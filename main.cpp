@@ -71,16 +71,16 @@ int main(int argc, const char *argv[]) {
         }
 
         Lexer lexer(infile, keywords, state_type, transitions, { 0, 16, 17}, debug);
-        struct token token;
-        while (lexer.good()) {
-            token = lexer.get_next_token();
-            if (token.type == TOKEN_EOF)
+        token t = lexer.get_next_token();
+        while (t.type != TOKEN_ERROR) {
+            if (t.type == TOKEN_EOF)
                 break;
+            t = lexer.get_next_token();
         }
 
         infile.close();
 
-        if (token.type != TOKEN_EOF) {
+        if (t.type != TOKEN_EOF) {
             std::cerr << "Error: Lexer failed." << std::endl;
             return 1;
         }
