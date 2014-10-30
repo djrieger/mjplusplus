@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
+#include <map>
 #include <set>
 #include <vector>
-#include <map>
-#include <cstring>
+
+#include <string.h>
+
 #include "lexer/stateomat.hpp"
 #include "lexer/token.hpp"
 #include "lexer/lexer.hpp"
@@ -38,4 +40,3 @@ int main(int argc, const char *argv[]) {
 		return 1;
 	}
 	return 0;
-}
