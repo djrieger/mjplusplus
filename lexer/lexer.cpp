@@ -13,7 +13,7 @@ token Lexer::get_next_token() {
 
     while(1) {
         int c = input.get();
-        int new_state = transitions[state][c == EOF ? 128 : c];
+        int new_state = stateomat.transitions[state][c == EOF ? 128 : c];
 
         if (!is_accepting(new_state))
             t.string_value = "";
@@ -34,7 +34,7 @@ token Lexer::get_next_token() {
         }
         else {
             t.string_value.push_back(c);
-            t.type = state_type[new_state];
+            t.type = stateomat.state_type[new_state];
         }
 
         state = new_state;
