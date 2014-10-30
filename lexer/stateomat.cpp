@@ -49,6 +49,5 @@ Stateomat::Stateomat() {
                                   "transient", "true", "try", "void",
                                   "volatile", "while"};
 
-     }
-
-
+    non_accepting_states = {0, 16, 17};
+}
