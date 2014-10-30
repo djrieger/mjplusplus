@@ -1,7 +1,7 @@
 CPP := g++
 DEBUGFLAGS := -ggdb -O1
 RELEASEFLAGS := -O3
-CPPFLAGS := -std=c++14 -pedantic -W -Wall -Wextra
+CPPFLAGS := -std=c++11 -pedantic -W -Wall -Wextra
 
 TARGET := mj++
 FILES := main.cpp \
