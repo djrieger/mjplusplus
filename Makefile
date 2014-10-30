@@ -4,7 +4,10 @@ RELEASEFLAGS := -O3
 CPPFLAGS := -std=c++14 -pedantic -W -Wall -Wextra
 
 TARGET := mj++
-FILES := insert_files_here.cpp
+FILES := main.cpp \
+	lexer/lexer.cpp \
+	lexer/stateomat.cpp \
+	lexer/token.cpp
 
 all: $(TARGET)
 

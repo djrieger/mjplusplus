@@ -1,19 +1,9 @@
 #include "lexer.hpp"
 #include "token.hpp"
 
-Lexer::Lexer(std::istream& input, 
-			std::set<std::string> keywords,
-			std::map<unsigned int, token_type> state_type,
-			std::vector<std::vector<int>> transitions,
-			std::set<unsigned int> non_accepting_states,
-			bool debug)
-	 : input(input),
-	  keywords(keywords), 
-	  state_type(state_type), 
-	  transitions(transitions),
-	  non_accepting_states(non_accepting_states),
-	  debug(debug) {
-};
+Lexer::Lexer(std::istream& input, Stateomat const &stateomat, bool debug)
+	: input(input), stateomat(stateomat), debug(debug)
+{;}
 
 token Lexer::get_next_token() {
 	struct token t;
@@ -30,7 +20,7 @@ token Lexer::get_next_token() {
         else if (new_state == STATE_STOP) {
             if (is_accepting(state)) {
                 input.unget();
-                if (keywords.find(t.string_value) != keywords.end())
+                if (stateomat.keywords.find(t.string_value) != stateomat.keywords.end())
                     t.type = TOKEN_KEYWORD;
                 if (debug)
               		print_token(&t);
@@ -55,7 +45,7 @@ token Lexer::get_next_token() {
 }
 
 int Lexer::is_accepting(int state) {
-	return non_accepting_states.find(state) == non_accepting_states.end();
+	return stateomat.non_accepting_states.find(state) == stateomat.non_accepting_states.end();
 }
 
 bool Lexer::good() {
