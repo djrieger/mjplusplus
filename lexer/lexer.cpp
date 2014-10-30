@@ -1,4 +1,5 @@
 #include "lexer.hpp"
+#include "token.hpp"
 
 Lexer::Lexer(std::istream& input, 
 			std::set<std::string> keywords,
