@@ -5,7 +5,7 @@
 #include <map>
 #include "lexer/token.hpp"
 #include "lexer/lexer.hpp"
-
+#include <cstring>
 
 
 // [N_STATES][129]
