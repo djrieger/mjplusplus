@@ -10,7 +10,8 @@
 #include "lexer/token.hpp"
 #include "lexer/lexer.hpp"
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char *argv[])
+{
 	bool debug = false;
 	if (argc == 3 && strncmp(argv[1], "--lextest", 10) == 0)
 	{
@@ -27,7 +28,8 @@ int main(int argc, const char *argv[]) {
 	Stateomat stateomat;
 	Lexer lexer(infile, stateomat, debug);
 	token t = lexer.get_next_token();
-	while (t.type != TOKEN_ERROR) {
+	while (t.type != TOKEN_ERROR)
+	{
 		if (t.type == TOKEN_EOF)
 		break;
 		t = lexer.get_next_token();
@@ -35,8 +37,10 @@ int main(int argc, const char *argv[]) {
 
 	infile.close();
 
-	if (t.type != TOKEN_EOF) {
+	if (t.type != TOKEN_EOF)
+	{
 		std::cerr << "Error: Lexer failed." << std::endl;
 		return 1;
 	}
 	return 0;
+}
