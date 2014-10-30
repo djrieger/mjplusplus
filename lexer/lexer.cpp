@@ -13,27 +13,43 @@ Lexer::Lexer(std::istream& input,
 	  transitions(transitions),
 	  non_accepting_states(non_accepting_states),
 	  debug(debug) {
+        position = std::make_pair(1, 1);
 };
 
 token Lexer::get_next_token() {
-	struct token t;
+	token t;
+    t.position = position;
 	t.string_value = "";
 
     int state = STATE_START;
 
     while(1) {
         int c = input.get();
+        if (c == '\n') {
+            position.first++;
+            position.second = 1;
+        } else {
+            position.second++;
+        }
+
         int new_state = transitions[state][c == EOF ? 128 : c];
 
-        if (!is_accepting(new_state))
+        if (!is_accepting(new_state)) {
             t.string_value = "";
+        }
         else if (new_state == STATE_STOP) {
             if (is_accepting(state)) {
                 input.unget();
+                if (c == '\n')
+                    position.first--;
+                else
+                    position.second--;
+
                 if (keywords.find(t.string_value) != keywords.end())
                     t.type = TOKEN_KEYWORD;
-                if (debug)
+                if (debug) {
               		print_token(&t);
+                }
                 return t;
             }
             else 

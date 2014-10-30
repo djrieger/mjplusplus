@@ -15,8 +15,10 @@ enum token_type {
 struct token {
     token_type type;
     std::string string_value;
+    // line, column
+    std::pair<unsigned int, unsigned int> position;
 };
 
-void print_token(struct token *t);
+void print_token(token *t);
 
 #endif

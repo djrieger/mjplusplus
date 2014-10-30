@@ -14,8 +14,8 @@
 
 class Lexer {
 	protected:
-
-		std::tuple<unsigned int, unsigned int> position;
+		// line, column
+		std::pair<unsigned int, unsigned int> position;
 		bool debug;
 		std::istream& input;
 		std::set<std::string> keywords;
