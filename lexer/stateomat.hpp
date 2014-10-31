@@ -15,12 +15,14 @@ class Stateomat
 {
 public:
 	Stateomat();
+    bool state_is_accepting(unsigned state);
+    void dump_graph(std::string file_name);
 
 //protected:
-	std::vector<std::vector<int>> transitions;
-	std::map<unsigned int, token_type> state_type;
+	std::vector<std::vector<unsigned>> transitions;
+	std::map<unsigned, token_type> state_type;
 	std::set<std::string> keywords;
-	std::set<unsigned int> non_accepting_states;
+	std::set<unsigned> non_accepting_states;
 };
 
 #endif
