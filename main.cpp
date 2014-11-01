@@ -7,47 +7,54 @@
 #include "lexer/stateomat.hpp"
 #include "lexer/token.hpp"
 
-int main(int argc, const char **argv) {
-    std::vector<std::string> options;
+int main(int argc, const char** argv)
+{
+	std::vector<std::string> options;
 
-    for (int i = 1; i < argc - 1; i++)
-        options.push_back(argv[i]);
+	for (int i = 1; i < argc - 1; i++)
+		options.push_back(argv[i]);
 
-    std::string file_name = argv[argc - 1];
-    auto has_option = [&options] (std::string option) {
-        return find(options.begin(), options.end(), option) != options.end();
-    };
+	std::string file_name = argv[argc - 1];
+	auto has_option = [&options] (std::string option)
+	{
+		return find(options.begin(), options.end(), option) != options.end();
+	};
 
-    if (has_option("--dumplexgraph")) {
-        Stateomat stateomat;
-        stateomat.dump_graph(file_name);
-    }
-    else if (has_option("--lextest")) {
-        std::ifstream infile(file_name);
+	if (has_option("--dumplexgraph"))
+	{
+		Stateomat stateomat;
+		stateomat.dump_graph(file_name);
+	}
+	else if (has_option("--lextest"))
+	{
+		std::ifstream infile(file_name);
 
-        if (!infile.good()) {
-            std::cerr << "Error reading file." << std::endl;
-            return EXIT_FAILURE;
-        }
+		if (!infile.good())
+		{
+			std::cerr << "Error reading file." << std::endl;
+			return EXIT_FAILURE;
+		}
 
-        Stateomat stateomat;
-        Lexer lexer(infile, stateomat, true);
-        Token t = lexer.get_next_token();
+		Stateomat stateomat;
+		Lexer lexer(infile, stateomat, true);
+		Token t = lexer.get_next_token();
 
-        while (t.type != Token::Type::TOKEN_ERROR) {
-            if (t.type == Token::Type::TOKEN_EOF)
-                break;
+		while (t.type != Token::Type::TOKEN_ERROR)
+		{
+			if (t.type == Token::Type::TOKEN_EOF)
+				break;
 
-            t = lexer.get_next_token();
-        }
+			t = lexer.get_next_token();
+		}
 
-        infile.close();
+		infile.close();
 
-        if (t.type != Token::Type::TOKEN_EOF) {
-            std::cerr << "Error: Lexer failed." << std::endl;
-            return EXIT_FAILURE;
-        }
-    }
+		if (t.type != Token::Type::TOKEN_EOF)
+		{
+			std::cerr << "Error: Lexer failed." << std::endl;
+			return EXIT_FAILURE;
+		}
+	}
 
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
