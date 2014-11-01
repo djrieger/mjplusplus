@@ -7,17 +7,17 @@
 #include "stateomat.hpp"
 
 class Lexer {
-	protected:
+    protected:
 
-		std::tuple<unsigned int, unsigned int> position;
-		std::istream &input;
-		Stateomat stateomat;
-		bool debug;
+        std::tuple<unsigned int, unsigned int> position;
+        std::istream &input;
+        Stateomat stateomat;
+        bool debug;
 
-	public:
-		Lexer(std::istream &input, Stateomat const &stateomat, bool debug = false);
-		Token get_next_token();
-		bool good();
+    public:
+        Lexer(std::istream &input, Stateomat const &stateomat, bool debug = false);
+        Token get_next_token();
+        bool good();
 };
 
 #endif
