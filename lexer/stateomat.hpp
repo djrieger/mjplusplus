@@ -1,13 +1,13 @@
 #ifndef STATEOMAT_HPP
 #define STATEOMAT_HPP
 
-#include <vector>
-#include <set>
 #include <map>
+#include <set>
 #include <string>
+#include <vector>
+
 #include "token.hpp"
 
-#define N_STATES 23
 #define STATE_START 0
 #define STATE_STOP 19
 
@@ -15,10 +15,12 @@ class Stateomat
 {
 public:
 	Stateomat();
+	bool state_is_accepting(unsigned int state);
+	void dump_graph(std::string const &file_name);
 
 //protected:
-	std::vector<std::vector<int>> transitions;
-	std::map<unsigned int, token_type> state_type;
+	std::vector<std::vector<unsigned int>> transitions;
+	std::map<unsigned int, Token::Type> state_type;
 	std::set<std::string> keywords;
 	std::set<unsigned int> non_accepting_states;
 };

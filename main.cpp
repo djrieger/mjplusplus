@@ -1,46 +1,61 @@
-#include <iostream>
+#include <algorithm>
 #include <fstream>
-#include <map>
-#include <set>
+#include <iostream>
 #include <vector>
 
-#include <string.h>
-
+#include "lexer/lexer.hpp"
 #include "lexer/stateomat.hpp"
 #include "lexer/token.hpp"
-#include "lexer/lexer.hpp"
 
-int main(int argc, const char *argv[])
+int main(int argc, const char **argv)
 {
-	bool debug = false;
-	if (argc == 3 && strncmp(argv[1], "--lextest", 10) == 0)
+	std::vector<std::string> options;
+	for (int i = 1; i < argc - 1; i++)
 	{
-		debug = true;
+		options.push_back(argv[i]);
 	}
 
-	std::ifstream infile(argv[2]);
-	if (!infile.good())
+	std::string file_name = argv[argc - 1];
+
+	auto has_option = [&options] (std::string option)
 	{
-		std::cerr << "Error reading file." << std::endl;
-		return 1;
+		return find(options.begin(), options.end(), option) != options.end();
+	};
+
+	if (has_option("--dumplexgraph"))
+	{
+		Stateomat stateomat;
+		stateomat.dump_graph(file_name);
+	}
+	else if (has_option("--lextest"))
+	{
+		std::ifstream infile(file_name);
+		if (!infile.good())
+		{
+			std::cerr << "Error reading file." << std::endl;
+			return EXIT_FAILURE;
+		}
+
+		Stateomat stateomat;
+		Lexer lexer(infile, stateomat, true);
+		Token t = lexer.get_next_token();
+		while (t.type != Token::Type::TOKEN_ERROR)
+		{
+			if (t.type == Token::Type::TOKEN_EOF)
+			{
+				break;
+			}
+			t = lexer.get_next_token();
+		}
+
+		infile.close();
+
+		if (t.type != Token::Type::TOKEN_EOF)
+		{
+			std::cerr << "Error: Lexer failed." << std::endl;
+			return EXIT_FAILURE;
+		}
 	}
 
-	Stateomat stateomat;
-	Lexer lexer(infile, stateomat, debug);
-	token t = lexer.get_next_token();
-	while (t.type != TOKEN_ERROR)
-	{
-		if (t.type == TOKEN_EOF)
-		break;
-		t = lexer.get_next_token();
-	}
-
-	infile.close();
-
-	if (t.type != TOKEN_EOF)
-	{
-		std::cerr << "Error: Lexer failed." << std::endl;
-		return 1;
-	}
-	return 0;
+	return EXIT_SUCCESS;
 }
