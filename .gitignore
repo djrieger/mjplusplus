@@ -1,2 +1,4 @@
 *.o
 mj++
+astyle.rc
+.gitignore
