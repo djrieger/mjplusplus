@@ -4,7 +4,7 @@
         
         {
             "path": ".",
-            "file_exclude_patterns": ["*.o", "*.sublime-workspace"]
+            "file_exclude_patterns": ["*.o", "*.sublime-workspace", "mj++"]
         }
     ],
 	"settings":
@@ -17,5 +17,22 @@
                 "additional_options_file": "astyle.rc"
             }
         }
-    }
+    },
+    "build_systems":
+    [
+        {
+            "name": "make clean",
+            "cmd": ["make", "clean"]
+        },
+        {
+            "name": "make",
+            "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "cmd": ["make"]
+        },
+        {
+            "name": "lextest",
+            "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "cmd": ["./mj++","--lextest","tests/blatt2.mj"]
+        }
+    ]
 }
