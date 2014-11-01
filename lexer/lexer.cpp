@@ -55,6 +55,11 @@ Token Lexer::get_next_token() {
 			}
 		}
 		else {
+			if(state == STATE_START)
+			{
+				t.position = position;
+				t.position.second--;
+			}
 			t.string_value.push_back(c);
 			t.type = stateomat.state_type[new_state];
 		}
