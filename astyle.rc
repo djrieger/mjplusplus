@@ -1,0 +1,16 @@
+align-pointer=type
+align-reference=type
+break-blocks
+indent-classes
+indent-col1-comments
+indent-labels
+indent-modifiers
+indent-namespaces
+indent-switches
+indent=tab=4
+mode=c
+pad-header
+pad-oper
+remove-brackets
+style=ansi
+suffix=none
