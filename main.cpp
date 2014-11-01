@@ -7,6 +7,8 @@
 #include "lexer/stateomat.hpp"
 #include "lexer/token.hpp"
 
+#define CMD_LINE_OPTION_PREFIX "--"
+
 int main(int argc, const char** argv)
 {
 	std::vector<std::string> options;
@@ -17,21 +19,21 @@ int main(int argc, const char** argv)
 	std::string file_name = argv[argc - 1];
 	auto has_option = [&options] (std::string option)
 	{
-		return find(options.begin(), options.end(), option) != options.end();
+		return std::find(options.begin(), options.end(), CMD_LINE_OPTION_PREFIX + option) != options.end();
 	};
 
-	if (has_option("--dumplexgraph"))
+	if (has_option("dumplexgraph"))
 	{
 		Stateomat stateomat;
 		stateomat.dump_graph(file_name);
 	}
-	else if (has_option("--lextest"))
+	else if (has_option("lextest"))
 	{
 		std::ifstream infile(file_name);
 
 		if (!infile.good())
 		{
-			std::cerr << "Error reading file." << std::endl;
+			std::cerr << "Error reading file " << file_name << std::endl;
 			return EXIT_FAILURE;
 		}
 
