@@ -39,15 +39,13 @@ int main(int argc, const char** argv)
 
 		Stateomat stateomat;
 		Lexer lexer(infile, stateomat, true);
-		Token t = lexer.get_next_token();
+		Token t;
 
-		while (t.type != Token::Type::TOKEN_ERROR)
+		do
 		{
-			if (t.type == Token::Type::TOKEN_EOF)
-				break;
-
 			t = lexer.get_next_token();
 		}
+		while (t.type != Token::Type::TOKEN_ERROR && t.type != Token::Type::TOKEN_EOF);
 
 		infile.close();
 
