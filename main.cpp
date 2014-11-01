@@ -1,38 +1,44 @@
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <set>
-#include <vector>
+#include <algorithm>
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <vector>
 
-#include <string.h>
-
+#include "lexer/lexer.hpp"
 #include "lexer/stateomat.hpp"
 #include "lexer/token.hpp"
-#include "lexer/lexer.hpp"
 
-int main(int argc, const char *argv[]) {
+using namespace std;
 
-    if (argc == 3 && std::string(argv[1]) == "--dumplexgraph") {
+int main(int argc, const char *argv[])
+{
+
+    vector<string> options;
+    for (int i = 1; i < argc - 1; i++)
+        options.push_back(string(argv[i]));
+
+    string file_name = string(argv[argc - 1]);
+
+    auto has_option = [&options] (string option) {
+        return find(options.begin(), options.end(), option) != options.end();
+    };
+
+    if (has_option("--dumplexgraph"))
+    {
         Stateomat stateomat;
-        stateomat.dump_graph(std::string(argv[2]));
+        stateomat.dump_graph(file_name);
     }
-    else {
-        bool debug = false;
-        if (argc == 3 && strncmp(argv[1], "--lextest", 10) == 0)
-        {
-            debug = true;
-        }
-
-        std::ifstream infile(argv[2]);
+    else if (has_option("--lextest"))
+    {
+        ifstream infile(file_name);
         if (!infile.good())
         {
-            std::cerr << "Error reading file." << std::endl;
-            return 1;
+            cerr << "Error reading file." << endl;
+            return EXIT_FAILURE;
         }
 
         Stateomat stateomat;
-        Lexer lexer(infile, stateomat, debug);
+        Lexer lexer(infile, stateomat, true);
         token t = lexer.get_next_token();
         while (t.type != TOKEN_ERROR)
         {
@@ -45,10 +51,9 @@ int main(int argc, const char *argv[]) {
 
         if (t.type != TOKEN_EOF)
         {
-            std::cerr << "Error: Lexer failed." << std::endl;
-            return 1;
+            cerr << "Error: Lexer failed." << endl;
+            return EXIT_FAILURE;
         }
-        return 0;
     }
 
     return EXIT_SUCCESS;

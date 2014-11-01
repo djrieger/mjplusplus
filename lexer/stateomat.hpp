@@ -7,7 +7,6 @@
 #include <string>
 #include "token.hpp"
 
-#define N_STATES 23
 #define STATE_START 0
 #define STATE_STOP 19
 

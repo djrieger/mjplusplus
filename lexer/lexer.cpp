@@ -15,10 +15,10 @@ token Lexer::get_next_token() {
         int c = input.get();
         int new_state = stateomat.transitions[state][c == EOF ? 128 : c];
 
-        if (!is_accepting(new_state))
+        if (!stateomat.state_is_accepting(new_state))
             t.string_value = "";
         else if (new_state == STATE_STOP) {
-            if (is_accepting(state)) {
+            if (stateomat.state_is_accepting(state)) {
                 input.unget();
                 if (stateomat.keywords.find(t.string_value) != stateomat.keywords.end())
                     t.type = TOKEN_KEYWORD;
@@ -42,10 +42,6 @@ token Lexer::get_next_token() {
 
     t.type = TOKEN_ERROR;
     return t;
-}
-
-int Lexer::is_accepting(int state) {
-	return stateomat.non_accepting_states.find(state) == stateomat.non_accepting_states.end();
 }
 
 bool Lexer::good() {
