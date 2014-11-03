@@ -37,15 +37,15 @@ Stateomat::Stateomat()
 		{15, Token::Token_type::TOKEN_OPERATOR}, {18, Token::Token_type::TOKEN_EOF}
 	};
 	keywords = {"abstract", "assert", "boolean", "break", "byte", "case",
-		"catch", "char", "class", "const", "continue", "default",
-		"double", "do", "else", "enum", "extends", "false", "finally",
-		"final", "float", "for", "goto", "if", "implements", "import",
-		"instanceof", "interface", "int", "long", "native", "new",
-		"null", "package", "private", "protected", "public", "return",
-		"short", "static", "strictfp", "super", "switch",
-		"synchronized", "this", "throws", "throw", "transient", "true",
-		"try", "void", "volatile", "while"
-	};
+	            "catch", "char", "class", "const", "continue", "default",
+	            "double", "do", "else", "enum", "extends", "false", "finally",
+	            "final", "float", "for", "goto", "if", "implements", "import",
+	            "instanceof", "interface", "int", "long", "native", "new",
+	            "null", "package", "private", "protected", "public", "return",
+	            "short", "static", "strictfp", "super", "switch",
+	            "synchronized", "this", "throws", "throw", "transient", "true",
+	            "try", "void", "volatile", "while"
+	           };
 	non_accepting_states = {0, 16, 17};
 	keyword_map = {{"abstract", Token::Keyword_type::KEYWORD_ABSTRACT}, {"assert", Token::Keyword_type::KEYWORD_ASSERT},
 		{"boolean", Token::Keyword_type::KEYWORD_BOOLEAN}, {"break", Token::Keyword_type::KEYWORD_BREAK},
