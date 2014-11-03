@@ -4,7 +4,7 @@
 
 void Token::print() const
 {
-	switch (type)
+	switch (token_type)
 	{
 		case TOKEN_EOF:
 			std::cout << "EOF" << std::endl;
