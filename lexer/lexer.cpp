@@ -27,7 +27,7 @@ Token Lexer::get_next_token()
 				input.unget();
 
 				if (stateomat.keywords.find(t.string_value) != stateomat.keywords.end())
-					t.token_type = Token::Type::TOKEN_KEYWORD;
+					t.token_type = Token::Token_type::TOKEN_KEYWORD;
 
 				if (debug)
 					t.print();
@@ -36,7 +36,7 @@ Token Lexer::get_next_token()
 			}
 			else
 			{
-				t.token_type = Token::Type::TOKEN_ERROR;
+				t.token_type = Token::Token_type::TOKEN_ERROR;
 				return t;
 			}
 		}
@@ -49,7 +49,7 @@ Token Lexer::get_next_token()
 		state = new_state;
 	}
 
-	t.token_type = Token::Type::TOKEN_ERROR;
+	t.token_type = Token::Token_type::TOKEN_ERROR;
 	return t;
 }
 

@@ -45,11 +45,11 @@ int main(int argc, const char** argv)
 		{
 			t = lexer.get_next_token();
 		}
-		while (t.token_type != Token::Type::TOKEN_ERROR && t.token_type != Token::Type::TOKEN_EOF);
+		while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF);
 
 		infile.close();
 
-		if (t.token_type != Token::Type::TOKEN_EOF)
+		if (t.token_type != Token::Token_type::TOKEN_EOF)
 		{
 			std::cerr << "Error: Lexer failed." << std::endl;
 			return EXIT_FAILURE;
