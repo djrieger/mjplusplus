@@ -27,7 +27,13 @@ Token Lexer::get_next_token()
 				input.unget();
 
 				if (stateomat.keywords.find(t.string_value) != stateomat.keywords.end())
+				{
 					t.token_type = Token::Token_type::TOKEN_KEYWORD;
+					t.keyword_type = stateomat.keyword_map[t.string_value];
+				}
+
+				if (t.token_type == Token::Token_type::TOKEN_OPERATOR)
+					t.operator_type = stateomat.operator_map[t.string_value];
 
 				if (debug)
 					t.print();
