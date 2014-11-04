@@ -1,0 +1,39 @@
+class World {
+
+	/*No assignment in field declaration allowed.*/
+	public int worldId = 0;
+	
+	public World(worldId) {
+		this.worldId = worldId /* Missing ;*/
+	}
+}
+
+class Hello {
+	
+	public World world;
+	
+	/*No type/ident*/
+	public Hello(world) {
+		this.world = world;
+		
+		/*Missing block closing*/
+		{
+	}
+	
+	public void print() {
+		/*An expression cant be empty.*/
+		if () {
+			System.out.println(word.worldId);
+		}
+	}
+}
+
+class Main {
+	public static void foo(String[] bar) {
+		int id = 0;
+		
+		/*Calling constructors with parameters is not allowed.*/
+		Hello hello = new Hello(new World(id))
+		
+	}
+}
