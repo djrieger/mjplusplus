@@ -24,7 +24,7 @@ class Parser
         /**
          * Generic function to start the parser
          */
-        int start(); 
+        bool start(); 
 
         /**
          * Prints the content of the error message buffer and resets it to an empty string. TODO: private?
@@ -34,8 +34,8 @@ class Parser
     private:
         // TODO: parseNT() function for each non terminal
         // TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
-        int parseProgram();
-        int parseClassDeclaration();
+        bool parseProgram();
+        bool parseClassDeclaration();
         // ..
 };
 
