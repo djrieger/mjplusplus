@@ -1,0 +1,5 @@
+class one {
+	public a a() {
+		public b b() {}
+	}
+}

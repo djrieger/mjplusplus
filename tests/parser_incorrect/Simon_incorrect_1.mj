@@ -1,0 +1,5 @@
+class one {
+	public a a() {
+		while (false) int x;
+	}
+}
