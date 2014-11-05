@@ -6,19 +6,20 @@
 #include "token.hpp"
 #include "stateomat.hpp"
 
-class Lexer
-{
-	protected:
+class Lexer {
+    protected:
 
-		std::tuple<unsigned int, unsigned int> position;
-		std::istream& input;
-		Stateomat stateomat;
-		bool debug;
+        std::tuple<unsigned int, unsigned int> position;
+        std::istream &input;
+        Stateomat stateomat;
+        bool debug;
+        std::vector<Token> token_stack;
 
-	public:
-		Lexer(std::istream& input, Stateomat const& stateomat, bool debug = false);
-		Token get_next_token();
-		bool good();
+    public:
+        Lexer(std::istream &input, Stateomat const &stateomat, bool debug = false);
+        Token get_next_token();
+        void unget_token(Token t);
+        bool good();
 };
 
 #endif
