@@ -2,6 +2,7 @@
 #define PARSER_HPP
 
 #include "../lexer/lexer.hpp"
+#include "precedences.hpp"
 
 class Parser
 {
@@ -38,6 +39,9 @@ class Parser
         // TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
         bool parseProgram();
         bool parseClassDeclaration();
+		bool parseExpression();
+		bool parseAssignmentExpression();
+		bool precedenceClimb(int minPrec);
         // ..
 };
 
