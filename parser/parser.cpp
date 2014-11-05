@@ -111,12 +111,12 @@ bool Parser::precedenceClimb(int minPrec) {
 	bool result = parseUnaryExpression();
 	int prec;
 	bool left_assoc;
-	Token op = current.token_type;
+	Token::Token_type op = current.token_type;
 	if (!result || operator_precs.find(op) == operator_precs.end()) {
 		return result;
 	}
 	std::tie(prec, left_assoc) = operator_precs.find(current.token_type);
-	while (prec >= min_prec) {
+	while (prec >= minPrec) {
 		if (left_assoc) {
 			prec = prec + 1;
 		}
