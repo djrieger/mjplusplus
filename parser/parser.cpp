@@ -139,7 +139,7 @@ bool Parser::precedenceClimb(int minPrec)
 	if (!result || operator_precs.find(op) == operator_precs.end())
 		return result;
 
-	std::tie(prec, left_assoc) = operator_precs.find(current.token_type);
+	std::tie(prec, left_assoc) = operator_precs[op];
 
 	while (prec >= minPrec)
 	{
@@ -147,14 +147,14 @@ bool Parser::precedenceClimb(int minPrec)
 			prec = prec + 1;
 
 		next_token();
-		rhs = precedenceClimb(prec);
+		bool rhs = precedenceClimb(prec);
 		result = result && rhs;
 		op = current.token_type;
 
 		if (!result || operator_precs.find(op) == operator_precs.end())
 			return result;
 
-		std::tie(prec, left_assoc) = operator_precs.find(current.token_type);
+		std::tie(prec, left_assoc) = operator_precs[op];
 	}
 
 	return result;
