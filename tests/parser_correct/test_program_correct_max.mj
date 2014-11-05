@@ -1,6 +1,6 @@
 class MyAdd {
 	public int offset;
-	public MyAdd(int offset) {
+	public MyAdd MyAdd(int offset) {
 		this.offset = offset;
 	}
 
@@ -17,6 +17,7 @@ class MyAdd {
 	}
 } 
 
+class Main {
 public static void main(String[] args) {
 	int offset = 4*10;
 	MyAdd ma = MyAdd(offset);
@@ -24,6 +25,7 @@ public static void main(String[] args) {
 	System.out.println("initialized MyAdd with offset: "+offset);
 	System.out.println("MyAdd of 5 and 4 is: "+ma.add(5,4); */
 	System.out.println(offset);
-	System.out.println(ma.add(5,4);
+	System.out.println(ma.add(5,4));
 	return 0;
+}
 }

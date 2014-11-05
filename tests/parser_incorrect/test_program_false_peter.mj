@@ -2,7 +2,8 @@ class World {
 
 	/*No assignment in field declaration allowed.*/
 	public int worldId = 0;
-	
+
+    /*no constructor allowed, method and parameter need a type*/
 	public World(worldId) {
 		this.worldId = worldId /* Missing ;*/
 	}

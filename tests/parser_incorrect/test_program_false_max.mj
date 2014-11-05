@@ -1,18 +1,24 @@
 class Shifter {
 	public boolean logicShift;
-	public Shifter(boolean logicShift = false) {
+    
+    /*methods need a type, no optional parameters*/
+    public Shifter(boolean logicShift = false) {
 		this.logicShift = logicShift;
 	}
+
 	public int shiftLeft(int toShift, int howFar) {
-		int res = logicShift? toShift <<< howFar : toShift << howFar;
+	    /*no ternary operator, no <<<*/
+        int res = logicShift? toShift <<< howFar : toShift << howFar;
 		return res;
 	}
 	public int shiftRight(int toShift, int howFar) {
-		int res = logicShift? toShift >>> howFar : toShift >>: howFar;
+		/*no ternary operator*/
+        int res = logicShift? toShift >>> howFar : toShift >>: howFar;
 		return res;
 	}
 } 
 
+/*method not in class declaration*/
 public static void main(String[] args) {
 	Shifter normalShifter;
 	System.out.println(normalShifter.shiftLeft(42,10));

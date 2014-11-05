@@ -7,28 +7,26 @@ class World {
 
 	public int worldId;
 	
-	public World() {
-	}
 }
 
 class Hello {
 	
 	public World world;
-	
-	public Hello() {
+
+    public Hello Hello() {
 		this.world = new World();
 		{}{}{}{}{}{}{}{}{}{}{}
 	}
 	
 	public void print() {
-		System.out.println(++world.worldId--);
+		System.out.println(world.worldId = world.worldId + 1);
 	}
 }
 
 class Main {
 	public static void foo(String[] bar) {
 		if ((G) = A == B && C != Y / Z < H) {
-			WorldArray ws = new World[A++ = B*10 || !C][];
+			WorldArray ws = new World[A = B*10 || !C][];
 			while (this.T % 42) {
 				{
 					ws[(bar)] = new Hello().world;
