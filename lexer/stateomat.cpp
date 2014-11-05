@@ -76,7 +76,7 @@ Stateomat::Stateomat()
 		{"while", Token::Token_type::KEYWORD_WHILE}
 	};
 	operator_map = {{"!=", Token::Token_type::OPERATOR_NOTEQ}, {"!", Token::Token_type::OPERATOR_NOT},
-		{"(", Token::Token_type::OPERATOR_LPARA}, {")", Token::Token_type::OPERATOR_RPARA},
+		{"(", Token::Token_type::OPERATOR_LPAREN}, {")", Token::Token_type::OPERATOR_RPAREN},
 		{"*=", Token::Token_type::OPERATOR_MULTEQ}, {"*", Token::Token_type::OPERATOR_MULT},
 		{"++", Token::Token_type::OPERATOR_PLUPLUS}, {"+=", Token::Token_type::OPERATOR_PLUSEQ},
 		{"+", Token::Token_type::OPERATOR_PLUS}, {",", Token::Token_type::OPERATOR_COMMA},
