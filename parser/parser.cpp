@@ -146,7 +146,7 @@ bool Parser::precedenceClimb(int minPrec)
 		if (left_assoc)
 			prec = prec + 1;
 
-		next_token();
+		nextToken();
 		bool rhs = precedenceClimb(prec);
 		result = result && rhs;
 		op = current.token_type;
