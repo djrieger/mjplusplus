@@ -418,12 +418,17 @@ bool Parser::parseOptionalBrackets()
 	return true;
 }
 
-// TODO!!!
 // BlockStatement -> Statement | LocalVariableDeclarationStatement .
 bool Parser::parseBlockStatement()
 {
 	// Statement first = IDENT, {, (, ;, while, if, return, -, !, null, false, true, INTEGER_LITERAL, this, new
 	// LVDS first =      IDENT, void, int, boolean
+
+	Token idToken;
+	Token maybeLBracketToken;
+	Token maybeRBracketToken;
+
+
 	switch (current.token_type)
 	{
 		case Token::Token_type::OPERATOR_LBRACE:
@@ -450,34 +455,106 @@ bool Parser::parseBlockStatement()
 			break;
 
 		case Token::Token_type::TOKEN_IDENT:
-			// TODO!!!!
-			return false;
+			idToken = current;
+			maybeLBracketToken = nextToken();
+
+			if (!expect(Token::Token_type::OPERATOR_LBRACKET))
+			{
+				lexer.unget_token(maybeLBracketToken);
+				current = idToken;
+				return parseStatement();
+			}
+			else
+			{
+				maybeRBracketToken = current;
+
+				bool isRBracket = expect(Token::Token_type::OPERATOR_RBRACKET);
+				lexer.unget_token(maybeRBracketToken);
+				lexer.unget_token(maybeLBracketToken);
+				current = idToken;
+
+				if (isRBracket)
+					return parseLocalVariableDeclarationStatement();
+				else
+					return parseStatement();
+			}
+
+			break;
 
 		default:
 			return false;
 	}
 }
 
-// TODO: Implement
+// LocalVariableDeclarationStatement -> TypeIdent OptionalLVDSExpression ; .
+// OptionalLVDSExpression -> = Expression
+//	| .
 bool Parser::parseLocalVariableDeclarationStatement()
 {
-	return false;
+	if (!parseTypeIdent())
+		return false;
+
+	if (expect(Token::Token_type::OPERATOR_EQ))
+	{
+		if (!parseExpression())
+			return false;
+	}
+
+	return expect(Token::Token_type::OPERATOR_SEMICOLON);
 }
+
+// IfStatement -> if ( Expression ) Statement OptionalElseStatement .
+// OptionalElseStatement -> else Statement
+// 	| .
 bool Parser::parseIfStatement()
 {
-	return false;
+	bool isValidIf = expect(Token::Token_type::KEYWORD_IF) &&
+	                 expect(Token::Token_type::OPERATOR_LPAREN) &&
+	                 parseExpression() &&
+	                 expect(Token::Token_type::OPERATOR_RPAREN) &&
+	                 parseStatement();
+
+	if (!isValidIf)
+		return false;
+
+	if (expect(Token::Token_type::KEYWORD_ELSE))
+		return parseStatement();
+	else
+		return true;
 }
+
+// WhileStatement -> while ( Expression ) Statement .
 bool Parser::parseWhileStatement()
 {
-	return false;
+	return expect(Token::Token_type::KEYWORD_WHILE) &&
+	       expect(Token::Token_type::OPERATOR_LPAREN) &&
+	       parseExpression() &&
+	       expect(Token::Token_type::OPERATOR_RPAREN) &&
+	       parseStatement();
 }
+
+// ReturnStatement -> return OptionalExpression .
 bool Parser::parseReturnStatement()
 {
-	return false;
+	bool hasReturnKeyword = expect(Token::Token_type::KEYWORD_RETURN);
+
+	if (!hasReturnKeyword)
+		return false;
+
+	if (!expect(Token::Token_type::OPERATOR_SEMICOLON))
+	{
+		return parseExpression() &&
+		       expect(Token::Token_type::OPERATOR_SEMICOLON);
+	}
+
+	return true;
 }
+
+// ExpressionStatement -> Expression ; .
 bool Parser::parseExpressionStatement()
 {
-	return false;
+	return parseExpression() &&
+	       expect(Token::Token_type::OPERATOR_SEMICOLON);
 }
 
 
