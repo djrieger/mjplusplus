@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "parser.hpp"
 #include "precedences.hpp"
 
@@ -10,7 +12,12 @@ Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages
 bool Parser::start()
 {
 	nextToken();
-	return parseProgram();
+	bool r = parseProgram();
+	if(!r)
+	{
+		std::cerr << "parsing failed at '" << current.string_value << std::endl;
+	}
+	return r;
 }
 
 Token Parser::nextToken()
@@ -474,7 +481,7 @@ bool Parser::parseBlockStatement()
 
 			if (!expect(Token::Token_type::OPERATOR_LBRACKET))
 			{
-				lexer.unget_token(maybeLBracketToken);
+				//lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 				return parseStatement();
 			}
@@ -483,7 +490,7 @@ bool Parser::parseBlockStatement()
 				maybeRBracketToken = current;
 
 				bool isRBracket = expect(Token::Token_type::OPERATOR_RBRACKET);
-				lexer.unget_token(maybeRBracketToken);
+				if(isRBracket) {lexer.unget_token(maybeRBracketToken);}
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 
