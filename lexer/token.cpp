@@ -18,12 +18,11 @@ void Token::print() const
 			std::cout << "identifier " << string_value << std::endl;
 			break;
 
-		case TOKEN_OPERATOR:
-		case TOKEN_KEYWORD:
-			std::cout << string_value << std::endl;
+		case TOKEN_ERROR:
 			break;
 
-		case TOKEN_ERROR:
+		default:
+			std::cout << string_value << std::endl;
 			break;
 	}
 }

@@ -24,8 +24,8 @@ class Stateomat
 		std::set<std::string> keywords;
 		std::set<unsigned int> non_accepting_states;
 
-		std::map<std::string, Token::Keyword_type> keyword_map;
-		std::map<std::string, Token::Operator_type> operator_map;
+		std::map<std::string, Token::Token_type> keyword_map;
+		std::map<std::string, Token::Token_type> operator_map;
 };
 
 #endif
