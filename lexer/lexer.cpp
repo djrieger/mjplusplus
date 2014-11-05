@@ -8,8 +8,11 @@ Lexer::Lexer(std::istream &input, Stateomat const &stateomat, bool debug)
 
 Token Lexer::get_next_token() {
 
-    if (!token_stack.empty())
-        return token_stack.pop_back();
+    if (!token_stack.empty()) {
+        Token t = token_stack[token_stack.size() - 1];
+        token_stack.pop_back();
+        return t;
+    }
 
     Token t;
     t.string_value = "";
