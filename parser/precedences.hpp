@@ -1,12 +1,12 @@
 #ifndef PRECEDENCES_HPP
 #define PRECEDENCES_HPP
 
-#include <utility>
+#include <tuple>
 #include <map>
 #include "../lexer/token.hpp"
 
 //pair = (precedence, left_associative)
-std::map<Token::Token_type, std::pair<int,bool> > operator_precs =
+std::map<Token::Token_type, std::tuple<int,bool> > operator_precs =
 	{{Token::Token_type::OPERATOR_EQ, std::make_pair(1,false)},
 	 {Token::Token_type::OPERATOR_OROR, std::make_pair(2,true)},
 	 {Token::Token_type::OPERATOR_ANDAND, std::make_pair(3,true)},
