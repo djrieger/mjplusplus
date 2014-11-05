@@ -17,7 +17,8 @@ SOURCE_FILES := main.cpp \
 HEADER_FILES := lexer/lexer.hpp \
 	lexer/stateomat.hpp \
 	lexer/token.hpp \
-	parser/parser.hpp
+	parser/parser.hpp \
+	parser/precedences.hpp
 
 all: $(TARGET)
 
