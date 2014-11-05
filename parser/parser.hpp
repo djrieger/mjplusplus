@@ -12,6 +12,8 @@ class Parser
         Token current;
         std::string error_msg_buf;
 
+        Token nextToken();
+        bool expect(Token::Token_type tokenType);
     public:
         /**
          * Constructor to the parser, needs at least a lexer.
