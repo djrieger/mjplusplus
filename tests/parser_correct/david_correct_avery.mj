@@ -1,11 +1,14 @@
 class AveryNode {
-	public int f, p, rho;
-	protected int depth;
-	protected int numberOfPlayers;
-	boolean good;
-	protected AveryNode goodChild, badChild;
+	public int f;
+	public int p;
+	public int rho;
+	public int depth;
+	public int numberOfPlayers;
+	public boolean good;
+	public AveryNode goodChild;
+	public AveryNode badChild;
 
-	protected void initializeChildren() {
+	public void initializeChildren() {
 		if (depth < numberOfPlayers - 1) {
 			goodChild = new AveryNode();
 			badChild = new AveryNode();
@@ -43,9 +46,10 @@ class AveryNode {
 }
 
 class AveryTree {
-	protected int b, g;
-	protected int numberOfPlayers;
-	protected AveryNode root;
+	public int b
+	public int g;
+	public int numberOfPlayers;
+	public AveryNode root;
 	
 	public AveryTree() {
 		this.b = 5;
