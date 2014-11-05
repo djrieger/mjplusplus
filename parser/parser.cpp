@@ -1,4 +1,5 @@
 #include "parser.hpp"
+#include "precedences.hpp"
 
 Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
 {
@@ -81,10 +82,10 @@ bool Parser::parseProgram()
 bool Parser::parseClassDeclaration()
 {
 	return expect(Token::Token_type::KEYWORD_CLASS) &&
-	       expect(Token::Token_type::TOKEN_IDENT) &&
-	       expect(Token::Token_type::OPERATOR_LBRACE) &&
-	       parseClassMembers() &&
-	       expect(Token::Token_type::OPERATOR_RBRACE);
+		   expect(Token::Token_type::TOKEN_IDENT) &&
+		   expect(Token::Token_type::OPERATOR_LBRACE) &&
+		   parseClassMembers() &&
+		   expect(Token::Token_type::OPERATOR_RBRACE);
 }
 
 // ClassMembers -> ClassMember ClassMembers | .
@@ -103,7 +104,7 @@ bool Parser::parseClassMembers()
 bool Parser::parseClassMember()
 {
 	return expect(Token::Token_type::KEYWORD_PUBLIC) &&
-	       parseClassMember_();
+		   parseClassMember_();
 }
 
 // ClassMember_ -> TypeIdent FieldOrMethod | MainMethod .
@@ -114,7 +115,7 @@ bool Parser::parseClassMember_()
 	else
 	{
 		return parseTypeIdent() &&
-		       parseFieldOrMethod();
+			   parseFieldOrMethod();
 	}
 }
 
@@ -122,39 +123,39 @@ bool Parser::parseClassMember_()
 bool Parser::parseMainMethod()
 {
 	return expect(Token::Token_type::KEYWORD_STATIC) &&
-	       expect(Token::Token_type::KEYWORD_VOID) &&
-	       expect(Token::Token_type::TOKEN_IDENT) &&
-	       expect(Token::Token_type::OPERATOR_LPAREN) &&
-	       expect(Token::Token_type::TOKEN_IDENT, "String") &&
-	       expect(Token::Token_type::OPERATOR_LBRACKET) &&
-	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
-	       expect(Token::Token_type::TOKEN_IDENT) &&
-	       expect(Token::Token_type::OPERATOR_RPAREN) &&
-	       parseBlock();
+		   expect(Token::Token_type::KEYWORD_VOID) &&
+		   expect(Token::Token_type::TOKEN_IDENT) &&
+		   expect(Token::Token_type::OPERATOR_LPAREN) &&
+		   expect(Token::Token_type::TOKEN_IDENT, "String") &&
+		   expect(Token::Token_type::OPERATOR_LBRACKET) &&
+		   expect(Token::Token_type::OPERATOR_RBRACKET) &&
+		   expect(Token::Token_type::TOKEN_IDENT) &&
+		   expect(Token::Token_type::OPERATOR_RPAREN) &&
+		   parseBlock();
 }
 
 // TypeIdent -> Type IDENT
 bool Parser::parseTypeIdent()
 {
 	return parseType() &&
-	       expect(Token::Token_type::TOKEN_IDENT);
+		   expect(Token::Token_type::TOKEN_IDENT);
 }
 
 // Type -> BasicType ArrayDecl .
 bool Parser::parseType()
 {
 	return parseBasicType() &&
-	       parseArrayDecl();
+		   parseArrayDecl();
 }
 
 // BasicType -> int | boolean | void | IDENT .
 bool Parser::parseBasicType()
 {
 	return expect({ Token::Token_type::KEYWORD_INT,
-	                Token::Token_type::KEYWORD_BOOLEAN,
-	                Token::Token_type::KEYWORD_VOID,
-	                Token::Token_type::TOKEN_IDENT
-	              });
+					Token::Token_type::KEYWORD_BOOLEAN,
+					Token::Token_type::KEYWORD_VOID,
+					Token::Token_type::TOKEN_IDENT
+				  });
 }
 
 // ArrayDecl -> [ ] ArrayDecl | .
@@ -178,9 +179,9 @@ bool Parser::parseFieldOrMethod()
 		return true;
 
 	return expect(Token::Token_type::OPERATOR_LPAREN) &&
-	       parseOptionalParameters() &&
-	       expect(Token::Token_type::OPERATOR_RPAREN) &&
-	       parseBlock();
+		   parseOptionalParameters() &&
+		   expect(Token::Token_type::OPERATOR_RPAREN) &&
+		   parseBlock();
 }
 
 // OptionalParameters -> Parameters | .
@@ -252,8 +253,8 @@ bool Parser::parseStatement()
 bool Parser::parseBlock()
 {
 	return expect(Token::Token_type::OPERATOR_LBRACE) &&
-	       parseBlockStatements() &&
-	       expect(Token::Token_type::OPERATOR_RBRACE);
+		   parseBlockStatements() &&
+		   expect(Token::Token_type::OPERATOR_RBRACE);
 }
 
 // BlockStatements -> BlockStatement BlockStatements | .
@@ -497,6 +498,8 @@ bool Parser::parseBlockStatement()
 		default:
 			return false;
 	}
+	/* unreachable */
+	return false;
 }
 
 // LocalVariableDeclarationStatement -> TypeIdent OptionalLVDSExpression ; .
@@ -522,10 +525,10 @@ bool Parser::parseLocalVariableDeclarationStatement()
 bool Parser::parseIfStatement()
 {
 	bool isValidIf = expect(Token::Token_type::KEYWORD_IF) &&
-	                 expect(Token::Token_type::OPERATOR_LPAREN) &&
-	                 parseExpression() &&
-	                 expect(Token::Token_type::OPERATOR_RPAREN) &&
-	                 parseStatement();
+					 expect(Token::Token_type::OPERATOR_LPAREN) &&
+					 parseExpression() &&
+					 expect(Token::Token_type::OPERATOR_RPAREN) &&
+					 parseStatement();
 
 	if (!isValidIf)
 		return false;
@@ -540,10 +543,10 @@ bool Parser::parseIfStatement()
 bool Parser::parseWhileStatement()
 {
 	return expect(Token::Token_type::KEYWORD_WHILE) &&
-	       expect(Token::Token_type::OPERATOR_LPAREN) &&
-	       parseExpression() &&
-	       expect(Token::Token_type::OPERATOR_RPAREN) &&
-	       parseStatement();
+		   expect(Token::Token_type::OPERATOR_LPAREN) &&
+		   parseExpression() &&
+		   expect(Token::Token_type::OPERATOR_RPAREN) &&
+		   parseStatement();
 }
 
 // ReturnStatement -> return OptionalExpression .
@@ -557,7 +560,7 @@ bool Parser::parseReturnStatement()
 	if (!expect(Token::Token_type::OPERATOR_SEMICOLON))
 	{
 		return parseExpression() &&
-		       expect(Token::Token_type::OPERATOR_SEMICOLON);
+			   expect(Token::Token_type::OPERATOR_SEMICOLON);
 	}
 
 	return true;
@@ -567,7 +570,7 @@ bool Parser::parseReturnStatement()
 bool Parser::parseExpressionStatement()
 {
 	return parseExpression() &&
-	       expect(Token::Token_type::OPERATOR_SEMICOLON);
+		   expect(Token::Token_type::OPERATOR_SEMICOLON);
 }
 
 
