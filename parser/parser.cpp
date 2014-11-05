@@ -61,3 +61,73 @@ bool Parser::parseProgram() {
 bool Parser::parseClassDeclaration() {
     return true;
 }
+
+/*
+ Expression -> AssignmentExpression .
+*/
+bool Parser::parseExpression() {
+	return parseAssignmentExpression();
+}
+
+/*
+AssignmentExpression -> LogicalOrExpression OptionalAssignmentExpression .
+OptionalAssignmentExpression -> = AssignmentExpression
+	| .
+LogicalOrExpression -> OptionalLogicalOrExpression LogicalAndExpression .
+OptionalLogicalOrExpression -> LogicalOrExpression DOUBLEPIPE
+	| .
+LogicalAndExpression ->  OptionalLogicalAndExpression EqualityExpression .
+OptionalLogicalAndExpression -> LogicalAndExpression &&
+	| .
+
+
+EqualityExpression -> OptionalEqualityExpression RelationalExpression .
+OptionalEqualityExpression -> EqualityExpression EqOrNeq 
+	| .
+EqOrNeq -> == | != .
+
+RelationalExpression -> OptionalRelationalExpression AdditiveExpression .
+OptionalRelationalExpression -> RelationalExpression RelationalOperator 
+	| .
+RelationalOperator -> < | <= | > | >= .
+
+AdditiveExpression -> OptionalAdditiveExpression MultiplicativeExpression .
+OptionalAdditiveExpression -> AdditiveExpression PlusOrMinus | .
+PlusOrMinus -> + | - .
+
+MultiplicativeExpression -> OptionalMultiplicativeExpression UnaryExpression .
+OptionalMultiplicativeExpression -> MultiplicativeExpression MultSlashPercent
+	| .
+MultSlashPercent -> * | / | % .
+*/
+bool Parser::parseAssignmentExpression() {
+	return precedenceClimb(1);
+}
+
+/*
+parses an expression via precedence climb
+*/
+bool Parser::precedenceClimb(int minPrec) {
+	bool result = parseUnaryExpression();
+	int prec;
+	bool left_assoc;
+	Token op = current.token_type;
+	if (!result || operator_precs.find(op) == operator_precs.end()) {
+		return result;
+	}
+	std::tie(prec, left_assoc) = operator_precs.find(current.token_type);
+	while (prec >= min_prec) {
+		if (left_assoc) {
+			prec = prec + 1;
+		}
+		next_token();
+		rhs = precedenceClimb(prec);
+		result = result && rhs;
+		op = current.token_type;
+		if (!result || operator_precs.find(op) == operator_precs.end()) {
+			return result;
+		}
+		std::tie(prec, left_assoc) = operator_precs.find(current.token_type);
+	}
+	return result;
+}
