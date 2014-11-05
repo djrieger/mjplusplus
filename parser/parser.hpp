@@ -2,6 +2,7 @@
 #define PARSER_HPP
 
 #include "../lexer/lexer.hpp"
+#include "precedences.hpp"
 
 class Parser
 {
