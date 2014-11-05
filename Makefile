@@ -11,11 +11,13 @@ TARGET := mj++
 SOURCE_FILES := main.cpp \
 	lexer/lexer.cpp \
 	lexer/stateomat.cpp \
-	lexer/token.cpp
+	lexer/token.cpp \
+	parser/parser.cpp
 	
 HEADER_FILES := lexer/lexer.hpp \
 	lexer/stateomat.hpp \
-	lexer/token.hpp
+	lexer/token.hpp \
+	parser/parser.hpp
 
 all: $(TARGET)
 

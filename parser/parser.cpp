@@ -30,12 +30,10 @@ bool Parser::parseProgram() {
     {
         case Token::Token_type::TOKEN_EOF: 
             return true; break; // empty file, that's ok.
-        case Token::Token_type::TOKEN_KEYWORD: 
-            if ( current.keyword_type == Token::Keyword_type::KEYWORD_CLASS ) { 
-                if (parseClassDeclaration()) {
-                    // call parseProgram again: either its EOF or another class declaration follows
-                    return parseProgram();
-                } // else case: fall through to default/error case
+        case Token::Token_type::KEYWORD_CLASS: 
+            if (parseClassDeclaration()) {
+                // call parseProgram again: either its EOF or another class declaration follows
+                return parseProgram();
             } // else case: fall through to default/error case
         default: 
             printError();
