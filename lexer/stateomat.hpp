@@ -13,16 +13,19 @@
 
 class Stateomat
 {
-public:
-	Stateomat();
-	bool state_is_accepting(unsigned int state);
-	void dump_graph(std::string const &file_name);
+	public:
+		Stateomat();
+		bool state_is_accepting(unsigned int state);
+		void dump_graph(std::string const& file_name);
 
-//protected:
-	std::vector<std::vector<unsigned int>> transitions;
-	std::map<unsigned int, Token::Type> state_type;
-	std::set<std::string> keywords;
-	std::set<unsigned int> non_accepting_states;
+		//protected:
+		std::vector<std::vector<unsigned int>> transitions;
+		std::map<unsigned int, Token::Token_type> state_type;
+		std::set<std::string> keywords;
+		std::set<unsigned int> non_accepting_states;
+
+		std::map<std::string, Token::Token_type> keyword_map;
+		std::map<std::string, Token::Token_type> operator_map;
 };
 
 #endif

@@ -2,23 +2,29 @@
 
 #include "token.hpp"
 
-void Token::print() const {
-	std::cout << position.first << "," << position.second << ":\t";
-	switch (type) {
+void Token::print() const
+{
+	// uncommenting the following line is for debug purposes during lextest
+	//std::cout << position.first << "," << position.second << ":\t";
+	switch (token_type)
+	{
 		case TOKEN_EOF:
 			std::cout << "EOF" << std::endl;
 			break;
+
 		case TOKEN_INT_LIT:
 			std::cout << "integer literal " << string_value << std::endl;
 			break;
+
 		case TOKEN_IDENT:
 			std::cout << "identifier " << string_value << std::endl;
 			break;
-		case TOKEN_OPERATOR:
-		case TOKEN_KEYWORD:
-			std::cout << string_value << std::endl;
-			break;
+
 		case TOKEN_ERROR:
+			break;
+
+		default:
+			std::cout << string_value << std::endl;
 			break;
 	}
 }

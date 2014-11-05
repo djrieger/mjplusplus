@@ -1,2 +1,4 @@
 *.o
 mj++
+.gitignore
+*.sublime-workspace
