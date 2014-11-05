@@ -43,22 +43,23 @@ class Parser
 		bool parseAssignmentExpression();
 		bool precedenceClimb(int minPrec);
 		// ..
-		bool parsePrimaryExpression();
-		bool parseNewObjectOrNewArrayExpression();
-		bool parseNewObjectExpression();
-		bool parseNewArrayExpression();
-		bool parseOptionalBrackets();
-		bool parseNewKeyword();
+		bool parseArguments();
 		bool parseArgumentsExpressions();
 		bool parseArrayAccess();
-		bool parseArguments();
+		bool parseExclMarkOrHyphen();
 		bool parseMethodInvocation();
 		bool parseMethodInvocationOrFieldAccess();
-		bool parseExclMarkOrHyphen();
+		bool parseNewArrayExpression();
+		bool parseNewKeyword();
+		bool parseNewObjectExpression();
+		bool parseNewObjectOrNewArrayExpression();
+		bool parseOptionalBrackets();
 		bool parsePostfixExpression();
-		bool parsePostfixOps();
 		bool parsePostfixOp();
+		bool parsePostfixOps();
+		bool parsePrimaryExpression();
 		bool parseUnaryExpression();
+		bool parseIdentOrIdentWithArguments();
 };
 
 #endif
