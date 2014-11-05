@@ -6,7 +6,13 @@ Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages
 /* Max' proposal: use return type to indicate if token stream is not a part of the language induced by the grammar
 */
 bool Parser::start() {
+    nextToken();
     return parseProgram();
+}
+
+Token Parser::nextToken() {
+    current = lexer.get_next_token();
+    return current;
 }
 
 void Parser::printError() {
@@ -15,8 +21,11 @@ void Parser::printError() {
     error_msg_buf = "";
 }
 
+bool Parser::expect(Token::Token_type tokenType) {
+    return nextToken().token_type == tokenType;
+}
+
 bool Parser::parseProgram() {
-    current = lexer.get_next_token();
     switch (current.token_type)
     {
         case Token::Token_type::TOKEN_EOF: 
