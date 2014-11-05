@@ -2,6 +2,7 @@
 #define PARSER_HPP
 
 #include "../lexer/lexer.hpp"
+#include "precedences.hpp"
 
 class Parser
 {
@@ -59,6 +60,27 @@ class Parser
 		bool parseWhileStatement();
 		bool parseReturnStatement();
 		bool parseExpressionStatement();
+		bool parseExpression();
+		bool parseAssignmentExpression();
+		bool precedenceClimb(int minPrec);
+		// ..
+		bool parseArguments();
+		bool parseArgumentsExpressions();
+		bool parseArrayAccess();
+		bool parseExclMarkOrHyphen();
+		bool parseMethodInvocation();
+		bool parseMethodInvocationOrFieldAccess();
+		bool parseNewArrayExpression();
+		bool parseNewKeyword();
+		bool parseNewObjectExpression();
+		bool parseNewObjectOrNewArrayExpression();
+		bool parseOptionalBrackets();
+		bool parsePostfixExpression();
+		bool parsePostfixOp();
+		bool parsePostfixOps();
+		bool parsePrimaryExpression();
+		bool parseUnaryExpression();
+		bool parseIdentOrIdentWithArguments();
 };
 
 #endif
