@@ -369,6 +369,19 @@ bool Parser::parsePrimaryExpression()
 	return false;
 }
 
+// IdentOrIdentWithArguments -> ( Arguments )
+//     | .
+bool Parser::parseIdentOrIdentWithArguments()
+{
+	if (expect(Token::Token_type::OPERATOR_LPAREN))
+	{
+		if (parseArguments())
+			return expect(Token::Token_type::OPERATOR_RPAREN);
+	}
+
+	return true;
+}
+
 // NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
 bool Parser::parseNewObjectOrNewArrayExpression()
 {
