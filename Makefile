@@ -8,17 +8,10 @@ ASTYLEFLAGS := --options=astyle.rc
 ASTYLESUFFIX := .orig
 
 TARGET := mj++
-SOURCE_FILES := main.cpp \
-	lexer/lexer.cpp \
-	lexer/stateomat.cpp \
-	lexer/token.cpp \
-	parser/parser.cpp
-	
-HEADER_FILES := lexer/lexer.hpp \
-	lexer/stateomat.hpp \
-	lexer/token.hpp \
-	parser/parser.hpp \
-	parser/precedences.hpp
+
+# this looks for .cpp/.hpp-files in the current directory and all subdirectories. (recursive-depth = 1)
+SOURCE_FILES := $(wildcard *.cpp) $(wildcard **/*.cpp)
+HEADER_FILES := $(wildcard *.hpp) $(wildcard **/*.hpp)
 
 all: $(TARGET)
 
