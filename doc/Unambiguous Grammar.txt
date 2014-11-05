@@ -18,12 +18,9 @@ Parameters -> Parameter FollowingParameters .
 FollowingParameters -> , Parameters 
 	| .	
 Parameter -> TypeIdent .
-
-Type -> BasicType ArrayDecl .
+Type -> ArrayType | BasicType .
+ArrayType -> Type [ ] .
 BasicType -> int | boolean | void | IDENT .
-ArrayDecl -> [ ] ArrayDecl
-	| .
-
 Statement -> Block | EmptyStatement | IfStatement | ExpressionStatement | WhileStatement | ReturnStatement .
 
 TypeIdent -> Type IDENT .
