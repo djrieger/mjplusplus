@@ -23,13 +23,22 @@ void Parser::printError() {
 
 bool Parser::expect(Token::Token_type tokenType) {
     bool ret = current.token_type == tokenType;
-    nextToken();
+    if (ret) 
+        nextToken();
     return ret;
 }
 
 bool Parser::expect(Token::Token_type tokenType, std::string string_val) {
     bool ret = current.token_type == tokenType && current.string_val == string_val;
-    nextToken();
+    if (ret)
+        nextToken();
+    return ret;
+}
+
+bool Parser::expect(std::set<Token::Token_type> token_types) {
+    bool ret = token_types.find(current.token_type) != token_types.end();
+    if (ret)
+        nextToken();
     return ret;
 }
 
