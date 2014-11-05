@@ -95,6 +95,8 @@ ArgumentsExpressions -> , Expression ArgumentsExpressions
 	| .
 
 PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT | IDENT ( Arguments ) | this | ( Expression ) | new NewObjectOrNewArrayExpression .
+IdentOrIdentWithArguments -> ( Arguments )
+    | .
 NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
 NewObjectExpression -> IDENT ( ) .
 NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
