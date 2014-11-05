@@ -1,3 +1,5 @@
+/* error at line 91 */
+
 class C
 {
 	public boolean[][][] qux(int a, boolean b, int c, boolean d)
@@ -27,7 +29,7 @@ class B
 	public B[] getBar(B _)
 	{
 		B[] r = new B[i];
-		for(int j = 0; j < i; j += 1)
+		for(int j = 0; j < i; j = j + 1)
 		{
 			r[j].i = _.i;
 		}
@@ -85,6 +87,7 @@ class A
 		println(a % b % c);
 		println(a + b * c);
 		println(a * b + c);
+		/* error: no bitwise and/or/xor */
 		println(a & b & c);
 		println(a | b | c);
 		println(a ^ b ^ c);

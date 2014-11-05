@@ -27,7 +27,7 @@ class B
 	public B[] getBar(B _)
 	{
 		B[] r = new B[i];
-		for(int j = 0; j < i; j += 1)
+		for(int j = 0; j < i; j = j + 1)
 		{
 			r[j].i = _.i;
 		}
@@ -80,7 +80,7 @@ class A
 	public void math(int a, int b, int c)
 	{
 		println(-a);
-		println(----a);
+		println(- - - -a);
 		println(a + b + c);
 		println(a - b - c);
 		println(a * b * c);
