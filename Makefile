@@ -37,5 +37,5 @@ clean:
 style: $(SOURCE_FILES) $(HEADER_FILES)
 	$(ASTYLE) $(ASTYLEFLAGS) $^ 
 	
-styleclean: 
+styleclean:
 	rm -f $(addsuffix $(ASTYLESUFFIX), $(SOURCE_FILES) $(HEADER_FILES))
