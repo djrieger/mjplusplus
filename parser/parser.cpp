@@ -320,6 +320,7 @@ bool Parser::parseStatement()
 			break;
 
 		default:
+			printError("expected Statement");
 			return false;
 	}
 }
