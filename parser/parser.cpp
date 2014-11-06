@@ -443,7 +443,7 @@ bool Parser::parsePrimaryExpression()
 	else if (expect(Token::Token_type::KEYWORD_NEW, false))
 		return parseNewObjectOrNewArrayExpression();
 
-	printError("expected Expresion");
+	printError("expected Expression");
 	return false;
 }
 
@@ -597,7 +597,7 @@ bool Parser::parseBlockStatement()
 	}
 
 	/* unreachable */
-	printError("expected Statement -- unreacable");
+	printError("expected Statement -- unreachable");
 	return false;
 }
 
