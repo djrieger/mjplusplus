@@ -1,7 +1,6 @@
 /*
     What mj++ should complain about:
     - file contains a package identifier
-    - Contains Non-ASCII characters (ρ)
     - Uses nested classes
     - Uses floats
     - Uses unknown classes (Boolean, String)
@@ -20,7 +19,7 @@ public class AveryTree {
     protected AveryNode root;
 
     private class AveryNode {
-        protected float f, p, ρ;
+        protected float f, p, rho;
         protected int depth;
         protected AveryNode goodChild, badChild;
         protected Boolean good = null;
@@ -35,7 +34,7 @@ public class AveryTree {
         public AveryNode(float p_initial) {
             p = p_initial;
             f = 1;
-            ρ = computeρ(p, g, b);
+            rho = computerho(p, g, b);
             depth = 0;
 
             initializeChildren();
@@ -46,25 +45,25 @@ public class AveryTree {
             this.good = good;
 
             if (good) {
-                f = parent.ρ * parent.f;
-                p = (g * parent.p) / parent.ρ;
+                f = parent.rho * parent.f;
+                p = (g * parent.p) / parent.rho;
             } else {
-                f = 1 - parent.ρ * parent.f;
-                p = ((1 - g) * parent.p) / (1 - parent.ρ);
+                f = 1 - parent.rho * parent.f;
+                p = ((1 - g) * parent.p) / (1 - parent.rho);
             }
-            ρ = computeρ(p, g, b);
+            rho = computerho(p, g, b);
 
             initializeChildren();
         }
 
         public String toString() {
             String label = (good == null ? "root" : (good == true ? "good" : "bad"));
-            return String.format("%" + (depth * 2 + 1) + "s%s: f=%.2f, p=%.2f, rho=%.2f\n", "", label, f, p, ρ) +
+            return String.format("%" + (depth * 2 + 1) + "s%s: f=%.2f, p=%.2f, rho=%.2f\n", "", label, f, p, rho) +
                    (goodChild != null ? goodChild.toString() : "") + (badChild != null ? badChild.toString() : "");
         }
     }
 
-    public static float computeρ(float p, float g, float b) {
+    public static float computerho(float p, float g, float b) {
         return p * g + (1 - p) * (1 - b);
     }
 
