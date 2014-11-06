@@ -4,7 +4,7 @@ RELEASEFLAGS := -O3
 CPPFLAGS := -std=c++11 -pedantic -W -Wall -Wextra
 
 ASTYLE := astyle
-ASTYLEFLAGS := --options=astyle.rc
+ASTYLEFLAGS := --options=meta/astyle.rc
 ASTYLESUFFIX := .orig
 
 TARGET := mj++
