@@ -8,5 +8,5 @@ else
   echo "Hook-astyling files..."
   echo "$CHANGEDFILES" 
   # Only perform commit if astyle completes successful
-  astyle --options=astyle.rc ${CHANGEDFILES} && git add $CHANGEDFILES
+  astyle --options=meta/astyle.rc ${CHANGEDFILES} && git add $CHANGEDFILES
 fi
