@@ -10,7 +10,6 @@ Lexer::Lexer(std::istream& input, Stateomat const& stateomat, bool debug)
 
 Token Lexer::get_next_token()
 {
-
 	if (!token_stack.empty())
 	{
 		Token t = token_stack[token_stack.size() - 1];

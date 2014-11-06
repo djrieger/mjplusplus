@@ -30,10 +30,6 @@ bool Parser::start()
 {
 	nextToken();
 	bool r = parseProgram();
-
-	if (!r)
-		std::cerr << "parsing failed at line " << current.position.first << " at column " << current.position.second << ": '" << current.string_value << std::endl;
-
 	return r;
 }
 
@@ -43,40 +39,34 @@ Token Parser::nextToken()
 	return current;
 }
 
-void Parser::printError()
+void Parser::printError(std::string const& error_msg)
 {
 	if (print_messages) // only print error messages if they are wanted
-		std::cout << error_msg_buf;
-
-	error_msg_buf = "";
+		std::cerr << "at line " << current.position.first << ", column " << current.position.second <<
+		          ", parsing '" << current.string_value << '\'' << (error_msg.empty() ? "" : ": ") <<
+		          error_msg << std::endl;
 }
 
-bool Parser::expect(Token::Token_type tokenType)
+bool Parser::expect(Token::Token_type tokenType, bool report)
 {
 	bool ret = current.token_type == tokenType;
 
 	if (ret)
 		nextToken();
+	else if (report)
+		printError("");
 
 	return ret;
 }
 
-bool Parser::expect(Token::Token_type tokenType, std::string string_val)
+bool Parser::expect(Token::Token_type tokenType, std::string const& string_val, bool report)
 {
 	bool ret = current.token_type == tokenType && current.string_value == string_val;
 
 	if (ret)
 		nextToken();
-
-	return ret;
-}
-
-bool Parser::expect(std::set<Token::Token_type> token_types)
-{
-	bool ret = token_types.find(current.token_type) != token_types.end();
-
-	if (ret)
-		nextToken();
+	else if (report)
+		printError("");
 
 	return ret;
 }
@@ -166,19 +156,18 @@ bool Parser::parseType()
 // BasicType -> int | boolean | void | IDENT .
 bool Parser::parseBasicType()
 {
-	return expect({ Token::Token_type::KEYWORD_INT,
-	                Token::Token_type::KEYWORD_BOOLEAN,
-	                Token::Token_type::KEYWORD_VOID,
-	                Token::Token_type::TOKEN_IDENT
-	              });
+	return expect(Token::Token_type::KEYWORD_INT, false) ||
+	       expect(Token::Token_type::KEYWORD_BOOLEAN, false) ||
+	       expect(Token::Token_type::KEYWORD_VOID, false) ||
+	       expect(Token::Token_type::TOKEN_IDENT);
 }
 
 // ArrayDecl -> [ ] ArrayDecl | .
 bool Parser::parseArrayDecl()
 {
-	while (expect(Token::Token_type::OPERATOR_LBRACE))
+	while (expect(Token::Token_type::OPERATOR_LBRACKET, false))
 	{
-		if (!expect(Token::Token_type::OPERATOR_RBRACE))
+		if (!expect(Token::Token_type::OPERATOR_RBRACKET))
 			return false;
 	}
 
@@ -190,7 +179,7 @@ bool Parser::parseArrayDecl()
 // Method -> ( OptionalParameters ) Block .
 bool Parser::parseFieldOrMethod()
 {
-	if (expect(Token::Token_type::OPERATOR_SEMICOLON))
+	if (expect(Token::Token_type::OPERATOR_SEMICOLON, false))
 		return true;
 
 	return expect(Token::Token_type::OPERATOR_LPAREN) &&
@@ -208,13 +197,16 @@ bool Parser::parseOptionalParameters()
 {
 	bool isFirstParameter = true;
 
-	while (parseTypeIdent())
+	while (current.token_type != Token::Token_type::OPERATOR_RPAREN && parseTypeIdent())
 	{
 		isFirstParameter = false;
 
-		if (!expect(Token::Token_type::OPERATOR_COMMA))
+		if (!expect(Token::Token_type::OPERATOR_COMMA, false))
 			return true;
 	}
+
+	if (!isFirstParameter)
+		printError("trailing comma");
 
 	return isFirstParameter;
 }
@@ -260,8 +252,6 @@ bool Parser::parseStatement()
 		default:
 			return false;
 	}
-
-	parseExpressionStatement();
 }
 
 // Block -> { BlockStatements } .
@@ -275,8 +265,11 @@ bool Parser::parseBlock()
 // BlockStatements -> BlockStatement BlockStatements | .
 bool Parser::parseBlockStatements()
 {
-	while (parseBlockStatement())
-		;
+	while (current.token_type != Token::Token_type::OPERATOR_RBRACE)
+	{
+		if (!parseBlockStatement())
+			return false;
+	}
 
 	return true;
 }
@@ -358,29 +351,27 @@ bool Parser::precedenceClimb(int minPrec)
 }
 
 
-// PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .↩
+// PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
 bool Parser::parsePrimaryExpression()
 {
-	if (expect(Token::Token_type::KEYWORD_NULL))
+	if (expect(Token::Token_type::KEYWORD_NULL, false))
 		return true;
-	else if (expect(Token::Token_type::KEYWORD_FALSE))
+	else if (expect(Token::Token_type::KEYWORD_FALSE, false))
 		return true;
-	else if (expect(Token::Token_type::KEYWORD_TRUE))
+	else if (expect(Token::Token_type::KEYWORD_TRUE, false))
 		return true;
-	else if (expect(Token::Token_type::TOKEN_INT_LIT))
+	else if (expect(Token::Token_type::TOKEN_INT_LIT, false))
 		return true;
-	else if (expect(Token::Token_type::KEYWORD_THIS))
+	else if (expect(Token::Token_type::KEYWORD_THIS, false))
 		return true;
-	else if (expect(Token::Token_type::TOKEN_IDENT))
+	else if (expect(Token::Token_type::TOKEN_IDENT, false))
 		return parseIdentOrIdentWithArguments();
-	else if (expect(Token::Token_type::OPERATOR_LPAREN))
-	{
-		if (parseExpression())
-			return expect(Token::Token_type::OPERATOR_RPAREN);
-	}
-	else if (expect(Token::Token_type::KEYWORD_NEW))
+	else if (expect(Token::Token_type::OPERATOR_LPAREN, false))
+		return parseExpression() && expect(Token::Token_type::OPERATOR_RPAREN);
+	else if (expect(Token::Token_type::KEYWORD_NEW, false))
 		return parseNewObjectOrNewArrayExpression();
 
+	printError("expected Expresion");
 	return false;
 }
 
@@ -388,11 +379,8 @@ bool Parser::parsePrimaryExpression()
 //     | .
 bool Parser::parseIdentOrIdentWithArguments()
 {
-	if (expect(Token::Token_type::OPERATOR_LPAREN))
-	{
-		if (parseArguments())
-			return expect(Token::Token_type::OPERATOR_RPAREN);
-	}
+	if (expect(Token::Token_type::OPERATOR_LPAREN, false))
+		return parseArguments() && expect(Token::Token_type::OPERATOR_RPAREN);
 
 	return true;
 }
@@ -400,50 +388,42 @@ bool Parser::parseIdentOrIdentWithArguments()
 // NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
 bool Parser::parseNewObjectOrNewArrayExpression()
 {
-	return parseNewObjectExpression() || parseNewArrayExpression();
+	Token id = current;
+	Token next = nextToken();
+	lexer.unget_token(next);
+	current = id;
+
+	if (next.token_type == Token::Token_type::OPERATOR_LPAREN)
+		return parseNewObjectExpression();
+	else
+		return parseNewArrayExpression();
 }
 
 // NewObjectExpression -> IDENT ( ) .
 bool Parser::parseNewObjectExpression()
 {
-	if (expect(Token::Token_type::TOKEN_IDENT))
-	{
-		if (expect(Token::Token_type::OPERATOR_LPAREN))
-			return expect(Token::Token_type::OPERATOR_RPAREN);
-	}
-
-	return false;
+	return expect(Token::Token_type::TOKEN_IDENT) &&
+	       expect(Token::Token_type::OPERATOR_LPAREN) &&
+	       expect(Token::Token_type::OPERATOR_RPAREN);
 }
 
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
 bool Parser::parseNewArrayExpression()
 {
-	if (parseBasicType())
-	{
-		if (expect(Token::Token_type::OPERATOR_LBRACKET))
-		{
-			if (parseExpression())
-			{
-				if (expect(Token::Token_type::OPERATOR_RBRACKET))
-					return parseOptionalBrackets();
-			}
-		}
-	}
-
-	return false;
+	return parseBasicType() &&
+	       expect(Token::Token_type::OPERATOR_LBRACKET) &&
+	       parseExpression() &&
+	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
+	       parseOptionalBrackets();
 }
 
 // OptionalBrackets -> [ ] OptionalBrackets
 //     | .
 bool Parser::parseOptionalBrackets()
 {
-	if (expect(Token::Token_type::OPERATOR_LBRACKET))
-	{
-		if (expect(Token::Token_type::OPERATOR_RBRACKET))
-			return parseOptionalBrackets();
-	}
-
-	return true;
+	return expect(Token::Token_type::OPERATOR_LBRACKET) &&
+	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
+	       parseOptionalBrackets();
 }
 
 // BlockStatement -> Statement | LocalVariableDeclarationStatement .
@@ -486,9 +466,15 @@ bool Parser::parseBlockStatement()
 			idToken = current;
 			maybeLBracketToken = nextToken();
 
-			if (!expect(Token::Token_type::OPERATOR_LBRACKET))
+			if (maybeLBracketToken.token_type == Token::Token_type::TOKEN_IDENT)
 			{
-				//lexer.unget_token(maybeLBracketToken);
+				lexer.unget_token(maybeLBracketToken);
+				current = idToken;
+				return parseLocalVariableDeclarationStatement();
+			}
+			else if (maybeLBracketToken.token_type == Token::Token_type::OPERATOR_LBRACKET)
+			{
+				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 				return parseStatement();
 			}
@@ -496,7 +482,7 @@ bool Parser::parseBlockStatement()
 			{
 				maybeRBracketToken = current;
 
-				bool isRBracket = expect(Token::Token_type::OPERATOR_RBRACKET);
+				bool isRBracket = maybeRBracketToken.token_type == Token::Token_type::OPERATOR_RBRACKET;
 
 				if (isRBracket)
 					lexer.unget_token(maybeRBracketToken);
@@ -513,10 +499,12 @@ bool Parser::parseBlockStatement()
 			break;
 
 		default:
+			printError("expected Statement");
 			return false;
 	}
 
 	/* unreachable */
+	printError("expected Statement -- unreacable");
 	return false;
 }
 
@@ -528,7 +516,7 @@ bool Parser::parseLocalVariableDeclarationStatement()
 	if (!parseTypeIdent())
 		return false;
 
-	if (expect(Token::Token_type::OPERATOR_EQ))
+	if (expect(Token::Token_type::OPERATOR_EQ, false))
 	{
 		if (!parseExpression())
 			return false;
@@ -551,7 +539,7 @@ bool Parser::parseIfStatement()
 	if (!isValidIf)
 		return false;
 
-	if (expect(Token::Token_type::KEYWORD_ELSE))
+	if (expect(Token::Token_type::KEYWORD_ELSE, false))
 		return parseStatement();
 	else
 		return true;
@@ -575,7 +563,7 @@ bool Parser::parseReturnStatement()
 	if (!hasReturnKeyword)
 		return false;
 
-	if (!expect(Token::Token_type::OPERATOR_SEMICOLON))
+	if (!expect(Token::Token_type::OPERATOR_SEMICOLON, false))
 	{
 		return parseExpression() &&
 		       expect(Token::Token_type::OPERATOR_SEMICOLON);
@@ -591,121 +579,95 @@ bool Parser::parseExpressionStatement()
 	       expect(Token::Token_type::OPERATOR_SEMICOLON);
 }
 
-
-// NewKeyword -> new .
-bool Parser::parseNewKeyword()
-{
-	return expect(Token::Token_type::KEYWORD_NEW);
-}
-
-// ArgumentsExpressions -> , Expression ArgumentsExpressions
-//     | .
-bool Parser::parseArgumentsExpressions()
-{
-	if (expect(Token::Token_type::OPERATOR_COMMA))
-		return parseExpression() && parseArgumentsExpressions();
-
-	return true;
-}
-
 // ArrayAccess -> [ Expression ] .
 bool Parser::parseArrayAccess()
 {
-	if (expect(Token::Token_type::OPERATOR_LBRACKET))
-	{
-		if (parseArguments())
-			return expect(Token::Token_type::OPERATOR_RBRACKET);
-		else
-			return false;
-	}
-
-	return false;
+	return expect(Token::Token_type::OPERATOR_LBRACKET) &&
+	       parseExpression() &&
+	       expect(Token::Token_type::OPERATOR_RBRACKET);
 }
 
 // Arguments -> Expression ArgumentsExpressions
 //     | .
+// ArgumentsExpressions -> , Expression ArgumentsExpressions
+//     | .
 bool Parser::parseArguments()
 {
-	if (parseExpression())
-		return parseArgumentsExpressions();
+	bool isFirstArgument = true;
 
-	return true;
+	while (current.token_type != Token::Token_type::OPERATOR_RPAREN && parseExpression())
+	{
+		isFirstArgument = false;
+
+		if (!expect(Token::Token_type::OPERATOR_COMMA, false))
+			return true;
+	}
+
+	if (!isFirstArgument)
+		printError("trailing comma");
+
+	return isFirstArgument;
 }
 
 // MethodInvocation -> ( Arguments ) .
 bool Parser::parseMethodInvocation()
 {
-	if (expect(Token::Token_type::OPERATOR_LPAREN))
-	{
-		if (parseArguments())
-			return expect(Token::Token_type::OPERATOR_RPAREN);
-	}
-
-	return false;
+	return expect(Token::Token_type::OPERATOR_LPAREN) &&
+	       parseArguments() &&
+	       expect(Token::Token_type::OPERATOR_RPAREN);
 }
 
 // MethodInvocationOrFieldAccess -> MethodInvocation | .
 bool Parser::parseMethodInvocationOrFieldAccess()
 {
-	parseMethodInvocation();
+	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
+		return parseMethodInvocation();
+
 	return true;
 }
 
 // ExclMarkOrHyphen -> ! | - .
 bool Parser::parseExclMarkOrHyphen()
 {
-	if (expect(Token::Token_type::OPERATOR_NOT))
-		return true;
-	else if (expect(Token::Token_type::OPERATOR_MINUS))
-		return true;
-
-	return false;
+	return expect(Token::Token_type::OPERATOR_NOT, false) ||
+	       expect(Token::Token_type::OPERATOR_MINUS);
 }
 
 // PostfixExpression -> PrimaryExpression PostfixOps .
 bool Parser::parsePostfixExpression()
 {
-	if (parsePrimaryExpression() && parsePostfixOps())
-		return true;
-	else
-		return false;
+	return parsePrimaryExpression() && parsePostfixOps();
 }
 
 // PostfixOps -> PostfixOp PostfixOps
 //     | .
-bool Parser::parsePostfixOps()
-{
-	if (parsePostfixOp())
-		return parsePostfixOps();
-
-	return true;
-}
-
 // PostfixOp -> DOT IDENT MethodInvocationOrFieldAccess
 //     | ArrayAccess .
-bool Parser::parsePostfixOp()
+bool Parser::parsePostfixOps()
 {
-	if (parseArrayAccess())
-		return true;
-	else
+	while (true)
 	{
-		if (expect(Token::Token_type::OPERATOR_DOT))
+		if (expect(Token::Token_type::OPERATOR_DOT, false))
 		{
-			if (expect(Token::Token_type::TOKEN_IDENT))
-				return parseMethodInvocationOrFieldAccess();
+			if (!(expect(Token::Token_type::TOKEN_IDENT) && parseMethodInvocationOrFieldAccess()))
+				return false;
 		}
+		else if (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
+		{
+			if (!parseArrayAccess())
+				return false;
+		}
+		else
+			return true;
 	}
-
-	return false;
 }
 
 // UnaryExpression -> PostfixExpression | ExclMarkOrHyphen UnaryExpression .
 bool Parser::parseUnaryExpression()
 {
-	if (parsePostfixExpression())
-		return true;
-	else if (parseExclMarkOrHyphen())
-		return parseUnaryExpression();
+	if (current.token_type == Token::Token_type::OPERATOR_NOT ||
+	        current.token_type == Token::Token_type::OPERATOR_MINUS)
+		return parseExclMarkOrHyphen() && parseUnaryExpression();
 	else
-		return false;
+		return parsePostfixExpression();
 }

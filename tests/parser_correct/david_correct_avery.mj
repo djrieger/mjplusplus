@@ -19,7 +19,7 @@ class AveryNode {
 		return p*g + (1 - p) * (1 - b);
 	}
 
-	public construct1(int p_initial) {
+	public void construct1(int p_initial) {
 		p = p_initial;
 		f = 1;
 		rho = computerho(p, g, b);
@@ -28,7 +28,7 @@ class AveryNode {
 		initializeChildren();
 	}
 		
-	public construct2(AveryNode parent, boolean good) {
+	public void construct2(AveryNode parent, boolean good) {
 		depth = parent.depth + 1;
 		this.good = good;
 		
@@ -46,12 +46,12 @@ class AveryNode {
 }
 
 class AveryTree {
-	public int b
+	public int b;
 	public int g;
 	public int numberOfPlayers;
 	public AveryNode root;
 	
-	public AveryTree() {
+	public AveryTree AveryTree() {
 		this.b = 5;
 		this.g = 2;
 		this.numberOfPlayers = 4;
