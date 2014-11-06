@@ -21,6 +21,7 @@ class Lexer
 		Token get_next_token();
 		void unget_token(Token t);
 		bool good();
+		std::istream& getInput();
 };
 
 #endif
