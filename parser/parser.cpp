@@ -450,14 +450,17 @@ bool Parser::parseNewArrayExpression()
 //     | .
 bool Parser::parseOptionalBrackets()
 {
-	if (expect(Token::Token_type::OPERATOR_LBRACKET)) {
-		if (expect(Token::Token_type::OPERATOR_RBRACKET)) {
-			return parseOptionalBrackets();	
-		} else {
+	if (expect(Token::Token_type::OPERATOR_LBRACKET))
+	{
+		if (expect(Token::Token_type::OPERATOR_RBRACKET))
+			return parseOptionalBrackets();
+		else
+		{
 			lexer.unget_token(current);
 			return true;
 		}
 	}
+
 	return true;
 }
 
