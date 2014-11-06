@@ -32,7 +32,7 @@ bool Parser::start()
 	bool r = parseProgram();
 
 	if (!r)
-		std::cerr << "parsing failed at '" << current.string_value << std::endl;
+		std::cerr << "parsing failed at line " << current.position.first << " at column " << current.position.second << ": '" << current.string_value << std::endl;
 
 	return r;
 }

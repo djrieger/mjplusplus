@@ -4,6 +4,8 @@
 
 void Token::print() const
 {
+	// uncommenting the following line is for debug purposes during lextest
+	//std::cout << position.first << "," << position.second << ":\t";
 	switch (token_type)
 	{
 		case TOKEN_EOF:
