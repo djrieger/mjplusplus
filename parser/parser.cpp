@@ -55,9 +55,52 @@ bool Parser::nextToken()
 void Parser::printError(std::string const& error_msg)
 {
 	if (print_messages) // only print error messages if they are wanted
+	{
 		std::cerr << "at line " << current.position.first << ", column " << current.position.second <<
 		          ", parsing '" << current.string_value << '\'' << (error_msg.empty() ? "" : ": ") <<
 		          error_msg << std::endl;
+
+		// get input file from lexer
+		std::istream& input = lexer.getInput();
+		std::string line = "";
+		char nextChar;
+
+		// seek back until beginning of current input line
+		do
+		{
+			input.seekg(-1, std::ios_base::cur);
+		}
+		while ((char)input.peek() != '\n');
+
+		// consume \n character from beginning of line
+		input.get();
+		// markerLine stores a position indicator like so: "     ^"
+		std::string markerline = "";
+		unsigned int linePos = 1;
+
+		// iterate through current line from beginning to end
+		do
+		{
+			nextChar = (char)input.get();
+			line += nextChar;
+
+			// build markerline
+			if (linePos < current.position.second)
+				markerline += " ";
+			else if (linePos == current.position.second)
+				markerline += "^";
+
+			linePos++;
+		}
+		while (nextChar != '\n');
+
+		std::replace(line.begin(), line.end(), '\t', ' ');
+
+		// output input line where error occurred and markerline
+		// line already ends with \n so no additional std::endl needs to be added
+		std::cerr << line;
+		std::cerr << markerline << std::endl;
+	}
 }
 
 bool Parser::expect(Token::Token_type tokenType, bool report)
