@@ -197,7 +197,7 @@ bool Parser::parseMainMethod()
 	       expect(Token::Token_type::KEYWORD_VOID) &&
 	       expect(Token::Token_type::TOKEN_IDENT) &&
 	       expect(Token::Token_type::OPERATOR_LPAREN) &&
-	       expect(Token::Token_type::TOKEN_IDENT, "String") &&
+	       expect(Token::Token_type::TOKEN_IDENT, std::string("String")) &&
 	       expect(Token::Token_type::OPERATOR_LBRACKET) &&
 	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
 	       expect(Token::Token_type::TOKEN_IDENT) &&
@@ -263,9 +263,12 @@ bool Parser::parseOptionalParameters()
 {
 	bool isFirstParameter = true;
 
-	while (current.token_type != Token::Token_type::OPERATOR_RPAREN && parseTypeIdent())
+	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstParameter = false;
+
+		if (!parseTypeIdent())
+			return false;
 
 		if (!expect(Token::Token_type::OPERATOR_COMMA, false))
 			return true;
