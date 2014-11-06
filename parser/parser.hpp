@@ -11,7 +11,7 @@ class Parser
 		bool print_messages;
 		Token current;
 
-		Token nextToken();
+		bool nextToken();
 		bool expect(Token::Token_type tokenType, bool report = true);
 		bool expect(Token::Token_type tokenType, std::string const& string_val, bool report = true);
 
