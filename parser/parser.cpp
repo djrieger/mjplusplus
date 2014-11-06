@@ -312,6 +312,7 @@ bool Parser::parseStatement()
 		case Token::Token_type::KEYWORD_TRUE:
 		case Token::Token_type::KEYWORD_THIS:
 		case Token::Token_type::KEYWORD_NEW:
+		case Token::Token_type::OPERATOR_NOT:
 			return parseExpressionStatement();
 			break;
 
