@@ -1,11 +1,28 @@
 #include <iostream>
 
 #include "parser.hpp"
-#include "precedences.hpp"
 
 Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
 {
 }
+
+std::map<Token::Token_type, std::tuple<int, bool> > Parser::operator_precs =
+{
+	{Token::Token_type::OPERATOR_EQ, std::make_tuple(1, false)},
+	{Token::Token_type::OPERATOR_OROR, std::make_tuple(2, true)},
+	{Token::Token_type::OPERATOR_ANDAND, std::make_tuple(3, true)},
+	{Token::Token_type::OPERATOR_EQEQ, std::make_tuple(4, true)},
+	{Token::Token_type::OPERATOR_NOTEQ, std::make_tuple(4, true)},
+	{Token::Token_type::OPERATOR_LT, std::make_tuple(5, true)},
+	{Token::Token_type::OPERATOR_LTEQ, std::make_tuple(5, true)},
+	{Token::Token_type::OPERATOR_GT, std::make_tuple(5, true)},
+	{Token::Token_type::OPERATOR_GTEQ, std::make_tuple(5, true)},
+	{Token::Token_type::OPERATOR_PLUS, std::make_tuple(6, true)},
+	{Token::Token_type::OPERATOR_MINUS, std::make_tuple(6, true)},
+	{Token::Token_type::OPERATOR_MULT, std::make_tuple(7, true)},
+	{Token::Token_type::OPERATOR_SLASH, std::make_tuple(7, true)},
+	{Token::Token_type::OPERATOR_MOD, std::make_tuple(7, true)}
+};
 
 /* Max' proposal: use return type to indicate if token stream is not a part of the language induced by the grammar
 */
@@ -13,10 +30,10 @@ bool Parser::start()
 {
 	nextToken();
 	bool r = parseProgram();
-	if(!r)
-	{
+
+	if (!r)
 		std::cerr << "parsing failed at '" << current.string_value << std::endl;
-	}
+
 	return r;
 }
 
@@ -64,25 +81,16 @@ bool Parser::expect(std::set<Token::Token_type> token_types)
 	return ret;
 }
 
+// Program -> ClassDeclaration Program | .
 bool Parser::parseProgram()
 {
-	switch (current.token_type)
+	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
-		case Token::Token_type::TOKEN_EOF:
-			return true;
-			break; // empty file, that's ok.
-
-		case Token::Token_type::KEYWORD_CLASS:
-			if (parseClassDeclaration())
-			{
-				// call parseProgram again: either its EOF or another class declaration follows
-				return parseProgram();
-			} // else case: fall through to default/error case
-
-		default:
-			printError();
+		if (!parseClassDeclaration())
 			return false;
 	}
+
+	return true;
 }
 
 // ClassDeclaration -> class IDENT { ClassMembers } .
@@ -291,7 +299,6 @@ LogicalAndExpression ->  OptionalLogicalAndExpression EqualityExpression .
 OptionalLogicalAndExpression -> LogicalAndExpression &&
 	| .
 
-
 EqualityExpression -> OptionalEqualityExpression RelationalExpression .
 OptionalEqualityExpression -> EqualityExpression EqOrNeq
 	| .
@@ -490,7 +497,10 @@ bool Parser::parseBlockStatement()
 				maybeRBracketToken = current;
 
 				bool isRBracket = expect(Token::Token_type::OPERATOR_RBRACKET);
-				if(isRBracket) {lexer.unget_token(maybeRBracketToken);}
+
+				if (isRBracket)
+					lexer.unget_token(maybeRBracketToken);
+
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 
