@@ -1,6 +1,6 @@
 class three {
 	public a a() {
-		t[][][] = t[t];
+		t[][][] t = t[t];
 		t[x] = 0;;
 	}
 }

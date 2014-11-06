@@ -421,6 +421,8 @@ bool Parser::parseNewArrayExpression()
 //     | .
 bool Parser::parseOptionalBrackets()
 {
+	//TODO: proper return for end of brackets
+	//TODO: [ Expression ] can follow (as ArrayAccess) instead of []
 	return expect(Token::Token_type::OPERATOR_LBRACKET) &&
 	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
 	       parseOptionalBrackets();
