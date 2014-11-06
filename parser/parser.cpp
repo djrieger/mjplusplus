@@ -29,7 +29,7 @@ std::map<Token::Token_type, std::tuple<int, bool> > Parser::operator_precs =
 bool Parser::start()
 {
 	nextToken();
-	bool r = parseProgram();
+	bool r = parseProgram();//TODO: error msg on parser failure
 	return r;
 }
 
@@ -80,6 +80,7 @@ bool Parser::parseProgram()
 			return false;
 	}
 
+	//TODO: expect EOF
 	return true;
 }
 
