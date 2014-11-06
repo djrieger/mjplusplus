@@ -493,13 +493,16 @@ bool Parser::parseNewArrayExpression()
 //     | .
 bool Parser::parseOptionalBrackets()
 {
-	if (expect(Token::Token_type::OPERATOR_LBRACKET))
+	Token t = current;
+
+	while (expect(Token::Token_type::OPERATOR_LBRACKET, false))
 	{
-		if (expect(Token::Token_type::OPERATOR_RBRACKET))
-			return parseOptionalBrackets();
+		if (expect(Token::Token_type::OPERATOR_RBRACKET, false))
+			t = current;
 		else
 		{
 			lexer.unget_token(current);
+			current = t;
 			return true;
 		}
 	}
@@ -557,22 +560,22 @@ bool Parser::parseBlockStatement()
 				current = idToken;
 				return parseLocalVariableDeclarationStatement();
 			}
-			else if (maybeLBracketToken.token_type == Token::Token_type::OPERATOR_LBRACKET)
+			else if (maybeLBracketToken.token_type != Token::Token_type::OPERATOR_LBRACKET)
 			{
-				//TODO: this can also be beginning of LVDS
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 				return parseStatement();
 			}
 			else
 			{
+				if (!nextToken())
+					return false;
+
 				maybeRBracketToken = current;
 
 				bool isRBracket = maybeRBracketToken.token_type == Token::Token_type::OPERATOR_RBRACKET;
 
-				if (isRBracket)
-					lexer.unget_token(maybeRBracketToken);
-
+				lexer.unget_token(maybeRBracketToken);
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 
