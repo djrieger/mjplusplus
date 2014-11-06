@@ -5,25 +5,10 @@
 
 class Parser
 {
-	private:
-		// TODO: determine member variables.
-		Lexer& lexer;
-		bool print_messages;
-		Token current;
-
-		bool nextToken();
-		bool expect(Token::Token_type tokenType, bool report = true);
-		bool expect(Token::Token_type tokenType, std::string const& string_val, bool report = true);
-
-		/**
-		 * Prints an error message, prepending current token position
-		 */
-		void printError(std::string const& error_msg);
-
 	public:
 		/**
 		 * Constructor to the parser, needs at least a lexer.
-		 * Since it's going to be handimplemented, the grammar is implicitly defined in the the functions
+		 * Since it's going to be handimplemented, the grammar is implicitly defined in parse*() functions below
 		 * @param	lexer	instance of a lexer providing the tokens
 		 * @param   print_messages   sets whether error messages will be printed, default: true
 		 */
@@ -35,7 +20,39 @@ class Parser
 		bool start();
 
 	private:
-		static std::map<Token::Token_type, std::tuple<int, bool> > operator_precs;
+		Lexer& lexer;
+		/**
+		 * Whether parser prints error messages or suppresses them
+		 */
+		bool print_messages;
+		Token current;
+		/*
+		 * Precedences of all operators, as well as associativity
+		 */
+		static std::map<Token::Token_type, std::tuple<int, bool>> operator_precs;
+
+		/**
+		 * Get next token from lexer.
+		 * Returns false if token is of type TOKEN_ERROR, else true.
+		 */
+		bool nextToken();
+		/**
+		 * Checks whether type of current token is tokenType.
+		 * If this is the case, nextToken() is called to advance to the next token.
+		 * @param	report	if true, an error is printed in case of a type mismatch
+		 */
+		bool expect(Token::Token_type tokenType, bool report = true);
+		/**
+		 * Same behavior as expect(Token::Token_type, bool).
+		 * In addition, this method also compares the string_value of current
+		 * to string_val and also returns false, if the string contents do not match.
+		 */
+		bool expect(Token::Token_type tokenType, std::string const& string_val, bool report = true);
+
+		/**
+		 * Prints an error message, prepending current token position
+		 */
+		void printError(std::string const& error_msg);
 
 		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
 		bool parseProgram();
