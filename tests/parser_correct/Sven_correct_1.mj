@@ -15,21 +15,23 @@ class C
 
 class B
 {
-	public int i = 100;
+	public int i;
 	public C baz;
 	
 	public B add(B _)
 	{
-		i += _.i;
+		i = _.i + i;
 		return this;
 	}
 	
 	public B[] getBar(B _)
 	{
 		B[] r = new B[i];
-		for(int j = 0; j < i; j = j + 1)
+		int j = 0;
+		while(j < i)
 		{
 			r[j].i = _.i;
+			j = j + 1;
 		}
 		return r;
 	}
@@ -38,7 +40,7 @@ class B
 
 class A
 {
-	public B[] bb = new B[4];;
+	public B[] bb;
 	
 	public B[] getBB() {return bb;}
 	
