@@ -36,7 +36,8 @@ class Parser
 		void printError();
 
 	private:
-		// TODO: parseNT() function for each non terminal
+		static std::map<Token::Token_type, std::tuple<int, bool> > operator_precs;
+
 		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
 		bool parseProgram();
 		bool parseClassDeclaration();
@@ -62,7 +63,6 @@ class Parser
 		bool parseExpression();
 		bool parseAssignmentExpression();
 		bool precedenceClimb(int minPrec);
-		// ..
 		bool parseArguments();
 		bool parseArgumentsExpressions();
 		bool parseArrayAccess();
