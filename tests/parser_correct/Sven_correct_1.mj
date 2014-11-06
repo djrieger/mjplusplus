@@ -15,12 +15,12 @@ class C
 
 class B
 {
-	public int i = 100;
+	public int i;
 	public C baz;
 	
 	public B add(B _)
 	{
-		i += _.i;
+		i = _.i + i;
 		return this;
 	}
 	
