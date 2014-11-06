@@ -52,7 +52,7 @@ int main(int argc, const char** argv)
 
 		if (t.token_type != Token::Token_type::TOKEN_EOF)
 		{
-			std::cerr << "Error: Lexer failed." << std::endl;
+			std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
 			return EXIT_FAILURE;
 		}
 	}

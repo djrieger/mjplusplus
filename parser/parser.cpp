@@ -28,15 +28,24 @@ std::map<Token::Token_type, std::tuple<int, bool> > Parser::operator_precs =
 */
 bool Parser::start()
 {
-	nextToken();
+	if (!nextToken())
+		return false;
+
 	bool r = parseProgram();//TODO: error msg on parser failure
 	return r;
 }
 
-Token Parser::nextToken()
+bool Parser::nextToken()
 {
 	current = lexer.get_next_token();
-	return current;
+
+	if (current.token_type == Token::Token_type::TOKEN_ERROR)
+	{
+		printError("Error from lexer");
+		return false;
+	}
+	else
+		return true;
 }
 
 void Parser::printError(std::string const& error_msg)
@@ -52,7 +61,12 @@ bool Parser::expect(Token::Token_type tokenType, bool report)
 	bool ret = current.token_type == tokenType;
 
 	if (ret)
-		nextToken();
+	{
+		if (nextToken())
+			return ret;
+		else
+			return false;
+	}
 	else if (report)
 		printError("");
 
@@ -64,7 +78,12 @@ bool Parser::expect(Token::Token_type tokenType, std::string const& string_val, 
 	bool ret = current.token_type == tokenType && current.string_value == string_val;
 
 	if (ret)
-		nextToken();
+	{
+		if (nextToken())
+			return ret;
+		else
+			return false;
+	}
 	else if (report)
 		printError("");
 
@@ -80,8 +99,7 @@ bool Parser::parseProgram()
 			return false;
 	}
 
-	//TODO: expect EOF
-	return true;
+	return expect(Token::Token_type::TOKEN_EOF);
 }
 
 // ClassDeclaration -> class IDENT { ClassMembers } .
@@ -337,7 +355,9 @@ bool Parser::precedenceClimb(int minPrec)
 		if (left_assoc)
 			prec = prec + 1;
 
-		nextToken();
+		if (!nextToken())
+			return false;
+
 		bool rhs = precedenceClimb(prec);
 		result = result && rhs;
 		op = current.token_type;
@@ -390,7 +410,11 @@ bool Parser::parseIdentOrIdentWithArguments()
 bool Parser::parseNewObjectOrNewArrayExpression()
 {
 	Token id = current;
-	Token next = nextToken();
+
+	if (!nextToken())
+		return false;
+
+	Token next = current;
 	lexer.unget_token(next);
 	current = id;
 
@@ -467,7 +491,11 @@ bool Parser::parseBlockStatement()
 
 		case Token::Token_type::TOKEN_IDENT:
 			idToken = current;
-			maybeLBracketToken = nextToken();
+
+			if (!nextToken())
+				return false;
+
+			maybeLBracketToken = current;
 
 			if (maybeLBracketToken.token_type == Token::Token_type::TOKEN_IDENT)
 			{
