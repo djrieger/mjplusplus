@@ -450,11 +450,15 @@ bool Parser::parseNewArrayExpression()
 //     | .
 bool Parser::parseOptionalBrackets()
 {
-	//TODO: proper return for end of brackets
-	//TODO: [ Expression ] can follow (as ArrayAccess) instead of []
-	return expect(Token::Token_type::OPERATOR_LBRACKET) &&
-	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
-	       parseOptionalBrackets();
+	if (expect(Token::Token_type::OPERATOR_LBRACKET)) {
+		if (expect(Token::Token_type::OPERATOR_RBRACKET)) {
+			return parseOptionalBrackets();	
+		} else {
+			lexer.unget_token(current);
+			return true;
+		}
+	}
+	return true;
 }
 
 // BlockStatement -> Statement | LocalVariableDeclarationStatement .
