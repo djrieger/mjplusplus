@@ -476,6 +476,7 @@ bool Parser::parseBlockStatement()
 			}
 			else if (maybeLBracketToken.token_type == Token::Token_type::OPERATOR_LBRACKET)
 			{
+				//TODO: this can also be beginning of LVDS
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 				return parseStatement();
