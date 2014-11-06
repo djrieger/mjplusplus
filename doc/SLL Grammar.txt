@@ -16,8 +16,8 @@ Method -> ( OptionalParameters ) Block .
 
 OptionalParameters -> Parameters | .
 Parameters -> Parameter FollowingParameters .
-FollowingParameters -> , Parameters 
-	| .	
+FollowingParameters -> , Parameters
+	| .
 Parameter -> TypeIdent .
 Type -> BasicType ArrayDecl .
 BasicType -> int | boolean | void | IDENT .
@@ -32,16 +32,16 @@ BlockStatements -> BlockStatement BlockStatements
 	| .
 BlockStatement -> Statement | LocalVariableDeclarationStatement .
 LocalVariableDeclarationStatement -> TypeIdent OptionalLVDSExpression ; .
-OptionalLVDSExpression -> = Expression 
+OptionalLVDSExpression -> = Expression
 	| .
 EmptyStatement -> ; .
 WhileStatement -> while ( Expression ) Statement .
 IfStatement -> if ( Expression ) Statement OptionalElseStatement .
-OptionalElseStatement -> else Statement 
+OptionalElseStatement -> else Statement
 	| .
 ExpressionStatement -> Expression ; .
 ReturnStatement -> return OptionalExpression .
-OptionalExpression -> Expression 
+OptionalExpression -> Expression
 	| .
 
 
@@ -58,12 +58,12 @@ OptionalLogicalAndExpression -> LogicalAndExpression &&
 
 
 EqualityExpression -> OptionalEqualityExpression RelationalExpression .
-OptionalEqualityExpression -> EqualityExpression EqOrNeq 
+OptionalEqualityExpression -> EqualityExpression EqOrNeq
 	| .
 EqOrNeq -> == | != .
 
 RelationalExpression -> OptionalRelationalExpression AdditiveExpression .
-OptionalRelationalExpression -> RelationalExpression RelationalOperator 
+OptionalRelationalExpression -> RelationalExpression RelationalOperator
 	| .
 RelationalOperator -> < | <= | > | >= .
 
@@ -96,10 +96,9 @@ ArgumentsExpressions -> , Expression ArgumentsExpressions
 
 PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
 IdentOrIdentWithArguments -> ( Arguments )
-    | .
+	| .
 NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
 NewObjectExpression -> IDENT ( ) .
 NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
-OptionalBrackets -> [ ] OptionalBrackets 
+OptionalBrackets -> [ ] OptionalBrackets
 	| .
-NewKeyword -> new .

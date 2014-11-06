@@ -5,17 +5,21 @@
 
 class Parser
 {
-	protected:
+	private:
 		// TODO: determine member variables.
 		Lexer& lexer;
 		bool print_messages;
 		Token current;
-		std::string error_msg_buf;
 
 		Token nextToken();
-		bool expect(Token::Token_type tokenType);
-		bool expect(Token::Token_type tokenType, std::string string_val);
-		bool expect(std::set<Token::Token_type> token_types);
+		bool expect(Token::Token_type tokenType, bool report = true);
+		bool expect(Token::Token_type tokenType, std::string const& string_val, bool report = true);
+
+		/**
+		 * Prints an error message, prepending current token position
+		 */
+		void printError(std::string const& error_msg);
+
 	public:
 		/**
 		 * Constructor to the parser, needs at least a lexer.
@@ -29,11 +33,6 @@ class Parser
 		 * Generic function to start the parser
 		 */
 		bool start();
-
-		/**
-		 * Prints the content of the error message buffer and resets it to an empty string. TODO: private?
-		 */
-		void printError();
 
 	private:
 		static std::map<Token::Token_type, std::tuple<int, bool> > operator_precs;
@@ -70,12 +69,10 @@ class Parser
 		bool parseMethodInvocation();
 		bool parseMethodInvocationOrFieldAccess();
 		bool parseNewArrayExpression();
-		bool parseNewKeyword();
 		bool parseNewObjectExpression();
 		bool parseNewObjectOrNewArrayExpression();
 		bool parseOptionalBrackets();
 		bool parsePostfixExpression();
-		bool parsePostfixOp();
 		bool parsePostfixOps();
 		bool parsePrimaryExpression();
 		bool parseUnaryExpression();
