@@ -9,8 +9,8 @@
 class Lexer
 {
 	protected:
-
-		std::tuple<unsigned int, unsigned int> position;
+		// line, column
+		std::pair<unsigned int, unsigned int> position;
 		std::istream& input;
 		Stateomat stateomat;
 		bool debug;

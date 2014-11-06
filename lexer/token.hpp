@@ -54,6 +54,8 @@ struct Token
 
 	Token_type token_type = TOKEN_ERROR;
 	std::string string_value;
+	// line, column
+	std::pair<unsigned int, unsigned int> position;
 
 	void print() const;
 };
