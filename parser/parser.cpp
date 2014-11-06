@@ -31,7 +31,11 @@ bool Parser::start()
 	if (!nextToken())
 		return false;
 
-	bool r = parseProgram();//TODO: error msg on parser failure
+	bool r = parseProgram();
+
+	if (!r)
+		std::cerr << "Error during compilation." << std::endl;
+
 	return r;
 }
 
