@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <algorithm>
 #include "parser.hpp"
 
 Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
