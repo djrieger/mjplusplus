@@ -37,7 +37,8 @@ class Parser
 		 */
 		bool nextToken();
 		/**
-		 * checks whether type of current token is tokenType
+		 * Checks whether type of current token is tokenType.
+		 * If this is the case, nextToken() is called to advance to the next token.
 		 * @param	report	if true, an error is printed in case of a type mismatch
 		 */
 		bool expect(Token::Token_type tokenType, bool report = true);
