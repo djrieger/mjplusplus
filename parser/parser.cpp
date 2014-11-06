@@ -525,13 +525,13 @@ bool Parser::parseBlockStatement()
 			}
 			else
 			{
+				if(!nextToken())
+					return false;
 				maybeRBracketToken = current;
 
 				bool isRBracket = maybeRBracketToken.token_type == Token::Token_type::OPERATOR_RBRACKET;
 
-				if (isRBracket)
-					lexer.unget_token(maybeRBracketToken);
-
+				lexer.unget_token(maybeRBracketToken);
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 
