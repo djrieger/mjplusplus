@@ -37,6 +37,11 @@ class Parser
 		 */
 		bool nextToken();
 		/**
+		 * Common functionality for all expect functions. See implementations of expect()
+		 * for details.
+		 */
+		bool expectHelper(bool ret, std::string const& error_msg, bool report);
+		/**
 		 * Checks whether type of current token is tokenType.
 		 * If this is the case, nextToken() is called to advance to the next token.
 		 * @param	report	if true, an error is printed in case of a type mismatch
