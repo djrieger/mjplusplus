@@ -25,6 +25,7 @@ class Parser
 		 * Whether parser prints error messages or suppresses them
 		 */
 		bool print_messages;
+		bool error_mode = false;
 		Token current;
 		/*
 		 * Precedences of all operators, as well as associativity
@@ -40,7 +41,7 @@ class Parser
 		 * Common functionality for all expect functions. See implementations of expect()
 		 * for details.
 		 */
-		bool expectHelper(bool ret, std::string const& error_msg, bool report);
+		bool expectHelper(Token::Token_type tokenType, bool ret, std::string const& error_msg, bool report);
 		/**
 		 * Checks whether type of current token is tokenType.
 		 * If this is the case, nextToken() is called to advance to the next token.
