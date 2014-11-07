@@ -132,7 +132,7 @@ bool Parser::expect(Token::Token_type tokenType, std::string const& string_val, 
 			return false;
 	}
 	else if (report)
-		printError("");
+		printError(current.string_value == string_val ? "" : "expected \"" + string_val + "\"");
 
 	return ret;
 }
