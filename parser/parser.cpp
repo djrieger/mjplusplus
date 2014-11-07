@@ -650,6 +650,8 @@ bool Parser::parseWhileStatement()
 }
 
 // ReturnStatement -> return OptionalExpression ; .
+// OptionalExpression -> Expression
+//  	| .
 bool Parser::parseReturnStatement()
 {
 	bool hasReturnKeyword = expect(Token::Token_type::KEYWORD_RETURN);
