@@ -684,9 +684,12 @@ bool Parser::parseArguments()
 {
 	bool isFirstArgument = true;
 
-	while (current.token_type != Token::Token_type::OPERATOR_RPAREN && parseExpression())
+	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
+
+		if (!parseExpression())
+			return false;
 
 		if (!expect(Token::Token_type::OPERATOR_COMMA, false))
 			return true;
