@@ -19,7 +19,7 @@ EmptyStatement -> ; .
 WhileStatement -> while ( Expression ) Statement .
 IfStatement -> if ( Expression ) Statement ( else Statement )? .
 ExpressionStatement -> Expression ; .
-ReturnStatement -> return Expression? .
+ReturnStatement -> return Expression? ; .
 
 Expression -> AssignmentExpression .
 AssignmentExpression -> LogicalOrExpression ( = AssignmentExpression )? .

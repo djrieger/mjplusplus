@@ -40,7 +40,7 @@ IfStatement -> if ( Expression ) Statement OptionalElseStatement .
 OptionalElseStatement -> else Statement
 	| .
 ExpressionStatement -> Expression ; .
-ReturnStatement -> return OptionalExpression .
+ReturnStatement -> return OptionalExpression ; .
 OptionalExpression -> Expression
 	| .
 
