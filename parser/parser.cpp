@@ -108,12 +108,7 @@ bool Parser::expect(Token::Token_type tokenType, bool report)
 	bool ret = current.token_type == tokenType;
 
 	if (ret)
-	{
-		if (nextToken())
-			return ret;
-		else
-			return false;
-	}
+		return nextToken();
 	else if (report)
 		printError("");
 
@@ -125,12 +120,7 @@ bool Parser::expect(Token::Token_type tokenType, std::string const& string_val, 
 	bool ret = current.token_type == tokenType && current.string_value == string_val;
 
 	if (ret)
-	{
-		if (nextToken())
-			return ret;
-		else
-			return false;
-	}
+		return nextToken();
 	else if (report)
 		printError(current.string_value == string_val ? "" : "expected \"" + string_val + "\"");
 
@@ -172,15 +162,12 @@ bool Parser::parseClassMembers()
 }
 
 // ClassMember -> public ClassMember_ .
+// ClassMember_ -> TypeIdent FieldOrMethod | MainMethod .
 bool Parser::parseClassMember()
 {
-	return expect(Token::Token_type::KEYWORD_PUBLIC) &&
-	       parseClassMember_();
-}
+	if (!expect(Token::Token_type::KEYWORD_PUBLIC))
+		return false;
 
-// ClassMember_ -> TypeIdent FieldOrMethod | MainMethod .
-bool Parser::parseClassMember_()
-{
 	if (current.token_type == Token::Token_type::KEYWORD_STATIC)
 		return parseMainMethod();
 	else
@@ -225,7 +212,8 @@ bool Parser::parseBasicType()
 	return expect(Token::Token_type::KEYWORD_INT, false) ||
 	       expect(Token::Token_type::KEYWORD_BOOLEAN, false) ||
 	       expect(Token::Token_type::KEYWORD_VOID, false) ||
-	       expect(Token::Token_type::TOKEN_IDENT);
+	       expect(Token::Token_type::TOKEN_IDENT, false) ||
+	       (printError("expected Type"), false);
 }
 
 // ArrayDecl -> [ ] ArrayDecl | .
