@@ -70,9 +70,10 @@ void Parser::printError(std::string const& error_msg)
 		{
 			input.seekg(-1, std::ios_base::cur);
 		}
-		while ((char)input.peek() != '\n');
+		while ((char)input.peek() != '\n' && input.tellg() > 0);
 
 		// consume \n character from beginning of line
+
 		input.get();
 		// markerLine stores a position indicator like so: "     ^"
 		std::string markerline = "";
@@ -81,6 +82,10 @@ void Parser::printError(std::string const& error_msg)
 		// iterate through current line from beginning to end
 		do
 		{
+			// abort if we have reached the end of the stream
+			if (!input.good())
+				break;
+
 			nextChar = (char)input.get();
 			line += nextChar;
 
