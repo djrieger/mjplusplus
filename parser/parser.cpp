@@ -60,6 +60,8 @@ void Parser::printError(std::string const& error_msg)
 		          ", parsing '" << current.string_value << '\'' << (error_msg.empty() ? "" : ": ") <<
 		          error_msg << std::endl;
 
+		return;
+
 		// get input file from lexer
 		std::istream& input = lexer.getInput();
 		std::string line = "";
@@ -108,7 +110,7 @@ void Parser::printError(std::string const& error_msg)
 	}
 }
 
-bool Parser::expectHelper(bool ret, std::string const& error_msg, bool report)
+bool Parser::expectHelper(Token::Token_type tokenType, bool ret, std::string const& error_msg, bool report)
 {
 	if (ret)
 	{
@@ -117,22 +119,41 @@ bool Parser::expectHelper(bool ret, std::string const& error_msg, bool report)
 		else
 			return false;
 	}
-	else if (report)
-		printError(error_msg);
+	else
+	{
+		if (!error_mode)
+		{
+			if (report)
+				printError(error_msg);
 
-	return ret;
+			error_mode = true;
+		}
+
+		// skip until token found
+		do
+		{
+			if (!nextToken())
+				return false;
+		}
+		while (current.token_type != tokenType);
+
+		nextToken();
+		error_mode = false;
+	}
+
+	return true;
 }
 
 bool Parser::expect(Token::Token_type tokenType, bool report)
 {
 	bool condition = current.token_type == tokenType;
-	return expectHelper(condition, "", report);
+	return expectHelper(tokenType, condition, "", report);
 }
 
 bool Parser::expect(Token::Token_type tokenType, std::string const& string_val, bool report)
 {
 	bool condition = current.token_type == tokenType && current.string_value == string_val;
-	return expectHelper(condition, current.string_value == string_val ? "" : "expected \"" + string_val + "\"", report);
+	return expectHelper(tokenType, condition, current.string_value == string_val ? "" : "expected \"" + string_val + "\"", report);
 }
 
 // Program -> ClassDeclaration Program | .
