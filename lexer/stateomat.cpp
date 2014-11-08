@@ -93,6 +93,16 @@ Stateomat::Stateomat()
 		{"~", Token::Token_type::OPERATOR_NEG}, {"|=", Token::Token_type::OPERATOR_OREQ},
 		{"||", Token::Token_type::OPERATOR_OROR}, {"|", Token::Token_type::OPERATOR_OR}
 	};
+	reverse = {{Token::Token_type::TOKEN_EOF, "end of file"}, {Token::Token_type::TOKEN_INT_LIT, "integer"},
+		{Token::Token_type::TOKEN_IDENT, "identifier"}, {Token::Token_type::TOKEN_OPERATOR, "unknown operator"},
+		{Token::Token_type::TOKEN_ERROR, "lexer error"}
+	};
+
+	for (auto it = keywords.begin(); it != keywords.end(); it++)
+		reverse[it->second] = '"' + it->first + '"';
+
+	for (auto it = operators.begin(); it != operators.end(); it++)
+		reverse[it->second] = '"' + it->first + '"';
 }
 
 bool Stateomat::state_is_accepting(unsigned int state)

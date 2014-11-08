@@ -25,6 +25,7 @@ class Stateomat
 
 		std::map<std::string, Token::Token_type> keywords;
 		std::map<std::string, Token::Token_type> operators;
+		std::map<Token::Token_type, std::string> reverse;
 };
 
 #endif
