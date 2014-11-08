@@ -57,7 +57,7 @@ void Parser::printError(std::string const& error_msg)
 	if (print_messages) // only print error messages if they are wanted
 	{
 		std::cerr << "at line " << current.position.first << ", column " << current.position.second <<
-		          ", parsing '" << current.string_value << '\'' << (error_msg.empty() ? "" : ": ") <<
+		          ", parsing \"" << current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
 		          error_msg << std::endl;
 
 		// get input file from lexer
@@ -121,13 +121,13 @@ bool Parser::expectHelper(bool ret, std::string const& error_msg, bool report)
 bool Parser::expect(Token::Token_type tokenType, bool report)
 {
 	bool condition = current.token_type == tokenType;
-	return expectHelper(condition, "", report);
+	return expectHelper(condition, "expected " + lexer.describe(tokenType), report);
 }
 
 bool Parser::expect(Token::Token_type tokenType, std::string const& string_val, bool report)
 {
 	bool condition = current.token_type == tokenType && current.string_value == string_val;
-	return expectHelper(condition, current.string_value == string_val ? "" : "expected \"" + string_val + "\"", report);
+	return expectHelper(condition, "expected " + (current.string_value == string_val ? lexer.describe(tokenType) : '"' + string_val + '"'), report);
 }
 
 // Program -> ClassDeclaration Program | .

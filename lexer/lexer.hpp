@@ -20,8 +20,9 @@ class Lexer
 		Lexer(std::istream& input, Stateomat const& stateomat, bool debug = false);
 		Token get_next_token();
 		void unget_token(Token t);
-		bool good();
+		bool good() const;
 		std::istream& getInput();
+		std::string describe(Token::Token_type t) const;
 };
 
 #endif

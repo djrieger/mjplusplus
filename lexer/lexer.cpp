@@ -89,7 +89,17 @@ Token Lexer::get_next_token()
 	return t;
 }
 
-bool Lexer::good()
+std::string Lexer::describe(Token::Token_type t) const
+{
+	auto it = stateomat.reverse.find(t);
+
+	if (it != stateomat.reverse.end())
+		return it->second;
+	else
+		return "";
+}
+
+bool Lexer::good() const
 {
 	return input.good();
 }
