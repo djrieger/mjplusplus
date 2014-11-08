@@ -25,11 +25,11 @@ class Oo {
 
         int minus_zero = -0;
 
-        new basic_type[42][][][15];
+        new basic_type[42][][][];
 
-        !null * -false; 
+        !null * -false;
 
-        c = a - -b; 
+        c = a - -b;
 
         this[15] = 1;
         
