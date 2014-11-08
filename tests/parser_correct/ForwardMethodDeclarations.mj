@@ -1,0 +1,9 @@
+class A {
+  public int foo() {
+    return bar();
+  }
+
+  public int bar() {
+    return 0;
+  }
+}

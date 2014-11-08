@@ -1,0 +1,9 @@
+class Test {
+    public static void main(String[] args) {
+        true = false;
+        a[null] = 42;
+        this.foo[bar] = !x[3][5];
+        x[3+false] = null;
+        23;
+    }
+}

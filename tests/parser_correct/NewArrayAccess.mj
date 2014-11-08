@@ -1,0 +1,6 @@
+/* 'new boolean[1][0]' is valid in Minijava (new array: boolean, size 1)(array access: 0) and invalid in Java */
+class a {
+  public void f() {
+    boolean a = new boolean[1][0];
+  }
+}
