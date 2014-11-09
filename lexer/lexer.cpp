@@ -7,7 +7,7 @@ std::istream& Lexer::getInput()
 }
 
 Lexer::Lexer(std::istream& input, Stateomat const& stateomat, bool debug)
-	: position(std::make_pair(1, 1)), input(input), stateomat(stateomat), debug(debug)
+	: position {1, 1}, input(input), stateomat(stateomat), debug(debug)
 {
 	;
 }
