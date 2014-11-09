@@ -12,6 +12,12 @@
 
 int main(int argc, const char** argv)
 {
+	if (argc == 1)
+	{
+		std::cerr << "No file specified for compilation." << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	std::vector<std::string> options;
 
 	for (int i = 1; i < argc - 1; i++)
