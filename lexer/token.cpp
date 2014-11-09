@@ -4,7 +4,9 @@
 
 void Token::print() const
 {
-	switch (type)
+	// uncommenting the following line is for debug purposes during lextest
+	//std::cout << position.first << "," << position.second << ":\t";
+	switch (token_type)
 	{
 		case TOKEN_EOF:
 			std::cout << "EOF" << std::endl;
@@ -18,12 +20,11 @@ void Token::print() const
 			std::cout << "identifier " << string_value << std::endl;
 			break;
 
-		case TOKEN_OPERATOR:
-		case TOKEN_KEYWORD:
-			std::cout << string_value << std::endl;
+		case TOKEN_ERROR:
 			break;
 
-		case TOKEN_ERROR:
+		default:
+			std::cout << string_value << std::endl;
 			break;
 	}
 }

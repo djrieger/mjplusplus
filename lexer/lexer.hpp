@@ -9,16 +9,20 @@
 class Lexer
 {
 	protected:
-
-		std::tuple<unsigned int, unsigned int> position;
+		// line, column
+		std::pair<unsigned int, unsigned int> position;
 		std::istream& input;
 		Stateomat stateomat;
 		bool debug;
+		std::vector<Token> token_stack;
 
 	public:
 		Lexer(std::istream& input, Stateomat const& stateomat, bool debug = false);
 		Token get_next_token();
-		bool good();
+		void unget_token(Token t);
+		bool good() const;
+		std::istream& getInput();
+		std::string describe(Token::Token_type t) const;
 };
 
 #endif
