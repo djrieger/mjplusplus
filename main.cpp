@@ -6,11 +6,18 @@
 #include "lexer/lexer.hpp"
 #include "lexer/stateomat.hpp"
 #include "lexer/token.hpp"
+#include "parser/parser.hpp"
 
 #define CMD_LINE_OPTION_PREFIX "--"
 
 int main(int argc, const char** argv)
 {
+	if (argc == 1)
+	{
+		std::cerr << "No file specified for compilation." << std::endl;
+		return EXIT_FAILURE;
+	}
+
 	std::vector<std::string> options;
 
 	for (int i = 1; i < argc - 1; i++)
@@ -27,17 +34,19 @@ int main(int argc, const char** argv)
 		Stateomat stateomat;
 		stateomat.dump_graph(file_name);
 	}
-	else if (has_option("lextest"))
+
+	std::ifstream infile(file_name);
+
+	if (!infile.good())
 	{
-		std::ifstream infile(file_name);
+		std::cerr << "Error reading file " << file_name << std::endl;
+		return EXIT_FAILURE;
+	}
 
-		if (!infile.good())
-		{
-			std::cerr << "Error reading file " << file_name << std::endl;
-			return EXIT_FAILURE;
-		}
+	Stateomat stateomat;
 
-		Stateomat stateomat;
+	if (has_option("lextest"))
+	{
 		Lexer lexer(infile, stateomat, true);
 		Token t;
 
@@ -45,15 +54,22 @@ int main(int argc, const char** argv)
 		{
 			t = lexer.get_next_token();
 		}
-		while (t.type != Token::Type::TOKEN_ERROR && t.type != Token::Type::TOKEN_EOF);
+		while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF);
 
-		infile.close();
-
-		if (t.type != Token::Type::TOKEN_EOF)
+		if (t.token_type != Token::Token_type::TOKEN_EOF)
 		{
-			std::cerr << "Error: Lexer failed." << std::endl;
+			std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
 			return EXIT_FAILURE;
 		}
+	}
+	else
+	{
+		Lexer lexer(infile, stateomat, false);
+		Parser parser(lexer, true);
+		bool valid = parser.start();
+
+		if (!valid)
+			return EXIT_FAILURE;
 	}
 
 	return EXIT_SUCCESS;

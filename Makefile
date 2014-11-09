@@ -4,18 +4,14 @@ RELEASEFLAGS := -O3
 CPPFLAGS := -std=c++11 -pedantic -W -Wall -Wextra
 
 ASTYLE := astyle
-ASTYLEFLAGS := --options=astyle.rc
+ASTYLEFLAGS := --options=meta/astyle.rc
 ASTYLESUFFIX := .orig
 
 TARGET := mj++
-SOURCE_FILES := main.cpp \
-	lexer/lexer.cpp \
-	lexer/stateomat.cpp \
-	lexer/token.cpp
-	
-HEADER_FILES := lexer/lexer.hpp \
-	lexer/stateomat.hpp \
-	lexer/token.hpp
+
+# this looks for .cpp/.hpp-files in the current directory and all subdirectories. (recursive-depth = 1)
+SOURCE_FILES := $(wildcard *.cpp) $(wildcard **/*.cpp)
+HEADER_FILES := $(wildcard *.hpp) $(wildcard **/*.hpp)
 
 all: $(TARGET)
 
@@ -35,5 +31,5 @@ clean:
 style: $(SOURCE_FILES) $(HEADER_FILES)
 	$(ASTYLE) $(ASTYLEFLAGS) $^ 
 	
-styleclean: 
+styleclean:
 	rm -f $(addsuffix $(ASTYLESUFFIX), $(SOURCE_FILES) $(HEADER_FILES))

@@ -1,0 +1,104 @@
+
+Program -> ClassDeclaration Program
+	| .
+ClassDeclaration -> class IDENT { ClassMembers } .
+ClassMembers -> ClassMember ClassMembers
+	| .
+
+
+ClassMember -> public ClassMember_ .
+ClassMember_ -> TypeIdent FieldOrMethod | MainMethod .
+
+MainMethod -> static void IDENT ( String [ ] IDENT ) Block .
+FieldOrMethod -> Field | Method .
+Field -> ; .
+Method -> ( OptionalParameters ) Block .
+
+OptionalParameters -> Parameters | .
+Parameters -> Parameter FollowingParameters .
+FollowingParameters -> , Parameters
+	| .
+Parameter -> TypeIdent .
+Type -> BasicType ArrayDecl .
+BasicType -> int | boolean | void | IDENT .
+ArrayDecl -> [ ] ArrayDecl
+	| .
+Statement -> Block | EmptyStatement | IfStatement | ExpressionStatement | WhileStatement | ReturnStatement .
+
+TypeIdent -> Type IDENT .
+
+Block -> { BlockStatements } .
+BlockStatements -> BlockStatement BlockStatements
+	| .
+BlockStatement -> Statement | LocalVariableDeclarationStatement .
+LocalVariableDeclarationStatement -> TypeIdent OptionalLVDSExpression ; .
+OptionalLVDSExpression -> = Expression
+	| .
+EmptyStatement -> ; .
+WhileStatement -> while ( Expression ) Statement .
+IfStatement -> if ( Expression ) Statement OptionalElseStatement .
+OptionalElseStatement -> else Statement
+	| .
+ExpressionStatement -> Expression ; .
+ReturnStatement -> return OptionalExpression ; .
+OptionalExpression -> Expression
+	| .
+
+
+Expression -> AssignmentExpression .
+AssignmentExpression -> LogicalOrExpression OptionalAssignmentExpression .
+OptionalAssignmentExpression -> = AssignmentExpression
+	| .
+LogicalOrExpression -> OptionalLogicalOrExpression LogicalAndExpression .
+OptionalLogicalOrExpression -> LogicalOrExpression DOUBLEPIPE
+	| .
+LogicalAndExpression ->  OptionalLogicalAndExpression EqualityExpression .
+OptionalLogicalAndExpression -> LogicalAndExpression &&
+	| .
+
+
+EqualityExpression -> OptionalEqualityExpression RelationalExpression .
+OptionalEqualityExpression -> EqualityExpression EqOrNeq
+	| .
+EqOrNeq -> == | != .
+
+RelationalExpression -> OptionalRelationalExpression AdditiveExpression .
+OptionalRelationalExpression -> RelationalExpression RelationalOperator
+	| .
+RelationalOperator -> < | <= | > | >= .
+
+AdditiveExpression -> OptionalAdditiveExpression MultiplicativeExpression .
+OptionalAdditiveExpression -> AdditiveExpression PlusOrMinus | .
+PlusOrMinus -> + | - .
+
+MultiplicativeExpression -> OptionalMultiplicativeExpression UnaryExpression .
+OptionalMultiplicativeExpression -> MultiplicativeExpression MultSlashPercent
+	| .
+MultSlashPercent -> * | / | % .
+
+UnaryExpression -> PostfixExpression | ExclMarkOrHyphen UnaryExpression .
+ExclMarkOrHyphen -> ! | - .
+
+
+PostfixExpression -> PrimaryExpression PostfixOps .
+PostfixOps -> PostfixOp PostfixOps
+	| .
+PostfixOp -> DOT IDENT MethodInvocationOrFieldAccess
+	| ArrayAccess .
+
+MethodInvocationOrFieldAccess -> MethodInvocation | .
+MethodInvocation -> ( Arguments ) .
+ArrayAccess -> [ Expression ] .
+Arguments -> Expression ArgumentsExpressions
+	| .
+ArgumentsExpressions -> , Expression ArgumentsExpressions
+	| .
+
+PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
+IdentOrIdentWithArguments -> ( Arguments )
+	| .
+NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
+NewObjectExpression -> IDENT ( ) .
+NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
+OptionalBrackets -> [ ] OptionalBrackets
+	| .

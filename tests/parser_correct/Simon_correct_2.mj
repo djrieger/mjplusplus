@@ -1,0 +1,6 @@
+class two {
+	public a a() {
+		new boolean[x][y];
+		new boolean[x][][z];
+	}
+}

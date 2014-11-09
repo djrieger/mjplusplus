@@ -1,0 +1,85 @@
+/*
+    What mj++ should complain about:
+    - file contains a package identifier
+    - Uses nested classes
+    - Uses floats
+    - Uses unknown classes (Boolean, String)
+    - missing main method
+    - System.out.println has a string argument
+    - Makes use of the ternary operator
+    - AveryTree contains a public static method which is not main()
+    - Constructors must not have arguments
+    - Class declarations must not have public/private modifiers
+**/
+package edu.kit.student.rs.avery;
+
+public class AveryTree {
+    protected float b, g;
+    protected int numberOfPlayers;
+    protected AveryNode root;
+
+    private class AveryNode {
+        protected float f, p, rho;
+        protected int depth;
+        protected AveryNode goodChild, badChild;
+        protected Boolean good = null;
+
+        protected void initializeChildren() {
+            if (depth < numberOfPlayers - 1) {
+                goodChild = new AveryNode(this, true);
+                badChild = new AveryNode(this, false);
+            }
+        }
+
+        public AveryNode(float p_initial) {
+            p = p_initial;
+            f = 1;
+            rho = computerho(p, g, b);
+            depth = 0;
+
+            initializeChildren();
+        }
+
+        public AveryNode(AveryNode parent, boolean good) {
+            depth = parent.depth + 1;
+            this.good = good;
+
+            if (good) {
+                f = parent.rho * parent.f;
+                p = (g * parent.p) / parent.rho;
+            } else {
+                f = 1 - parent.rho * parent.f;
+                p = ((1 - g) * parent.p) / (1 - parent.rho);
+            }
+            rho = computerho(p, g, b);
+
+            initializeChildren();
+        }
+
+        public String toString() {
+            String label = (good == null ? "root" : (good == true ? "good" : "bad"));
+            return String.format("%" + (depth * 2 + 1) + "s%s: f=%.2f, p=%.2f, rho=%.2f\n", "", label, f, p, rho) +
+                   (goodChild != null ? goodChild.toString() : "") + (badChild != null ? badChild.toString() : "");
+        }
+    }
+
+    public static float computerho(float p, float g, float b) {
+        return p * g + (1 - p) * (1 - b);
+    }
+
+    public AveryTree(float p_init, float b, float g, int numberOfPlayers) {
+        this.b = b;
+        this.g = g;
+        this.numberOfPlayers = numberOfPlayers;
+        root = new AveryNode(p_init);
+    }
+
+    public String toString() {
+        return root.toString();
+    }
+
+    public static void main(String[] args) {
+        AveryTree tree = new AveryTree(0.5f, 4f / 5f, 4f / 5f, 3);
+        System.out.println(tree.toString());
+    }
+}
