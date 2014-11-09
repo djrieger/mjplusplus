@@ -25,7 +25,7 @@ class Oo {
 
         int minus_zero = -0;
 
-        new basic_type[42][][][];
+        new basic_type[42][][][15];
 
         !null * -false;
 
