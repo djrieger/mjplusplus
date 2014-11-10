@@ -46,13 +46,13 @@ class Parser
 		 * If this is the case, nextToken() is called to advance to the next token.
 		 * @param	report	if true, an error is printed in case of a type mismatch
 		 */
-		bool expect(Token::Token_type tokenType, bool report = true);
+		bool expect(Token::Token_type const& tokenType, bool report = true);
 		/**
 		 * Same behavior as expect(Token::Token_type, bool).
 		 * In addition, this method also compares the string_value of current
 		 * to string_val and also returns false, if the string contents do not match.
 		 */
-		bool expect(Token::Token_type tokenType, std::string const& string_val, bool report = true);
+		bool expect(Token::Token_type const& tokenType, std::string const& string_val, bool report = true);
 
 		/**
 		 * Prints an error message, prepending current token position

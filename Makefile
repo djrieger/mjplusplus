@@ -1,6 +1,7 @@
 CPP := g++
 DEBUGFLAGS := -ggdb -O1
 RELEASEFLAGS := -O3
+PROFILEFLAGS := -pg -ggdb -O3
 CPPFLAGS := -std=c++11 -pedantic -W -Wall -Wextra
 
 ASTYLE := astyle
@@ -18,6 +19,10 @@ all: $(TARGET)
 debug $(TARGET): $(SOURCE_FILES:.cpp=.o)
 	$(CPP) $(CPPFLAGS) $(DEBUGFLAGS) $^ -o $(TARGET)
 
+# analyse with gprof [options] ./mj++ gmon.out
+profile: $(SOURCE_FILES)
+	$(CPP) $(CPPFLAGS) $(PROFILEFLAGS) $^ -o $(TARGET)
+
 # no .o files in release build
 release: $(SOURCE_FILES)
 	$(CPP) $(CPPFLAGS) $(RELEASEFLAGS) $^ -o $(TARGET)
@@ -33,3 +38,4 @@ style: $(SOURCE_FILES) $(HEADER_FILES)
 	
 styleclean:
 	rm -f $(addsuffix $(ASTYLESUFFIX), $(SOURCE_FILES) $(HEADER_FILES))
+
