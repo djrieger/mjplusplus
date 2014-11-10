@@ -9,26 +9,19 @@ std::istream& Lexer::getInput()
 Lexer::Lexer(std::istream& input, Stateomat const& stateomat, bool debug)
 	: position {1, 1}, input(input), stateomat(stateomat), debug(debug)
 {
-	;
+	c = input.get();
+	advancePosition(c);
 }
 
-void Lexer::advancePosition(char nextCharacter)
+void Lexer::advancePosition(int nextCharacter)
 {
-	if (nextCharacter == '\n')
+	if (nextCharacter == 10)
 	{
 		position.first++;
 		position.second = 1;
 	}
 	else
 		position.second++;
-}
-
-void Lexer::rewindPosition(char nextCharacter)
-{
-	if (nextCharacter == '\n')
-		position.first--;
-	else
-		position.second--;
 }
 
 Token Lexer::get_next_token()
@@ -47,25 +40,20 @@ Token Lexer::get_next_token()
 
 	while (1)
 	{
-		int c = input.get();
-
-		advancePosition(c);
-
 		int new_state = stateomat.transitions[state][c == EOF ? 128 : c];
 
-		if (!stateomat.state_is_accepting(new_state))
-			t.string_value = "";
-		else if (new_state == STATE_STOP)
+		if (new_state == STATE_STOP)
 		{
 			if (stateomat.state_is_accepting(state))
 			{
-				input.unget();
 
-				rewindPosition(c);
+				if (t.token_type == Token::Token_type::TOKEN_IDENT)
+				{
+					auto keyword = stateomat.keywords.find(t.string_value);
 
-				if (stateomat.keywords.find(t.string_value) != stateomat.keywords.end())
-					t.token_type = stateomat.keywords[t.string_value];
-
+					if (keyword != stateomat.keywords.end())
+						t.token_type = keyword->second;
+				}
 				else if (t.token_type == Token::Token_type::TOKEN_OPERATOR)
 					t.token_type = stateomat.operators[t.string_value];
 
@@ -80,6 +68,8 @@ Token Lexer::get_next_token()
 				return t;
 			}
 		}
+		else if (!stateomat.state_is_accepting(new_state))
+			t.string_value = "";
 		else
 		{
 			if (state == STATE_START)
@@ -91,6 +81,9 @@ Token Lexer::get_next_token()
 			t.string_value.push_back(c);
 			t.token_type = stateomat.state_type[new_state];
 		}
+
+		c = input.get();
+		advancePosition(c);
 
 		state = new_state;
 	}
