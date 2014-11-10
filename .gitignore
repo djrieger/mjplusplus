@@ -1,4 +1,8 @@
 *.o
 mj++
-.gitignore
+gmon.out
+
+# project files of varios IDEs
 *.sublime-workspace
+*.pro
+*.pro.user
