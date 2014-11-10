@@ -108,12 +108,17 @@ void Parser::printError(std::string const& error_msg)
 	}
 }
 
-bool Parser::expectHelper(bool ret, std::string const& error_msg, bool report)
+bool Parser::expectHelper(bool ret, Token::Token_type const& tokenType, std::string const& error_msg, bool report)
 {
 	if (ret)
 		return nextToken();
 	else if (report)
-		printError(error_msg);
+	{
+		if (error_msg.empty())
+			printError("expected " + lexer.describe(tokenType));
+		else
+			printError(error_msg);
+	}
 
 	return ret;
 }
@@ -121,13 +126,13 @@ bool Parser::expectHelper(bool ret, std::string const& error_msg, bool report)
 bool Parser::expect(Token::Token_type const& tokenType, bool report)
 {
 	bool condition = current.token_type == tokenType;
-	return expectHelper(condition, "expected " + lexer.describe(tokenType), report);
+	return expectHelper(condition, tokenType, "", report);
 }
 
 bool Parser::expect(Token::Token_type const& tokenType, std::string const& string_val, bool report)
 {
 	bool condition = current.token_type == tokenType && current.string_value == string_val;
-	return expectHelper(condition, "expected " + (current.string_value == string_val ? lexer.describe(tokenType) : '"' + string_val + '"'), report);
+	return expectHelper(condition, tokenType, (current.string_value == string_val ? "" : '"' + string_val + '"'), report);
 }
 
 // Program -> ClassDeclaration Program | .
