@@ -7,6 +7,6 @@ Compile by running `make` (debug version) or `make release` (release version) in
 
 Run the compiler like this:
 
-`./mj++ [--lextest] FILE` 
+`./mj++ [--lextest] FILE`
 
 `--lextest`: Run a test on the compiler's lexer on the given `FILE`
