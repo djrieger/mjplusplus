@@ -12,6 +12,25 @@ Lexer::Lexer(std::istream& input, Stateomat const& stateomat, bool debug)
 	;
 }
 
+void Lexer::advancePosition(char nextCharacter)
+{
+	if (nextCharacter == '\n')
+	{
+		position.first++;
+		position.second = 1;
+	}
+	else
+		position.second++;
+}
+
+void Lexer::rewindPosition(char nextCharacter)
+{
+	if (nextCharacter == '\n')
+		position.first--;
+	else
+		position.second--;
+}
+
 Token Lexer::get_next_token()
 {
 	if (!token_stack.empty())
@@ -30,13 +49,7 @@ Token Lexer::get_next_token()
 	{
 		int c = input.get();
 
-		if (c == '\n')
-		{
-			position.first++;
-			position.second = 1;
-		}
-		else
-			position.second++;
+		advancePosition(c);
 
 		int new_state = stateomat.transitions[state][c == EOF ? 128 : c];
 
@@ -48,10 +61,7 @@ Token Lexer::get_next_token()
 			{
 				input.unget();
 
-				if (c == '\n')
-					position.first--;
-				else
-					position.second--;
+				rewindPosition(c);
 
 				if (stateomat.keywords.find(t.string_value) != stateomat.keywords.end())
 					t.token_type = stateomat.keywords[t.string_value];
