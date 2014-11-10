@@ -1,8 +1,10 @@
 *.o
 mj++
+
+# profile data
 gmon.out
 
-# project files of varios IDEs
+# project files of various IDEs
 *.sublime-workspace
 *.pro
 *.pro.user

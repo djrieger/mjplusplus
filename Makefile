@@ -28,7 +28,7 @@ release: $(SOURCE_FILES)
 	$(CPP) $(CPPFLAGS) $(RELEASEFLAGS) $^ -o $(TARGET)
 
 clean:
-	rm -f $(TARGET) $(SOURCE_FILES:.cpp=.o) *~
+	rm -f $(TARGET) $(SOURCE_FILES:.cpp=.o) gmon.out *~
 
 %.o : %.cpp
 	$(CPP) $(CPPFLAGS) $(DEBUGFLAGS) -c $< -o $(<:.cpp=.o)
