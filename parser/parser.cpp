@@ -118,13 +118,13 @@ bool Parser::expectHelper(bool ret, std::string const& error_msg, bool report)
 	return ret;
 }
 
-bool Parser::expect(Token::Token_type tokenType, bool report)
+bool Parser::expect(Token::Token_type const& tokenType, bool report)
 {
 	bool condition = current.token_type == tokenType;
 	return expectHelper(condition, "expected " + lexer.describe(tokenType), report);
 }
 
-bool Parser::expect(Token::Token_type tokenType, std::string const& string_val, bool report)
+bool Parser::expect(Token::Token_type const& tokenType, std::string const& string_val, bool report)
 {
 	bool condition = current.token_type == tokenType && current.string_value == string_val;
 	return expectHelper(condition, "expected " + (current.string_value == string_val ? lexer.describe(tokenType) : '"' + string_val + '"'), report);
@@ -757,7 +757,7 @@ bool Parser::parseUnaryExpression()
 {
 	if (current.token_type == Token::Token_type::OPERATOR_NOT ||
 	        current.token_type == Token::Token_type::OPERATOR_MINUS)
-		return parseExclMarkOrHyphen() && parseUnaryExpression();
+		return nextToken() && parseUnaryExpression();
 	else
 		return parsePostfixExpression();
 }
