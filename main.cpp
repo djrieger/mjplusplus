@@ -33,6 +33,7 @@ int main(int argc, const char** argv)
 	{
 		Stateomat stateomat;
 		stateomat.dump_graph(file_name);
+		return EXIT_SUCCESS;
 	}
 
 	std::ifstream infile(file_name);
