@@ -27,9 +27,9 @@ class Parser
 		bool print_messages;
 		Token current;
 		/*
-		 * Precedences of all operators, as well as associativity
+		 * Precedences of all operators, associativity is stored implicitly
 		 */
-		static std::map<Token::Token_type, std::tuple<int, bool>> operator_precs;
+		static std::map<Token::Token_type, int> operator_precs;
 
 		/**
 		 * Get next token from lexer.
