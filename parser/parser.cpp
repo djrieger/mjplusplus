@@ -184,11 +184,19 @@ bool Parser::parseType()
 // BasicType -> int | boolean | void | IDENT .
 bool Parser::parseBasicType()
 {
-	return expect(Token::Token_type::KEYWORD_INT, false) ||
-	       expect(Token::Token_type::KEYWORD_BOOLEAN, false) ||
-	       expect(Token::Token_type::KEYWORD_VOID, false) ||
-	       expect(Token::Token_type::TOKEN_IDENT, false) ||
-	       (printError("expected Type"), false);
+	switch (current.token_type)
+	{
+		case Token::Token_type::KEYWORD_INT:
+		case Token::Token_type::KEYWORD_BOOLEAN:
+		case Token::Token_type::KEYWORD_VOID:
+		case Token::Token_type::TOKEN_IDENT:
+			return nextToken();
+			break;
+
+		default:
+			printError("expected Type");
+			return false;
+	}
 }
 
 // ArrayDecl -> [ ] ArrayDecl | .
@@ -273,12 +281,12 @@ bool Parser::parseStatement()
 		case Token::Token_type::TOKEN_INT_LIT:
 		case Token::Token_type::OPERATOR_LPAREN:
 		case Token::Token_type::OPERATOR_MINUS:
+		case Token::Token_type::OPERATOR_NOT:
 		case Token::Token_type::KEYWORD_NULL:
 		case Token::Token_type::KEYWORD_FALSE:
 		case Token::Token_type::KEYWORD_TRUE:
 		case Token::Token_type::KEYWORD_THIS:
 		case Token::Token_type::KEYWORD_NEW:
-		case Token::Token_type::OPERATOR_NOT:
 			return parseExpressionStatement();
 			break;
 
@@ -390,25 +398,32 @@ bool Parser::precedenceClimb(int minPrec)
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
 bool Parser::parsePrimaryExpression()
 {
-	if (expect(Token::Token_type::KEYWORD_NULL, false))
-		return true;
-	else if (expect(Token::Token_type::KEYWORD_FALSE, false))
-		return true;
-	else if (expect(Token::Token_type::KEYWORD_TRUE, false))
-		return true;
-	else if (expect(Token::Token_type::TOKEN_INT_LIT, false))
-		return true;
-	else if (expect(Token::Token_type::KEYWORD_THIS, false))
-		return true;
-	else if (expect(Token::Token_type::TOKEN_IDENT, false))
-		return parseIdentOrIdentWithArguments();
-	else if (expect(Token::Token_type::OPERATOR_LPAREN, false))
-		return parseExpression() && expect(Token::Token_type::OPERATOR_RPAREN);
-	else if (expect(Token::Token_type::KEYWORD_NEW, false))
-		return parseNewObjectOrNewArrayExpression();
+	switch (current.token_type)
+	{
+		case Token::Token_type::KEYWORD_NULL:
+		case Token::Token_type::KEYWORD_FALSE:
+		case Token::Token_type::KEYWORD_TRUE:
+		case Token::Token_type::KEYWORD_THIS:
+		case Token::Token_type::TOKEN_INT_LIT:
+			return nextToken();
+			break;
 
-	printError("expected Expression");
-	return false;
+		case Token::Token_type::TOKEN_IDENT:
+			return nextToken() && parseIdentOrIdentWithArguments();
+			break;
+
+		case Token::Token_type::OPERATOR_LPAREN:
+			return nextToken() && parseExpression() && expect(Token::Token_type::OPERATOR_RPAREN);
+			break;
+
+		case Token::Token_type::KEYWORD_NEW:
+			return nextToken() && parseNewObjectOrNewArrayExpression();
+			break;
+
+		default:
+			printError("expected Expression");
+			return false;
+	}
 }
 
 // IdentOrIdentWithArguments -> ( Arguments )
