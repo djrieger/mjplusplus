@@ -29,15 +29,17 @@ Stateomat::Stateomat()
 		{19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,}
 	}; /* stop */
 
-	state_type = {{ 1, Token::Token_type::TOKEN_INT_LIT},  { 2, Token::Token_type::TOKEN_INT_LIT},
-		{ 3, Token::Token_type::TOKEN_IDENT},    { 4, Token::Token_type::TOKEN_OPERATOR},
-		{ 5, Token::Token_type::TOKEN_OPERATOR}, { 6, Token::Token_type::TOKEN_OPERATOR},
-		{ 7, Token::Token_type::TOKEN_OPERATOR}, { 8, Token::Token_type::TOKEN_OPERATOR},
-		{ 9, Token::Token_type::TOKEN_OPERATOR}, {10, Token::Token_type::TOKEN_OPERATOR},
-		{11, Token::Token_type::TOKEN_OPERATOR}, {12, Token::Token_type::TOKEN_OPERATOR},
-		{13, Token::Token_type::TOKEN_OPERATOR}, {14, Token::Token_type::TOKEN_OPERATOR},
-		{15, Token::Token_type::TOKEN_OPERATOR}, {18, Token::Token_type::TOKEN_EOF}
-	};
+	state_type = {Token::Token_type::TOKEN_ERROR, Token::Token_type::TOKEN_INT_LIT, // 0, 1
+	              Token::Token_type::TOKEN_INT_LIT, Token::Token_type::TOKEN_IDENT, // 2, 3
+	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 4, 5
+	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 6, 7
+	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 8, 9
+	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 10, 11
+	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 12, 13
+	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 14, 15
+	              Token::Token_type::TOKEN_ERROR, Token::Token_type::TOKEN_ERROR, // 16, 17
+	              Token::Token_type::TOKEN_EOF, // 18
+	             };
 
 
 	non_accepting_states = {0, 16, 17};
