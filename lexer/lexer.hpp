@@ -16,6 +16,7 @@ class Lexer
 		bool debug;
 		std::vector<Token> token_stack;
 		int c;
+		std::istream::pos_type line_start;
 
 		/*
 		 * If nextCharacter is \n the line number in position will be incremented
@@ -28,7 +29,7 @@ class Lexer
 		Token get_next_token();
 		void unget_token(Token const& t);
 		bool good() const;
-		std::istream& getInput();
+		std::string getLine();
 		std::string describe(Token::Token_type const& t) const;
 };
 
