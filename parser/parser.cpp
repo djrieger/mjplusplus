@@ -102,61 +102,55 @@ bool Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 	return expectHelper(condition, tokenType, (current.string_value == string_val ? "" : '"' + string_val + '"'), report);
 }
 
-// Program -> ClassDeclaration Program | .
+// Program -> class ClassDeclaration Program | .
 bool Parser::parseProgram()
 {
 	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
-		if (!parseClassDeclaration())
+		if (!(nextToken() && parseClassDeclaration()))
 			return false;
 	}
 
 	return expect(Token::Token_type::TOKEN_EOF);
 }
 
-// ClassDeclaration -> class IDENT { ClassMembers } .
+// ClassDeclaration -> IDENT { ClassMembers } .
 bool Parser::parseClassDeclaration()
 {
-	return expect(Token::Token_type::KEYWORD_CLASS) &&
-	       expect(Token::Token_type::TOKEN_IDENT) &&
+	return expect(Token::Token_type::TOKEN_IDENT) &&
 	       expect(Token::Token_type::OPERATOR_LBRACE) &&
 	       parseClassMembers() &&
 	       expect(Token::Token_type::OPERATOR_RBRACE);
 }
 
-// ClassMembers -> ClassMember ClassMembers | .
+// ClassMembers -> public ClassMember ClassMembers | .
+// ClassMember -> TypeIdent FieldOrMethod | static MainMethod .
 bool Parser::parseClassMembers()
 {
 	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
 	{
-		if (!parseClassMember())
+		if (!nextToken())
 			return false;
+
+		if (current.token_type == Token::Token_type::KEYWORD_STATIC)
+		{
+			if (!(nextToken() && parseMainMethod()))
+				return false;
+		}
+		else
+		{
+			if (!(parseTypeIdent() && parseFieldOrMethod()))
+				return false;
+		}
 	}
 
 	return true;
 }
 
-// ClassMember -> public ClassMember_ .
-// ClassMember_ -> TypeIdent FieldOrMethod | MainMethod .
-bool Parser::parseClassMember()
-{
-	if (!expect(Token::Token_type::KEYWORD_PUBLIC))
-		return false;
-
-	if (current.token_type == Token::Token_type::KEYWORD_STATIC)
-		return parseMainMethod();
-	else
-	{
-		return parseTypeIdent() &&
-		       parseFieldOrMethod();
-	}
-}
-
-// MainMethod -> static void IDENT ( String [ ] IDENT ) Block .
+// MainMethod -> void IDENT ( String [ ] IDENT ) Block .
 bool Parser::parseMainMethod()
 {
-	return expect(Token::Token_type::KEYWORD_STATIC) &&
-	       expect(Token::Token_type::KEYWORD_VOID) &&
+	return expect(Token::Token_type::KEYWORD_VOID) &&
 	       expect(Token::Token_type::TOKEN_IDENT) &&
 	       expect(Token::Token_type::OPERATOR_LPAREN) &&
 	       expect(Token::Token_type::TOKEN_IDENT, std::string("String")) &&
@@ -216,13 +210,15 @@ bool Parser::parseArrayDecl()
 // Method -> ( OptionalParameters ) Block .
 bool Parser::parseFieldOrMethod()
 {
-	if (expect(Token::Token_type::OPERATOR_SEMICOLON, false))
-		return true;
-
-	return expect(Token::Token_type::OPERATOR_LPAREN) &&
-	       parseOptionalParameters() &&
-	       expect(Token::Token_type::OPERATOR_RPAREN) &&
-	       parseBlock();
+	if (current.token_type == Token::Token_type::OPERATOR_SEMICOLON)
+		return nextToken();
+	else
+	{
+		return expect(Token::Token_type::OPERATOR_LPAREN) &&
+		       parseOptionalParameters() &&
+		       expect(Token::Token_type::OPERATOR_RPAREN) &&
+		       parseBlock();
+	}
 }
 
 // OptionalParameters -> Parameters | .
@@ -251,7 +247,8 @@ bool Parser::parseOptionalParameters()
 	return isFirstParameter;
 }
 
-// Statement -> Block | EmptyStatement | IfStatement | ExpressionStatement | WhileStatement | ReturnStatement .
+// Statement -> Block | EmptyStatement | if IfStatement | Expression ; | while WhileStatement | return ReturnStatement .
+// EmptyStatement -> ; .
 bool Parser::parseStatement()
 {
 	switch (current.token_type)
@@ -261,19 +258,19 @@ bool Parser::parseStatement()
 			break;
 
 		case Token::Token_type::OPERATOR_SEMICOLON:
-			return expect(Token::Token_type::OPERATOR_SEMICOLON);
+			return nextToken();
 			break;
 
 		case Token::Token_type::KEYWORD_IF:
-			return parseIfStatement();
+			return nextToken() && parseIfStatement();
 			break;
 
 		case Token::Token_type::KEYWORD_WHILE:
-			return parseWhileStatement();
+			return nextToken() && parseWhileStatement();
 			break;
 
 		case Token::Token_type::KEYWORD_RETURN:
-			return parseReturnStatement();
+			return nextToken() && parseReturnStatement();
 			break;
 
 		// IDENT, (, -, !, null, false, true, INTEGER_LITERAL, this, new
@@ -287,7 +284,7 @@ bool Parser::parseStatement()
 		case Token::Token_type::KEYWORD_TRUE:
 		case Token::Token_type::KEYWORD_THIS:
 		case Token::Token_type::KEYWORD_NEW:
-			return parseExpressionStatement();
+			return parseExpression() && expect(Token::Token_type::OPERATOR_SEMICOLON);
 			break;
 
 		default:
@@ -297,200 +294,19 @@ bool Parser::parseStatement()
 }
 
 // Block -> { BlockStatements } .
+// BlockStatements -> BlockStatement BlockStatements | .
 bool Parser::parseBlock()
 {
-	return expect(Token::Token_type::OPERATOR_LBRACE) &&
-	       parseBlockStatements() &&
-	       expect(Token::Token_type::OPERATOR_RBRACE);
-}
+	if (!expect(Token::Token_type::OPERATOR_LBRACE))
+		return false;
 
-// BlockStatements -> BlockStatement BlockStatements | .
-bool Parser::parseBlockStatements()
-{
 	while (current.token_type != Token::Token_type::OPERATOR_RBRACE)
 	{
 		if (!parseBlockStatement())
 			return false;
 	}
 
-	return true;
-}
-/*
- Expression -> AssignmentExpression .
-*/
-bool Parser::parseExpression()
-{
-	return parseAssignmentExpression();
-}
-
-/*
-AssignmentExpression -> LogicalOrExpression OptionalAssignmentExpression .
-OptionalAssignmentExpression -> = AssignmentExpression
-	| .
-LogicalOrExpression -> OptionalLogicalOrExpression LogicalAndExpression .
-OptionalLogicalOrExpression -> LogicalOrExpression DOUBLEPIPE
-	| .
-LogicalAndExpression ->  OptionalLogicalAndExpression EqualityExpression .
-OptionalLogicalAndExpression -> LogicalAndExpression &&
-	| .
-
-EqualityExpression -> OptionalEqualityExpression RelationalExpression .
-OptionalEqualityExpression -> EqualityExpression EqOrNeq
-	| .
-EqOrNeq -> == | != .
-
-RelationalExpression -> OptionalRelationalExpression AdditiveExpression .
-OptionalRelationalExpression -> RelationalExpression RelationalOperator
-	| .
-RelationalOperator -> < | <= | > | >= .
-
-AdditiveExpression -> OptionalAdditiveExpression MultiplicativeExpression .
-OptionalAdditiveExpression -> AdditiveExpression PlusOrMinus | .
-PlusOrMinus -> + | - .
-
-MultiplicativeExpression -> OptionalMultiplicativeExpression UnaryExpression .
-OptionalMultiplicativeExpression -> MultiplicativeExpression MultSlashPercent
-	| .
-MultSlashPercent -> * | / | % .
-*/
-bool Parser::parseAssignmentExpression()
-{
-	return precedenceClimb(1);
-}
-
-/*
-parses an expression via precedence climb
-*/
-bool Parser::precedenceClimb(int minPrec)
-{
-	bool result = parseUnaryExpression();
-	int prec;
-	bool left_assoc;
-	Token::Token_type op = current.token_type;
-
-	if (!result || operator_precs.find(op) == operator_precs.end())
-		return result;
-
-	std::tie(prec, left_assoc) = operator_precs[op];
-
-	while (prec >= minPrec)
-	{
-		if (left_assoc)
-			prec = prec + 1;
-
-		if (!nextToken())
-			return false;
-
-		bool rhs = precedenceClimb(prec);
-		result = result && rhs;
-		op = current.token_type;
-
-		if (!result || operator_precs.find(op) == operator_precs.end())
-			return result;
-
-		std::tie(prec, left_assoc) = operator_precs[op];
-	}
-
-	return result;
-}
-
-
-// PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
-bool Parser::parsePrimaryExpression()
-{
-	switch (current.token_type)
-	{
-		case Token::Token_type::KEYWORD_NULL:
-		case Token::Token_type::KEYWORD_FALSE:
-		case Token::Token_type::KEYWORD_TRUE:
-		case Token::Token_type::KEYWORD_THIS:
-		case Token::Token_type::TOKEN_INT_LIT:
-			return nextToken();
-			break;
-
-		case Token::Token_type::TOKEN_IDENT:
-			return nextToken() && parseIdentOrIdentWithArguments();
-			break;
-
-		case Token::Token_type::OPERATOR_LPAREN:
-			return nextToken() && parseExpression() && expect(Token::Token_type::OPERATOR_RPAREN);
-			break;
-
-		case Token::Token_type::KEYWORD_NEW:
-			return nextToken() && parseNewObjectOrNewArrayExpression();
-			break;
-
-		default:
-			printError("expected Expression");
-			return false;
-	}
-}
-
-// IdentOrIdentWithArguments -> ( Arguments )
-//     | .
-bool Parser::parseIdentOrIdentWithArguments()
-{
-	if (expect(Token::Token_type::OPERATOR_LPAREN, false))
-		return parseArguments() && expect(Token::Token_type::OPERATOR_RPAREN);
-
-	return true;
-}
-
-// NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
-bool Parser::parseNewObjectOrNewArrayExpression()
-{
-	Token id = current;
-
-	if (!nextToken())
-		return false;
-
-	Token next = current;
-	lexer.unget_token(next);
-	current = id;
-
-	if (next.token_type == Token::Token_type::OPERATOR_LPAREN)
-		return parseNewObjectExpression();
-	else
-		return parseNewArrayExpression();
-}
-
-// NewObjectExpression -> IDENT ( ) .
-bool Parser::parseNewObjectExpression()
-{
-	return expect(Token::Token_type::TOKEN_IDENT) &&
-	       expect(Token::Token_type::OPERATOR_LPAREN) &&
-	       expect(Token::Token_type::OPERATOR_RPAREN);
-}
-
-// NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
-bool Parser::parseNewArrayExpression()
-{
-	return parseBasicType() &&
-	       expect(Token::Token_type::OPERATOR_LBRACKET) &&
-	       parseExpression() &&
-	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
-	       parseOptionalBrackets();
-}
-
-// OptionalBrackets -> [ ] OptionalBrackets
-//     | .
-bool Parser::parseOptionalBrackets()
-{
-	Token t = current;
-
-	while (expect(Token::Token_type::OPERATOR_LBRACKET, false))
-	{
-		if (expect(Token::Token_type::OPERATOR_RBRACKET, false))
-			t = current;
-		else
-		{
-			lexer.unget_token(current);
-			current = t;
-			return true;
-		}
-	}
-
-	return true;
+	return nextToken();
 }
 
 // BlockStatement -> Statement | LocalVariableDeclarationStatement .
@@ -597,13 +413,12 @@ bool Parser::parseLocalVariableDeclarationStatement()
 	return expect(Token::Token_type::OPERATOR_SEMICOLON);
 }
 
-// IfStatement -> if ( Expression ) Statement OptionalElseStatement .
+// IfStatement -> ( Expression ) Statement OptionalElseStatement .
 // OptionalElseStatement -> else Statement
 // 	| .
 bool Parser::parseIfStatement()
 {
-	bool isValidIf = expect(Token::Token_type::KEYWORD_IF) &&
-	                 expect(Token::Token_type::OPERATOR_LPAREN) &&
+	bool isValidIf = expect(Token::Token_type::OPERATOR_LPAREN) &&
 	                 parseExpression() &&
 	                 expect(Token::Token_type::OPERATOR_RPAREN) &&
 	                 parseStatement();
@@ -611,60 +426,219 @@ bool Parser::parseIfStatement()
 	if (!isValidIf)
 		return false;
 
-	if (expect(Token::Token_type::KEYWORD_ELSE, false))
-		return parseStatement();
+	if (current.token_type == Token::Token_type::KEYWORD_ELSE)
+		return nextToken() && parseStatement();
 	else
 		return true;
 }
 
-// WhileStatement -> while ( Expression ) Statement .
+// WhileStatement -> ( Expression ) Statement .
 bool Parser::parseWhileStatement()
 {
-	return expect(Token::Token_type::KEYWORD_WHILE) &&
-	       expect(Token::Token_type::OPERATOR_LPAREN) &&
+	return expect(Token::Token_type::OPERATOR_LPAREN) &&
 	       parseExpression() &&
 	       expect(Token::Token_type::OPERATOR_RPAREN) &&
 	       parseStatement();
 }
 
-// ReturnStatement -> return OptionalExpression ; .
+// ReturnStatement -> OptionalExpression ; .
 // OptionalExpression -> Expression
 //  	| .
 bool Parser::parseReturnStatement()
 {
-	bool hasReturnKeyword = expect(Token::Token_type::KEYWORD_RETURN);
+	if (current.token_type != Token::Token_type::OPERATOR_SEMICOLON)
+	{
+		if (!parseExpression())
+			return false;
 
-	if (!hasReturnKeyword)
+	}
+
+	return expect(Token::Token_type::OPERATOR_SEMICOLON);
+}
+
+/*
+Expression -> AssignmentExpression .
+AssignmentExpression -> LogicalOrExpression OptionalAssignmentExpression .
+OptionalAssignmentExpression -> = AssignmentExpression
+	| .
+LogicalOrExpression -> OptionalLogicalOrExpression LogicalAndExpression .
+OptionalLogicalOrExpression -> LogicalOrExpression DOUBLEPIPE
+	| .
+LogicalAndExpression ->  OptionalLogicalAndExpression EqualityExpression .
+OptionalLogicalAndExpression -> LogicalAndExpression &&
+	| .
+
+EqualityExpression -> OptionalEqualityExpression RelationalExpression .
+OptionalEqualityExpression -> EqualityExpression EqOrNeq
+	| .
+EqOrNeq -> == | != .
+
+RelationalExpression -> OptionalRelationalExpression AdditiveExpression .
+OptionalRelationalExpression -> RelationalExpression RelationalOperator
+	| .
+RelationalOperator -> < | <= | > | >= .
+
+AdditiveExpression -> OptionalAdditiveExpression MultiplicativeExpression .
+OptionalAdditiveExpression -> AdditiveExpression PlusOrMinus | .
+PlusOrMinus -> + | - .
+
+MultiplicativeExpression -> OptionalMultiplicativeExpression UnaryExpression .
+OptionalMultiplicativeExpression -> MultiplicativeExpression MultSlashPercent
+	| .
+MultSlashPercent -> * | / | % .
+*/
+bool Parser::parseExpression()
+{
+	return precedenceClimb(1);
+}
+
+/*
+parses an expression via precedence climb
+*/
+bool Parser::precedenceClimb(int minPrec)
+{
+	bool result = parseUnaryExpression();
+	int prec;
+	bool left_assoc;
+	Token::Token_type op = current.token_type;
+
+	if (!result || operator_precs.find(op) == operator_precs.end())
+		return result;
+
+	std::tie(prec, left_assoc) = operator_precs[op];
+
+	while (prec >= minPrec)
+	{
+		if (left_assoc)
+			prec = prec + 1;
+
+		if (!nextToken())
+			return false;
+
+		bool rhs = precedenceClimb(prec);
+		result = result && rhs;
+		op = current.token_type;
+
+		if (!result || operator_precs.find(op) == operator_precs.end())
+			return result;
+
+		std::tie(prec, left_assoc) = operator_precs[op];
+	}
+
+	return result;
+}
+
+// UnaryExpression -> PostfixExpression | ExclMarkOrHyphen UnaryExpression .
+// PostfixExpression -> PrimaryExpression PostfixOps .
+bool Parser::parseUnaryExpression()
+{
+	while (current.token_type == Token::Token_type::OPERATOR_NOT ||
+	        current.token_type == Token::Token_type::OPERATOR_MINUS)
+		nextToken();
+
+	return parsePrimaryExpression() && parsePostfixOps();
+}
+
+// PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
+bool Parser::parsePrimaryExpression()
+{
+	switch (current.token_type)
+	{
+		case Token::Token_type::KEYWORD_NULL:
+		case Token::Token_type::KEYWORD_FALSE:
+		case Token::Token_type::KEYWORD_TRUE:
+		case Token::Token_type::KEYWORD_THIS:
+		case Token::Token_type::TOKEN_INT_LIT:
+			return nextToken();
+			break;
+
+		case Token::Token_type::TOKEN_IDENT:
+			return nextToken() && parseIdentOrIdentWithArguments();
+			break;
+
+		case Token::Token_type::OPERATOR_LPAREN:
+			return nextToken() && parseExpression() && expect(Token::Token_type::OPERATOR_RPAREN);
+			break;
+
+		case Token::Token_type::KEYWORD_NEW:
+			return nextToken() && parseNewObjectOrNewArrayExpression();
+			break;
+
+		default:
+			printError("expected Expression");
+			return false;
+	}
+}
+
+// IdentOrIdentWithArguments -> ( Arguments )
+//     | .
+bool Parser::parseIdentOrIdentWithArguments()
+{
+	if (expect(Token::Token_type::OPERATOR_LPAREN, false))
+		return parseArguments() && expect(Token::Token_type::OPERATOR_RPAREN);
+
+	return true;
+}
+
+// NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
+bool Parser::parseNewObjectOrNewArrayExpression()
+{
+	Token id = current;
+
+	if (!nextToken())
 		return false;
 
-	if (!expect(Token::Token_type::OPERATOR_SEMICOLON, false))
+	Token next = current;
+	lexer.unget_token(next);
+	current = id;
+
+	if (next.token_type == Token::Token_type::OPERATOR_LPAREN)
+		return parseNewObjectExpression();
+	else
+		return parseNewArrayExpression();
+}
+
+// NewObjectExpression -> IDENT ( ) .
+bool Parser::parseNewObjectExpression()
+{
+	return expect(Token::Token_type::TOKEN_IDENT) &&
+	       expect(Token::Token_type::OPERATOR_LPAREN) &&
+	       expect(Token::Token_type::OPERATOR_RPAREN);
+}
+
+// NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
+bool Parser::parseNewArrayExpression()
+{
+	return parseBasicType() &&
+	       expect(Token::Token_type::OPERATOR_LBRACKET) &&
+	       parseExpression() &&
+	       expect(Token::Token_type::OPERATOR_RBRACKET) &&
+	       parseOptionalBrackets();
+}
+
+// OptionalBrackets -> [ ] OptionalBrackets
+//     | .
+bool Parser::parseOptionalBrackets()
+{
+	Token t = current;
+
+	while (expect(Token::Token_type::OPERATOR_LBRACKET, false))
 	{
-		return parseExpression() &&
-		       expect(Token::Token_type::OPERATOR_SEMICOLON);
+		if (expect(Token::Token_type::OPERATOR_RBRACKET, false))
+			t = current;
+		else
+		{
+			lexer.unget_token(current);
+			current = t;
+			return true;
+		}
 	}
 
 	return true;
 }
 
-// ExpressionStatement -> Expression ; .
-bool Parser::parseExpressionStatement()
-{
-	return parseExpression() &&
-	       expect(Token::Token_type::OPERATOR_SEMICOLON);
-}
-
-// ArrayAccess -> [ Expression ] .
-bool Parser::parseArrayAccess()
-{
-	return expect(Token::Token_type::OPERATOR_LBRACKET) &&
-	       parseExpression() &&
-	       expect(Token::Token_type::OPERATOR_RBRACKET);
-}
-
-// Arguments -> Expression ArgumentsExpressions
-//     | .
-// ArgumentsExpressions -> , Expression ArgumentsExpressions
-//     | .
+// Arguments -> Expression ArgumentsExpressions | .
+// ArgumentsExpressions -> , Expression ArgumentsExpressions | .
 bool Parser::parseArguments()
 {
 	bool isFirstArgument = true;
@@ -703,48 +677,28 @@ bool Parser::parseMethodInvocationOrFieldAccess()
 	return true;
 }
 
-// ExclMarkOrHyphen -> ! | - .
-bool Parser::parseExclMarkOrHyphen()
-{
-	return expect(Token::Token_type::OPERATOR_NOT, false) ||
-	       expect(Token::Token_type::OPERATOR_MINUS);
-}
-
-// PostfixExpression -> PrimaryExpression PostfixOps .
-bool Parser::parsePostfixExpression()
-{
-	return parsePrimaryExpression() && parsePostfixOps();
-}
-
-// PostfixOps -> PostfixOp PostfixOps
-//     | .
+// PostfixOps -> PostfixOp PostfixOps | .
 // PostfixOp -> DOT IDENT MethodInvocationOrFieldAccess
-//     | ArrayAccess .
+//     | [ Expression ] .
 bool Parser::parsePostfixOps()
 {
 	while (true)
 	{
-		if (expect(Token::Token_type::OPERATOR_DOT, false))
+		if (current.token_type == Token::Token_type::OPERATOR_DOT)
 		{
-			if (!(expect(Token::Token_type::TOKEN_IDENT) && parseMethodInvocationOrFieldAccess()))
+			if (!(nextToken() &&
+			        expect(Token::Token_type::TOKEN_IDENT) &&
+			        parseMethodInvocationOrFieldAccess()))
 				return false;
 		}
 		else if (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
 		{
-			if (!parseArrayAccess())
+			if (!(nextToken() &&
+			        parseExpression() &&
+			        expect(Token::Token_type::OPERATOR_RBRACKET)))
 				return false;
 		}
 		else
 			return true;
 	}
-}
-
-// UnaryExpression -> PostfixExpression | ExclMarkOrHyphen UnaryExpression .
-bool Parser::parseUnaryExpression()
-{
-	if (current.token_type == Token::Token_type::OPERATOR_NOT ||
-	        current.token_type == Token::Token_type::OPERATOR_MINUS)
-		return nextToken() && parseUnaryExpression();
-	else
-		return parsePostfixExpression();
 }
