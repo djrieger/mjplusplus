@@ -109,7 +109,16 @@ Stateomat::Stateomat()
 
 bool Stateomat::state_is_accepting(unsigned int state)
 {
-	return non_accepting_states.find(state) == non_accepting_states.end();
+	switch (state)
+	{
+		case 0:
+		case 16:
+		case 17:
+			return false;
+
+		default:
+			return true;
+	}
 }
 
 void Stateomat::dump_graph(std::string const& file_name)
