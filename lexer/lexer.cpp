@@ -1,16 +1,10 @@
 #include "lexer.hpp"
 #include "token.hpp"
 
-std::istream& Lexer::getInput()
-{
-	return input;
-}
-
 Lexer::Lexer(std::istream& input, Stateomat const& stateomat, bool debug)
-	: position {1, 1}, input(input), stateomat(stateomat), debug(debug)
+	: position {1, 1}, input(input), stateomat(stateomat), debug(debug), line_start(0)
 {
 	c = input.get();
-	advancePosition(c);
 }
 
 void Lexer::advancePosition(int nextCharacter)
@@ -19,9 +13,20 @@ void Lexer::advancePosition(int nextCharacter)
 	{
 		position.first++;
 		position.second = 1;
+		line_start = input.tellg();
 	}
 	else
 		position.second++;
+}
+
+std::string Lexer::getLine()
+{
+	std::istream::pos_type cur = input.tellg();
+	input.seekg(line_start);
+	std::string l;
+	std::getline(input, l);
+	input.seekg(cur);
+	return l;
 }
 
 Token Lexer::get_next_token()
@@ -72,17 +77,14 @@ Token Lexer::get_next_token()
 		else
 		{
 			if (state == STATE_START)
-			{
 				t.position = position;
-				t.position.second--;
-			}
 
 			t.string_value.push_back(c);
 			t.token_type = stateomat.state_type[new_state];
 		}
 
-		c = input.get();
 		advancePosition(c);
+		c = input.get();
 
 		state = new_state;
 	}

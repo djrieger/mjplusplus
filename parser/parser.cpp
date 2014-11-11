@@ -60,22 +60,8 @@ void Parser::printError(std::string const& error_msg)
 		          ", parsing \"" << current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
 		          error_msg << std::endl;
 
-		// get input file from lexer
-		std::istream& input = lexer.getInput();
-
-		// seek back until beginning of current input line
-		do
-		{
-			input.seekg(-1, std::ios_base::cur);
-		}
-		while ((char)input.peek() != '\n' && input.tellg() > 0);
-
-		// consume \n character from beginning of line
-		input.get();
-
 		// read current line
-		std::string line;
-		std::getline(input, line);
+		std::string line = lexer.getLine();
 		std::replace(line.begin(), line.end(), '\t', ' ');
 
 		// markerLine stores a position indicator like so: "     ^"
