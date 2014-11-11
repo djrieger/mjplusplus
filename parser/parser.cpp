@@ -6,23 +6,42 @@ Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages
 {
 }
 
-std::map<Token::Token_type, int> Parser::operator_precs =
+int Parser::operator_precs(Token::Token_type t)
 {
-	{Token::Token_type::OPERATOR_EQ, 1},
-	{Token::Token_type::OPERATOR_OROR, 2},
-	{Token::Token_type::OPERATOR_ANDAND, 3},
-	{Token::Token_type::OPERATOR_EQEQ, 4},
-	{Token::Token_type::OPERATOR_NOTEQ, 4},
-	{Token::Token_type::OPERATOR_LT, 5},
-	{Token::Token_type::OPERATOR_LTEQ, 5},
-	{Token::Token_type::OPERATOR_GT, 5},
-	{Token::Token_type::OPERATOR_GTEQ, 5},
-	{Token::Token_type::OPERATOR_PLUS, 6},
-	{Token::Token_type::OPERATOR_MINUS, 6},
-	{Token::Token_type::OPERATOR_MULT, 7},
-	{Token::Token_type::OPERATOR_SLASH, 7},
-	{Token::Token_type::OPERATOR_MOD, 7}
-};
+	switch (t)
+	{
+		case Token::Token_type::OPERATOR_EQ:
+			return 1;
+
+		case Token::Token_type::OPERATOR_OROR:
+			return 2;
+
+		case Token::Token_type::OPERATOR_ANDAND:
+			return 3;
+
+		case Token::Token_type::OPERATOR_EQEQ:
+		case Token::Token_type::OPERATOR_NOTEQ:
+			return 4;
+
+		case Token::Token_type::OPERATOR_LT:
+		case Token::Token_type::OPERATOR_LTEQ:
+		case Token::Token_type::OPERATOR_GT:
+		case Token::Token_type::OPERATOR_GTEQ:
+			return 5;
+
+		case Token::Token_type::OPERATOR_PLUS:
+		case Token::Token_type::OPERATOR_MINUS:
+			return 6;
+
+		case Token::Token_type::OPERATOR_MULT:
+		case Token::Token_type::OPERATOR_SLASH:
+		case Token::Token_type::OPERATOR_MOD:
+			return 7;
+
+		default:
+			return -1;
+	}
+}
 
 /* Max' proposal: use return type to indicate if token stream is not a part of the language induced by the grammar
 */
@@ -393,14 +412,7 @@ bool Parser::precedenceClimb(int minPrec)
 	if (!result)
 		return false;
 
-	int prec;
-	Token::Token_type op = current.token_type;
-	auto precEntry = operator_precs.find(op);
-
-	if (precEntry == operator_precs.end())
-		return result;
-
-	prec = precEntry->second;
+	int prec = operator_precs(current.token_type);
 
 	while (prec >= minPrec)
 	{
@@ -415,14 +427,7 @@ bool Parser::precedenceClimb(int minPrec)
 		if (!result)
 			return false;
 
-		op = current.token_type;
-
-		precEntry = operator_precs.find(op);
-
-		if (precEntry == operator_precs.end())
-			return result;
-
-		prec = precEntry->second;
+		prec = operator_precs(current.token_type);
 	}
 
 	return result;
