@@ -22,7 +22,6 @@ class Stateomat
 		//protected:
 		std::vector<std::vector<unsigned int>> transitions;
 		std::vector<Token::Token_type> state_type;
-		std::set<unsigned int> non_accepting_states;
 
 		std::unordered_map<std::string, Token::Token_type> keywords;
 		std::unordered_map<std::string, Token::Token_type> operators;
