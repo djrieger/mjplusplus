@@ -29,7 +29,7 @@ class Parser
 		/*
 		 * Precedences of all operators, associativity is stored implicitly
 		 */
-		static std::map<Token::Token_type, int> operator_precs;
+		int operator_precs(Token::Token_type t);
 
 		/**
 		 * Get next token from lexer.
