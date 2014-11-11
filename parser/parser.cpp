@@ -6,22 +6,22 @@ Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages
 {
 }
 
-std::map<Token::Token_type, std::tuple<int, bool> > Parser::operator_precs =
+std::map<Token::Token_type, int> Parser::operator_precs =
 {
-	{Token::Token_type::OPERATOR_EQ, std::make_tuple(1, false)},
-	{Token::Token_type::OPERATOR_OROR, std::make_tuple(2, true)},
-	{Token::Token_type::OPERATOR_ANDAND, std::make_tuple(3, true)},
-	{Token::Token_type::OPERATOR_EQEQ, std::make_tuple(4, true)},
-	{Token::Token_type::OPERATOR_NOTEQ, std::make_tuple(4, true)},
-	{Token::Token_type::OPERATOR_LT, std::make_tuple(5, true)},
-	{Token::Token_type::OPERATOR_LTEQ, std::make_tuple(5, true)},
-	{Token::Token_type::OPERATOR_GT, std::make_tuple(5, true)},
-	{Token::Token_type::OPERATOR_GTEQ, std::make_tuple(5, true)},
-	{Token::Token_type::OPERATOR_PLUS, std::make_tuple(6, true)},
-	{Token::Token_type::OPERATOR_MINUS, std::make_tuple(6, true)},
-	{Token::Token_type::OPERATOR_MULT, std::make_tuple(7, true)},
-	{Token::Token_type::OPERATOR_SLASH, std::make_tuple(7, true)},
-	{Token::Token_type::OPERATOR_MOD, std::make_tuple(7, true)}
+	{Token::Token_type::OPERATOR_EQ, 1},
+	{Token::Token_type::OPERATOR_OROR, 2},
+	{Token::Token_type::OPERATOR_ANDAND, 3},
+	{Token::Token_type::OPERATOR_EQEQ, 4},
+	{Token::Token_type::OPERATOR_NOTEQ, 4},
+	{Token::Token_type::OPERATOR_LT, 5},
+	{Token::Token_type::OPERATOR_LTEQ, 5},
+	{Token::Token_type::OPERATOR_GT, 5},
+	{Token::Token_type::OPERATOR_GTEQ, 5},
+	{Token::Token_type::OPERATOR_PLUS, 6},
+	{Token::Token_type::OPERATOR_MINUS, 6},
+	{Token::Token_type::OPERATOR_MULT, 7},
+	{Token::Token_type::OPERATOR_SLASH, 7},
+	{Token::Token_type::OPERATOR_MOD, 7}
 };
 
 /* Max' proposal: use return type to indicate if token stream is not a part of the language induced by the grammar
@@ -389,31 +389,40 @@ parses an expression via precedence climb
 bool Parser::precedenceClimb(int minPrec)
 {
 	bool result = parseUnaryExpression();
-	int prec;
-	bool left_assoc;
-	Token::Token_type op = current.token_type;
 
-	if (!result || operator_precs.find(op) == operator_precs.end())
+	if (!result)
+		return false;
+
+	int prec;
+	Token::Token_type op = current.token_type;
+	auto precEntry = operator_precs.find(op);
+
+	if (precEntry == operator_precs.end())
 		return result;
 
-	std::tie(prec, left_assoc) = operator_precs[op];
+	prec = precEntry->second;
 
 	while (prec >= minPrec)
 	{
-		if (left_assoc)
-			prec = prec + 1;
+		if (prec > 1) //equivalent to the fact that operator is left associative
+			prec++;
 
 		if (!nextToken())
 			return false;
 
-		bool rhs = precedenceClimb(prec);
-		result = result && rhs;
+		result = precedenceClimb(prec);
+
+		if (!result)
+			return false;
+
 		op = current.token_type;
 
-		if (!result || operator_precs.find(op) == operator_precs.end())
+		precEntry = operator_precs.find(op);
+
+		if (precEntry == operator_precs.end())
 			return result;
 
-		std::tie(prec, left_assoc) = operator_precs[op];
+		prec = precEntry->second;
 	}
 
 	return result;
