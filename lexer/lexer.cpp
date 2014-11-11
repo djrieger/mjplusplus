@@ -28,14 +28,13 @@ Token Lexer::get_next_token()
 {
 	if (!token_stack.empty())
 	{
-		Token t = token_stack[token_stack.size() - 1];
+		Token t(token_stack[token_stack.size() - 1]);
 		token_stack.pop_back();
 		return t;
 	}
 
 	Token t;
 	t.position = position;
-	t.string_value = "";
 	int state = STATE_START;
 
 	while (1)
@@ -69,7 +68,7 @@ Token Lexer::get_next_token()
 			}
 		}
 		else if (!stateomat.state_is_accepting(new_state))
-			t.string_value = "";
+			t.string_value.clear();
 		else
 		{
 			if (state == STATE_START)
@@ -92,7 +91,7 @@ Token Lexer::get_next_token()
 	return t;
 }
 
-std::string Lexer::describe(Token::Token_type t) const
+std::string Lexer::describe(Token::Token_type const& t) const
 {
 	auto it = stateomat.reverse.find(t);
 
@@ -107,7 +106,7 @@ bool Lexer::good() const
 	return input.good();
 }
 
-void Lexer::unget_token(Token t)
+void Lexer::unget_token(Token const& t)
 {
 	token_stack.push_back(t);
 }

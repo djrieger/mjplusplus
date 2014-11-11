@@ -62,8 +62,6 @@ void Parser::printError(std::string const& error_msg)
 
 		// get input file from lexer
 		std::istream& input = lexer.getInput();
-		std::string line = "";
-		char nextChar;
 
 		// seek back until beginning of current input line
 		do
@@ -73,37 +71,20 @@ void Parser::printError(std::string const& error_msg)
 		while ((char)input.peek() != '\n' && input.tellg() > 0);
 
 		// consume \n character from beginning of line
-
 		input.get();
-		// markerLine stores a position indicator like so: "     ^"
-		std::string markerline = "";
-		unsigned int linePos = 1;
 
-		// iterate through current line from beginning to end
-		do
-		{
-			// abort if we have reached the end of the stream
-			if (!input.good())
-				break;
-
-			nextChar = (char)input.get();
-			line += nextChar;
-
-			// build markerline
-			if (linePos < current.position.second)
-				markerline += " ";
-			else if (linePos == current.position.second)
-				markerline += "^";
-
-			linePos++;
-		}
-		while (nextChar != '\n');
-
+		// read current line
+		std::string line;
+		std::getline(input, line);
 		std::replace(line.begin(), line.end(), '\t', ' ');
+
+		// markerLine stores a position indicator like so: "     ^"
+		std::string markerline(current.position.second - 1, ' ');
+		markerline += '^';
 
 		// output input line where error occurred and markerline
 		// line already ends with \n so no additional std::endl needs to be added
-		std::cerr << line;
+		std::cerr << line << std::endl;
 		std::cerr << markerline << std::endl;
 	}
 }
