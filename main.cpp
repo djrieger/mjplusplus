@@ -36,19 +36,11 @@ int main(int argc, const char** argv)
 		return EXIT_SUCCESS;
 	}
 
-	std::ifstream infile(file_name);
-
-	if (!infile.good())
-	{
-		std::cerr << "Error reading file " << file_name << std::endl;
-		return EXIT_FAILURE;
-	}
-
 	Stateomat stateomat;
 
 	if (has_option("lextest"))
 	{
-		Lexer lexer(infile, stateomat, true);
+		Lexer lexer(file_name.c_str(), stateomat, true);
 		Token t;
 
 		do
@@ -65,7 +57,7 @@ int main(int argc, const char** argv)
 	}
 	else
 	{
-		Lexer lexer(infile, stateomat, false);
+		Lexer lexer(file_name.c_str(), stateomat, false);
 		Parser parser(lexer, true);
 		bool valid = parser.start();
 
