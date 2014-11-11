@@ -1,32 +1,92 @@
 #include "lexer.hpp"
 #include "token.hpp"
 
-Lexer::Lexer(std::istream& input, Stateomat const& stateomat, bool debug)
-	: position {1, 1}, input(input), stateomat(stateomat), debug(debug), line_start(0)
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <cstdio>
+#include <cstdlib>
+
+Lexer::Lexer(const char* file_name, Stateomat const& stateomat, bool debug)
+	: position {1, 1}, stateomat(stateomat), debug(debug), line_start(0)
 {
-	c = input.get();
+
+	fd = open(file_name, O_RDONLY);
+
+	if (fd == -1)
+		throw 42;
+
+	if (posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL) != 0)
+		throw 42;
+
+	buf_off = 0;
+	buf_len = 0;
+
+	c = getc();
 }
 
 void Lexer::advancePosition(int nextCharacter)
 {
-	if (nextCharacter == 10)
+	if (nextCharacter == '\n')
 	{
+		line_start += position.second;
 		position.first++;
 		position.second = 1;
-		line_start = input.tellg();
 	}
 	else
 		position.second++;
 }
 
+char Lexer::getc()
+{
+
+	char foo;
+
+	if (buf_off < buf_len)
+	{
+		foo = buf[buf_off];
+		buf_off++;
+	}
+	else
+	{
+		ssize_t bytes_read = read(fd, buf, BUF_SIZE);
+
+		if (bytes_read == -1)
+			throw 42;
+		else if (bytes_read == 0)
+			foo = EOF;
+		else
+		{
+			buf_off = 0;
+			buf_len = bytes_read;
+			return getc();
+		}
+	}
+
+	return foo;
+}
+
 std::string Lexer::getLine()
 {
-	std::istream::pos_type cur = input.tellg();
-	input.seekg(line_start);
-	std::string l;
-	std::getline(input, l);
-	input.seekg(cur);
-	return l;
+
+	off_t initial_offset = lseek(fd, 0, SEEK_CUR);
+
+	lseek(fd, line_start, SEEK_SET);
+
+	FILE* f = fdopen(fd, "r");
+
+	char* line = NULL;
+	size_t alloc = 0;
+	ssize_t len = getline(&line, &alloc, f);
+	line[len - 1] = '\0';
+
+	std::string s(line);
+
+	free(line);
+
+	lseek(fd, initial_offset, SEEK_SET);
+
+	return s;
 }
 
 Token Lexer::get_next_token()
@@ -84,7 +144,7 @@ Token Lexer::get_next_token()
 		}
 
 		advancePosition(c);
-		c = input.get();
+		c = getc();
 
 		state = new_state;
 	}
@@ -105,7 +165,7 @@ std::string Lexer::describe(Token::Token_type const& t) const
 
 bool Lexer::good() const
 {
-	return input.good();
+	return true;
 }
 
 void Lexer::unget_token(Token const& t)

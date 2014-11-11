@@ -11,12 +11,20 @@ class Lexer
 	protected:
 		// line, column
 		std::pair<unsigned int, unsigned int> position;
-		std::istream& input;
 		Stateomat stateomat;
 		bool debug;
 		std::vector<Token> token_stack;
 		int c;
-		std::istream::pos_type line_start;
+		//std::istream::pos_type line_start;
+
+#define BUF_SIZE 1024
+
+		int fd;
+		char getc();
+		char buf[BUF_SIZE];
+		size_t buf_off;
+		size_t buf_len;
+		off_t line_start;
 
 		/*
 		 * If nextCharacter is \n the line number in position will be incremented
@@ -25,7 +33,7 @@ class Lexer
 		void advancePosition(int nextCharacter);
 
 	public:
-		Lexer(std::istream& input, Stateomat const& stateomat, bool debug = false);
+		Lexer(const char* file_name, Stateomat const& stateomat, bool debug = false);
 		Token get_next_token();
 		void unget_token(Token const& t);
 		bool good() const;
