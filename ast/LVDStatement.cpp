@@ -9,5 +9,5 @@ ast::LVDStatement::LVDStatement(TypeIdent& type_ident)
 
 std::string ast::LVDStatement::toString()
 {
-	return type_ident.toString() + ";" + std::endl;
+	return type_ident.toString() + ";\n";
 }
