@@ -17,7 +17,7 @@ namespace ast
 		public:
 			MethodInvocation(Ident& method_name, std::vector<Expression> arguments);
 			virtual std::string toString();
-	}
+	};
 }
 
 #endif
