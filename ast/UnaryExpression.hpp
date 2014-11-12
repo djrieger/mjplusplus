@@ -18,6 +18,7 @@ namespace ast
 			};
 
 			UnaryExpression(PostfixExpression& child, std::vector<Unary_Operator> unary_operators);
+			virtual std::string toString();
 
 		private:
 			PostfixExpression& child;
