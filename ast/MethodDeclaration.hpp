@@ -1,3 +1,6 @@
+#ifndef METHOD_DECLARATION_HPP
+#define METHOD_DECLARATION_HPP
+
 #include "ClassMember.hpp"
 
 namespace ast
@@ -13,3 +16,5 @@ namespace ast
 			MethodDeclaration(TypeIdent& return_type_and_name, std::vector<TypeIdent> parameters, Statement& block);
 	}
 }
+
+#endif

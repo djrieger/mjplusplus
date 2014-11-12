@@ -1,3 +1,6 @@
+#ifndef NODE_HPP
+#define NODE_HPP
+
 #include <string>
 
 namespace ast
@@ -8,3 +11,5 @@ namespace ast
 			virtual std::string toString() = 0;
 	};
 }
+
+#endif
