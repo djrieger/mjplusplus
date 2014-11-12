@@ -1,27 +1,37 @@
+#ifndef TYPEIDENT_HPP
+#define TYPEIDENT_HPP
+
 #include "Node.hpp"
+#include "Ident.hpp"
 
 namespace ast
 {
 	class TypeIdent : public Node
 	{
-		private:
-			Ident& identifier;
-			int dimension;
-			int array_size;
-			// NewArrayExpression einbauen? Expression wg Größe
-			Primitive_Type primitive_type;
-			std::string class_name; // maybe a pointer to the string table
-
 
 		public:
-			TypeIdent(Ident& identifier, Primitive_type primitive_type, std::string class_name = "", int dimension = 0, int array_size = 0);
-
-			enum Primitive_Type
+			enum Primitive_type
 			{
 				NONE,
 				INT,
 				BOOLEAN,
 				VOID
 			};
-	}
+
+			TypeIdent(Ident& identifier, Primitive_type primitive_type, std::string class_name = "", int dimension = 0, int array_size = 0);
+			virtual std::string toString();
+
+		private:
+			Ident& identifier;
+			Primitive_type primitive_type;
+			std::string class_name; // maybe a pointer to the string table
+			int dimension;
+			int array_size;
+			// NewArrayExpression einbauen? Expression wg Größe
+
+
+
+	};
 }
+
+#endif

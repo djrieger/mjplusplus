@@ -1,3 +1,6 @@
+#ifndef METHOD_INVOCATION_HPP
+#define METHOD_INVOCATION_HPP
+
 #include "PostfixOp.hpp"
 
 namespace ast
@@ -12,3 +15,5 @@ namespace ast
 			MethodInvocation(Ident& method_name, std::vector<Expression> arguments);
 	}
 }
+
+#endif
