@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE 700
+
 #include "lexer.hpp"
 #include "token.hpp"
 
@@ -16,8 +18,13 @@ Lexer::Lexer(const char* file_name, Stateomat const& stateomat, bool debug)
 	if (fd == -1)
 		throw 42;
 
+	// Does not work on Mac OS X yet:
+#ifndef __APPLE__
+
 	if (posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL) != 0)
 		throw 42;
+
+#endif
 
 	buf_off = 0;
 	buf_len = 0;
