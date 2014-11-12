@@ -129,6 +129,7 @@ Token Lexer::get_next_token()
 			else
 			{
 				t.token_type = Token::Token_type::TOKEN_ERROR;
+				t.position = position;
 				return t;
 			}
 		}
@@ -150,6 +151,7 @@ Token Lexer::get_next_token()
 	}
 
 	t.token_type = Token::Token_type::TOKEN_ERROR;
+	t.position = position;
 	return t;
 }
 
