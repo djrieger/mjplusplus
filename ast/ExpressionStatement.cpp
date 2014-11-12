@@ -7,5 +7,5 @@ ast::ExpressionStatement::ExpressionStatement(Expression& expr) : expression(exp
 
 std::string ast::ExpressionStatement::toString()
 {
-	return expr.toString();
+	return expression.toString();
 }
