@@ -1,4 +1,7 @@
-#include "Node.hpp"
+#ifndef PRIMARYEXPRESSION_HPP
+#define PRIMARYEXPRESSION_HPP
+
+#include "Expression.hpp"
 #include <vector>
 
 namespace ast
@@ -11,5 +14,8 @@ namespace ast
 
 		public:
 			PrimaryExpression(Node& child, std::vector<Expression> arguments);
-	}
+			std::string toString();
+	};
 }
+
+#endif // PRIMARYEXPRESSION_HPP
