@@ -2,6 +2,8 @@
 #define BINARY_EXPRESSION_HPP
 
 #include "Node.hpp"
+#include "Expression.hpp"
+#include "../lexer/token.hpp"
 #include <vector>
 
 namespace ast
