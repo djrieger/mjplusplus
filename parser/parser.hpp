@@ -35,24 +35,17 @@ class Parser
 		 * Get next token from lexer.
 		 * Returns false if token is of type TOKEN_ERROR, else true.
 		 */
-		bool nextToken();
-		/**
-		 * Common functionality for all expect functions. See implementations of expect()
-		 * for details.
-		 */
-		bool expectHelper(bool ret, Token::Token_type const& tokenType, std::string const& string_val);
+		void nextToken();
 		/**
 		 * Checks whether type of current token is tokenType.
 		 * If this is the case, nextToken() is called to advance to the next token.
-		 * @param	report	if true, an error is printed in case of a type mismatch
 		 */
-		bool expect(Token::Token_type const& tokenType);
+		void expect(Token::Token_type const& tokenType);
 		/**
-		 * Same behavior as expect(Token::Token_type, bool).
-		 * In addition, this method also compares the string_value of current
-		 * to string_val and also returns false, if the string contents do not match.
+		 * Same behavior as expect(Token::Token_type).
+		 * In addition, this method also compares the string_value of current to string_val.
 		 */
-		bool expect(Token::Token_type const& tokenType, std::string const& string_val);
+		void expect(Token::Token_type const& tokenType, std::string const& string_val);
 
 		/**
 		 * Prints an error message, prepending current token position
@@ -60,37 +53,36 @@ class Parser
 		void printError(std::string const& error_msg);
 
 		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
-		bool parseProgram();
-		bool parseClassDeclaration();
-		bool parseClassMembers();
-		bool parseMainMethod();
-		bool parseTypeIdent();
-		bool parseType();
-		bool parseBasicType();
-		bool parseArrayDecl();
-		bool parseFieldOrMethod();
-		bool parseOptionalParameters();
-		bool parseStatement();
-		bool parseBlock();
-		bool parseBlockStatement();
-		bool parseLocalVariableDeclarationStatement();
-		bool parseIfStatement();
-		bool parseWhileStatement();
-		bool parseReturnStatement();
-		bool parseExpression();
-		bool parseAssignmentExpression();
-		bool precedenceClimb(int minPrec);
-		bool parseUnaryExpression();
-		bool parsePostfixOps();
-		bool parsePrimaryExpression();
-		bool parseArguments();
-		bool parseMethodInvocation();
-		bool parseMethodInvocationOrFieldAccess();
-		bool parseNewArrayExpression();
-		bool parseNewObjectExpression();
-		bool parseNewObjectOrNewArrayExpression();
-		bool parseOptionalBrackets();
-		bool parseIdentOrIdentWithArguments();
+		void parseProgram();
+		void parseClassMembers();
+		void parseMainMethod();
+		void parseTypeIdent();
+		void parseType();
+		void parseBasicType();
+		void parseArrayDecl();
+		void parseFieldOrMethod();
+		void parseOptionalParameters();
+		void parseStatement();
+		void parseBlock();
+		void parseBlockStatement();
+		void parseLocalVariableDeclarationStatement();
+		void parseIfStatement();
+		void parseWhileStatement();
+		void parseReturnStatement();
+		void parseExpression();
+		void parseAssignmentExpression();
+		void precedenceClimb(int minPrec);
+		void parseUnaryExpression();
+		void parsePostfixOps();
+		void parsePrimaryExpression();
+		void parseArguments();
+		void parseMethodInvocation();
+		void parseMethodInvocationOrFieldAccess();
+		void parseNewArrayExpression();
+		void parseNewObjectExpression();
+		void parseNewObjectOrNewArrayExpression();
+		void parseOptionalBrackets();
+		void parseIdentOrIdentWithArguments();
 };
 
 #endif
