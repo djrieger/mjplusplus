@@ -1,5 +1,6 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 #include "../lexer/token.hpp"
 
-class ASTExpressionNode : public ASTNode {
+class Expression : public Node
+{
 }

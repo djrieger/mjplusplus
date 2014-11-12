@@ -1,5 +1,6 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTClassMemberNode : public ASTNode {
+class ClassMember : public Node
+{
 
 }

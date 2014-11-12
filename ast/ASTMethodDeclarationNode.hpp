@@ -1,11 +1,12 @@
-#include "ASTClassMemberNode.hpp"
+#include "ClassMember.hpp"
 
-class ASTMethodDeclarationNode : public ASTClassMemberNode {
-protected:
-	ASTTypeIdentNode &return_type_and_name;
-	std::vector<ASTTypeIdentNode> parameters;
-	ASTStatementNode &block;
+class MethodDeclaration : public ClassMember
+{
+	protected:
+		TypeIdent& return_type_and_name;
+		std::vector<TypeIdent> parameters;
+		Statement& block;
 
-public:
-	ASTMethodDeclarationNode(ASTTypeIdentNode &return_type_and_name, std::vector<ASTTypeIdentNode> parameters, ASTStatementNode &block);
+	public:
+		MethodDeclaration(TypeIdent& return_type_and_name, std::vector<TypeIdent> parameters, Statement& block);
 }

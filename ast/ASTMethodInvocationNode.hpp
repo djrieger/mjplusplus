@@ -1,10 +1,11 @@
-#include "ASTPostfixOpNode.hpp"
+#include "PostfixOp.hpp"
 
-class ASTMethodInvocationNode : public ASTPostfixOpNode {
-private:
-	ASTIdentNode &method_name;
-	std::vector<ASTExpressionNode> arguments;
+class MethodInvocation : public PostfixOp
+{
+	private:
+		Ident& method_name;
+		std::vector<Expression> arguments;
 
-public:
-	ASTMethodInvocationNode(ASTIdentNode &method_name, std::vector<ASTExpressionNode> arguments);
+	public:
+		MethodInvocation(Ident& method_name, std::vector<Expression> arguments);
 }

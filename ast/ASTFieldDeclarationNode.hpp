@@ -1,9 +1,10 @@
-#include "ASTClassMemberNode.hpp"
+#include "ClassMember.hpp"
 
-class ASTFieldDeclarationNode : public ASTClassMemberNode {
-protected:
-	ASTTypeIdentNode &type_and_name;
+class FieldDeclaration : public ClassMember
+{
+	protected:
+		TypeIdent& type_and_name;
 
-public:
-	ASTFieldDeclarationNode(ASTTypeIdentNode &type_and_name);
+	public:
+		FieldDeclaration(TypeIdent& type_and_name);
 }

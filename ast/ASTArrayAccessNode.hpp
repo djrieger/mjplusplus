@@ -1,9 +1,10 @@
-#include "ASTPostfixOpNode.hpp"
+#include "PostfixOp.hpp"
 
-class ASTArrayAccessNode : public ASTPostfixOpNode {
-private:
-	ASTExpressionNode& access_offset;
+class ArrayAccess : public PostfixOp
+{
+	private:
+		Expression& access_offset;
 
-public:
-	ASTArrayAccessNode(ASTExpressionNode& access_offset;);
+	public:
+		ArrayAccess(Expression& access_offset;);
 }

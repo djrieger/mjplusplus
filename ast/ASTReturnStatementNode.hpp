@@ -1,9 +1,10 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTReturnStatementNode : public ASTStatementNode {
-private:
-	ASTExpressionNode &expression;
+class ReturnStatement : public Statement
+{
+	private:
+		Expression& expression;
 
-public:
-	ASTReturnStatementNode(ASTExpressionNode &expr);
+	public:
+		ReturnStatement(Expression& expr);
 }

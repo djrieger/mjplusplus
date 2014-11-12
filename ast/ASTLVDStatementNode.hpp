@@ -1,9 +1,10 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTLVDStatementNode : public ASTStatementNode {
-protected:
-	ASTTypeIdentNode &type_ident;
+class LVDStatement : public Statement
+{
+	protected:
+		TypeIdent& type_ident;
 
-public:
-	ASTLVDStatementNode(ASTTypeIdentNode &type_ident);
+	public:
+		LVDStatement(TypeIdent& type_ident);
 }

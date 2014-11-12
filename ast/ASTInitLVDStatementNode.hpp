@@ -1,9 +1,10 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTInitLVDStatementNode : public ASTLVDStatementNode {
-protected:
-	ASTExpressionNode &init_expr;
+class InitLVDStatement : public LVDStatement
+{
+	protected:
+		Expression& init_expr;
 
-public:
-	ASTLVDStatementNode(ASTTypeIdentNode &type_ident, ASTExpressionNode &init_expr);
+	public:
+		LVDStatement(TypeIdent& type_ident, Expression& init_expr);
 }
