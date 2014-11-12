@@ -1,6 +1,8 @@
-#include "Node.hpp"
-#include "Expression.hpp"
+#ifndef POSTFIXEXPRESSION_HPP
+#define POSTFIXEXPRESSION_HPP
 #include <vector>
+#include "Expression.hpp"
+#include "PrimaryExpression.hpp"
 
 namespace ast
 {
@@ -12,5 +14,6 @@ namespace ast
 
 		public:
 			PostfixExpression(PrimaryExpression& child, std::vector<PostfixOp> postfix_op);
-	}
+	};
 }
+#endif // POSTFIXEXPRESSION_HPP

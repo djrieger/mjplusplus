@@ -1,3 +1,5 @@
+#ifndef OBJECTLITERAL_HPP
+#define OBJECTLITERAL_HPP
 #include "Node.hpp"
 
 namespace ast
@@ -15,5 +17,7 @@ namespace ast
 				NULL_OBJECT,
 				THIS_OBJECT
 			};
-	}
+	};
 }
+
+#endif // OBJECTLITERAL_HPP

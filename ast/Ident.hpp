@@ -12,9 +12,7 @@ namespace ast
 
 		public:
 			Ident(std::string string_value);
-
-			// Konstruktor überladen mit token?
+			std::string toString();
 	};
 }
-
-#endif
+#endif // IDENT_HPP

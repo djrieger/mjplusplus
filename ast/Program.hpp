@@ -1,4 +1,9 @@
+#ifndef PROGRAM_HPP
+#define PROGRAM_HPP
+
 #include "Node.hpp"
+#include "ClassDeclaration.hpp"
+#include <vector>
 
 namespace ast
 {
@@ -9,6 +14,10 @@ namespace ast
 
 		public:
 			Program(std::vector<ClassDeclaration> classes);
+			std::string toString();
 
-	}
+	};
+
 }
+
+#endif // PROGRAM_HPP

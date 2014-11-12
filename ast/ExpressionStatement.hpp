@@ -1,4 +1,7 @@
-#include "Node.hpp"
+#ifndef EXPRESIONSTATEMENT
+#define EXPRESIONSTATEMENT
+
+#include "Statement.hpp"
 
 namespace ast
 {
@@ -9,5 +12,6 @@ namespace ast
 
 		public:
 			ExpressionStatement(Expression& expr);
-	}
+	};
 }
+#endif // EXPRESIONSTATEMENT
