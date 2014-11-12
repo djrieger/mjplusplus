@@ -1,7 +1,10 @@
 #include <string>
 
-class Node
+namespace ast
 {
-	public:
-		virtual std::string toString() = 0;
+	class Node
+	{
+		public:
+			virtual std::string toString() = 0;
+	}
 }

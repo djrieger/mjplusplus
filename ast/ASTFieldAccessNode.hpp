@@ -1,10 +1,13 @@
 #include "PostfixOp.hpp"
 
-class FieldAccess : public PostfixOp
+namespace ast
 {
-	private:
-		Ident& field_name;
+	class FieldAccess : public PostfixOp
+	{
+		private:
+			Ident& field_name;
 
-	public:
-		FieldAccess(Ident& field_name);
+		public:
+			FieldAccess(Ident& field_name);
+	}
 }

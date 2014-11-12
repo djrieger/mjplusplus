@@ -1,6 +1,9 @@
 #include "Node.hpp"
 
-class ClassMember : public Node
+namespace ast
 {
+	class ClassMember : public Node
+	{
 
+	}
 }

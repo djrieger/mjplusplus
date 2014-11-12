@@ -1,8 +1,11 @@
 #include "MethodDeclarion.hpp"
 
-class MainMethodDeclaration : public MethodDeclaration
+namespace ast
 {
+	class MainMethodDeclaration : public MethodDeclaration
+	{
 
-	public:
-		MainMethodDeclaration(Statement& block);
+		public:
+			MainMethodDeclaration(Statement& block);
+	}
 }

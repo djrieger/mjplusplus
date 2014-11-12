@@ -1,6 +1,9 @@
 #include "Node.hpp"
 
-class PostfixOp : public Node
+namespace ast
 {
+	class PostfixOp : public Node
+	{
 
+	}
 }
