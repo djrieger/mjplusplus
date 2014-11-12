@@ -1,7 +1,8 @@
 #ifndef WHILESTATEMENT_HPP
 #define WHILESTATEMENT_HPP
 
-#include "Node.hpp"
+#include "Expression.hpp"
+#include "Statement.hpp"
 
 namespace ast
 {

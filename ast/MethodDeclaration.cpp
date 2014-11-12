@@ -13,7 +13,7 @@ std::string ast::MethodDeclaration::toString()
 
 	while (1)
 	{
-		ret += it.toString();
+		ret += it->toString();
 
 		if (++it != parameters.end())
 			ret += ", ";

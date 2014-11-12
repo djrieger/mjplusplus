@@ -13,8 +13,8 @@ std::string ast::PrimaryExpression::toString()
 
 	for (int i = 0, size = arguments.size(); i < size; ++i)
 	{
-		str += a.toString();
-		str += (i < size - 1) ? + ", ";
+		str += arguments[i].toString();
+		str += (i < size - 1) ? ", " : "";
 	}
 
 	str += ")";

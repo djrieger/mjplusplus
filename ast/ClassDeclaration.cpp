@@ -14,5 +14,7 @@ namespace ast
 			r += it->toString();
 
 		r += '}';
+
+		return r;
 	}
 }
