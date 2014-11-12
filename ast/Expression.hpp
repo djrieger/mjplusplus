@@ -8,6 +8,11 @@ namespace ast
 {
 	class Expression : public Node
 	{
+		public:
+			virtual std::string toString()
+			{
+				return "";
+			};
 	};
 }
 
