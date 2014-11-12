@@ -8,7 +8,10 @@ namespace ast
 	class ClassMember : public Node
 	{
 		public:
-			virtual std::string toString() {return ""; };
+			virtual std::string toString()
+			{
+				return "";
+			};
 	};
 }
 
