@@ -1,3 +1,6 @@
+#ifndef WHILESTATEMENT_HPP
+#define WHILESTATEMENT_HPP
+
 #include "Node.hpp"
 
 namespace ast
@@ -10,5 +13,7 @@ namespace ast
 
 		public:
 			WhileStatement(Expression& condition, Statement& statement);
-	}
+	};
 }
+
+#endif

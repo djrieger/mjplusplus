@@ -1,3 +1,6 @@
+#ifndef IFSTATEMENT_H
+#define IFSTATEMENT_H
+
 #include "Node.hpp"
 
 namespace ast
@@ -10,5 +13,7 @@ namespace ast
 
 		public:
 			IfStatement(Expression& condition, Statement& thenStatement);
-	}
+	};
 }
+
+#endif

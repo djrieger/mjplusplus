@@ -1,3 +1,6 @@
+#ifndef IFELSESTATEMENT_H
+#define IFELSESTATEMENT_H
+
 #include "Node.hpp"
 
 namespace ast
@@ -9,5 +12,8 @@ namespace ast
 
 		public:
 			IfElseStatement(Expression& condition, Statement& thenStatement, Statement& elseStatement);
-	}
+			std::string toString();
+	};
 }
+
+#endif
