@@ -1,3 +1,6 @@
+#ifndef FIELDACCESS_H
+#define FIELDACCESS_H
+
 #include "PostfixOp.hpp"
 
 namespace ast
@@ -9,5 +12,8 @@ namespace ast
 
 		public:
 			FieldAccess(Ident& field_name);
-	}
+			std::string toString();
+	};
 }
+
+#endif

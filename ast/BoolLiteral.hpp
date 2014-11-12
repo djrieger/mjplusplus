@@ -1,3 +1,6 @@
+#ifndef BOOLLITERAL_H
+#define BOOLLITERAL_H
+
 #include "Node.hpp"
 
 namespace ast
@@ -9,7 +12,8 @@ namespace ast
 
 		public:
 			BoolLiteral(bool value);
-
-			// Konstruktor überladen mit token?
-	}
+			std::string toString();
+	};
 }
+
+#endif
