@@ -3,6 +3,7 @@
 #include <vector>
 #include "Expression.hpp"
 #include "PrimaryExpression.hpp"
+#include "PostfixOp.hpp"
 
 namespace ast
 {

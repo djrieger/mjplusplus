@@ -18,7 +18,7 @@ namespace ast
 		public:
 			BinaryExpression(Expression& leftChild, Expression& rightChild, Token::Token_type operator_type);
 
-	}
+	};
 }
 
 #endif
