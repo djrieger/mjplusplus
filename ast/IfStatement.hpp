@@ -1,7 +1,8 @@
 #ifndef IFSTATEMENT_H
 #define IFSTATEMENT_H
 
-#include "Node.hpp"
+#include "Expression.hpp"
+#include "Statement.hpp"
 
 namespace ast
 {
@@ -13,6 +14,7 @@ namespace ast
 
 		public:
 			IfStatement(Expression& condition, Statement& thenStatement);
+			virtual std::string toString();
 	};
 }
 

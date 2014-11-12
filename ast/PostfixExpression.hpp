@@ -15,6 +15,7 @@ namespace ast
 
 		public:
 			PostfixExpression(PrimaryExpression& child, std::vector<PostfixOp> postfix_op);
+			virtual std::string toString();
 	};
 }
 #endif // POSTFIXEXPRESSION_HPP

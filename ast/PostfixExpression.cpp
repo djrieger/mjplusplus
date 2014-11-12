@@ -9,7 +9,7 @@ std::string ast::PostfixExpression::toString()
 {
 	std::string str = child.toString();
 
-	for (p : postfix_op)
+	for (auto p : postfix_op)
 		str += p.toString();
 
 	return str;

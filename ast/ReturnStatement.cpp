@@ -1,7 +1,7 @@
 #include "ReturnStatement.hpp"
 
-ast::ReturnStatement::ReturnStatement(Expression& expr):
-	expr(expr)
+ast::ReturnStatement::ReturnStatement(Expression& expression):
+	expression(expression)
 {
 
 }

@@ -2,6 +2,7 @@
 #define RETURNSTATEMENT_HPP
 
 #include "Statement.hpp"
+#include "Expression.hpp"
 
 namespace ast
 {
