@@ -13,6 +13,7 @@ namespace ast
 
 		public:
 			WhileStatement(Expression& condition, Statement& statement);
+			virtual std::string toString();
 	};
 }
 

@@ -11,7 +11,8 @@ namespace ast
 
 		public:
 			MainMethodDeclaration(Statement& block);
-	}
+            virtual std::string toString();
+    }
 }
 
 #endif
