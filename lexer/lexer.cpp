@@ -112,15 +112,15 @@ Token Lexer::get_next_token()
 			{
 
 				if (t.token_type == Token::Token_type::TOKEN_OPERATOR)
-					t.token_type = stateomat.operators[t.string_value];
+					t.token_type = stateomat.operators[state][t.string_value];
 				else if (t.token_type == Token::Token_type::TOKEN_IDENT_OR_KEYWORD)
 				{
 					auto keyword = stateomat.keywords.find(t.string_value);
 
 					if (keyword != stateomat.keywords.end())
 						t.token_type = keyword->second;
-                    else
-                        t.token_type = Token::Token_type::TOKEN_IDENT;
+					else
+						t.token_type = Token::Token_type::TOKEN_IDENT;
 				}
 
 				if (debug)
