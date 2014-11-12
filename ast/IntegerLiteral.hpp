@@ -12,7 +12,7 @@ namespace ast
 
 		public:
 			IntegerLiteral(std::string string_value);
-            virtual std::string toString();
+			virtual std::string toString();
 			// Konstruktor überladen mit token?
 	}
 }
