@@ -1,6 +1,8 @@
 #ifndef FIELDDECLARATION_HPP
 #define FIELDDECLARATION_HPP
+
 #include "ClassMember.hpp"
+#include "TypeIdent.hpp"
 
 namespace ast
 {
@@ -11,7 +13,7 @@ namespace ast
 
 		public:
 			FieldDeclaration(TypeIdent& type_and_name);
-			std::string toString();
+			virtual std::string toString();
 	};
 }
 #endif // FIELDDECLARATION_HPP

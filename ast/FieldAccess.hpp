@@ -2,6 +2,7 @@
 #define FIELDACCESS_H
 
 #include "PostfixOp.hpp"
+#include "Ident.hpp"
 
 namespace ast
 {

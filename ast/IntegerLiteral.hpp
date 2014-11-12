@@ -14,7 +14,7 @@ namespace ast
 			IntegerLiteral(std::string string_value);
 			virtual std::string toString();
 			// Konstruktor überladen mit token?
-	}
+	};
 }
 
 #endif

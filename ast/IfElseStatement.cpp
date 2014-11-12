@@ -7,7 +7,7 @@ namespace ast
 		;
 	}
 
-	std::string IfStatement::toString()
+	std::string IfElseStatement::toString()
 	{
 		return "if (" + condition.toString() + ")" + thenStatement.toString() + "else " + elseStatement.toString();
 	}
