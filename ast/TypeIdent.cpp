@@ -27,8 +27,14 @@ std::string ast::TypeIdent::toString()
 	// first dimension with size, others just as []'s
 	if (dimension >= 1)
 	{
-		if (array_size > 0)
-			s += "[" + std::to_string(array_size) + "]";
+
+		if (dimension >= 1)
+		{
+			if (array_size > 0)
+				s += "[" + std::to_string(array_size) + "]";
+			else
+				s += "[]";
+		}
 
 		if (dimension >= 2)
 		{
