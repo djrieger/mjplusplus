@@ -8,9 +8,8 @@ namespace ast
 {
 	class MainMethodDeclaration : public MethodDeclaration
 	{
-
 		public:
-			MainMethodDeclaration(Statement& block);
+			MainMethodDeclaration(TypeIdent& return_type_and_name, std::vector<TypeIdent> parameters, Statement& block);
 			virtual std::string toString();
 	};
 }
