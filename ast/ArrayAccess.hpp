@@ -1,6 +1,7 @@
 #ifndef ARRAYACCESS_H
 #define ARRAYACCESS_H
 
+#include "Expression.hpp"
 #include "PostfixOp.hpp"
 
 namespace ast

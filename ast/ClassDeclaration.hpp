@@ -16,7 +16,7 @@ namespace ast
 
 		public:
 			ClassDeclaration(Ident& class_name, std::vector<ClassMember> members);
-			std::string toString();
+			virtual std::string toString();
 	};
 }
 
