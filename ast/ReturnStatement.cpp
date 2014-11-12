@@ -8,5 +8,5 @@ ast::ReturnStatement::ReturnStatement(Expression& expr):
 
 std::string ast::ReturnStatement::toString()
 {
-	return "return " + expression.toString() + ";" + std::endl;
+	return "return " + expression.toString() + ";\n";
 }
