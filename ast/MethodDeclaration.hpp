@@ -17,8 +17,8 @@ namespace ast
 
 		public:
 			MethodDeclaration(TypeIdent& return_type_and_name, std::vector<TypeIdent> parameters, Statement& block);
-            virtual std::string toString();
-    }
+			virtual std::string toString();
+	}
 }
 
 #endif

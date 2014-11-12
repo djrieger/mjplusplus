@@ -1,9 +1,11 @@
 #include "ExpressionStatement.hpp"
 
-ast::ExpressionStatement::ExpressionStatement(Expression& expr) : expression(expr) {
+ast::ExpressionStatement::ExpressionStatement(Expression& expr) : expression(expr)
+{
 
 }
 
-std::string ast::ExpressionStatement::toString() {
+std::string ast::ExpressionStatement::toString()
+{
 	return expr.toString();
 }
