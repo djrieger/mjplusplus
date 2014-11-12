@@ -1,3 +1,6 @@
+#ifndef IDENT_HPP
+#define IDENT_HPP
+
 #include "Node.hpp"
 
 namespace ast
@@ -11,5 +14,7 @@ namespace ast
 			Ident(std::string string_value);
 
 			// Konstruktor überladen mit token?
-	}
+	};
 }
+
+#endif

@@ -5,5 +5,5 @@ namespace ast
 {
 	class Expression : public Node
 	{
-	}
+	};
 }
