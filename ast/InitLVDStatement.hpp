@@ -1,3 +1,6 @@
+#ifndef INITLVDSTATEMENT_H
+#define INITLVDSTATEMENT_H
+
 #include "Node.hpp"
 
 namespace ast
@@ -9,5 +12,8 @@ namespace ast
 
 		public:
 			LVDStatement(TypeIdent& type_ident, Expression& init_expr);
-	}
+			std::string toString();
+	};
 }
+
+#endif
