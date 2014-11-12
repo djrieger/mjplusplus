@@ -310,22 +310,20 @@ Token::Token_type Lexer::lex_keyword_or_ident(const char* s)
 
 	for (int i = 0; s[i] != '\0'; i++)
 	{
-		int new_state = kw_lex_table[state][s[i] - 'a'];
+		state = kw_lex_table[state][s[i] - 'a'];
 
-		if (new_state == IDENT)
+		if (state == IDENT)
 			return Token::Token_type::TOKEN_IDENT;
 
-		if (CHECK_ABSTRACT <= new_state && new_state <= CHECK_WHILE)
+		if (CHECK_ABSTRACT <= state && state <= CHECK_WHILE)
 		{
-			auto kw_pair = kw_vector[new_state - CHECK_ABSTRACT];
+			auto kw_pair = kw_vector[state - CHECK_ABSTRACT];
 
 			if (strcmp(kw_pair.first, s) == 0)
 				return kw_pair.second;
 			else
 				return Token::Token_type::TOKEN_IDENT;
 		}
-
-		state = new_state;
 	}
 
 	if (KEYWORD_DO <= state && state <= KEYWORD_THROWS)
