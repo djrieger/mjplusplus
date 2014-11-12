@@ -1,7 +1,8 @@
-#include "ASTMethodDeclarionNode.hpp"
+#include "MethodDeclarion.hpp"
 
-class ASTMainMethodDeclarationNode : public ASTMethodDeclarationNode {
+class MainMethodDeclaration : public MethodDeclaration
+{
 
-public:
-	ASTMainMethodDeclarationNode(ASTStatementNode &block);
+	public:
+		MainMethodDeclaration(Statement& block);
 }

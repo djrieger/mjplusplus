@@ -1,10 +1,11 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTProgramNode : public ASTNode {
-private:
-	std::vector<ASTClassDeclarationNode> classes;
+class Program : public Node
+{
+	private:
+		std::vector<ClassDeclaration> classes;
 
-public:
-	ASTProgramNode(std::vector<ASTClassDeclarationNode> classes);
+	public:
+		Program(std::vector<ClassDeclaration> classes);
 
 }

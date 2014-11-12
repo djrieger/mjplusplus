@@ -1,6 +1,7 @@
 #include <string>
 
-class ASTNode {
-public:
-	virtual std::string toString() = 0;
+class Node
+{
+	public:
+		virtual std::string toString() = 0;
 }

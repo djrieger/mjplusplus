@@ -1,11 +1,12 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTIntegerLiteralNode : public ASTNode {
-private:
-	std::string string_value;
+class IntegerLiteral : public Node
+{
+	private:
+		std::string string_value;
 
-public:
-	ASTIntegerLiteralNode(std::string string_value);
+	public:
+		IntegerLiteral(std::string string_value);
 
-	// Konstruktor überladen mit token?
+		// Konstruktor überladen mit token?
 }

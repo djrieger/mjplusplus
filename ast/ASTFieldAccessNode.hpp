@@ -1,9 +1,10 @@
-#include "ASTPostfixOpNode.hpp"
+#include "PostfixOp.hpp"
 
-class ASTFieldAccessNode : public ASTPostfixOpNode {
-private:
-	ASTIdentNode &field_name;
+class FieldAccess : public PostfixOp
+{
+	private:
+		Ident& field_name;
 
-public:
-	ASTFieldAccessNode(ASTIdentNode &field_name);
+	public:
+		FieldAccess(Ident& field_name);
 }

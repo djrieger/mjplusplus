@@ -1,10 +1,11 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTIfStatementNode : public ASTStatementNode {
-protected:
-	ASTExpressionNode &condition;
-	ASTStatementNode &thenStatement;
+class IfStatement : public Statement
+{
+	protected:
+		Expression& condition;
+		Statement& thenStatement;
 
-public:
-	ASTIfStatementNode(ASTExpressionNode &condition, ASTStatementNode &thenStatement);
+	public:
+		IfStatement(Expression& condition, Statement& thenStatement);
 }

@@ -1,11 +1,12 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 #include <vector>
 
-class ASTPrimaryExpressionNode : public ASTExpressionNode {
-private:
-	ASTNode &child;
-	std::vector<ASTExpressionNode> arguments;
+class PrimaryExpression : public Expression
+{
+	private:
+		Node& child;
+		std::vector<Expression> arguments;
 
-public:
-	ASTPrimaryExpressionNode(ASTNode &child, std::vector<ASTExpressionNode> arguments);
+	public:
+		PrimaryExpression(Node& child, std::vector<Expression> arguments);
 }

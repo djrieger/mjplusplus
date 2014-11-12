@@ -1,17 +1,19 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 #include <vector>
 
-class ASTUnaryExpressionNode : public ASTExpressionNode {
-private:
-	ASTPostfixExpressionNode &child;
-	std::vector<Unary_Operator> unary_operators;
-	
+class UnaryExpression : public Expression
+{
+	private:
+		PostfixExpression& child;
+		std::vector<Unary_Operator> unary_operators;
 
-public:
-	ASTUnaryExpressionNode(ASTPostfixExpressionNode &child, std::vector<Unary_Operator> unary_operators);
 
-	enum Unary_Operator {
-		UNARY_NOT,
-		UNARY_MINUS
-	};
+	public:
+		UnaryExpression(PostfixExpression& child, std::vector<Unary_Operator> unary_operators);
+
+		enum Unary_Operator
+		{
+			UNARY_NOT,
+			UNARY_MINUS
+		};
 }

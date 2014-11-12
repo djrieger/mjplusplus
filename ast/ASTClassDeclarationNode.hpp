@@ -1,10 +1,11 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTClassDeclarationNode : public ASTNode {
-private:
-	ASTIdentNode &class_name;
-	std::vector<ASTClassMemberNode> members;
+class ClassDeclaration : public Node
+{
+	private:
+		Ident& class_name;
+		std::vector<ClassMember> members;
 
-public:
-	ASTClassDeclarationNode(ASTIdentNode &class_name, std:vector<ASTClassMemberNode> members);
+	public:
+		ClassDeclaration(Ident& class_name, std: vector<ClassMember> members);
 }

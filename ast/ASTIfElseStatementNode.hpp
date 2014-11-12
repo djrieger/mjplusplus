@@ -1,9 +1,10 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTIfElseStatementNode : public ASTIfStatementNode {
-protected:
-	ASTStatementNode &elseStatement;
+class IfElseStatement : public IfStatement
+{
+	protected:
+		Statement& elseStatement;
 
-public:
-	ASTIfElseStatementNode(ASTExpressionNode &condition, ASTStatementNode &thenStatement, ASTStatementNode &elseStatement);
+	public:
+		IfElseStatement(Expression& condition, Statement& thenStatement, Statement& elseStatement);
 }

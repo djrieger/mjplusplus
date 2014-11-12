@@ -1,10 +1,11 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTWhileStatementNode : public ASTStatementNode {
-protected:
-	ASTExpressionNode &condition;
-	ASTStatementNode &statement;
+class WhileStatement : public Statement
+{
+	protected:
+		Expression& condition;
+		Statement& statement;
 
-public:
-	ASTWhileStatementNode(ASTExpressionNode &condition, ASTStatementNode &statement);
+	public:
+		WhileStatement(Expression& condition, Statement& statement);
 }

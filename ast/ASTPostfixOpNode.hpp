@@ -1,5 +1,6 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTPostfixOpNode : public ASTNode {
+class PostfixOp : public Node
+{
 
 }

@@ -1,14 +1,16 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTObjectLiteralNode : public ASTNode {
-private:
-	Object_Type object_type;
+class ObjectLiteral : public Node
+{
+	private:
+		Object_Type object_type;
 
-public:
-	ASTObjectLiteralNode(Object_Type object_type);
+	public:
+		ObjectLiteral(Object_Type object_type);
 
-	enum Object_Type {
-		NULL_OBJECT,
-		THIS_OBJECT
-	};
+		enum Object_Type
+		{
+			NULL_OBJECT,
+			THIS_OBJECT
+		};
 }

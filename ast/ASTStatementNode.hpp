@@ -1,4 +1,5 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 
-class ASTStatementNode : public ASTNode {
+class Statement : public Node
+{
 }

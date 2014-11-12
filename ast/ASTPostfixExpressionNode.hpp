@@ -1,11 +1,12 @@
-#include "ASTNode.hpp"
+#include "Node.hpp"
 #include <vector>
 
-class ASTPostfixExpressionNode : public ASTExpressionNode {
-private:
-	ASTPrimaryExpressionNode &child;
-	std::vector<ASTPostfixOpNode> postfix_op;
+class PostfixExpression : public Expression
+{
+	private:
+		PrimaryExpression& child;
+		std::vector<PostfixOp> postfix_op;
 
-public:
-	ASTPostfixExpressionNode(ASTPrimaryExpressionNode &child, std::vector<ASTPostfixOpNode> postfix_op);
+	public:
+		PostfixExpression(PrimaryExpression& child, std::vector<PostfixOp> postfix_op);
 }
