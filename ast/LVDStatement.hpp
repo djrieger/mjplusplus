@@ -12,8 +12,9 @@ namespace ast
 			TypeIdent& type_ident;
 
 		public:
-			LVDStatement(TypeIdent& type_ident);
-	}
+            LVDStatement(TypeIdent& type_ident);
+	        virtual std::string toString();
+    }
 }
 
 #endif
