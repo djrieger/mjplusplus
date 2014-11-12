@@ -1,3 +1,6 @@
+#ifndef INTEGER_LITERAL_HPP
+#define INTEGER_LITERAL_HPP
+
 #include "Node.hpp"
 
 namespace ast
@@ -13,3 +16,5 @@ namespace ast
 			// Konstruktor überladen mit token?
 	}
 }
+
+#endif
