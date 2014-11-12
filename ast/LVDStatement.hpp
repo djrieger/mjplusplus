@@ -1,7 +1,8 @@
 #ifndef LVD_STATEMENT_HPP
 #define LVD_STATEMENT_HPP
 
-#include "Node.hpp"
+#include "Statement.hpp"
+#include "TypeIdent.hpp"
 
 namespace ast
 {

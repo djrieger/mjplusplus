@@ -2,6 +2,9 @@
 #define METHOD_INVOCATION_HPP
 
 #include "PostfixOp.hpp"
+#include "Ident.hpp"
+#include <vector>
+#include "Expression.hpp"
 
 namespace ast
 {

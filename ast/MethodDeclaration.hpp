@@ -2,6 +2,9 @@
 #define METHOD_DECLARATION_HPP
 
 #include "ClassMember.hpp"
+#include <vector>
+#include "TypeIdent.hpp"
+#include "Statement.hpp"
 
 namespace ast
 {
