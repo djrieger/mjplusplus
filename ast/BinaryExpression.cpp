@@ -8,5 +8,6 @@ ast::BinaryExpression::BinaryExpression(Expression& leftChild, Expression& right
 
 std::string ast::BinaryExpression::toString()
 {
-	return leftChild.toString() + operator_type.toString() + rightChild.toString();
+	//TODO operator_type -> string
+	return leftChild.toString() + " + " + rightChild.toString();
 }
