@@ -1,10 +1,13 @@
 #include "Node.hpp"
 
-class IfElseStatement : public IfStatement
+namespace ast
 {
-	protected:
-		Statement& elseStatement;
+	class IfElseStatement : public IfStatement
+	{
+		protected:
+			Statement& elseStatement;
 
-	public:
-		IfElseStatement(Expression& condition, Statement& thenStatement, Statement& elseStatement);
+		public:
+			IfElseStatement(Expression& condition, Statement& thenStatement, Statement& elseStatement);
+	}
 }

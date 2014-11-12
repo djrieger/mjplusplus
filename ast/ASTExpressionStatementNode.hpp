@@ -1,10 +1,13 @@
 #include "Node.hpp"
 
-class ExpressionStatement : public Statement
+namespace ast
 {
-	private:
-		Expression& expression;
+	class ExpressionStatement : public Statement
+	{
+		private:
+			Expression& expression;
 
-	public:
-		ExpressionStatement(Expression& expr);
+		public:
+			ExpressionStatement(Expression& expr);
+	}
 }

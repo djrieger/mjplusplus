@@ -1,10 +1,13 @@
 #include "Node.hpp"
 
-class LVDStatement : public Statement
+namespace ast
 {
-	protected:
-		TypeIdent& type_ident;
+	class LVDStatement : public Statement
+	{
+		protected:
+			TypeIdent& type_ident;
 
-	public:
-		LVDStatement(TypeIdent& type_ident);
+		public:
+			LVDStatement(TypeIdent& type_ident);
+	}
 }

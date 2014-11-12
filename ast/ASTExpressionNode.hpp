@@ -1,6 +1,9 @@
 #include "Node.hpp"
 #include "../lexer/token.hpp"
 
-class Expression : public Node
+namespace ast
 {
+	class Expression : public Node
+	{
+	}
 }

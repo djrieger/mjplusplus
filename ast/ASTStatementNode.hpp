@@ -1,5 +1,8 @@
 #include "Node.hpp"
 
-class Statement : public Node
+namespace ast
 {
+	class Statement : public Node
+	{
+	}
 }

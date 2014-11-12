@@ -1,10 +1,13 @@
 #include "PostfixOp.hpp"
 
-class ArrayAccess : public PostfixOp
+namespace ast
 {
-	private:
-		Expression& access_offset;
+	class ArrayAccess : public PostfixOp
+	{
+		private:
+			Expression& access_offset;
 
-	public:
-		ArrayAccess(Expression& access_offset;);
+		public:
+			ArrayAccess(Expression& access_offset;);
+	}
 }

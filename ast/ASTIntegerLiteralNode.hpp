@@ -1,12 +1,15 @@
 #include "Node.hpp"
 
-class IntegerLiteral : public Node
+namespace ast
 {
-	private:
-		std::string string_value;
+	class IntegerLiteral : public Node
+	{
+		private:
+			std::string string_value;
 
-	public:
-		IntegerLiteral(std::string string_value);
+		public:
+			IntegerLiteral(std::string string_value);
 
-		// Konstruktor überladen mit token?
+			// Konstruktor überladen mit token?
+	}
 }

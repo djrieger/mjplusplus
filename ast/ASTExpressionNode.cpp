@@ -6,9 +6,11 @@ Expression::Expression(Expression& leftChild, Expression& rightChild, Token::Tok
 {
 
 }
+}
 
 Expression::Expression(Expression& child, Token::Token_type operator_type) :
 	leftChild(child), rightChild(child), operator_type(operator_type), is_unary(true)
 {
 
+}
 }
