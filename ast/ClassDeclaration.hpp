@@ -2,7 +2,8 @@
 #define CLASSDECLARATION_H
 
 #include <vector>
-
+#include "Ident.hpp"
+#include "ClassMember.hpp"
 #include "Node.hpp"
 
 namespace ast
