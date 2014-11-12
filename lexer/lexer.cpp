@@ -8,6 +8,213 @@
 #include <sys/types.h>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+
+enum kw_states
+{
+	CHECK_ABSTRACT = 30,
+	CHECK_ASSERT,
+	CHECK_BOOLEAN,
+	CHECK_BREAK,
+	CHECK_BYTE,
+	CHECK_CASE,
+	CHECK_CATCH,
+	CHECK_CHAR,
+	CHECK_CLASS,
+	CHECK_CONST,
+	CHECK_CONTINUE,
+	CHECK_DEFAULT,
+	CHECK_DOUBLE,
+	CHECK_ELSE,
+	CHECK_ENUM,
+	CHECK_EXTENDS,
+	CHECK_FALSE,
+	CHECK_FINALLY,
+	CHECK_FLOAT,
+	CHECK_FOR,
+	CHECK_GOTO,
+	CHECK_IMPLEMENTS,
+	CHECK_IMPORT,
+	CHECK_INSTANCEOF,
+	CHECK_INTERFACE,
+	CHECK_LONG,
+	CHECK_NATIVE,
+	CHECK_NEW,
+	CHECK_NULL,
+	CHECK_PACKAGE,
+	CHECK_PRIVATE,
+	CHECK_PROTECTED,
+	CHECK_PUBLIC,
+	CHECK_RETURN,
+	CHECK_SHORT,
+	CHECK_STATIC,
+	CHECK_STRICTFP,
+	CHECK_SUPER,
+	CHECK_SWITCH,
+	CHECK_SYNCHRONIZED,
+	CHECK_THIS,
+	CHECK_TRANSIENT,
+	CHECK_TRUE,
+	CHECK_TRY,
+	CHECK_VOID,
+	CHECK_VOLATILE,
+	CHECK_WHILE,
+	KEYWORD_DO,
+	KEYWORD_FINAL,
+	KEYWORD_IF,
+	KEYWORD_INT,
+	KEYWORD_THROW,
+	KEYWORD_THROWS,
+	IDENT,
+};
+
+Token::Token_type kw_array[] =
+{
+	Token::Token_type::KEYWORD_DO,
+	Token::Token_type::KEYWORD_FINAL,
+	Token::Token_type::KEYWORD_IF,
+	Token::Token_type::KEYWORD_INT,
+	Token::Token_type::KEYWORD_THROW,
+	Token::Token_type::KEYWORD_THROWS,
+};
+
+std::vector<std::pair<const char*, Token::Token_type>> kw_vector =
+{
+	std::make_pair("abstract", Token::Token_type::KEYWORD_ABSTRACT),
+	std::make_pair("assert", Token::Token_type::KEYWORD_ASSERT),
+	std::make_pair("boolean", Token::Token_type::KEYWORD_BOOLEAN),
+	std::make_pair("break", Token::Token_type::KEYWORD_BREAK),
+	std::make_pair("byte", Token::Token_type::KEYWORD_BYTE),
+	std::make_pair("case", Token::Token_type::KEYWORD_CASE),
+	std::make_pair("catch", Token::Token_type::KEYWORD_CATCH),
+	std::make_pair("char", Token::Token_type::KEYWORD_CHAR),
+	std::make_pair("class", Token::Token_type::KEYWORD_CLASS),
+	std::make_pair("const", Token::Token_type::KEYWORD_CONST),
+	std::make_pair("continue", Token::Token_type::KEYWORD_CONTINUE),
+	std::make_pair("default", Token::Token_type::KEYWORD_DEFAULT),
+	std::make_pair("double", Token::Token_type::KEYWORD_DOUBLE),
+	std::make_pair("else", Token::Token_type::KEYWORD_ELSE),
+	std::make_pair("enum", Token::Token_type::KEYWORD_ENUM),
+	std::make_pair("extends", Token::Token_type::KEYWORD_EXTENDS),
+	std::make_pair("false", Token::Token_type::KEYWORD_FALSE),
+	std::make_pair("finally", Token::Token_type::KEYWORD_FINALLY),
+	std::make_pair("float", Token::Token_type::KEYWORD_FLOAT),
+	std::make_pair("for", Token::Token_type::KEYWORD_FOR),
+	std::make_pair("goto", Token::Token_type::KEYWORD_GOTO),
+	std::make_pair("implements", Token::Token_type::KEYWORD_IMPLEMENTS),
+	std::make_pair("import", Token::Token_type::KEYWORD_IMPORT),
+	std::make_pair("instanceof", Token::Token_type::KEYWORD_INSTANCEOF),
+	std::make_pair("interface", Token::Token_type::KEYWORD_INTERFACE),
+	std::make_pair("long", Token::Token_type::KEYWORD_LONG),
+	std::make_pair("native", Token::Token_type::KEYWORD_NATIVE),
+	std::make_pair("new", Token::Token_type::KEYWORD_NEW),
+	std::make_pair("null", Token::Token_type::KEYWORD_NULL),
+	std::make_pair("package", Token::Token_type::KEYWORD_PACKAGE),
+	std::make_pair("private", Token::Token_type::KEYWORD_PRIVATE),
+	std::make_pair("protected", Token::Token_type::KEYWORD_PROTECTED),
+	std::make_pair("public", Token::Token_type::KEYWORD_PUBLIC),
+	std::make_pair("return", Token::Token_type::KEYWORD_RETURN),
+	std::make_pair("short", Token::Token_type::KEYWORD_SHORT),
+	std::make_pair("static", Token::Token_type::KEYWORD_STATIC),
+	std::make_pair("strictfp", Token::Token_type::KEYWORD_STRICTFP),
+	std::make_pair("super", Token::Token_type::KEYWORD_SUPER),
+	std::make_pair("switch", Token::Token_type::KEYWORD_SWITCH),
+	std::make_pair("synchronized", Token::Token_type::KEYWORD_SYNCHRONIZED),
+	std::make_pair("this", Token::Token_type::KEYWORD_THIS),
+	std::make_pair("transient", Token::Token_type::KEYWORD_TRANSIENT),
+	std::make_pair("true", Token::Token_type::KEYWORD_TRUE),
+	std::make_pair("try", Token::Token_type::KEYWORD_TRY),
+	std::make_pair("void", Token::Token_type::KEYWORD_VOID),
+	std::make_pair("volatile", Token::Token_type::KEYWORD_VOLATILE),
+	std::make_pair("while", Token::Token_type::KEYWORD_WHILE),
+};
+
+const int kw_lex_table[][26] = {{ 1,  2,  3,  4,  5,  6, 50, 83,  7, 83, 83, 55, 83,  8, 83,  9, 83, 63, 10, 11, 83, 12, 76, 83, 83, 83, },
+	{83, 30, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 31, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 32, 83, 83, 33, 83, 83, 83, 83, 83, 83, 34, 83, },
+	{13, 83, 83, 83, 83, 83, 83, 37, 83, 83, 83, 38, 83, 83, 14, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 41, 83, 83, 83, 83, 83, 83, 83, 83, 83, 77, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 43, 83, 44, 83, 83, 83, 83, 83, 83, 83, 83, 83, 45, 83, 83, },
+	{46, 83, 83, 83, 83, 83, 83, 83, 16, 83, 83, 48, 83, 83, 49, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 79, 83, 83, 83, 83, 83, 83, 17, 18, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{56, 83, 83, 83, 57, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 58, 83, 83, 83, 83, 83, },
+	{59, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 19, 83, 83, 62, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 64, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 20, 67, 83, 68, 83, 69, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 21, 83, 83, 83, 83, 83, 83, 83, 83, 83, 22, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 23, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 35, 36, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 24, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 25, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 27, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 53, 80, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 60, 83, 83, 83, 83, 83, 61, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{65, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 66, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 70, 83, 83, 83, 83, 83, 83, 83, 83, 28, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{71, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 72, 83, 83, 83, 73, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 74, 83, 83, 75, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 39, 40, 83, 83, 83, 83, 83, 83, },
+	{26, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 78, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 51, 83, 83, 52, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 29, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 81, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 42, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 47, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 54, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 82, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
+};
+
 
 Lexer::Lexer(const char* file_name, Stateomat const& stateomat, bool debug)
 	: position {1, 1}, stateomat(stateomat), debug(debug), line_start(0)
@@ -96,6 +303,37 @@ std::string Lexer::getLine()
 	return s;
 }
 
+Token::Token_type Lexer::lex_keyword_or_ident(const char* s)
+{
+
+	int state = 0;
+
+	for (int i = 0; s[i] != '\0'; i++)
+	{
+		int new_state = kw_lex_table[state][s[i] - 'a'];
+
+		if (new_state == IDENT)
+			return Token::Token_type::TOKEN_IDENT;
+
+		if (CHECK_ABSTRACT <= new_state && new_state <= CHECK_WHILE)
+		{
+			auto kw_pair = kw_vector[new_state - CHECK_ABSTRACT];
+
+			if (strcmp(kw_pair.first, s) == 0)
+				return kw_pair.second;
+			else
+				return Token::Token_type::TOKEN_IDENT;
+		}
+
+		state = new_state;
+	}
+
+	if (KEYWORD_DO <= state && state <= KEYWORD_THROWS)
+		return kw_array[state - KEYWORD_DO];
+	else
+		return Token::Token_type::TOKEN_IDENT;
+}
+
 Token Lexer::get_next_token()
 {
 	if (!token_stack.empty())
@@ -121,14 +359,7 @@ Token Lexer::get_next_token()
 				if (t.token_type == Token::Token_type::TOKEN_OPERATOR)
 					t.token_type = stateomat.operators[state][t.string_value];
 				else if (t.token_type == Token::Token_type::TOKEN_IDENT_OR_KEYWORD)
-				{
-					auto keyword = stateomat.keywords.find(t.string_value);
-
-					if (keyword != stateomat.keywords.end())
-						t.token_type = keyword->second;
-					else
-						t.token_type = Token::Token_type::TOKEN_IDENT;
-				}
+					t.token_type = lex_keyword_or_ident(t.string_value.c_str());
 
 				if (debug)
 					t.print();

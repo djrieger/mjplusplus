@@ -31,6 +31,7 @@ class Lexer
 		 * and column is reset to 1. Otherwise column will be incremented.
 		 */
 		void advancePosition(int nextCharacter);
+		Token::Token_type lex_keyword_or_ident(const char* s);
 
 	public:
 		Lexer(const char* file_name, Stateomat const& stateomat, bool debug = false);

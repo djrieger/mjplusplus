@@ -84,7 +84,7 @@ void Parser::nextToken()
 
 void Parser::printError(std::string const& error_msg)
 {
-	if (print_messages) // only print error messages if they are wanted
+	if (print_messages)   // only print error messages if they are wanted
 	{
 		std::cerr << "at line " << current.position.first << ", column " << current.position.second <<
 		          ", parsing \"" << current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
