@@ -35,12 +35,12 @@ Stateomat::Stateomat()
 
 	state_type = {Token::Token_type::TOKEN_ERROR, Token::Token_type::TOKEN_ERROR, // 0, 1
 	              Token::Token_type::TOKEN_ERROR, Token::Token_type::TOKEN_IDENT, // 2, 3
-	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 4, 5
-	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 6, 7
-	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 8, 9
-	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 10, 11
-	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 12, 13
-	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::TOKEN_OPERATOR, // 14, 15
+	              Token::Token_type::OPERATOR_SLASH, Token::Token_type::TOKEN_OPERATOR, // 4, 5
+	              Token::Token_type::TOKEN_OPERATOR, Token::Token_type::OPERATOR_AND, // 6, 7
+	              Token::Token_type::OPERATOR_OR, Token::Token_type::OPERATOR_PLUS, // 8, 9
+	              Token::Token_type::OPERATOR_MINUS, Token::Token_type::OPERATOR_LT, // 10, 11
+	              Token::Token_type::OPERATOR_LTLT, Token::Token_type::OPERATOR_GT, // 12, 13
+	              Token::Token_type::OPERATOR_GTGT, Token::Token_type::OPERATOR_GTGTGT, // 14, 15
 	              Token::Token_type::TOKEN_INT_LIT, Token::Token_type::TOKEN_INT_LIT, // 16, 17
 	              Token::Token_type::TOKEN_EOF, Token::Token_type::TOKEN_ERROR, // 18, 19
 	              Token::Token_type::TOKEN_IDENT_OR_KEYWORD, Token::Token_type::TOKEN_OPERATOR, // 20, 21
