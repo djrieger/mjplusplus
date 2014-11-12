@@ -1,3 +1,6 @@
+#ifndef MAIN_METHOD_DECLARATION_HPP
+#define MAIN_METHOD_DECLARATION_HPP
+
 #include "MethodDeclaration.hpp"
 
 namespace ast
@@ -9,3 +12,5 @@ namespace ast
 			MainMethodDeclaration(Statement& block);
 	}
 }
+
+#endif

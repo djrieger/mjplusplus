@@ -1,3 +1,6 @@
+#ifndef LVD_STATEMENT_HPP
+#define LVD_STATEMENT_HPP
+
 #include "Node.hpp"
 
 namespace ast
@@ -11,3 +14,5 @@ namespace ast
 			LVDStatement(TypeIdent& type_ident);
 	}
 }
+
+#endif
