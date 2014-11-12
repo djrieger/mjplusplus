@@ -2,6 +2,8 @@
 #define PARSER_HPP
 
 #include "../lexer/lexer.hpp"
+#include "../ast/Program.hpp"
+#include "../ast/ClassMember.hpp"
 
 class Parser
 {
@@ -53,8 +55,8 @@ class Parser
 		void printError(std::string const& error_msg);
 
 		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
-		void parseProgram();
-		void parseClassMembers();
+		ast::Program parseProgram();
+		std::vector<ast::ClassMember> parseClassMembers();
 		void parseMainMethod();
 		void parseTypeIdent();
 		void parseType();

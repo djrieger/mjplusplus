@@ -1,6 +1,8 @@
 #include <iostream>
 #include <algorithm>
 #include "parser.hpp"
+#include "../ast/ClassDeclaration.hpp"
+#include "../ast/ClassMember.hpp"
 
 Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
 {
@@ -123,23 +125,31 @@ void Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 
 // Program -> class ClassDeclaration Program | .
 // ClassDeclaration -> IDENT { ClassMembers } .
-void Parser::parseProgram()
+ast::Program Parser::parseProgram()
 {
+	std::vector<ast::ClassDeclaration> classes;
+
 	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
 		nextToken();
+		ast::Ident className(current.string_value);
 		expect(Token::Token_type::TOKEN_IDENT);
 		expect(Token::Token_type::OPERATOR_LBRACE);
-		parseClassMembers();
+		std::vector<ast::ClassMember> members = parseClassMembers();
 		expect(Token::Token_type::OPERATOR_RBRACE);
+		classes.push_back(ast::ClassDeclaration(className, members));
 	}
 
+	for (auto it : classes)
+		std::cout << it.toString() << std::endl;
+
 	expect(Token::Token_type::TOKEN_EOF);
+	return (ast::Program(classes));
 }
 
 // ClassMembers -> public ClassMember ClassMembers | .
 // ClassMember -> TypeIdent FieldOrMethod | static MainMethod .
-void Parser::parseClassMembers()
+std::vector<ast::ClassMember> Parser::parseClassMembers()
 {
 	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
 	{
@@ -156,6 +166,8 @@ void Parser::parseClassMembers()
 			parseFieldOrMethod();
 		}
 	}
+
+	return std::vector<ast::ClassMember>();
 }
 
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .
