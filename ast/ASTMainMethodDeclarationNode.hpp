@@ -1,4 +1,4 @@
-#include "MethodDeclarion.hpp"
+#include "MethodDeclaration.hpp"
 
 namespace ast
 {
