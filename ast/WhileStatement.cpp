@@ -8,5 +8,5 @@ ast::WhileStatement::WhileStatement(Expression& condition, Statement& statement)
 
 std::string ast::WhileStatement::toString()
 {
-	return "while (" + condition.toString() + ") {" + std::endl + statement.toString + "}" + std::endl;
+	return "while (" + condition.toString() + ") {\n" + statement.toString + "}" + std::endl;
 }
