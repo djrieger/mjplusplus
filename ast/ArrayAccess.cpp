@@ -12,5 +12,3 @@ namespace ast
 		return '[' + access_offset.toString() + ']';
 	}
 }
-
-#endif
