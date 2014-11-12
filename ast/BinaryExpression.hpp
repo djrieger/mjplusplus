@@ -1,3 +1,6 @@
+#ifndef BINARY_EXPRESSION_HPP
+#define BINARY_EXPRESSION_HPP
+
 #include "Node.hpp"
 #include <vector>
 
@@ -15,3 +18,5 @@ namespace ast
 
 	}
 }
+
+#endif
