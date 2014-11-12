@@ -10,6 +10,7 @@ struct Token
 		TOKEN_EOF,
 		TOKEN_INT_LIT,
 		TOKEN_IDENT,
+        TOKEN_IDENT_OR_KEYWORD,
 		TOKEN_OPERATOR,// only used before distinction which operator
 		TOKEN_ERROR,
 		/* Keywords */
