@@ -1,4 +1,4 @@
-#include "LVDStatement.hpp"
+#include "IntegerLiteral.hpp"
 
 
 ast::IntegerLiteral::IntegerLiteral(std::string string_value)

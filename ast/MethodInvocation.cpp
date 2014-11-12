@@ -8,12 +8,12 @@ ast::MethodInvocation::MethodInvocation(Ident& method_name, std::vector<Expressi
 
 std::string ast::MethodInvocation::toString()
 {
-	std::string ret = method_name + "(";
+	std::string ret = method_name.toString() + "(";
 	auto it = arguments.begin();
 
 	while (1)
 	{
-		ret += it.toString();
+		ret += it->toString();
 
 		if (++it != arguments.end())
 			ret += ", ";

@@ -6,7 +6,11 @@ namespace ast
 {
 	class PostfixOp : public Node
 	{
-
+		public:
+			virtual std::string toString()
+			{
+				return "";
+			}
 	};
 }
 #endif // POSTFIXOP_HPP
