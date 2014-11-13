@@ -90,14 +90,14 @@ class Parser
 		void parseUnaryExpression();
 		void parsePostfixOps();
 		void parsePrimaryExpression();
-		void parseArguments();
+		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseArguments();
 		void parseMethodInvocation();
 		void parseMethodInvocationOrFieldAccess();
 		void parseNewArrayExpression();
 		void parseNewObjectExpression();
 		void parseNewObjectOrNewArrayExpression();
 		void parseOptionalBrackets();
-		void parseIdentOrIdentWithArguments();
+		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseIdentOrIdentWithArguments();
 };
 
 #endif
