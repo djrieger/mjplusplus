@@ -83,10 +83,10 @@ class Parser
 		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseIdentOrIdentWithArguments();
 		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseArguments();
 
-		void parseStatement();
-		void parseBlock();
-		void parseBlockStatement();
-		void parseLocalVariableDeclarationStatement();
+		std::unique_ptr<ast::Statement> parseStatement();
+		std::unique_ptr<ast::Statement> parseBlock();
+		std::unique_ptr<ast::Statement> parseBlockStatement();
+		std::unique_ptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
 		std::unique_ptr<ast::IfStatement> parseIfStatement();
 		std::unique_ptr<ast::WhileStatement> parseWhileStatement();
 		std::unique_ptr<ast::ReturnStatement> parseReturnStatement();
