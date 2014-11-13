@@ -3,6 +3,9 @@
 #include <memory>
 #include "parser.hpp"
 
+template <class T> using uptr = std::unique_ptr<T>;
+template <class T> using vec = std::vector<T>;
+
 Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
 {
 }
@@ -129,9 +132,9 @@ void Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 
 // Program -> class ClassDeclaration Program | .
 // ClassDeclaration -> IDENT { ClassMembers } .
-std::unique_ptr<ast::Program> Parser::parseProgram()
+uptr<ast::Program> Parser::parseProgram()
 {
-	auto classes = std::make_unique<std::vector<ast::ClassDeclaration>>();
+	auto classes = std::make_unique<vec<ast::ClassDeclaration>>();
 
 	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
@@ -151,9 +154,9 @@ std::unique_ptr<ast::Program> Parser::parseProgram()
 
 // ClassMembers -> public ClassMember ClassMembers | .
 // ClassMember -> TypeIdent FieldOrMethod | static MainMethod .
-std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> Parser::parseClassMembers()
+uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 {
-	auto classMembers = std::make_unique<std::vector<std::unique_ptr<ast::ClassMember>>>();
+	auto classMembers = std::make_unique<vec<uptr<ast::ClassMember>>>();
 
 	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
 	{
@@ -176,7 +179,7 @@ std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> Parser::parseCla
 }
 
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .
-std::unique_ptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
+uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
 	expect(Token::Token_type::KEYWORD_VOID);
 	auto mainMethodName = std::make_unique<ast::Ident>(current.string_value);
@@ -188,7 +191,7 @@ std::unique_ptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	expect(Token::Token_type::OPERATOR_LPAREN);
 
 	auto parameterName = std::make_unique<ast::Ident>(current.string_value);
-	auto parameters = std::make_unique<std::vector<std::unique_ptr<ast::TypeIdent>>>();
+	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
 	parameters->push_back(std::make_unique<ast::TypeIdent>(parameterName, ast::TypeIdent::Primitive_type::VOID));
 
 	expect(Token::Token_type::TOKEN_IDENT, "String");
@@ -200,14 +203,14 @@ std::unique_ptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	// auto block = parseBlock();
 	// instead of this:
 	parseBlock();
-	std::unique_ptr<ast::Statement> emptyStatement;
+	uptr<ast::Statement> emptyStatement;
 	// TODO: return block instead of emptyStatement:
 	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, emptyStatement);
 }
 
 // TypeIdent -> Type IDENT
 // Type -> BasicType ArrayDecl .
-std::unique_ptr<ast::TypeIdent> Parser::parseTypeIdent()
+uptr<ast::TypeIdent> Parser::parseTypeIdent()
 {
 	auto basicType = parseBasicType();
 	int dimension = parseArrayDecl();
@@ -270,9 +273,9 @@ std::pair<ast::TypeIdent::Primitive_type, std::string> Parser::parseBasicType()
 // FieldOrMethod -> Field | Method .
 // Field -> ; .
 // Method -> ( OptionalParameters ) Block .
-std::unique_ptr<ast::ClassMember> Parser::parseFieldOrMethod(std::unique_ptr<ast::TypeIdent> typeIdent)
+uptr<ast::ClassMember> Parser::parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent)
 {
-	std::unique_ptr<ast::ClassMember> classMember;
+	uptr<ast::ClassMember> classMember;
 
 	if (current.token_type == Token::Token_type::OPERATOR_SEMICOLON)
 	{
@@ -287,7 +290,7 @@ std::unique_ptr<ast::ClassMember> Parser::parseFieldOrMethod(std::unique_ptr<ast
 		// TODO: auto block = parseBlock();
 		parseBlock();
 		// TODO: remove this:
-		std::unique_ptr<ast::Statement> emptyStatement;
+		uptr<ast::Statement> emptyStatement;
 
 		classMember = std::make_unique<ast::MethodDeclaration>(typeIdent, parameters, emptyStatement);
 	}
@@ -300,9 +303,9 @@ std::unique_ptr<ast::ClassMember> Parser::parseFieldOrMethod(std::unique_ptr<ast
 // FollowingParameters -> , Parameters
 //     | .
 // Parameter -> TypeIdent .
-std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> Parser::parseOptionalParameters()
+uptr<vec<uptr<ast::TypeIdent>>> Parser::parseOptionalParameters()
 {
-	auto parameters = std::make_unique<std::vector<std::unique_ptr<ast::TypeIdent>>>();
+	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
 	bool isFirstParameter = true;
 
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
@@ -324,7 +327,7 @@ std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> Parser::parseOptio
 
 // Statement -> Block | EmptyStatement | if IfStatement | Expression ; | while WhileStatement | return ReturnStatement .
 // EmptyStatement -> ; .
-std::unique_ptr<ast::Statement> Parser::parseStatement()
+uptr<ast::Statement> Parser::parseStatement()
 {
 	switch (current.token_type)
 	{
@@ -334,7 +337,7 @@ std::unique_ptr<ast::Statement> Parser::parseStatement()
 
 		case Token::Token_type::OPERATOR_SEMICOLON:
 			nextToken();
-			return std::unique_ptr<ast::Statement>;
+			return uptr<ast::Statement>;
 			break;
 
 		case Token::Token_type::KEYWORD_IF:
@@ -375,11 +378,11 @@ std::unique_ptr<ast::Statement> Parser::parseStatement()
 
 // Block -> { BlockStatements } .
 // BlockStatements -> BlockStatement BlockStatements | .
-std::unique_ptr<ast::Statement> Parser::parseBlock()
+uptr<ast::Statement> Parser::parseBlock()
 {
 	expect(Token::Token_type::OPERATOR_LBRACE);
 
-	auto statements = std::make_unique<std::vector<std::unique_ptr<ast::Statement>>>();
+	auto statements = std::make_unique<vec<uptr<ast::Statement>>>();
 
 	while (current.token_type != Token::Token_type::OPERATOR_RBRACE)
 	{
@@ -395,11 +398,11 @@ std::unique_ptr<ast::Statement> Parser::parseBlock()
 	if (!statements->empty())
 		return std::make_unique<ast::Block>(statements);
 	else
-		return std::unique_ptr<ast::Statement>;
+		return uptr<ast::Statement>;
 }
 
 // BlockStatement -> Statement | LocalVariableDeclarationStatement .
-std::unique_ptr<ast::Statement> Parser::parseBlockStatement()
+uptr<ast::Statement> Parser::parseBlockStatement()
 {
 	// Statement first = IDENT, {, (, ;, while, if, return, -, !, null, false, true, INTEGER_LITERAL, this, new
 	// LVDS first =      IDENT, void, int, boolean
@@ -477,7 +480,7 @@ std::unique_ptr<ast::Statement> Parser::parseBlockStatement()
 // LocalVariableDeclarationStatement -> TypeIdent OptionalLVDSExpression ; .
 // OptionalLVDSExpression -> = Expression
 //	| .
-std::unique_ptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
+uptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 {
 	parseTypeIdent();
 
@@ -493,7 +496,7 @@ std::unique_ptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatemen
 // IfStatement -> ( Expression ) Statement OptionalElseStatement .
 // OptionalElseStatement -> else Statement
 // 	| .
-std::unique_ptr<ast::IfStatement> Parser::parseIfStatement()
+uptr<ast::IfStatement> Parser::parseIfStatement()
 {
 	expect(Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
@@ -510,7 +513,7 @@ std::unique_ptr<ast::IfStatement> Parser::parseIfStatement()
 }
 
 // WhileStatement -> ( Expression ) Statement .
-std::unique_ptr<ast::WhileStatement> Parser::parseWhileStatement()
+uptr<ast::WhileStatement> Parser::parseWhileStatement()
 {
 	expect(Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
@@ -521,7 +524,7 @@ std::unique_ptr<ast::WhileStatement> Parser::parseWhileStatement()
 // ReturnStatement -> OptionalExpression ; .
 // OptionalExpression -> Expression
 //  	| .
-std::unique_ptr<ast::ReturnStatement> Parser::parseReturnStatement()
+uptr<ast::ReturnStatement> Parser::parseReturnStatement()
 {
 	if (current.token_type != Token::Token_type::OPERATOR_SEMICOLON)
 	{
@@ -636,9 +639,9 @@ void Parser::parsePrimaryExpression()
 
 // IdentOrIdentWithArguments -> ( Arguments )
 //     | .
-std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> Parser::parseIdentOrIdentWithArguments()
+uptr<vec<uptr<ast::Ident>>> Parser::parseIdentOrIdentWithArguments()
 {
-	std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> arguments;
+	uptr<vec<uptr<ast::Ident>>> arguments;
 
 	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
 	{
@@ -710,9 +713,9 @@ void Parser::parseOptionalBrackets()
 
 // Arguments -> Expression ArgumentsExpressions | .
 // ArgumentsExpressions -> , Expression ArgumentsExpressions | .
-std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> Parser::parseArguments()
+uptr<vec<uptr<ast::Ident>>> Parser::parseArguments()
 {
-	auto arguments = std::make_unique<std::vector<std::unique_ptr<ast::Ident>>>();
+	auto arguments = std::make_unique<vec<uptr<ast::Ident>>>();
 	bool isFirstArgument = true;
 
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)

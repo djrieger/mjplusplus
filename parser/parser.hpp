@@ -17,6 +17,9 @@
 #include "../ast/WhileStatement.hpp"
 #include "../ast/ReturnStatement.hpp"
 
+template <class T> using uptr = std::unique_ptr<T>;
+template <class T> using vec = std::vector<T>;
+
 class Parser
 {
 	public:
@@ -72,28 +75,28 @@ class Parser
 		 */
 		void printError(std::string const& error_msg);
 
-		std::unique_ptr<ast::Program> parseProgram();
-		std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> parseClassMembers();
-		std::unique_ptr<ast::MainMethodDeclaration> parseMainMethod();
+		uptr<ast::Program> parseProgram();
+		uptr<vec<uptr<ast::ClassMember>>> parseClassMembers();
+		uptr<ast::MainMethodDeclaration> parseMainMethod();
 
-		std::unique_ptr<ast::TypeIdent> parseTypeIdent();
+		uptr<ast::TypeIdent> parseTypeIdent();
 		std::pair<ast::TypeIdent::Primitive_type, std::string> parseBasicType();
 		int parseArrayDecl();
 		void parseNewArrayExpression();
 		void parseOptionalBrackets(); // does not need to return anything
 
-		std::unique_ptr<ast::ClassMember> parseFieldOrMethod(std::unique_ptr<ast::TypeIdent> typeIdent);
-		std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> parseOptionalParameters();
-		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseIdentOrIdentWithArguments();
-		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseArguments();
+		uptr<ast::ClassMember> parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent);
+		uptr<vec<uptr<ast::TypeIdent>>> parseOptionalParameters();
+		uptr<vec<uptr<ast::Ident>>> parseIdentOrIdentWithArguments();
+		uptr<vec<uptr<ast::Ident>>> parseArguments();
 
-		std::unique_ptr<ast::Statement> parseStatement();
-		std::unique_ptr<ast::Statement> parseBlock();
-		std::unique_ptr<ast::Statement> parseBlockStatement();
-		std::unique_ptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
-		std::unique_ptr<ast::IfStatement> parseIfStatement();
-		std::unique_ptr<ast::WhileStatement> parseWhileStatement();
-		std::unique_ptr<ast::ReturnStatement> parseReturnStatement();
+		uptr<ast::Statement> parseStatement();
+		uptr<ast::Statement> parseBlock();
+		uptr<ast::Statement> parseBlockStatement();
+		uptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
+		uptr<ast::IfStatement> parseIfStatement();
+		uptr<ast::WhileStatement> parseWhileStatement();
+		uptr<ast::ReturnStatement> parseReturnStatement();
 		void parseExpression();
 		void parseAssignmentExpression();
 		void precedenceClimb(int minPrec);
