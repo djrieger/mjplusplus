@@ -62,7 +62,7 @@ class Parser
 
 		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
 		std::unique_ptr<ast::Program> parseProgram();
-		std::unique_ptr<std::vector<ast::ClassMember>> parseClassMembers();
+		std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> parseClassMembers();
 		std::unique_ptr<ast::MainMethodDeclaration> parseMainMethod();
 		void parseTypeIdent();
 		void parseType();

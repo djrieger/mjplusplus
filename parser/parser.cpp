@@ -146,9 +146,9 @@ std::unique_ptr<ast::Program> Parser::parseProgram()
 
 // ClassMembers -> public ClassMember ClassMembers | .
 // ClassMember -> TypeIdent FieldOrMethod | static MainMethod .
-std::unique_ptr<std::vector<ast::ClassMember>> Parser::parseClassMembers()
+std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> Parser::parseClassMembers()
 {
-	auto classMembers = std::make_unique<std::vector<ast::ClassMember>>();
+	std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> classMembers;
 
 	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
 	{
@@ -157,7 +157,9 @@ std::unique_ptr<std::vector<ast::ClassMember>> Parser::parseClassMembers()
 		if (current.token_type == Token::Token_type::KEYWORD_STATIC)
 		{
 			nextToken();
-			auto mainMethod = parseMainMethod();
+			//auto mainMethodPtr = parseMainMethod();
+			//auto mainMethod = *mainMethodPtr;
+			classMembers->push_back(std::move(parseMainMethod()));
 		}
 		else
 		{
