@@ -9,11 +9,13 @@ namespace ast
 	class IfStatement : public Statement
 	{
 		protected:
-			Expression& condition;
-			Statement& thenStatement;
+			std::unique_ptr<Expression> condition;
+			std::unique_ptr<Statement> thenStatement;
+			std::unique_ptr<Statement> elseStatement;
 
 		public:
-			IfStatement(Expression& condition, Statement& thenStatement);
+			IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement);
+			IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement, std::unique_ptr<Statement>& elseStatement);
 			virtual std::string toString();
 	};
 }

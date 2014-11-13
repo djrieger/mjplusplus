@@ -2,13 +2,13 @@
 
 namespace ast
 {
-	ArrayAccess::ArrayAccess(Expression& access_offset) : access_offset(access_offset)
+	ArrayAccess::ArrayAccess(std::unique_ptr<Expression>& access_offset) : access_offset(std::move(access_offset))
 	{
 		;
 	}
 
 	std::string ArrayAccess::toString()
 	{
-		return '[' + access_offset.toString() + ']';
+		return '[' + access_offset->toString() + ']';
 	}
 }

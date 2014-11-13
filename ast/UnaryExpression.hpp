@@ -17,7 +17,7 @@ namespace ast
 				UNARY_MINUS
 			};
 
-			UnaryExpression(std::unique_ptr<PostfixExpression> &child, std::unique_ptr<std::vector<Unary_Operator>> &unary_operators);
+			UnaryExpression(std::unique_ptr<PostfixExpression>& child, std::unique_ptr<std::vector<Unary_Operator>>& unary_operators);
 			virtual std::string toString();
 
 		private:

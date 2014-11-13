@@ -13,7 +13,7 @@ namespace ast
 			std::unique_ptr<Statement> statement;
 
 		public:
-			WhileStatement(std::unique_ptr<Expression> &condition, std::unique_ptr<Statement> &statement);
+			WhileStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& statement);
 			virtual std::string toString();
 	};
 }
