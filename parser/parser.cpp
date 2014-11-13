@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <memory>
 #include "parser.hpp"
 #include "../ast/ClassDeclaration.hpp"
 #include "../ast/ClassMember.hpp"
@@ -135,9 +136,9 @@ ast::Program Parser::parseProgram()
 		ast::Ident className(current.string_value);
 		expect(Token::Token_type::TOKEN_IDENT);
 		expect(Token::Token_type::OPERATOR_LBRACE);
-		std::vector<ast::ClassMember> members = parseClassMembers();
+		std::unique_ptr<std::vector<ast::ClassMember>> members = parseClassMembers();
 		expect(Token::Token_type::OPERATOR_RBRACE);
-		classes.push_back(ast::ClassDeclaration(className, members));
+		classes.push_back(ast::ClassDeclaration(className, std::move(members)));
 	}
 
 	for (auto it : classes)
@@ -149,8 +150,9 @@ ast::Program Parser::parseProgram()
 
 // ClassMembers -> public ClassMember ClassMembers | .
 // ClassMember -> TypeIdent FieldOrMethod | static MainMethod .
-std::vector<ast::ClassMember> Parser::parseClassMembers()
+std::unique_ptr<std::vector<ast::ClassMember>> Parser::parseClassMembers()
 {
+
 	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
 	{
 		nextToken();
@@ -167,7 +169,7 @@ std::vector<ast::ClassMember> Parser::parseClassMembers()
 		}
 	}
 
-	return std::vector<ast::ClassMember>();
+	return std::make_unique<std::vector<ast::ClassMember>>();
 }
 
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .

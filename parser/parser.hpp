@@ -22,6 +22,8 @@ class Parser
 		bool start();
 
 	private:
+		ast::Program astRoot;
+
 		Lexer& lexer;
 		/**
 		 * Whether parser prints error messages or suppresses them
