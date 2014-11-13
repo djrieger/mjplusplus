@@ -615,14 +615,18 @@ void Parser::parsePrimaryExpression()
 
 // IdentOrIdentWithArguments -> ( Arguments )
 //     | .
-void Parser::parseIdentOrIdentWithArguments()
+std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> Parser::parseIdentOrIdentWithArguments()
 {
+	std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> arguments;
+
 	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
 	{
 		nextToken();
-		parseArguments();
+		arguments = parseArguments();
 		expect(Token::Token_type::OPERATOR_RPAREN);
 	}
+
+	return arguments;
 }
 
 // NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
@@ -685,23 +689,29 @@ void Parser::parseOptionalBrackets()
 
 // Arguments -> Expression ArgumentsExpressions | .
 // ArgumentsExpressions -> , Expression ArgumentsExpressions | .
-void Parser::parseArguments()
+std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> Parser::parseArguments()
 {
+	auto arguments = std::make_unique<std::vector<std::unique_ptr<ast::Ident>>>();
 	bool isFirstArgument = true;
 
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
+		// TODO:
+		// parameters->push_back(std::move(parseExpression());
+		// instead of
 		parseExpression();
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
-			return;
+			return arguments;
 		else
 			nextToken();
 	}
 
 	if (!isFirstArgument)
 		throw "trailing comma";
+
+	return arguments;
 }
 
 // MethodInvocation -> ( Arguments ) .
