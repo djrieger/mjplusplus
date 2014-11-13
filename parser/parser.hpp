@@ -25,9 +25,13 @@ class Parser
 		 * Generic function to start the parser
 		 */
 		bool start();
+		/**
+		 * Reference to parsed Program
+		 */
+		std::shared_ptr<ast::Program> getRoot();
 
 	private:
-		std::unique_ptr<ast::Program> astRoot;
+		std::shared_ptr<ast::Program> astRoot;
 
 		Lexer& lexer;
 		/**
