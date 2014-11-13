@@ -324,31 +324,32 @@ std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> Parser::parseOptio
 
 // Statement -> Block | EmptyStatement | if IfStatement | Expression ; | while WhileStatement | return ReturnStatement .
 // EmptyStatement -> ; .
-void Parser::parseStatement()
+std::unique_ptr<ast::Statement> Parser::parseStatement()
 {
 	switch (current.token_type)
 	{
 		case Token::Token_type::OPERATOR_LBRACE:
-			parseBlock();
+			return parseBlock();
 			break;
 
 		case Token::Token_type::OPERATOR_SEMICOLON:
 			nextToken();
+			return std::unique_ptr<ast::Statement>;
 			break;
 
 		case Token::Token_type::KEYWORD_IF:
 			nextToken();
-			parseIfStatement();
+			return parseIfStatement();
 			break;
 
 		case Token::Token_type::KEYWORD_WHILE:
 			nextToken();
-			parseWhileStatement();
+			return parseWhileStatement();
 			break;
 
 		case Token::Token_type::KEYWORD_RETURN:
 			nextToken();
-			parseReturnStatement();
+			return parseReturnStatement();
 			break;
 
 		// IDENT, (, -, !, null, false, true, INTEGER_LITERAL, this, new
@@ -362,8 +363,9 @@ void Parser::parseStatement()
 		case Token::Token_type::KEYWORD_TRUE:
 		case Token::Token_type::KEYWORD_THIS:
 		case Token::Token_type::KEYWORD_NEW:
-			parseExpression();
+			auto expr = parseExpression();
 			expect(Token::Token_type::OPERATOR_SEMICOLON);
+			return std::make_unique<ast::ExpressionStatement>(expr);
 			break;
 
 		default:
@@ -373,18 +375,29 @@ void Parser::parseStatement()
 
 // Block -> { BlockStatements } .
 // BlockStatements -> BlockStatement BlockStatements | .
-void Parser::parseBlock()
+std::unique_ptr<ast::Statement> Parser::parseBlock()
 {
 	expect(Token::Token_type::OPERATOR_LBRACE);
 
+	auto statements = std::make_unique<std::vector<std::unique_ptr<ast::Statement>>>();
+
 	while (current.token_type != Token::Token_type::OPERATOR_RBRACE)
-		parseBlockStatement();
+		auto block_statement = parseBlockStatement();
+
+	if (block_statement)
+		statements->push_back(std::move(block_statement));
 
 	nextToken();
+
+	//If there are no block_statements we can skip the block.
+	if (!statements.empty())
+		return std::make_unique<ast::Block>(statements);
+	else
+		return std::unique_ptr<ast::Statement>;
 }
 
 // BlockStatement -> Statement | LocalVariableDeclarationStatement .
-void Parser::parseBlockStatement()
+std::unique_ptr<ast::Statement> Parser::parseBlockStatement()
 {
 	// Statement first = IDENT, {, (, ;, while, if, return, -, !, null, false, true, INTEGER_LITERAL, this, new
 	// LVDS first =      IDENT, void, int, boolean
@@ -392,7 +405,6 @@ void Parser::parseBlockStatement()
 	Token idToken;
 	Token maybeLBracketToken;
 	Token maybeRBracketToken;
-
 
 	switch (current.token_type)
 	{
@@ -410,13 +422,13 @@ void Parser::parseBlockStatement()
 		case Token::Token_type::TOKEN_INT_LIT:
 		case Token::Token_type::KEYWORD_THIS:
 		case Token::Token_type::KEYWORD_NEW:
-			parseStatement();
+			return parseStatement();
 			break;
 
 		case Token::Token_type::KEYWORD_VOID:
 		case Token::Token_type::KEYWORD_INT:
 		case Token::Token_type::KEYWORD_BOOLEAN:
-			parseLocalVariableDeclarationStatement();
+			return parseLocalVariableDeclarationStatement();
 			break;
 
 		case Token::Token_type::TOKEN_IDENT:
@@ -428,13 +440,13 @@ void Parser::parseBlockStatement()
 			{
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
-				parseLocalVariableDeclarationStatement();
+				return parseLocalVariableDeclarationStatement();
 			}
 			else if (maybeLBracketToken.token_type != Token::Token_type::OPERATOR_LBRACKET)
 			{
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
-				parseStatement();
+				return parseStatement();
 			}
 			else
 			{
@@ -446,9 +458,9 @@ void Parser::parseBlockStatement()
 				current = idToken;
 
 				if (isRBracket)
-					parseLocalVariableDeclarationStatement();
+					return parseLocalVariableDeclarationStatement();
 				else
-					parseStatement();
+					return parseStatement();
 			}
 
 			break;
@@ -456,12 +468,14 @@ void Parser::parseBlockStatement()
 		default:
 			throw "expected Statement";
 	}
+
+	throw "unreachable";
 }
 
 // LocalVariableDeclarationStatement -> TypeIdent OptionalLVDSExpression ; .
 // OptionalLVDSExpression -> = Expression
 //	| .
-void Parser::parseLocalVariableDeclarationStatement()
+std::unique_ptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 {
 	parseTypeIdent();
 
