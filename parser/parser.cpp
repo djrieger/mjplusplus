@@ -157,8 +157,6 @@ std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> Parser::parseCla
 		if (current.token_type == Token::Token_type::KEYWORD_STATIC)
 		{
 			nextToken();
-			//auto mainMethodPtr = parseMainMethod();
-			//auto mainMethod = *mainMethodPtr;
 			classMembers->push_back(std::move(parseMainMethod()));
 		}
 		else
@@ -203,44 +201,65 @@ std::unique_ptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 }
 
 // TypeIdent -> Type IDENT
-void Parser::parseTypeIdent()
+// Type -> BasicType ArrayDecl .
+std::unique_ptr<ast::TypeIdent> Parser::parseTypeIdent()
 {
-	parseType();
+	auto basicType = parseBasicType();
+	int dimension = parseArrayDecl();
+
+	// retrieve variable name:
+	auto variable_name = std::make_unique<ast::Ident>(current.string_value);
 	expect(Token::Token_type::TOKEN_IDENT);
+
+	auto typeIdent = std::make_unique<ast::TypeIdent>(variable_name, basicType.first, basicType.second, dimension);
+	return typeIdent;
 }
 
-// Type -> BasicType ArrayDecl .
-void Parser::parseType()
+// ArrayDecl -> [ ] ArrayDecl | .
+int Parser::parseArrayDecl()
 {
-	parseBasicType();
-	parseArrayDecl();
+	int dimension = 0;
+
+	while (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
+	{
+		nextToken();
+		expect(Token::Token_type::OPERATOR_RBRACKET);
+		dimension++;
+	}
+
+	return dimension;
 }
 
 // BasicType -> int | boolean | void | IDENT .
-void Parser::parseBasicType()
+std::pair<ast::TypeIdent::Primitive_type, std::string> Parser::parseBasicType()
 {
+	std::string class_name = "";
+	ast::TypeIdent::Primitive_type primitive_type = ast::TypeIdent::Primitive_type::NONE;
+
 	switch (current.token_type)
 	{
 		case Token::Token_type::KEYWORD_INT:
+			primitive_type = ast::TypeIdent::Primitive_type::INT;
+			break;
+
 		case Token::Token_type::KEYWORD_BOOLEAN:
+			primitive_type = ast::TypeIdent::Primitive_type::BOOLEAN;
+			break;
+
 		case Token::Token_type::KEYWORD_VOID:
+			primitive_type = ast::TypeIdent::Primitive_type::VOID;
+			break;
+
 		case Token::Token_type::TOKEN_IDENT:
-			nextToken();
+			class_name = current.string_value;
 			break;
 
 		default:
 			throw "expected Type";
 	}
-}
 
-// ArrayDecl -> [ ] ArrayDecl | .
-void Parser::parseArrayDecl()
-{
-	while (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
-	{
-		nextToken();
-		expect(Token::Token_type::OPERATOR_RBRACKET);
-	}
+	nextToken();
+	return std::make_pair(primitive_type, class_name);
 }
 
 // FieldOrMethod -> Field | Method .

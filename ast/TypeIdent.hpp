@@ -19,7 +19,7 @@ namespace ast
 			};
 
 			TypeIdent(std::unique_ptr<Ident>& identifier, Primitive_type primitive_type);
-			TypeIdent(std::unique_ptr<Ident>& identifier, Primitive_type primitive_type, std::string class_name, int dimension, int array_size);
+			TypeIdent(std::unique_ptr<Ident>& identifier, Primitive_type primitive_type, std::string class_name, int dimension /*, int array_size*/);
 			virtual std::string toString();
 
 		private:
@@ -27,7 +27,7 @@ namespace ast
 			Primitive_type primitive_type;
 			std::string class_name; // maybe a pointer to the string table
 			int dimension;
-			int array_size;
+			//int array_size;
 			// NewArrayExpression einbauen? Expression wg Größe
 
 
