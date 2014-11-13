@@ -65,7 +65,6 @@ class Parser
 		 */
 		void printError(std::string const& error_msg);
 
-		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
 		std::unique_ptr<ast::Program> parseProgram();
 		std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> parseClassMembers();
 		std::unique_ptr<ast::MainMethodDeclaration> parseMainMethod();
@@ -73,9 +72,13 @@ class Parser
 		std::unique_ptr<ast::TypeIdent> parseTypeIdent();
 		std::pair<ast::TypeIdent::Primitive_type, std::string> parseBasicType();
 		int parseArrayDecl();
+		void parseNewArrayExpression();
+		void parseOptionalBrackets(); // does not need to return anything
 
 		std::unique_ptr<ast::ClassMember> parseFieldOrMethod(std::unique_ptr<ast::TypeIdent> typeIdent);
 		std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> parseOptionalParameters();
+		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseIdentOrIdentWithArguments();
+		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseArguments();
 
 		std::unique_ptr<ast::Statement> parseStatement();
 		std::unique_ptr<ast::Statement> parseBlock();
@@ -90,14 +93,10 @@ class Parser
 		void parseUnaryExpression();
 		void parsePostfixOps();
 		void parsePrimaryExpression();
-		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseArguments();
 		void parseMethodInvocation();
 		void parseMethodInvocationOrFieldAccess();
-		void parseNewArrayExpression();
 		void parseNewObjectExpression();
 		void parseNewObjectOrNewArrayExpression();
-		void parseOptionalBrackets();
-		std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> parseIdentOrIdentWithArguments();
 };
 
 #endif
