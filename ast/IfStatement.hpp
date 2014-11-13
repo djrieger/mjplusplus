@@ -8,7 +8,7 @@ namespace ast
 {
 	class IfStatement : public Statement
 	{
-		protected:
+		private:
 			std::unique_ptr<Expression> condition;
 			std::unique_ptr<Statement> thenStatement;
 			std::unique_ptr<Statement> elseStatement;

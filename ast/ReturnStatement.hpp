@@ -12,6 +12,7 @@ namespace ast
 			std::unique_ptr<Expression> expression;
 
 		public:
+			ReturnStatement();
 			ReturnStatement(std::unique_ptr<Expression>& expression);
 			virtual std::string toString();
 	};

@@ -9,6 +9,9 @@
 #include "../ast/ClassDeclaration.hpp"
 #include "../ast/MainMethodDeclaration.hpp"
 #include "../ast/FieldDeclaration.hpp"
+#include "../ast/IfStatement.hpp"
+#include "../ast/WhileStatement.hpp"
+#include "../ast/ReturnStatement.hpp"
 
 class Parser
 {
@@ -84,9 +87,9 @@ class Parser
 		void parseBlock();
 		void parseBlockStatement();
 		void parseLocalVariableDeclarationStatement();
-		void parseIfStatement();
-		void parseWhileStatement();
-		void parseReturnStatement();
+		std::unique_ptr<ast::IfStatement> parseIfStatement();
+		std::unique_ptr<ast::WhileStatement> parseWhileStatement();
+		std::unique_ptr<ast::ReturnStatement> parseReturnStatement();
 		void parseExpression();
 		void parseAssignmentExpression();
 		void precedenceClimb(int minPrec);
