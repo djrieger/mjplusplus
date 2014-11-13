@@ -11,7 +11,7 @@ namespace ast
 			virtual std::string toString()
 			{
 				return "";
-			};
+			}
 	};
 }
 
