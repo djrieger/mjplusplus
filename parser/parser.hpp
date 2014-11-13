@@ -77,10 +77,10 @@ class Parser
 		std::unique_ptr<ast::ClassMember> parseFieldOrMethod(std::unique_ptr<ast::TypeIdent> typeIdent);
 		std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> parseOptionalParameters();
 
-		void parseStatement();
-		void parseBlock();
-		void parseBlockStatement();
-		void parseLocalVariableDeclarationStatement();
+		std::unique_ptr<ast::Statement> parseStatement();
+		std::unique_ptr<ast::Statement> parseBlock();
+		std::unique_ptr<ast::Statement> parseBlockStatement();
+		std::unique_ptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
 		void parseIfStatement();
 		void parseWhileStatement();
 		void parseReturnStatement();
