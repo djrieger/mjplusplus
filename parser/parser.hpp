@@ -9,6 +9,10 @@
 #include "../ast/ClassDeclaration.hpp"
 #include "../ast/MainMethodDeclaration.hpp"
 #include "../ast/FieldDeclaration.hpp"
+#include "../ast/LVDStatement.hpp"
+#include "../ast/Block.hpp"
+#include "../ast/ExpressionStatement.hpp"
+#include "../ast/Statement.hpp"
 
 class Parser
 {

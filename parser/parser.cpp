@@ -382,15 +382,17 @@ std::unique_ptr<ast::Statement> Parser::parseBlock()
 	auto statements = std::make_unique<std::vector<std::unique_ptr<ast::Statement>>>();
 
 	while (current.token_type != Token::Token_type::OPERATOR_RBRACE)
+	{
 		auto block_statement = parseBlockStatement();
 
-	if (block_statement)
-		statements->push_back(std::move(block_statement));
+		if (block_statement)
+			statements->push_back(std::move(block_statement));
+	}
 
 	nextToken();
 
 	//If there are no block_statements we can skip the block.
-	if (!statements.empty())
+	if (!statements->empty())
 		return std::make_unique<ast::Block>(statements);
 	else
 		return std::unique_ptr<ast::Statement>;
