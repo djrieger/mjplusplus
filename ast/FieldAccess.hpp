@@ -9,11 +9,11 @@ namespace ast
 	class FieldAccess : public PostfixOp
 	{
 		private:
-			Ident& field_name;
+			std::unique_ptr<Ident> field_name;
 
 		public:
-			FieldAccess(Ident& field_name);
-			std::string toString();
+			FieldAccess(std::unique_ptr<Ident>& field_name);
+			virtual std::string toString();
 	};
 }
 

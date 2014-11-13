@@ -9,11 +9,11 @@ namespace ast
 	class ArrayAccess : public PostfixOp
 	{
 		private:
-			Expression& access_offset;
+			std::unique_ptr<Expression> access_offset;
 
 		public:
-			ArrayAccess(Expression& access_offset);
-			std::string toString();
+			ArrayAccess(std::unique_ptr<Expression>& access_offset);
+			virtual std::string toString();
 	};
 }
 

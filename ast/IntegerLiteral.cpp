@@ -1,7 +1,7 @@
 #include "IntegerLiteral.hpp"
 
 
-ast::IntegerLiteral::IntegerLiteral(std::string string_value)
+ast::IntegerLiteral::IntegerLiteral(std::string const& string_value)
 	: string_value(string_value)
 {
 
