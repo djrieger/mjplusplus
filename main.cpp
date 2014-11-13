@@ -37,33 +37,35 @@ int main(int argc, const char** argv)
 	}
 
 	Stateomat stateomat;
+	Lexer lexer(file_name.c_str(), stateomat);
 
 	if (has_option("lextest"))
 	{
-		Lexer lexer(file_name.c_str(), stateomat, true);
-		Token t;
+		Token t(lexer.get_next_token());
 
-		do
+		while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF)
 		{
+			t.print();
 			t = lexer.get_next_token();
 		}
-		while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF);
 
 		if (t.token_type != Token::Token_type::TOKEN_EOF)
 		{
 			std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
 			return EXIT_FAILURE;
 		}
-	}
-	else
-	{
-		Lexer lexer(file_name.c_str(), stateomat, false);
-		Parser parser(lexer, true);
-		bool valid = parser.start();
 
-		if (!valid)
-			return EXIT_FAILURE;
+		return EXIT_SUCCESS;
 	}
+
+	Parser parser(lexer, true);
+	bool valid = parser.start();
+
+	if (!valid)
+		return EXIT_FAILURE;
+
+	if (has_option("print-ast"))
+		parser.getRoot()->toString();
 
 	return EXIT_SUCCESS;
 }
