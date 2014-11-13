@@ -1,6 +1,6 @@
 #include "MethodInvocation.hpp"
 
-ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident> &method_name, std::unique_ptr<std::vector<Expression>> &arguments)
+ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<std::vector<Expression>>& arguments)
 	: method_name(std::move(method_name)), arguments(std::move(arguments))
 {
 

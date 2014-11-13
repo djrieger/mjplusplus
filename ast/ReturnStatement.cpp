@@ -1,6 +1,6 @@
 #include "ReturnStatement.hpp"
 
-ast::ReturnStatement::ReturnStatement(std::unique_ptr<Expression> &expression):
+ast::ReturnStatement::ReturnStatement(std::unique_ptr<Expression>& expression):
 	expression(std::move(expression))
 {
 
