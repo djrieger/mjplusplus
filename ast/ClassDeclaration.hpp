@@ -11,11 +11,11 @@ namespace ast
 	class ClassDeclaration : public Node
 	{
 		private:
-			Ident class_name;
+			std::unique_ptr<Ident> class_name;
 			std::unique_ptr<std::vector<ClassMember>> members;
 
 		public:
-			ClassDeclaration(Ident class_name, std::unique_ptr<std::vector<ClassMember>>& members);
+			ClassDeclaration(std::unique_ptr<Ident>& class_name, std::unique_ptr<std::vector<ClassMember>>& members);
 			virtual std::string toString();
 	};
 }

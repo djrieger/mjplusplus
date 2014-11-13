@@ -127,15 +127,15 @@ void Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 // ClassDeclaration -> IDENT { ClassMembers } .
 std::unique_ptr<ast::Program> Parser::parseProgram()
 {
-	std::unique_ptr<std::vector<ast::ClassDeclaration>> classes = std::make_unique<std::vector<ast::ClassDeclaration>>();
+	auto classes = std::make_unique<std::vector<ast::ClassDeclaration>>();
 
 	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
 		nextToken();
-		ast::Ident className(current.string_value);
+		auto className = std::make_unique<ast::Ident>(current.string_value);
 		expect(Token::Token_type::TOKEN_IDENT);
 		expect(Token::Token_type::OPERATOR_LBRACE);
-		std::unique_ptr<std::vector<ast::ClassMember>> members = parseClassMembers();
+		auto members = parseClassMembers();
 		expect(Token::Token_type::OPERATOR_RBRACE);
 		classes->emplace_back(className, members);
 	}
