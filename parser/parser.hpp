@@ -6,6 +6,8 @@
 #include "../lexer/lexer.hpp"
 #include "../ast/Program.hpp"
 #include "../ast/ClassMember.hpp"
+#include "../ast/ClassDeclaration.hpp"
+#include "../ast/MainMethodDeclaration.hpp"
 
 class Parser
 {
@@ -61,7 +63,7 @@ class Parser
 		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
 		std::unique_ptr<ast::Program> parseProgram();
 		std::unique_ptr<std::vector<ast::ClassMember>> parseClassMembers();
-		void parseMainMethod();
+		std::unique_ptr<ast::MainMethodDeclaration> parseMainMethod();
 		void parseTypeIdent();
 		void parseType();
 		void parseBasicType();

@@ -49,6 +49,12 @@ std::string ast::TypeIdent::toString()
 }
 
 ast::TypeIdent::TypeIdent(std::unique_ptr<Ident>& identifier,
+                          Primitive_type primitive_type):
+	TypeIdent(identifier, primitive_type, "", 0, 0)
+{
+}
+
+ast::TypeIdent::TypeIdent(std::unique_ptr<Ident>& identifier,
                           Primitive_type primitive_type,
                           std::string class_name,
                           int dimension,

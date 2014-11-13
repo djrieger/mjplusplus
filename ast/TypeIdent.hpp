@@ -18,7 +18,8 @@ namespace ast
 				VOID
 			};
 
-			TypeIdent(std::unique_ptr<Ident>& identifier, Primitive_type primitive_type, std::string class_name = "", int dimension = 0, int array_size = 0);
+			TypeIdent(std::unique_ptr<Ident>& identifier, Primitive_type primitive_type);
+			TypeIdent(std::unique_ptr<Ident>& identifier, Primitive_type primitive_type, std::string class_name, int dimension, int array_size);
 			virtual std::string toString();
 
 		private:
