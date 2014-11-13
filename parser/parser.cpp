@@ -1,8 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <memory>
 #include "parser.hpp"
-#include "../ast/ClassDeclaration.hpp"
-#include "../ast/ClassMember.hpp"
 
 Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
 {
@@ -132,6 +131,7 @@ std::unique_ptr<ast::Program> Parser::parseProgram()
 	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
 		nextToken();
+		// now current.string_value contains the name of the class:
 		auto className = std::make_unique<ast::Ident>(current.string_value);
 		expect(Token::Token_type::TOKEN_IDENT);
 		expect(Token::Token_type::OPERATOR_LBRACE);
@@ -148,6 +148,7 @@ std::unique_ptr<ast::Program> Parser::parseProgram()
 // ClassMember -> TypeIdent FieldOrMethod | static MainMethod .
 std::unique_ptr<std::vector<ast::ClassMember>> Parser::parseClassMembers()
 {
+	auto classMembers = std::make_unique<std::vector<ast::ClassMember>>();
 
 	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
 	{
@@ -156,30 +157,47 @@ std::unique_ptr<std::vector<ast::ClassMember>> Parser::parseClassMembers()
 		if (current.token_type == Token::Token_type::KEYWORD_STATIC)
 		{
 			nextToken();
-			parseMainMethod();
+			auto mainMethod = parseMainMethod();
 		}
 		else
 		{
+			// TODO
 			parseTypeIdent();
 			parseFieldOrMethod();
 		}
 	}
 
-	return std::make_unique<std::vector<ast::ClassMember>>();
+	return classMembers;
 }
 
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .
-void Parser::parseMainMethod()
+std::unique_ptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
 	expect(Token::Token_type::KEYWORD_VOID);
+	auto mainMethodName = std::make_unique<ast::Ident>(current.string_value);
+	auto typeIdent = std::make_unique<ast::TypeIdent>(
+	                     mainMethodName,
+	                     ast::TypeIdent::Primitive_type::VOID);
+
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
-	expect(Token::Token_type::TOKEN_IDENT, "String");
+
+	auto parameterName = std::make_unique<ast::Ident>(current.string_value);
+	auto parameters = std::make_unique<std::vector<ast::TypeIdent>>();
+	parameters->emplace_back(parameterName, ast::TypeIdent::Primitive_type::VOID);
+
+	expect(Token::Token_type::TOKEN_IDENT); // used to expect "String". Removed to move check to semantic analysis
 	expect(Token::Token_type::OPERATOR_LBRACKET);
 	expect(Token::Token_type::OPERATOR_RBRACKET);
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_RPAREN);
+	// TODO: Implemented Statement AST Node, update parseBlock() to return AST Node and then:
+	// auto block = parseBlock();
+	// instead of this:
 	parseBlock();
+	std::unique_ptr<ast::Statement> emptyStatement;
+	// TODO: return block instead of emptyStatement:
+	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, emptyStatement);
 }
 
 // TypeIdent -> Type IDENT
