@@ -13,7 +13,7 @@ namespace ast
 			std::unique_ptr<std::vector<Expression>> arguments;
 
 		public:
-			PrimaryExpression(std::unique_ptr<Node> &child, std::unique_ptr<std::vector<Expression>> &arguments);
+			PrimaryExpression(std::unique_ptr<Node>& child, std::unique_ptr<std::vector<Expression>>& arguments);
 			virtual std::string toString();
 	};
 }

@@ -22,7 +22,7 @@ std::string ast::UnaryExpression::toString()
 	return s;
 }
 
-ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression> &child, std::unique_ptr<std::vector<Unary_Operator>> &unary_operators) :
+ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression>& child, std::unique_ptr<std::vector<Unary_Operator>>& unary_operators) :
 	child(std::move(child)), unary_operators(std::move(unary_operators))
 {
 

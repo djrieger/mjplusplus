@@ -14,7 +14,7 @@ namespace ast
 			std::unique_ptr<std::vector<PostfixOp>> postfix_op;
 
 		public:
-			PostfixExpression(std::unique_ptr<PrimaryExpression> &child, std::unique_ptr<std::vector<PostfixOp>> &postfix_op);
+			PostfixExpression(std::unique_ptr<PrimaryExpression>& child, std::unique_ptr<std::vector<PostfixOp>>& postfix_op);
 			virtual std::string toString();
 	};
 }
