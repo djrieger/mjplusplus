@@ -64,10 +64,11 @@ class Parser
 		std::unique_ptr<ast::Program> parseProgram();
 		std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> parseClassMembers();
 		std::unique_ptr<ast::MainMethodDeclaration> parseMainMethod();
-		void parseTypeIdent();
-		void parseType();
-		void parseBasicType();
-		void parseArrayDecl();
+
+		std::unique_ptr<ast::TypeIdent> parseTypeIdent();
+		std::pair<ast::TypeIdent::Primitive_type, std::string> parseBasicType();
+		int parseArrayDecl();
+
 		void parseFieldOrMethod();
 		void parseOptionalParameters();
 		void parseStatement();
