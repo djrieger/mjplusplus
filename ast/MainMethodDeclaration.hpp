@@ -9,7 +9,7 @@ namespace ast
 	class MainMethodDeclaration : public MethodDeclaration
 	{
 		public:
-			MainMethodDeclaration(TypeIdent& return_type_and_name, std::vector<TypeIdent> parameters, Statement& block);
+			MainMethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<TypeIdent> >& parameters, std::unique_ptr<Statement>& block);
 			virtual std::string toString();
 	};
 }
