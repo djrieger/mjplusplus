@@ -9,10 +9,10 @@ namespace ast
 	class FieldDeclaration : public ClassMember
 	{
 		protected:
-			TypeIdent& type_and_name;
+			std::unique_ptr<TypeIdent> type_and_name;
 
 		public:
-			FieldDeclaration(TypeIdent& type_and_name);
+			FieldDeclaration(std::unique_ptr<TypeIdent>& type_and_name);
 			virtual std::string toString();
 	};
 }

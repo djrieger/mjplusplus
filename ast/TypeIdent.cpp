@@ -48,7 +48,7 @@ std::string ast::TypeIdent::toString()
 	return s;
 }
 
-ast::TypeIdent::TypeIdent(std::unique_ptr<Ident> &identifier,
+ast::TypeIdent::TypeIdent(std::unique_ptr<Ident>& identifier,
                           Primitive_type primitive_type,
                           std::string class_name,
                           int dimension,

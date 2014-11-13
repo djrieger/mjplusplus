@@ -1,6 +1,6 @@
 #include "PrimaryExpression.hpp"
 
-ast::PrimaryExpression::PrimaryExpression(std::unique_ptr<Node> &child, std::unique_ptr<std::vector<Expression>> &arguments) : child(std::move(child)), arguments(std::move(arguments))
+ast::PrimaryExpression::PrimaryExpression(std::unique_ptr<Node>& child, std::unique_ptr<std::vector<Expression>>& arguments) : child(std::move(child)), arguments(std::move(arguments))
 {
 
 }
