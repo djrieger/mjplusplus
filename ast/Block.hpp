@@ -2,6 +2,7 @@
 #define BLOCK_HPP
 
 #include "Statement.hpp"
+#include <vector>
 
 namespace ast
 {
