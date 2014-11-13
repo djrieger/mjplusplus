@@ -161,9 +161,9 @@ std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> Parser::parseCla
 		}
 		else
 		{
+			auto typeIdent = parseTypeIdent();
 			// TODO
-			parseTypeIdent();
-			parseFieldOrMethod();
+			parseFieldOrMethod(std::move(typeIdent));
 		}
 	}
 
@@ -183,8 +183,8 @@ std::unique_ptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	expect(Token::Token_type::OPERATOR_LPAREN);
 
 	auto parameterName = std::make_unique<ast::Ident>(current.string_value);
-	auto parameters = std::make_unique<std::vector<ast::TypeIdent>>();
-	parameters->emplace_back(parameterName, ast::TypeIdent::Primitive_type::VOID);
+	auto parameters = std::make_unique<std::vector<std::unique_ptr<ast::TypeIdent>>>();
+	parameters->push_back(std::make_unique<ast::TypeIdent>(parameterName, ast::TypeIdent::Primitive_type::VOID));
 
 	expect(Token::Token_type::TOKEN_IDENT); // used to expect "String". Removed to move check to semantic analysis
 	expect(Token::Token_type::OPERATOR_LBRACKET);
@@ -265,17 +265,29 @@ std::pair<ast::TypeIdent::Primitive_type, std::string> Parser::parseBasicType()
 // FieldOrMethod -> Field | Method .
 // Field -> ; .
 // Method -> ( OptionalParameters ) Block .
-void Parser::parseFieldOrMethod()
+std::unique_ptr<ast::ClassMember> Parser::parseFieldOrMethod(std::unique_ptr<ast::TypeIdent> typeIdent)
 {
+	std::unique_ptr<ast::ClassMember> classMember;
+
 	if (current.token_type == Token::Token_type::OPERATOR_SEMICOLON)
+	{
+		classMember = std::make_unique<ast::FieldDeclaration>(typeIdent);
 		nextToken();
+	}
 	else
 	{
 		expect(Token::Token_type::OPERATOR_LPAREN);
-		parseOptionalParameters();
+		auto parameters = parseOptionalParameters();
 		expect(Token::Token_type::OPERATOR_RPAREN);
+		// TODO: auto block = parseBlock();
 		parseBlock();
+		// TODO: remove this:
+		std::unique_ptr<ast::Statement> emptyStatement;
+
+		classMember = std::make_unique<ast::MethodDeclaration>(typeIdent, parameters, emptyStatement);
 	}
+
+	return classMember;
 }
 
 // OptionalParameters -> Parameters | .
@@ -283,23 +295,26 @@ void Parser::parseFieldOrMethod()
 // FollowingParameters -> , Parameters
 //     | .
 // Parameter -> TypeIdent .
-void Parser::parseOptionalParameters()
+std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> Parser::parseOptionalParameters()
 {
+	auto parameters = std::make_unique<std::vector<std::unique_ptr<ast::TypeIdent>>>();
 	bool isFirstParameter = true;
 
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstParameter = false;
-		parseTypeIdent();
+		parameters->push_back(std::move(parseTypeIdent()));
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
-			return;
+			return parameters;
 		else
 			nextToken();
 	}
 
 	if (!isFirstParameter)
 		throw "trailing comma";
+
+	return parameters;
 }
 
 // Statement -> Block | EmptyStatement | if IfStatement | Expression ; | while WhileStatement | return ReturnStatement .

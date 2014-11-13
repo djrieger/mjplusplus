@@ -12,11 +12,11 @@ namespace ast
 	{
 		protected:
 			std::unique_ptr<TypeIdent> return_type_and_name;
-			std::unique_ptr<std::vector<TypeIdent>> parameters;
+			std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>> parameters;
 			std::unique_ptr<Statement> block;
 
 		public:
-			MethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<TypeIdent>>& parameters, std::unique_ptr<Statement>& block);
+			MethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>>& parameters, std::unique_ptr<Statement>& block);
 			virtual std::string toString();
 	};
 }

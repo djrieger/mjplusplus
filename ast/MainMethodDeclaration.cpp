@@ -2,7 +2,7 @@
 #include "TypeIdent.hpp"
 
 
-ast::MainMethodDeclaration::MainMethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<TypeIdent>>& parameters, std::unique_ptr<Statement>& block)
+ast::MainMethodDeclaration::MainMethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>>& parameters, std::unique_ptr<Statement>& block)
 	: MethodDeclaration(return_type_and_name, parameters, block)
 {
 	;
@@ -15,7 +15,7 @@ std::string ast::MainMethodDeclaration::toString()
 
 	while (1)
 	{
-		ret += it->toString();
+		ret += (**it).toString();
 
 		if (++it != parameters->end())
 			ret += ", ";
