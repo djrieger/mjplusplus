@@ -493,39 +493,44 @@ std::unique_ptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatemen
 // IfStatement -> ( Expression ) Statement OptionalElseStatement .
 // OptionalElseStatement -> else Statement
 // 	| .
-void Parser::parseIfStatement()
+std::unique_ptr<ast::IfStatement> Parser::parseIfStatement()
 {
 	expect(Token::Token_type::OPERATOR_LPAREN);
-	parseExpression();
+	auto cond = parseExpression();
 	expect(Token::Token_type::OPERATOR_RPAREN);
-	parseStatement();
+	auto then = parseStatement();
 
 	if (current.token_type == Token::Token_type::KEYWORD_ELSE)
 	{
 		nextToken();
-		parseStatement();
+		return std::make_unique<ast::IfStatement>(cond, then, parseStatement());
 	}
+	else
+		return std::make_unique<ast::IfStatement>(cond, then);
 }
 
 // WhileStatement -> ( Expression ) Statement .
-void Parser::parseWhileStatement()
+std::unique_ptr<ast::WhileStatement> Parser::parseWhileStatement()
 {
 	expect(Token::Token_type::OPERATOR_LPAREN);
-	parseExpression();
+	auto cond = parseExpression();
 	expect(Token::Token_type::OPERATOR_RPAREN);
-	parseStatement();
+	return std::make_unique<ast::WhileStatement>(cond, parseStatement());
 }
 
 // ReturnStatement -> OptionalExpression ; .
 // OptionalExpression -> Expression
 //  	| .
-void Parser::parseReturnStatement()
+std::unique_ptr<ast::ReturnStatement> Parser::parseReturnStatement()
 {
 	if (current.token_type != Token::Token_type::OPERATOR_SEMICOLON)
-		parseExpression();
-
+	{
+		expect(Token::Token_type::OPERATOR_SEMICOLON);
+		return std::make_unique<ast::ReturnStatement>(parseExpression());
+	}
 
 	expect(Token::Token_type::OPERATOR_SEMICOLON);
+	return std::make_unique<ast::ReturnStatement>();
 }
 
 /*

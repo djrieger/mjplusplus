@@ -13,6 +13,9 @@
 #include "../ast/Block.hpp"
 #include "../ast/ExpressionStatement.hpp"
 #include "../ast/Statement.hpp"
+#include "../ast/IfStatement.hpp"
+#include "../ast/WhileStatement.hpp"
+#include "../ast/ReturnStatement.hpp"
 
 class Parser
 {
@@ -88,9 +91,9 @@ class Parser
 		std::unique_ptr<ast::Statement> parseBlock();
 		std::unique_ptr<ast::Statement> parseBlockStatement();
 		std::unique_ptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
-		void parseIfStatement();
-		void parseWhileStatement();
-		void parseReturnStatement();
+		std::unique_ptr<ast::IfStatement> parseIfStatement();
+		std::unique_ptr<ast::WhileStatement> parseWhileStatement();
+		std::unique_ptr<ast::ReturnStatement> parseReturnStatement();
 		void parseExpression();
 		void parseAssignmentExpression();
 		void precedenceClimb(int minPrec);
