@@ -216,8 +216,8 @@ const int kw_lex_table[][26] = {{ 1,  2,  3,  4,  5,  6, 50, 83,  7, 83, 83, 55,
 };
 
 
-Lexer::Lexer(const char* file_name, Stateomat const& stateomat, bool debug)
-	: position {1, 1}, stateomat(stateomat), debug(debug), line_start(0)
+Lexer::Lexer(const char* file_name, Stateomat const& stateomat)
+	: position {1, 1}, stateomat(stateomat), line_start(0)
 {
 
 	fd = open(file_name, O_RDONLY);
@@ -358,9 +358,6 @@ Token Lexer::get_next_token()
 					t.token_type = stateomat.operators[state][t.string_value];
 				else if (t.token_type == Token::Token_type::TOKEN_IDENT_OR_KEYWORD)
 					t.token_type = lex_keyword_or_ident(t.string_value.c_str());
-
-				if (debug)
-					t.print();
 
 				return t;
 			}
