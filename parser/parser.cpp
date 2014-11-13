@@ -191,7 +191,7 @@ std::unique_ptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	auto parameters = std::make_unique<std::vector<std::unique_ptr<ast::TypeIdent>>>();
 	parameters->push_back(std::make_unique<ast::TypeIdent>(parameterName, ast::TypeIdent::Primitive_type::VOID));
 
-	expect(Token::Token_type::TOKEN_IDENT); // used to expect "String". Removed to move check to semantic analysis
+	expect(Token::Token_type::TOKEN_IDENT, "String");
 	expect(Token::Token_type::OPERATOR_LBRACKET);
 	expect(Token::Token_type::OPERATOR_RBRACKET);
 	expect(Token::Token_type::TOKEN_IDENT);
