@@ -13,10 +13,10 @@ namespace ast
 	{
 		private:
 			std::unique_ptr<Ident> class_name;
-			std::unique_ptr<std::vector<ClassMember>> members;
+			std::unique_ptr<std::vector<std::unique_ptr<ClassMember>>> members;
 
 		public:
-			ClassDeclaration(std::unique_ptr<Ident>& class_name, std::unique_ptr<std::vector<ClassMember>>& members);
+			ClassDeclaration(std::unique_ptr<Ident>& class_name, std::unique_ptr<std::vector<std::unique_ptr<ClassMember>>>& members);
 			virtual std::string toString();
 	};
 }

@@ -2,7 +2,7 @@
 
 namespace ast
 {
-	ClassDeclaration::ClassDeclaration(std::unique_ptr<Ident>& class_name, std::unique_ptr<std::vector<ClassMember>>& members) : class_name(std::move(class_name)), members(std::move(members))
+	ClassDeclaration::ClassDeclaration(std::unique_ptr<Ident>& class_name, std::unique_ptr<std::vector<std::unique_ptr<ClassMember>>>& members) : class_name(std::move(class_name)), members(std::move(members))
 	{
 		;
 	}
@@ -11,7 +11,7 @@ namespace ast
 		std::string r("class " + class_name->toString() + "\n{");
 
 		for (auto it = members->begin(); it != members->end(); it++)
-			r += it->toString();
+			r += (**it).toString();
 
 		r += '}';
 
