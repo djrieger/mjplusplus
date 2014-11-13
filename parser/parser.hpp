@@ -1,6 +1,8 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
+#include <memory>
+
 #include "../lexer/lexer.hpp"
 #include "../ast/Program.hpp"
 #include "../ast/ClassMember.hpp"
@@ -22,7 +24,7 @@ class Parser
 		bool start();
 
 	private:
-		ast::Program astRoot;
+		std::unique_ptr<ast::Program> astRoot;
 
 		Lexer& lexer;
 		/**
@@ -57,8 +59,8 @@ class Parser
 		void printError(std::string const& error_msg);
 
 		// TODO: determine (in and out) parameters as well as the return type, e.g.: anchor set for panic mode, later on the AST data structure.
-		ast::Program parseProgram();
-		std::vector<ast::ClassMember> parseClassMembers();
+		std::unique_ptr<ast::Program> parseProgram();
+		std::unique_ptr<std::vector<ast::ClassMember>> parseClassMembers();
 		void parseMainMethod();
 		void parseTypeIdent();
 		void parseType();

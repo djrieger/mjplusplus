@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <memory>
 #include "parser.hpp"
 #include "../ast/ClassDeclaration.hpp"
 #include "../ast/ClassMember.hpp"
@@ -126,9 +125,9 @@ void Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 
 // Program -> class ClassDeclaration Program | .
 // ClassDeclaration -> IDENT { ClassMembers } .
-ast::Program Parser::parseProgram()
+std::unique_ptr<ast::Program> Parser::parseProgram()
 {
-	std::vector<ast::ClassDeclaration> classes;
+	std::unique_ptr<std::vector<ast::ClassDeclaration>> classes = std::make_unique<std::vector<ast::ClassDeclaration>>();
 
 	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
@@ -138,14 +137,11 @@ ast::Program Parser::parseProgram()
 		expect(Token::Token_type::OPERATOR_LBRACE);
 		std::unique_ptr<std::vector<ast::ClassMember>> members = parseClassMembers();
 		expect(Token::Token_type::OPERATOR_RBRACE);
-		classes.push_back(ast::ClassDeclaration(className, std::move(members)));
+		classes->emplace_back(className, members);
 	}
 
-	for (auto it : classes)
-		std::cout << it.toString() << std::endl;
-
 	expect(Token::Token_type::TOKEN_EOF);
-	return (ast::Program(classes));
+	return std::make_unique<ast::Program>(classes);
 }
 
 // ClassMembers -> public ClassMember ClassMembers | .

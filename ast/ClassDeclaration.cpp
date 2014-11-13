@@ -2,7 +2,7 @@
 
 namespace ast
 {
-	ClassDeclaration::ClassDeclaration(Ident class_name, std::unique_ptr<std::vector<ClassMember>>&& members) : class_name(class_name), members(members)
+	ClassDeclaration::ClassDeclaration(Ident class_name, std::unique_ptr<std::vector<ClassMember>>& members) : class_name(class_name), members(std::move(members))
 	{
 		;
 	}
