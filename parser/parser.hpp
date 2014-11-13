@@ -8,6 +8,7 @@
 #include "../ast/ClassMember.hpp"
 #include "../ast/ClassDeclaration.hpp"
 #include "../ast/MainMethodDeclaration.hpp"
+#include "../ast/FieldDeclaration.hpp"
 
 class Parser
 {
@@ -69,8 +70,9 @@ class Parser
 		std::pair<ast::TypeIdent::Primitive_type, std::string> parseBasicType();
 		int parseArrayDecl();
 
-		void parseFieldOrMethod();
-		void parseOptionalParameters();
+		std::unique_ptr<ast::ClassMember> parseFieldOrMethod(std::unique_ptr<ast::TypeIdent> typeIdent);
+		std::unique_ptr<std::vector<std::unique_ptr<ast::TypeIdent>>> parseOptionalParameters();
+
 		void parseStatement();
 		void parseBlock();
 		void parseBlockStatement();
