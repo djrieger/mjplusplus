@@ -17,12 +17,12 @@ namespace ast
 				UNARY_MINUS
 			};
 
-			UnaryExpression(PostfixExpression& child, std::vector<Unary_Operator> unary_operators);
+			UnaryExpression(std::unique_ptr<PostfixExpression> &child, std::unique_ptr<std::vector<Unary_Operator>> &unary_operators);
 			virtual std::string toString();
 
 		private:
-			PostfixExpression& child;
-			std::vector<Unary_Operator> unary_operators;
+			std::unique_ptr<PostfixExpression> child;
+			std::unique_ptr<std::vector<Unary_Operator>> unary_operators;
 
 	};
 }

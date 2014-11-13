@@ -1,21 +1,21 @@
 #include "MethodInvocation.hpp"
 
-ast::MethodInvocation::MethodInvocation(Ident& method_name, std::vector<Expression> arguments)
-	: method_name(method_name), arguments(arguments)
+ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident> &method_name, std::unique_ptr<std::vector<Expression>> &arguments)
+	: method_name(std::move(method_name)), arguments(std::move(arguments))
 {
 
 }
 
 std::string ast::MethodInvocation::toString()
 {
-	std::string ret = method_name.toString() + "(";
-	auto it = arguments.begin();
+	std::string ret = method_name->toString() + "(";
+	auto it = arguments->begin();
 
 	while (1)
 	{
 		ret += it->toString();
 
-		if (++it != arguments.end())
+		if (++it != arguments->end())
 			ret += ", ";
 		else
 			break;

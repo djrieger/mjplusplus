@@ -1,12 +1,12 @@
 #include "ReturnStatement.hpp"
 
-ast::ReturnStatement::ReturnStatement(Expression& expression):
-	expression(expression)
+ast::ReturnStatement::ReturnStatement(std::unique_ptr<Expression> &expression):
+	expression(std::move(expression))
 {
 
 }
 
 std::string ast::ReturnStatement::toString()
 {
-	return "return " + expression.toString() + ";\n";
+	return "return " + expression->toString() + ";\n";
 }

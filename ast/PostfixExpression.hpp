@@ -10,11 +10,11 @@ namespace ast
 	class PostfixExpression : public Expression
 	{
 		private:
-			PrimaryExpression& child;
-			std::vector<PostfixOp> postfix_op;
+			std::unique_ptr<PrimaryExpression> child;
+			std::unique_ptr<std::vector<PostfixOp>> postfix_op;
 
 		public:
-			PostfixExpression(PrimaryExpression& child, std::vector<PostfixOp> postfix_op);
+			PostfixExpression(std::unique_ptr<PrimaryExpression> &child, std::unique_ptr<std::vector<PostfixOp>> &postfix_op);
 			virtual std::string toString();
 	};
 }
