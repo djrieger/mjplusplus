@@ -11,8 +11,8 @@ namespace ast
 			std::string string_value;
 
 		public:
-			Ident(std::string string_value);
-			std::string toString();
+			Ident(std::string const& string_value);
+			virtual std::string toString();
 	};
 }
 #endif // IDENT_HPP

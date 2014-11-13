@@ -12,7 +12,7 @@ namespace ast
 
 		public:
 			BoolLiteral(bool value);
-			std::string toString();
+			virtual std::string toString();
 	};
 }
 
