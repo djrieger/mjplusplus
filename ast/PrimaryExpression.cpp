@@ -1,6 +1,6 @@
 #include "PrimaryExpression.hpp"
 
-ast::PrimaryExpression::PrimaryExpression(Node& child, std::vector<Expression> arguments) : child(child), arguments(arguments)
+ast::PrimaryExpression::PrimaryExpression(std::unique_ptr<Node> &child, std::unique_ptr<std::vector<Expression>> &arguments) : child(std::move(child)), arguments(std::move(arguments))
 {
 
 }
@@ -8,12 +8,12 @@ ast::PrimaryExpression::PrimaryExpression(Node& child, std::vector<Expression> a
 std::string ast::PrimaryExpression::toString()
 {
 	std::string str = "";
-	str += child.toString();
+	str += child->toString();
 	str += "(";
 
-	for (int i = 0, size = arguments.size(); i < size; ++i)
+	for (int i = 0, size = arguments->size(); i < size; ++i)
 	{
-		str += arguments[i].toString();
+		str += arguments->at(i).toString();
 		str += (i < size - 1) ? ", " : "";
 	}
 

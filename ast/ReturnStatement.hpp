@@ -9,10 +9,10 @@ namespace ast
 	class ReturnStatement : public Statement
 	{
 		private:
-			Expression& expression;
+			std::unique_ptr<Expression> expression;
 
 		public:
-			ReturnStatement(Expression& expr);
+			ReturnStatement(std::unique_ptr<Expression> &expression);
 			virtual std::string toString();
 	};
 }

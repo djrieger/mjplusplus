@@ -11,11 +11,11 @@ namespace ast
 	class MethodInvocation : public PostfixOp
 	{
 		private:
-			Ident& method_name;
-			std::vector<Expression> arguments;
+			std::unique_ptr<Ident> method_name;
+			std::unique_ptr<std::vector<Expression>> arguments;
 
 		public:
-			MethodInvocation(Ident& method_name, std::vector<Expression> arguments);
+			MethodInvocation(std::unique_ptr<Ident> &method_name, std::unique_ptr<std::vector<Expression>> &arguments);
 			virtual std::string toString();
 	};
 }

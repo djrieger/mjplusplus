@@ -4,7 +4,7 @@ std::string ast::UnaryExpression::toString()
 {
 	std::string s = "";
 
-	for (auto unary_operator : unary_operators)
+	for (auto& unary_operator : *unary_operators)
 	{
 		switch (unary_operator)
 		{
@@ -18,12 +18,12 @@ std::string ast::UnaryExpression::toString()
 		}
 	}
 
-	s += child.toString();
+	s += child->toString();
 	return s;
 }
 
-ast::UnaryExpression::UnaryExpression(PostfixExpression& child, std::vector<Unary_Operator> unary_operators) :
-	child(child), unary_operators(unary_operators)
+ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression> &child, std::unique_ptr<std::vector<Unary_Operator>> &unary_operators) :
+	child(std::move(child)), unary_operators(std::move(unary_operators))
 {
 
 }

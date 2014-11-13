@@ -43,16 +43,16 @@ std::string ast::TypeIdent::toString()
 		}
 	}
 
-	s += " " + identifier.toString();
+	s += " " + identifier->toString();
 
 	return s;
 }
 
-ast::TypeIdent::TypeIdent(Ident& identifier,
+ast::TypeIdent::TypeIdent(std::unique_ptr<Ident> &identifier,
                           Primitive_type primitive_type,
                           std::string class_name,
                           int dimension,
                           int array_size):
-	identifier(identifier), primitive_type(primitive_type), class_name(class_name), dimension(dimension), array_size(array_size)
+	identifier(std::move(identifier)), primitive_type(primitive_type), class_name(class_name), dimension(dimension), array_size(array_size)
 {
 }

@@ -9,12 +9,12 @@ namespace ast
 	class PrimaryExpression : public Expression
 	{
 		private:
-			Node& child;
-			std::vector<Expression> arguments;
+			std::unique_ptr<Node> child;
+			std::unique_ptr<std::vector<Expression>> arguments;
 
 		public:
-			PrimaryExpression(Node& child, std::vector<Expression> arguments);
-			std::string toString();
+			PrimaryExpression(std::unique_ptr<Node> &child, std::unique_ptr<std::vector<Expression>> &arguments);
+			virtual std::string toString();
 	};
 }
 
