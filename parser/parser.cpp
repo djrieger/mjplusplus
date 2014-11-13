@@ -53,7 +53,7 @@ bool Parser::start()
 	try
 	{
 		nextToken();
-		parseProgram();
+		astRoot = std::move(parseProgram());
 		r = true;
 	}
 	catch (char const* msg)
@@ -73,6 +73,11 @@ bool Parser::start()
 		std::cerr << "Error during compilation." << std::endl;
 
 	return r;
+}
+
+std::shared_ptr<ast::Program> Parser::getRoot()
+{
+	return astRoot;
 }
 
 void Parser::nextToken()
@@ -148,7 +153,7 @@ std::unique_ptr<ast::Program> Parser::parseProgram()
 // ClassMember -> TypeIdent FieldOrMethod | static MainMethod .
 std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> Parser::parseClassMembers()
 {
-	std::unique_ptr<std::vector<std::unique_ptr<ast::ClassMember>>> classMembers;
+	auto classMembers = std::make_unique<std::vector<std::unique_ptr<ast::ClassMember>>>();
 
 	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
 	{

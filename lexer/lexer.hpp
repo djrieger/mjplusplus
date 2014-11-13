@@ -12,7 +12,6 @@ class Lexer
 		// line, column
 		std::pair<unsigned int, unsigned int> position;
 		Stateomat stateomat;
-		bool debug;
 		std::vector<Token> token_stack;
 		int c;
 		//std::istream::pos_type line_start;
@@ -34,7 +33,7 @@ class Lexer
 		Token::Token_type lex_keyword_or_ident(const char* s);
 
 	public:
-		Lexer(const char* file_name, Stateomat const& stateomat, bool debug = false);
+		Lexer(const char* file_name, Stateomat const& stateomat);
 		Token get_next_token();
 		void unget_token(Token const& t);
 		bool good() const;
