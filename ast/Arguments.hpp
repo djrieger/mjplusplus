@@ -12,6 +12,7 @@ namespace ast
 		private:
 			std::unique_ptr<std::vector<std::unique_ptr<ast::Expression>>> arguments;
 		public:
+			Arguments();
 			Arguments(std::unique_ptr<std::vector<std::unique_ptr<ast::Expression>>>& arguments);
 			virtual std::string toString() const;
 	};

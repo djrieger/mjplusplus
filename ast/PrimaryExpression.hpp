@@ -85,7 +85,6 @@ namespace ast
 				IdentWithArguments(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments);
 				virtual std::string toString() const;
 			private:
-				std::unique_ptr<ast::Ident> identifier;
 				std::unique_ptr<Arguments> arguments;
 		};
 
