@@ -28,7 +28,7 @@ namespace ast
 		{
 		}
 
-		std::string ast::Object::toString()
+		std::string Object::toString()
 		{
 			return (object_type == Object_Type::THIS_OBJECT) ? "this" : "null";
 		}
@@ -46,7 +46,6 @@ namespace ast
 
 
 		NewArrayExpression::NewArrayExpression(std::unique_ptr<BasicType>& basic_type, std::unique_ptr<Expression>& expr, int dimension) :
-			PrimaryExpression(std::unique_ptr<Node>(nullptr), std::unique_ptr<std::vector<Expression>>(nullptr)),
 			basic_type(std::move(basic_type)),
 			expr(std::move(expr)),
 			dimension(dimension)
@@ -77,7 +76,7 @@ namespace ast
 			return "new " + identifier->toString() + "()";
 		}
 
-		IdentWithArguments(std::unique_ptr<Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
+		IdentWithArguments::IdentWithArguments(std::unique_ptr<Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
 			Ident(identifier),
 			arguments(std::move(arguments))
 		{
