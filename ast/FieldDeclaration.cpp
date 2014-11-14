@@ -7,5 +7,5 @@ ast::FieldDeclaration::FieldDeclaration(std::unique_ptr<TypeIdent>& type_and_nam
 
 std::string ast::FieldDeclaration::toString()
 {
-	return type_and_name->toString();
+	return "public " + type_and_name->toString() + ";\n";
 }

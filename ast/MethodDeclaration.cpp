@@ -21,7 +21,7 @@ std::string ast::MethodDeclaration::toString()
 			break;
 	}
 
-	ret += ")\n" + block->toString();
+	ret += ");\n" + block->toString();
 
 	return ret;
 }
