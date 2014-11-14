@@ -12,10 +12,10 @@ namespace ast
 	{
 		private:
 			std::unique_ptr<Ident> method_name;
-			std::unique_ptr<std::vector<Expression>> arguments;
+			std::unique_ptr<std::vector<std::unique_ptr<Expression>>> arguments;
 
 		public:
-			MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<std::vector<Expression>>& arguments);
+			MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<std::vector<std::unique_ptr<Expression>>>& arguments);
 			virtual std::string toString();
 	};
 }

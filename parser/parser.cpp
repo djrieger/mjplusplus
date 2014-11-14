@@ -199,13 +199,8 @@ uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	expect(Token::Token_type::OPERATOR_RBRACKET);
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_RPAREN);
-	// TODO: Implemented Statement AST Node, update parseBlock() to return AST Node and then:
-	// auto block = parseBlock();
-	// instead of this:
-	parseBlock();
-	uptr<ast::Statement> emptyStatement;
-	// TODO: return block instead of emptyStatement:
-	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, emptyStatement);
+	auto block = parseBlock();
+	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, block);
 }
 
 // TypeIdent -> Type IDENT
@@ -287,12 +282,9 @@ uptr<ast::ClassMember> Parser::parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent
 		expect(Token::Token_type::OPERATOR_LPAREN);
 		auto parameters = parseOptionalParameters();
 		expect(Token::Token_type::OPERATOR_RPAREN);
-		// TODO: auto block = parseBlock();
-		parseBlock();
-		// TODO: remove this:
-		uptr<ast::Statement> emptyStatement;
+		auto block = parseBlock();
 
-		classMember = std::make_unique<ast::MethodDeclaration>(typeIdent, parameters, emptyStatement);
+		classMember = std::make_unique<ast::MethodDeclaration>(typeIdent, parameters, block);;
 	}
 
 	return classMember;
@@ -371,9 +363,7 @@ uptr<ast::Statement> Parser::parseStatement()
 		case Token::Token_type::KEYWORD_THIS:
 		case Token::Token_type::KEYWORD_NEW:
 		{
-			// TODO
-			//auto expr = parseExpression();
-			uptr<ast::Expression> expr;
+			auto expr = parseExpression();
 			expect(Token::Token_type::OPERATOR_SEMICOLON);
 			return std::make_unique<ast::ExpressionStatement>(expr);
 			break;
@@ -499,16 +489,20 @@ uptr<ast::Statement> Parser::parseBlockStatement()
 //	| .
 uptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 {
-	parseTypeIdent();
+	auto type_ident = parseTypeIdent();
+	uptr<ast::LVDStatement> lvdStatement;
 
 	if (current.token_type == Token::Token_type::OPERATOR_EQ)
 	{
 		nextToken();
-		parseExpression();
+		auto expression = parseExpression();
+		lvdStatement = std::make_unique<ast::LVDStatement>(type_ident, expression);
 	}
+	else
+		lvdStatement = std::make_unique<ast::LVDStatement>(type_ident);
 
 	expect(Token::Token_type::OPERATOR_SEMICOLON);
-	// TODO: return something
+	return lvdStatement;
 }
 
 // IfStatement -> ( Expression ) Statement OptionalElseStatement .
@@ -517,8 +511,7 @@ uptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 uptr<ast::IfStatement> Parser::parseIfStatement()
 {
 	expect(Token::Token_type::OPERATOR_LPAREN);
-	// TODO auto cond = parseExpression();
-	std::unique_ptr<ast::Expression> cond;
+	auto cond = parseExpression();
 	expect(Token::Token_type::OPERATOR_RPAREN);
 	auto then = parseStatement();
 
@@ -536,11 +529,9 @@ uptr<ast::IfStatement> Parser::parseIfStatement()
 uptr<ast::WhileStatement> Parser::parseWhileStatement()
 {
 	expect(Token::Token_type::OPERATOR_LPAREN);
-	// TODO auto cond = parseExpression();
-	std::unique_ptr<ast::Expression> cond;
+	auto cond = parseExpression();
 	expect(Token::Token_type::OPERATOR_RPAREN);
-	// TODO return std::make_unique<ast::WhileStatement>(cond, parseStatement());
-	uptr<ast::Statement> stmt;
+	auto stmt = parseStatement();
 	return std::make_unique<ast::WhileStatement>(cond, stmt);
 }
 
@@ -552,8 +543,8 @@ uptr<ast::ReturnStatement> Parser::parseReturnStatement()
 	if (current.token_type != Token::Token_type::OPERATOR_SEMICOLON)
 	{
 		expect(Token::Token_type::OPERATOR_SEMICOLON);
-		// TODO return std::make_unique<ast::ReturnStatement>(parseExpression());
-		return std::make_unique<ast::ReturnStatement>();
+		auto expr = parseExpression();
+		return std::make_unique<ast::ReturnStatement>(expr);
 	}
 
 	expect(Token::Token_type::OPERATOR_SEMICOLON);
@@ -591,17 +582,17 @@ OptionalMultiplicativeExpression -> MultiplicativeExpression MultSlashPercent
 	| .
 MultSlashPercent -> * | / | % .
 */
-void Parser::parseExpression()
+uptr<ast::Expression> Parser::parseExpression()
 {
-	precedenceClimb(1);
+	return precedenceClimb(1);
 }
 
 /*
 parses an expression via precedence climb
 */
-void Parser::precedenceClimb(int minPrec)
+uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 {
-	parseUnaryExpression();
+	uptr<ast::Expression> expr = parseUnaryExpression();
 	int prec = operator_precs(current.token_type);
 
 	while (prec >= minPrec)
@@ -609,26 +600,52 @@ void Parser::precedenceClimb(int minPrec)
 		if (prec > 1) //equivalent to the fact that operator is left associative
 			prec++;
 
+		Token::Token_type t = current.token_type;
 		nextToken();
-		precedenceClimb(prec);
+		auto exprRHS = precedenceClimb(prec);
+		expr = std::make_unique<ast::BinaryExpression>(expr, exprRHS, t);
+
 		prec = operator_precs(current.token_type);
 	}
+
+	return expr;
 }
 
 // UnaryExpression -> PostfixExpression | ExclMarkOrHyphen UnaryExpression .
 // PostfixExpression -> PrimaryExpression PostfixOps .
-void Parser::parseUnaryExpression()
+uptr<ast::UnaryExpression> Parser::parseUnaryExpression()
 {
+	auto unary_operators = std::make_unique<std::vector<ast::UnaryExpression::Unary_Operator>>();
+
 	while (current.token_type == Token::Token_type::OPERATOR_NOT ||
 	        current.token_type == Token::Token_type::OPERATOR_MINUS)
-		nextToken();
+	{
+		switch (current.token_type)
+		{
+			case Token::Token_type::OPERATOR_NOT:
+				unary_operators->push_back(ast::UnaryExpression::Unary_Operator::UNARY_NOT);
+				break;
 
-	parsePrimaryExpression();
-	parsePostfixOps();
+			case Token::Token_type::OPERATOR_MINUS:
+				unary_operators->push_back(ast::UnaryExpression::Unary_Operator::UNARY_MINUS);
+				break;
+
+			default:
+				break;
+		}
+
+		nextToken();
+	}
+
+	auto primaryExpr = parsePrimaryExpression();
+	//TODO auto postfix_ops = parsePostfixOps();
+	uptr<std::vector<uptr<ast::PostfixOp>>> postfix_ops;
+	auto postfixExpr = std::make_unique<ast::PostfixExpression>(primaryExpr, postfix_ops);
+	return std::make_unique<ast::UnaryExpression>(postfixExpr, unary_operators);
 }
 
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
-void Parser::parsePrimaryExpression()
+uptr<ast::PrimaryExpression> Parser::parsePrimaryExpression()
 {
 	switch (current.token_type)
 	{
@@ -663,9 +680,9 @@ void Parser::parsePrimaryExpression()
 
 // IdentOrIdentWithArguments -> ( Arguments )
 //     | .
-uptr<vec<uptr<ast::Ident>>> Parser::parseIdentOrIdentWithArguments()
+uptr<vec<uptr<ast::Expression>>> Parser::parseIdentOrIdentWithArguments()
 {
-	uptr<vec<uptr<ast::Ident>>> arguments;
+	uptr<vec<uptr<ast::Expression>>> arguments;
 
 	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
 	{
@@ -737,18 +754,15 @@ void Parser::parseOptionalBrackets()
 
 // Arguments -> Expression ArgumentsExpressions | .
 // ArgumentsExpressions -> , Expression ArgumentsExpressions | .
-uptr<vec<uptr<ast::Ident>>> Parser::parseArguments()
+uptr<vec<uptr<ast::Expression>>> Parser::parseArguments()
 {
-	auto arguments = std::make_unique<vec<uptr<ast::Ident>>>();
+	auto arguments = std::make_unique<vec<uptr<ast::Expression>>>();
 	bool isFirstArgument = true;
 
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
-		// TODO:
-		// parameters->push_back(std::move(parseExpression());
-		// instead of
-		parseExpression();
+		arguments->push_back(std::move(parseExpression()));
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
 			return arguments;
@@ -772,7 +786,8 @@ std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
 	{
 		nextToken();
-		return std::make_unique<ast::MethodInvocation>(id, parseArguments());
+		auto args = parseArguments();
+		return std::make_unique<ast::MethodInvocation>(id, args);
 		expect(Token::Token_type::OPERATOR_RPAREN);
 	}
 	else
@@ -782,7 +797,7 @@ std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 // PostfixOps -> PostfixOp PostfixOps | .
 // PostfixOp -> DOT MethodInvocationOrFieldAccess
 //     | [ Expression ] .
-std::unique_ptr<std::vector<std::unique_ptr<ast::PostfixOp>>> Parser::parsePostfixOps()
+uptr<vec<uptr<ast::PostfixOp> > > Parser::parsePostfixOps()
 {
 	auto postfixops = std::make_unique<std::vector<std::unique_ptr<ast::PostfixOp>>>();
 
@@ -796,7 +811,8 @@ std::unique_ptr<std::vector<std::unique_ptr<ast::PostfixOp>>> Parser::parsePostf
 		else if (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
 		{
 			nextToken();
-			postfixops->push_back(std::make_unique<ast::ArrayAccess>(parseExpression()));
+			auto expr = parseExpression();
+			postfixops->push_back(std::make_unique<ast::ArrayAccess>(expr));
 			expect(Token::Token_type::OPERATOR_RBRACKET);
 		}
 		else
