@@ -5,6 +5,11 @@ ast::Arguments::Arguments(std::unique_ptr<std::vector<std::unique_ptr<Expression
 
 }
 
+ast::Arguments::Arguments() : arguments(std::make_unique<std::vector<std::unique_ptr<Expression>>>())
+{
+
+}
+
 std::string ast::Arguments::toString() const
 {
 	std::string ret = "(";
