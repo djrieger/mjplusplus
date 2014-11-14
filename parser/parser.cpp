@@ -551,8 +551,8 @@ uptr<ast::ReturnStatement> Parser::parseReturnStatement()
 {
 	if (current.token_type != Token::Token_type::OPERATOR_SEMICOLON)
 	{
-		expect(Token::Token_type::OPERATOR_SEMICOLON);
 		auto expr = parseExpression();
+		expect(Token::Token_type::OPERATOR_SEMICOLON);
 		return std::make_unique<ast::ReturnStatement>(expr);
 	}
 
