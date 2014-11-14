@@ -762,41 +762,44 @@ uptr<vec<uptr<ast::Ident>>> Parser::parseArguments()
 	return arguments;
 }
 
+// MethodInvocationOrFieldAccess -> IDENT MethodInvocation | .
 // MethodInvocation -> ( Arguments ) .
-void Parser::parseMethodInvocation()
+std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 {
-	expect(Token::Token_type::OPERATOR_LPAREN);
-	parseArguments();
-	expect(Token::Token_type::OPERATOR_RPAREN);
-}
+	auto id = std::make_unique<ast::Ident>(current.string_value);
+	expect(Token::Token_type::TOKEN_IDENT);
 
-// MethodInvocationOrFieldAccess -> MethodInvocation | .
-void Parser::parseMethodInvocationOrFieldAccess()
-{
 	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
-		parseMethodInvocation();
+	{
+		nextToken();
+		return std::make_unique<ast::MethodInvocation>(id, parseArguments());
+		expect(Token::Token_type::OPERATOR_RPAREN);
+	}
+	else
+		return std::make_unique<ast::FieldAccess>(id);
 }
 
 // PostfixOps -> PostfixOp PostfixOps | .
-// PostfixOp -> DOT IDENT MethodInvocationOrFieldAccess
+// PostfixOp -> DOT MethodInvocationOrFieldAccess
 //     | [ Expression ] .
-void Parser::parsePostfixOps()
+std::unique_ptr<std::vector<std::unique_ptr<ast::PostfixOp>>> Parser::parsePostfixOps()
 {
+	auto postfixops = std::make_unique<std::vector<std::unique_ptr<ast::PostfixOp>>>();
+
 	while (true)
 	{
 		if (current.token_type == Token::Token_type::OPERATOR_DOT)
 		{
 			nextToken();
-			expect(Token::Token_type::TOKEN_IDENT);
-			parseMethodInvocationOrFieldAccess();
+			postfixops->push_back(parseMethodInvocationOrFieldAccess());
 		}
 		else if (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
 		{
 			nextToken();
-			parseExpression();
+			postfixops->push_back(std::make_unique<ast::ArrayAccess>(parseExpression()));
 			expect(Token::Token_type::OPERATOR_RBRACKET);
 		}
 		else
-			return;
+			return postfixops;
 	}
 }

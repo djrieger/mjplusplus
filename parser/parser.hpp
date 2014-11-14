@@ -16,6 +16,11 @@
 #include "../ast/IfStatement.hpp"
 #include "../ast/WhileStatement.hpp"
 #include "../ast/ReturnStatement.hpp"
+#include "../ast/PostfixExpression.hpp"
+#include "../ast/PostfixOp.hpp"
+#include "../ast/ArrayAccess.hpp"
+#include "../ast/FieldAccess.hpp"
+#include "../ast/MethodInvocation.hpp"
 
 template <class T> using uptr = std::unique_ptr<T>;
 template <class T> using vec = std::vector<T>;
@@ -101,10 +106,10 @@ class Parser
 		void parseAssignmentExpression();
 		void precedenceClimb(int minPrec);
 		void parseUnaryExpression();
-		void parsePostfixOps();
+		std::unique_ptr<std::vector<std::unique_ptr<ast::PostfixOp>>> parsePostfixOps();
 		void parsePrimaryExpression();
 		void parseMethodInvocation();
-		void parseMethodInvocationOrFieldAccess();
+		std::unique_ptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
 		void parseNewObjectExpression();
 		void parseNewObjectOrNewArrayExpression();
 };
