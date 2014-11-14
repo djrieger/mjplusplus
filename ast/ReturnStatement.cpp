@@ -6,6 +6,11 @@ ast::ReturnStatement::ReturnStatement(std::unique_ptr<Expression>& expression):
 
 }
 
+ast::ReturnStatement::ReturnStatement()
+{
+
+}
+
 std::string ast::ReturnStatement::toString()
 {
 	return "return " + expression->toString() + ";\n";
