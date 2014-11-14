@@ -169,6 +169,7 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 		}
 		else
 		{
+
 			auto typeIdent = parseTypeIdent();
 			classMembers->push_back(std::move(parseFieldOrMethod(std::move(typeIdent))));
 		}
@@ -259,6 +260,8 @@ uptr<ast::BasicType> Parser::parseBasicType()
 
 	}
 
+	nextToken();
+
 	if (class_name.empty())
 		return  std::make_unique<ast::BasicType>(primitive_type);
 	else
@@ -269,7 +272,6 @@ uptr<ast::BasicType> Parser::parseBasicType()
 uptr<ast::Type> Parser::parseType()
 {
 	auto basicType = parseBasicType();
-	nextToken();
 
 	int dimension = parseArrayDecl();
 	uptr<ast::Type> type;
@@ -669,18 +671,22 @@ uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 	{
 		case Token::Token_type::KEYWORD_FALSE:
 			pe = std::make_unique<ast::pe::Bool>(false);
+			nextToken();
 			break;
 
 		case Token::Token_type::KEYWORD_TRUE:
 			pe = std::make_unique<ast::pe::Bool>(true);
+			nextToken();
 			break;
 
 		case Token::Token_type::KEYWORD_NULL:
 			pe = std::make_unique<ast::pe::Object>(ast::pe::Object::Object_Type::NULL_OBJECT);
+			nextToken();
 			break;
 
 		case Token::Token_type::KEYWORD_THIS:
 			pe = std::make_unique<ast::pe::Object>(ast::pe::Object::Object_Type::THIS_OBJECT);
+			nextToken();
 			break;
 
 		case Token::Token_type::TOKEN_INT_LIT:
