@@ -14,6 +14,7 @@ namespace ast
 		public:
 			Block(std::unique_ptr<std::vector<std::unique_ptr<Statement>>>& block_statements);
 			virtual std::string toString(unsigned int indent) const;
+			virtual Statement::Type getType() const;
 	};
 }
 
