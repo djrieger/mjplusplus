@@ -189,14 +189,15 @@ uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
 
+	expect(Token::Token_type::TOKEN_IDENT, "String");
+	expect(Token::Token_type::OPERATOR_LBRACKET);
+	expect(Token::Token_type::OPERATOR_RBRACKET);
+
 	auto parameterName = std::make_unique<ast::Ident>(current.string_value);
 	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
 	std::unique_ptr<ast::Type> parType( new ast::BasicType(ast::Type::Primitive_type::VOID));
 	parameters->push_back(std::make_unique<ast::TypeIdent>(parType, parameterName));
 
-	expect(Token::Token_type::TOKEN_IDENT, "String");
-	expect(Token::Token_type::OPERATOR_LBRACKET);
-	expect(Token::Token_type::OPERATOR_RBRACKET);
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_RPAREN);
 	auto block = parseBlock();
