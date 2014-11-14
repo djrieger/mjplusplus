@@ -79,10 +79,10 @@ namespace ast
 				std::unique_ptr<ast::Ident> identifier;
 		};
 
-		class IdentWithArguments : public Ident
+		class MethodInvocation : public Ident
 		{
 			public:
-				IdentWithArguments(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments);
+				MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments);
 				virtual std::string toString() const;
 			private:
 				std::unique_ptr<Arguments> arguments;

@@ -663,6 +663,8 @@ uptr<ast::UnaryExpression> Parser::parseUnaryExpression()
 }
 
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
+// IdentOrIdentWithArguments -> ( Arguments )
+//     | .
 uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 {
 	uptr<ast::pe::PrimaryExpression> pe;
@@ -698,8 +700,17 @@ uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 		{
 			auto ident = std::make_unique<ast::Ident>(current.string_value);
 			nextToken();
-			auto identOrIdentWithArguments = parseIdentOrIdentWithArguments();
-			pe = std::make_unique<ast::pe::IdentWithArguments>(ident, identOrIdentWithArguments);
+
+			if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
+			{
+				nextToken();
+				auto arguments = parseArguments();
+				expect(Token::Token_type::OPERATOR_RPAREN);
+				pe = std::make_unique<ast::pe::MethodInvocation>(ident, arguments);
+			}
+			else
+				pe = std::make_unique<ast::pe::Ident>(ident);
+
 			break;
 		}
 
@@ -722,22 +733,6 @@ uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 	}
 
 	return pe;
-}
-
-// IdentOrIdentWithArguments -> ( Arguments )
-//     | .
-uptr<ast::Arguments> Parser::parseIdentOrIdentWithArguments()
-{
-	uptr<ast::Arguments> arguments;
-
-	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
-	{
-		nextToken();
-		arguments = parseArguments();
-		expect(Token::Token_type::OPERATOR_RPAREN);
-	}
-
-	return arguments;
 }
 
 // NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
