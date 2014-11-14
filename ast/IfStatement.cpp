@@ -13,7 +13,7 @@ namespace ast
 		;
 	}
 
-	std::string IfStatement::toString()
+	std::string IfStatement::toString() const
 	{
 		return "if (" + condition->toString() + ")" + thenStatement->toString() + (elseStatement ? "else " + elseStatement->toString() : "");
 	}

@@ -11,7 +11,7 @@ ast::ReturnStatement::ReturnStatement()
 
 }
 
-std::string ast::ReturnStatement::toString()
+std::string ast::ReturnStatement::toString() const
 {
 	return "return " + expression->toString() + ";\n";
 }

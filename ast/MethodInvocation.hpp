@@ -16,7 +16,7 @@ namespace ast
 
 		public:
 			MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<std::vector<std::unique_ptr<Expression>>>& arguments);
-			virtual std::string toString();
+			virtual std::string toString() const;
 	};
 }
 

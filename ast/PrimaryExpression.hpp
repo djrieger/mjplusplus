@@ -23,14 +23,14 @@ namespace ast
 				bool value;
 			public:
 				Bool(bool value);
-				virtual std::string toString();
+				virtual std::string toString() const;
 		};
 
 		class Ident : public PrimaryExpression
 		{
 			public:
 				Ident(std::unique_ptr<Ident>& identifier);
-				virtual std::string toString();
+				virtual std::string toString() const;
 			protected:
 				std::unique_ptr<Ident> identifier;
 		};
@@ -45,7 +45,7 @@ namespace ast
 				};
 
 				Object(Object_Type object_type);
-				virtual std::string toString();
+				virtual std::string toString() const;
 			private:
 				Object_Type object_type;
 		};
@@ -56,14 +56,14 @@ namespace ast
 				std::string string_value;
 			public:
 				Integer(std::string const& string_value);
-				virtual std::string toString();
+				virtual std::string toString() const;
 		};
 
 		class NewArrayExpression : public PrimaryExpression
 		{
 			public:
 				NewArrayExpression(std::unique_ptr<BasicType>& basic_type, std::unique_ptr<Expression>& expr, int dimension);
-				virtual std::string toString();
+				virtual std::string toString() const;
 			private:
 				std::unique_ptr<BasicType> basic_type;
 				std::unique_ptr<Expression> expr;
@@ -74,7 +74,7 @@ namespace ast
 		{
 			public:
 				NewObjectExpression(std::unique_ptr<Ident>& identifier);
-				virtual std::string toString();
+				virtual std::string toString() const;
 			private:
 				std::unique_ptr<Ident> identifier;
 		};
@@ -83,7 +83,7 @@ namespace ast
 		{
 			public:
 				IdentWithArguments(std::unique_ptr<Ident>& identifier, std::unique_ptr<Arguments>& arguments);
-				virtual std::string toString();
+				virtual std::string toString() const;
 			private:
 				std::unique_ptr<Ident> identifier;
 				std::unique_ptr<Arguments> arguments;
@@ -93,7 +93,7 @@ namespace ast
 		{
 			public:
 				ExpressionWithParens(std::unique_ptr<Expression>& expr);
-				virtual std::string toString();
+				virtual std::string toString() const;
 			private:
 				std::unique_ptr<Expression> expr;
 		};
