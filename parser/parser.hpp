@@ -18,6 +18,12 @@
 #include "../ast/ReturnStatement.hpp"
 #include "../ast/UnaryExpression.hpp"
 #include "../ast/BinaryExpression.hpp"
+#include "../ast/PrimaryExpression.hpp"
+#include "../ast/Type.hpp"
+#include "../ast/BasicType.hpp"
+#include "../ast/TypeIdent.hpp"
+#include "../ast/ArrayType.hpp"
+
 
 template <class T> using uptr = std::unique_ptr<T>;
 template <class T> using vec = std::vector<T>;
@@ -82,7 +88,7 @@ class Parser
 		uptr<ast::MainMethodDeclaration> parseMainMethod();
 
 		uptr<ast::TypeIdent> parseTypeIdent();
-		std::pair<ast::TypeIdent::Primitive_type, std::string> parseBasicType();
+		uptr<ast::Type> parseBasicType();
 		int parseArrayDecl();
 		void parseNewArrayExpression();
 		void parseOptionalBrackets(); // does not need to return anything
@@ -103,7 +109,7 @@ class Parser
 		uptr<ast::Expression> precedenceClimb(int minPrec);
 		uptr<ast::UnaryExpression> parseUnaryExpression();
 		void parsePostfixOps();
-		uptr<ast::PrimaryExpression> parsePrimaryExpression();
+		uptr<ast::pe::PrimaryExpression> parsePrimaryExpression();
 		void parseMethodInvocation();
 		void parseMethodInvocationOrFieldAccess();
 		void parseNewObjectExpression();

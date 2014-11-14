@@ -1,6 +1,6 @@
 #include "Arguments.hpp"
 
-ast::Arguments::Arguments(std::unique_ptr<std::vector<std::uniqe_ptr<ast::Ident>>>& arguments) : arguments(std::move(arguments))
+ast::Arguments::Arguments(std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>>& arguments) : arguments(std::move(arguments))
 {
 
 }
@@ -12,7 +12,7 @@ std::string ast::Arguments::toString()
 
 	while (1)
 	{
-		ret += it->toString();
+		ret += (**it).toString();
 
 		if (++it != arguments->end())
 			ret += ", ";

@@ -2,6 +2,7 @@
 #define ARRAYTYPE_HPP
 
 #include "Type.hpp"
+#include "BasicType.hpp"
 
 namespace ast
 {

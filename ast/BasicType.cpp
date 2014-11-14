@@ -10,25 +10,25 @@ ast::BasicType::BasicType(std::string class_name) : primitive_type(Type::Primiti
 
 }
 
-std::string ast::BasticType::toString()
+std::string ast::BasicType::toString()
 {
 	std::string s = "";
 
 	switch (primitive_type)
 	{
-		case TypeIdent::Primitive_type::INT:
+		case Type::Primitive_type::INT:
 			s += "int";
 			break;
 
-		case TypeIdent::Primitive_type::BOOLEAN:
+		case Type::Primitive_type::BOOLEAN:
 			s += "boolean";
 			break;
 
-		case TypeIdent::Primitive_type::VOID:
+		case Type::Primitive_type::VOID:
 			s += "void";
 			break;
 
-		case TypeIdent::Primitive_type::NONE:
+		case Type::Primitive_type::NONE:
 			s += class_name;
 			break;
 	}

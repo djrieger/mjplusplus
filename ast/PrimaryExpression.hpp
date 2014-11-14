@@ -4,6 +4,7 @@
 #include "Expression.hpp"
 #include "Arguments.hpp"
 #include "Ident.hpp"
+#include "BasicType.hpp"
 #include <vector>
 
 namespace ast
@@ -29,7 +30,7 @@ namespace ast
 		{
 			public:
 				Ident(std::unique_ptr<Ident>& identifier);
-				virtual std::string();
+				virtual std::string toString();
 			protected:
 				std::unique_ptr<Ident> identifier;
 		};
