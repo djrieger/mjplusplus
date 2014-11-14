@@ -11,7 +11,7 @@ namespace ast
 
 		public:
 			ArrayType(std::unique_ptr<BasicType>& basic_type);
-			virtual std::string toString();
+			virtual std::string toString() const;
 
 		private:
 			// dimension is implicitly defined to 1

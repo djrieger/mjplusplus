@@ -5,7 +5,7 @@ ast::TypeIdent::TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& i
 {
 }
 
-std::string ast::TypeIdent::toString()
+std::string ast::TypeIdent::toString() const
 {
 	return type->toString() + " " + identifier->toString();
 }

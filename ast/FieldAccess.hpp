@@ -13,7 +13,7 @@ namespace ast
 
 		public:
 			FieldAccess(std::unique_ptr<Ident>& field_name);
-			virtual std::string toString();
+			virtual std::string toString() const;
 	};
 }
 

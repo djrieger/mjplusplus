@@ -10,7 +10,7 @@ ast::BasicType::BasicType(std::string class_name) : primitive_type(Type::Primiti
 
 }
 
-std::string ast::BasicType::toString()
+std::string ast::BasicType::toString() const
 {
 	std::string s = "";
 

@@ -8,7 +8,7 @@ ast::MainMethodDeclaration::MainMethodDeclaration(std::unique_ptr<TypeIdent>& re
 	;
 }
 
-std::string ast::MainMethodDeclaration::toString()
+std::string ast::MainMethodDeclaration::toString() const
 {
 	std::string ret = "public static " + return_type_and_name->toString() + "(";
 	auto it = parameters->begin();

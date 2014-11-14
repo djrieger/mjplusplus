@@ -11,7 +11,7 @@ ast::LVDStatement::LVDStatement(std::unique_ptr<TypeIdent>& type_ident, std::uni
 	;
 }
 
-std::string ast::LVDStatement::toString()
+std::string ast::LVDStatement::toString() const
 {
 	return type_ident->toString() + (init_expr ? " = " + init_expr->toString() : "") + ";\n";
 }
