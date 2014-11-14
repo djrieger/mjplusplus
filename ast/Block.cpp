@@ -15,8 +15,8 @@ namespace ast
 		{
 			std::string r("{\n");
 
-			for (auto it = block_statements->begin(); it != block_statements->end(); it++)
-				r += (**it).toString();
+			for (auto& it : *block_statements)
+				r += it->toString();
 
 			r += '}';
 
