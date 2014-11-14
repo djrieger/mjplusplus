@@ -15,6 +15,6 @@ namespace ast
 
 	std::string IfStatement::toString() const
 	{
-		return "if (" + condition->toString() + ")" + thenStatement->toString() + (elseStatement ? "else " + elseStatement->toString() : "");
+		return "if (" + condition->toString() + ")" + (thenStatement ? thenStatement->toString() : "{ }") + (elseStatement ? "else " + elseStatement->toString() : "");
 	}
 }

@@ -8,5 +8,5 @@ ast::WhileStatement::WhileStatement(std::unique_ptr<Expression>& condition, std:
 
 std::string ast::WhileStatement::toString() const
 {
-	return "while (" + condition->toString() + ") {\n" + statement->toString() + "}\n";
+	return "while (" + condition->toString() + ")\n" + (statement ? statement->toString() : "{ }");
 }
