@@ -7,9 +7,10 @@ namespace ast
 	{
 		;
 	}
-	std::string ClassDeclaration::toString() const
+	std::string ClassDeclaration::toString(unsigned int indent) const
 	{
-		std::string r("class " + class_name->toString() + " {\n");
+		std::string r(indent, '\t');
+		r += "class " + class_name->toString(indent) + " {\n";
 
 		auto sortMembers = [](const std::unique_ptr<ast::ClassMember>& a,
 		                      const std::unique_ptr<ast::ClassMember>& b) -> bool
@@ -19,9 +20,8 @@ namespace ast
 		std::sort(members->begin(), members->end(), sortMembers);
 
 		for (auto& it : *members)
-			r += it->toString();
+			r += it->toString(indent + 1);
 
-		r += '\n';
 		r += '}';
 
 		return r;

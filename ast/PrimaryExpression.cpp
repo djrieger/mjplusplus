@@ -9,7 +9,7 @@ namespace ast
 			;
 		}
 
-		std::string Bool::toString() const
+		std::string Bool::toString(unsigned int) const
 		{
 			return value ? "true" : "false";
 		}
@@ -18,9 +18,9 @@ namespace ast
 		{
 		}
 
-		std::string Ident::toString() const
+		std::string Ident::toString(unsigned int ident) const
 		{
-			return identifier->toString();
+			return identifier->toString(ident);
 		}
 
 
@@ -28,7 +28,7 @@ namespace ast
 		{
 		}
 
-		std::string Object::toString() const
+		std::string Object::toString(unsigned int) const
 		{
 			return (object_type == Object_Type::THIS_OBJECT) ? "this" : "null";
 		}
@@ -39,7 +39,7 @@ namespace ast
 
 		}
 
-		std::string Integer::toString() const
+		std::string Integer::toString(unsigned int) const
 		{
 			return string_value;
 		}
@@ -53,7 +53,7 @@ namespace ast
 
 		}
 
-		std::string NewArrayExpression::toString() const
+		std::string NewArrayExpression::toString(unsigned int) const
 		{
 			std::string s = "";
 
@@ -71,9 +71,9 @@ namespace ast
 
 		}
 
-		std::string NewObjectExpression::toString() const
+		std::string NewObjectExpression::toString(unsigned int indent) const
 		{
-			return "new " + identifier->toString() + "()";
+			return "new " + identifier->toString(indent) + "()";
 		}
 
 		MethodInvocation::MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
@@ -83,9 +83,9 @@ namespace ast
 
 		}
 
-		std::string MethodInvocation::toString() const
+		std::string MethodInvocation::toString(unsigned int indent) const
 		{
-			return identifier->toString() + arguments->toString();
+			return identifier->toString(indent) + arguments->toString(indent);
 		}
 
 		ExpressionWithParens::ExpressionWithParens(std::unique_ptr<Expression>& expr) : expr(std::move(expr))
@@ -93,9 +93,9 @@ namespace ast
 
 		}
 
-		std::string ExpressionWithParens::toString() const
+		std::string ExpressionWithParens::toString(unsigned int indent) const
 		{
-			return "(" + expr->toString() + ")";
+			return "(" + expr->toString(indent) + ")";
 		}
 
 	} // namespace pe

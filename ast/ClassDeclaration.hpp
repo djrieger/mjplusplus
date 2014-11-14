@@ -17,7 +17,7 @@ namespace ast
 
 		public:
 			ClassDeclaration(std::unique_ptr<Ident>& class_name, std::unique_ptr<std::vector<std::unique_ptr<ClassMember>>>& members);
-			virtual std::string toString() const;
+			virtual std::string toString(unsigned int indent) const;
 	};
 }
 

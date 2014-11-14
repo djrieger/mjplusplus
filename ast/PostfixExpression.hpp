@@ -15,7 +15,7 @@ namespace ast
 
 		public:
 			PostfixExpression(std::unique_ptr<pe::PrimaryExpression>& child, std::unique_ptr<std::vector<std::unique_ptr<PostfixOp>>>& postfix_op);
-			virtual std::string toString() const;
+			virtual std::string toString(unsigned int indent) const;
 	};
 }
 #endif // POSTFIXEXPRESSION_HPP

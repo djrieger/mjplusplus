@@ -7,8 +7,8 @@ namespace ast
 		;
 	}
 
-	std::string FieldAccess::toString() const
+	std::string FieldAccess::toString(unsigned int indent) const
 	{
-		return '.' + field_name->toString();
+		return '.' + field_name->toString(indent);
 	}
 }

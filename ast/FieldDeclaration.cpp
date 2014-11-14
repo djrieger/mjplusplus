@@ -5,9 +5,10 @@ ast::FieldDeclaration::FieldDeclaration(std::unique_ptr<TypeIdent>& type_and_nam
 
 }
 
-std::string ast::FieldDeclaration::toString() const
+std::string ast::FieldDeclaration::toString(unsigned int indent) const
 {
-	return "public " + type_and_name->toString() + ";\n";
+	std::string r(indent, '\t');
+	return r + "public " + type_and_name->toString(indent) + ";\n";
 }
 
 std::string ast::FieldDeclaration::getName() const

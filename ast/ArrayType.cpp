@@ -5,9 +5,9 @@ ast::ArrayType::ArrayType(std::unique_ptr<BasicType>& basic_type, int dimension)
 
 }
 
-std::string ast::ArrayType::toString() const
+std::string ast::ArrayType::toString(unsigned int indent) const
 {
-	std::string s = basic_type->toString();
+	std::string s = basic_type->toString(indent);
 
 	for (int i = 0; i < dimension; ++i)
 		s += "[]";
