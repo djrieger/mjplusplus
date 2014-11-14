@@ -1,22 +1,102 @@
 #include "PrimaryExpression.hpp"
 
-ast::PrimaryExpression::PrimaryExpression(std::unique_ptr<Node>& child, std::unique_ptr<std::vector<Expression>>& arguments) : child(std::move(child)), arguments(std::move(arguments))
+namespace ast
 {
-
-}
-
-std::string ast::PrimaryExpression::toString()
-{
-	std::string str = "";
-	str += child->toString();
-	str += "(";
-
-	for (int i = 0, size = arguments->size(); i < size; ++i)
+	namespace pe
 	{
-		str += arguments->at(i).toString();
-		str += (i < size - 1) ? ", " : "";
-	}
+		Bool::Bool(bool value) : value(value)
+		{
+			;
+		}
 
-	str += ")";
-	return str;
-}
+		std::string Bool::toString()
+		{
+			return value ? "true" : "false";
+		}
+
+		Ident::Ident(std::unique_ptr<Ident>& identifier) : identifier(std::move(identifier))
+		{
+		}
+
+		std::string Ident::toString()
+		{
+			return identifier->toString();
+		}
+
+
+		Object::Object(Object_Type object_type) : object_type(object_type)
+		{
+		}
+
+		std::string Object::toString()
+		{
+			return (object_type == Object_Type::THIS_OBJECT) ? "this" : "null";
+		}
+
+		Integer::Integer(std::string const& string_value)
+			: string_value(string_value)
+		{
+
+		}
+
+		std::string Integer::toString()
+		{
+			return string_value;
+		}
+
+
+		NewArrayExpression::NewArrayExpression(std::unique_ptr<BasicType>& basic_type, std::unique_ptr<Expression>& expr, int dimension) :
+			basic_type(std::move(basic_type)),
+			expr(std::move(expr)),
+			dimension(dimension)
+		{
+
+		}
+
+		std::string NewArrayExpression::toString()
+		{
+			std::string s = "";
+
+			if (dimension > 1)
+			{
+				for (int i = 0; i < dimension - 1; ++i)
+					s += "[]";
+			}
+
+			return s;
+		}
+
+		NewObjectExpression::NewObjectExpression(std::unique_ptr<Ident>& identifier) : identifier(std::move(identifier))
+		{
+
+		}
+
+		std::string NewObjectExpression::toString()
+		{
+			return "new " + identifier->toString() + "()";
+		}
+
+		IdentWithArguments::IdentWithArguments(std::unique_ptr<Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
+			Ident(identifier),
+			arguments(std::move(arguments))
+		{
+
+		}
+
+		std::string IdentWithArguments::toString()
+		{
+			return identifier->toString() + arguments->toString();
+		}
+
+		ExpressionWithParens::ExpressionWithParens(std::unique_ptr<Expression>& expr) : expr(std::move(expr))
+		{
+
+		}
+
+		std::string ExpressionWithParens::toString()
+		{
+			return "(" + expr->toString() + ")";
+		}
+
+	} // namespace pe
+} // namespace ast
