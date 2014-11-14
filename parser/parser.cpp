@@ -231,8 +231,7 @@ int Parser::parseArrayDecl()
 	return dimension;
 }
 
-// BasicType -> int | boolean | void | IDENT .
-uptr<ast::Type> Parser::parseType()
+uptr<ast::BasicType> Parser::parseBasicType()
 {
 	std::string class_name = "";
 	ast::Type::Primitive_type primitive_type = ast::Type::Primitive_type::NONE;
@@ -260,20 +259,23 @@ uptr<ast::Type> Parser::parseType()
 
 	}
 
-	nextToken();
-
-	uptr<ast::BasicType> basicType;
-
 	if (class_name.empty())
-		basicType = std::make_unique<ast::BasicType>(primitive_type);
+		return  std::make_unique<ast::BasicType>(primitive_type);
 	else
-		basicType = std::make_unique<ast::BasicType>(class_name);
+		return std::make_unique<ast::BasicType>(class_name);
+}
+
+// BasicType -> int | boolean | void | IDENT .
+uptr<ast::Type> Parser::parseType()
+{
+	auto basicType = parseBasicType();
+	nextToken();
 
 	int dimension = parseArrayDecl();
 	uptr<ast::Type> type;
 
 	if (dimension > 0)
-		type = std::make_unique<ast::ArrayType>(basicType);
+		type = std::make_unique<ast::ArrayType>(basicType, dimension);
 	else
 		type = std::move(basicType);
 
@@ -733,19 +735,22 @@ void Parser::parseNewObjectExpression()
 }
 
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
-void Parser::parseNewArrayExpression()
+uptr<ast::pe::NewArrayExpression> Parser::parseNewArrayExpression()
 {
-	parseType();
+	auto basicType = parseBasicType();
 	expect(Token::Token_type::OPERATOR_LBRACKET);
-	parseExpression();
+	auto expression = parseExpression();
 	expect(Token::Token_type::OPERATOR_RBRACKET);
-	parseOptionalBrackets();
+	int dimension = parseOptionalBrackets();
+
+	return std::make_unique<ast::pe::NewArrayExpression>(basicType, expression, dimension);
 }
 
 // OptionalBrackets -> [ ] OptionalBrackets
 //     | .
-void Parser::parseOptionalBrackets()
+int Parser::parseOptionalBrackets()
 {
+	int dimension = 0;
 	Token t = current;
 
 	while (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
@@ -754,6 +759,7 @@ void Parser::parseOptionalBrackets()
 
 		if (current.token_type == Token::Token_type::OPERATOR_RBRACKET)
 		{
+			dimension++;
 			nextToken();
 			t = current;
 		}
@@ -761,9 +767,11 @@ void Parser::parseOptionalBrackets()
 		{
 			lexer.unget_token(current);
 			current = t;
-			return;
+			return dimension;
 		}
 	}
+
+	return dimension;
 }
 
 // Arguments -> Expression ArgumentsExpressions | .
