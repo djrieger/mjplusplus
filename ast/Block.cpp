@@ -18,7 +18,6 @@ namespace ast
 			for (auto it = block_statements->begin(); it != block_statements->end(); it++)
 				r += (**it).toString();
 
-			r += '\n';
 			r += '}';
 
 			return r;
