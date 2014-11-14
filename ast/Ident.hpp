@@ -12,7 +12,7 @@ namespace ast
 
 		public:
 			Ident(std::string const& string_value);
-			virtual std::string toString() const;
+			virtual std::string toString(unsigned int indent) const;
 	};
 }
 #endif // IDENT_HPP

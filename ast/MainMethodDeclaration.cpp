@@ -8,19 +8,20 @@ ast::MainMethodDeclaration::MainMethodDeclaration(std::unique_ptr<TypeIdent>& re
 	;
 }
 
-std::string ast::MainMethodDeclaration::toString() const
+std::string ast::MainMethodDeclaration::toString(unsigned int indent) const
 {
-	std::string ret = "public static " + return_type_and_name->toString() + "(";
+	std::string ret(indent, '\t');
+	ret += "public static " + return_type_and_name->toString(indent) + "(";
 
 	for (auto it = parameters->begin(); it != parameters->end(); it++)
 	{
-		ret += (**it).toString();
+		ret += (**it).toString(indent);
 
 		if (it + 1 != parameters->end())
 			ret += ", ";
 	}
 
-	ret += ")\n" + (block ? block->toString() : "{ }");
+	ret += ") " + (block ? block->toString(indent + 1) : "{ }");
 
 	return ret;
 }

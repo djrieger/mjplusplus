@@ -7,8 +7,8 @@ namespace ast
 		;
 	}
 
-	std::string ArrayAccess::toString() const
+	std::string ArrayAccess::toString(unsigned int indent) const
 	{
-		return '[' + access_offset->toString() + ']';
+		return '[' + access_offset->toString(indent) + ']';
 	}
 }
