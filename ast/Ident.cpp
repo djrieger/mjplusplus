@@ -9,3 +9,8 @@ std::string ast::Ident::toString() const
 {
 	return string_value;
 }
+
+std::string ast::Ident::getName() const
+{
+	return string_value;
+}

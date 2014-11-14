@@ -10,4 +10,8 @@ std::string ast::TypeIdent::toString() const
 	return type->toString() + " " + identifier->toString();
 }
 
+std::string ast::TypeIdent::getName() const
+{
+	return identifier->getName();
+}
 

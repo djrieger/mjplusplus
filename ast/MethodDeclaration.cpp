@@ -3,7 +3,6 @@
 ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>>& parameters, std::unique_ptr<Statement>& block)
 	: return_type_and_name(std::move(return_type_and_name)), parameters(std::move(parameters)), block(std::move(block))
 {
-
 }
 
 std::string ast::MethodDeclaration::toString() const
@@ -27,4 +26,9 @@ std::string ast::MethodDeclaration::toString(bool isStatic) const
 	ret += ")\n" + (block ? block->toString() : "{ }");
 
 	return ret;
+}
+
+std::string ast::MethodDeclaration::getName() const
+{
+	return "M" + return_type_and_name->getName();
 }
