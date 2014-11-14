@@ -260,11 +260,16 @@ uptr<ast::Type> Parser::parseBasicType()
 			throw "expected Type";
 
 	}
+
 	nextToken();
-	if (class_name.empty()) {
+
+	if (class_name.empty())
+	{
 		uptr<ast::Type> ret(new ast::BasicType(primitive_type));
 		return ret;
-	} else {
+	}
+	else
+	{
 		uptr<ast::Type> ret(new ast::BasicType(class_name));
 		return ret;
 	}
@@ -547,8 +552,8 @@ uptr<ast::ReturnStatement> Parser::parseReturnStatement()
 {
 	if (current.token_type != Token::Token_type::OPERATOR_SEMICOLON)
 	{
-		expect(Token::Token_type::OPERATOR_SEMICOLON);
 		auto expr = parseExpression();
+		expect(Token::Token_type::OPERATOR_SEMICOLON);
 		return std::make_unique<ast::ReturnStatement>(expr);
 	}
 

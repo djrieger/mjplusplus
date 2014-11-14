@@ -117,7 +117,6 @@ class Parser
 
 		uptr<ast::pe::PrimaryExpression> parsePrimaryExpression();
 		uptr<vec<uptr<ast::PostfixOp>>> parsePostfixOps();
-		//void parseMethodInvocation();
 		uptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
 
 		void parseNewObjectExpression();
