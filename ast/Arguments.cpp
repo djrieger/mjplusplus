@@ -13,7 +13,6 @@ ast::Arguments::Arguments() : arguments(std::make_unique<std::vector<std::unique
 std::string ast::Arguments::toString() const
 {
 	std::string ret = "(";
-	auto it = arguments->begin();
 
 	for (auto it = arguments->begin(); it != arguments->end(); it++)
 	{
