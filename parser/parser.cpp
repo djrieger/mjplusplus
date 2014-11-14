@@ -181,26 +181,31 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .
 uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
-	std::unique_ptr<ast::Type> basicType( new ast::BasicType(ast::Type::Primitive_type::VOID));
+	// build "void METHODNAME"
+	std::unique_ptr<ast::Type> voidType( new ast::BasicType(ast::Type::Primitive_type::VOID));
 	expect(Token::Token_type::KEYWORD_VOID);
 	auto mainMethodName = std::make_unique<ast::Ident>(current.string_value);
-	auto typeIdent = std::make_unique<ast::TypeIdent>(basicType, mainMethodName);
+	auto typeIdent = std::make_unique<ast::TypeIdent>(voidType, mainMethodName);
 
+	// expect "METHODNAME (String[]"
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
-
 	expect(Token::Token_type::TOKEN_IDENT, "String");
 	expect(Token::Token_type::OPERATOR_LBRACKET);
 	expect(Token::Token_type::OPERATOR_RBRACKET);
 
+	// build "String[] PARAMETERNAME"
 	auto parameterName = std::make_unique<ast::Ident>(current.string_value);
 	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
-	std::unique_ptr<ast::Type> parType( new ast::BasicType(ast::Type::Primitive_type::VOID));
+	auto basicType = std::make_unique<ast::BasicType>("String");
+	std::unique_ptr<ast::Type> parType( new ast::ArrayType(basicType, 1) );
 	parameters->push_back(std::make_unique<ast::TypeIdent>(parType, parameterName));
 
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_RPAREN);
+
 	auto block = parseBlock();
+
 	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, block);
 }
 
