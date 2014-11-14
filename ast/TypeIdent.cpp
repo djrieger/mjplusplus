@@ -1,63 +1,13 @@
 #include "TypeIdent.hpp"
 
+ast::TypeIdent::TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& identifier) :
+	type(std::move(type)), identifier(std::move(identifier))
+{
+}
 
 std::string ast::TypeIdent::toString()
 {
-	std::string s = "";
-
-	switch (primitive_type)
-	{
-		case TypeIdent::Primitive_type::INT:
-			s += "int";
-			break;
-
-		case TypeIdent::Primitive_type::BOOLEAN:
-			s += "boolean";
-			break;
-
-		case TypeIdent::Primitive_type::VOID:
-			s += "void";
-			break;
-
-		case TypeIdent::Primitive_type::NONE:
-			s += class_name;
-			break;
-	}
-
-	// first dimension with size, others just as []'s
-	if (dimension >= 1)
-	{
-		/*
-		if (dimension >= 1)
-		{
-			if (array_size > 0)
-				s += "[" + std::to_string(array_size) + "]";
-			else
-				s += "[]";
-		}
-		*/
-		if (dimension >= 1)
-		{
-			for (int i = 0; i < dimension - 1; ++i)
-				s += "[]";
-		}
-	}
-
-	s += " " + identifier->toString();
-
-	return s;
+	return type->toString() + " " + identifier->toString();
 }
 
-ast::TypeIdent::TypeIdent(std::unique_ptr<Ident>& identifier,
-                          Primitive_type primitive_type):
-	TypeIdent(identifier, primitive_type, "", 0 /*, 0*/)
-{
-}
 
-ast::TypeIdent::TypeIdent(std::unique_ptr<Ident>& identifier,
-                          Primitive_type primitive_type,
-                          std::string class_name,
-                          int dimension /*,int array_size*/):
-	identifier(std::move(identifier)), primitive_type(primitive_type), class_name(class_name), dimension(dimension) /*, array_size(array_size)*/
-{
-}
