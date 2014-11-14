@@ -638,8 +638,7 @@ uptr<ast::UnaryExpression> Parser::parseUnaryExpression()
 	}
 
 	auto primaryExpr = parsePrimaryExpression();
-	//TODO auto postfix_ops = parsePostfixOps();
-	uptr<std::vector<uptr<ast::PostfixOp>>> postfix_ops;
+	auto postfix_ops = parsePostfixOps();
 	auto postfixExpr = std::make_unique<ast::PostfixExpression>(primaryExpr, postfix_ops);
 	return std::make_unique<ast::UnaryExpression>(postfixExpr, unary_operators);
 }
