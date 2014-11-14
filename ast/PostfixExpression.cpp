@@ -5,12 +5,12 @@ ast::PostfixExpression::PostfixExpression(std::unique_ptr<pe::PrimaryExpression>
 
 }
 
-std::string ast::PostfixExpression::toString() const
+std::string ast::PostfixExpression::toString(unsigned int indent) const
 {
-	std::string str = child->toString();
+	std::string str = child->toString(indent);
 
 	for (auto& p : *postfix_op)
-		str += p->toString();
+		str += p->toString(indent);
 
 	return str;
 }

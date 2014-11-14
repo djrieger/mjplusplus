@@ -1,6 +1,12 @@
 #include "UnaryExpression.hpp"
 
-std::string ast::UnaryExpression::toString() const
+ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression>& child, std::unique_ptr<std::vector<Unary_Operator>>& unary_operators) :
+	child(std::move(child)), unary_operators(std::move(unary_operators))
+{
+
+}
+
+std::string ast::UnaryExpression::toString(unsigned int indent) const
 {
 	std::string s = "";
 
@@ -18,12 +24,6 @@ std::string ast::UnaryExpression::toString() const
 		}
 	}
 
-	s += child->toString();
+	s += child->toString(indent);
 	return s;
-}
-
-ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression>& child, std::unique_ptr<std::vector<Unary_Operator>>& unary_operators) :
-	child(std::move(child)), unary_operators(std::move(unary_operators))
-{
-
 }

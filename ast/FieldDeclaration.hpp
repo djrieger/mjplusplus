@@ -13,7 +13,8 @@ namespace ast
 
 		public:
 			FieldDeclaration(std::unique_ptr<TypeIdent>& type_and_name);
-			virtual std::string toString() const;
+
+			virtual std::string toString(unsigned int indent) const;
 			virtual std::string getName() const;
 	};
 }

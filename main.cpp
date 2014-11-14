@@ -65,7 +65,7 @@ int main(int argc, const char** argv)
 		return EXIT_FAILURE;
 
 	if (has_option("print-ast"))
-		std::cout << parser.getRoot()->toString() << std::endl;
+		std::cout << parser.getRoot()->toString(0) << std::endl;
 
 	return EXIT_SUCCESS;
 }

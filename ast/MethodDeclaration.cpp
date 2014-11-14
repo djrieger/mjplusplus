@@ -5,25 +5,25 @@ ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_typ
 {
 }
 
-std::string ast::MethodDeclaration::toString() const
+std::string ast::MethodDeclaration::toString(unsigned int indent) const
 {
-	return toString(false);
+	return toString(indent, false);
 }
 
-std::string ast::MethodDeclaration::toString(bool isStatic) const
+std::string ast::MethodDeclaration::toString(unsigned int indent, bool isStatic) const
 {
 	std::string modifier = isStatic ? "static " : "";
-	std::string ret = "public " + modifier + return_type_and_name->toString() + "(";
+	std::string ret = std::string(indent, '\t') + "public " + modifier + return_type_and_name->toString(indent) + "(";
 
 	for (auto it = parameters->begin(); it != parameters->end(); it++)
 	{
-		ret += (**it).toString();
+		ret += (**it).toString(indent);
 
 		if (it + 1 != parameters->end())
 			ret += ", ";
 	}
 
-	ret += ")\n" + (block ? block->toString() : "{ }");
+	ret += ") " + (block ? block->toString(indent + 1) : "{ }");
 
 	return ret;
 }

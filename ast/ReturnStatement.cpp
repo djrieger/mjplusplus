@@ -11,7 +11,7 @@ ast::ReturnStatement::ReturnStatement()
 
 }
 
-std::string ast::ReturnStatement::toString() const
+std::string ast::ReturnStatement::toString(unsigned int indent) const
 {
-	return "return" + (expression ? ' ' + expression->toString() : "") + ";\n";
+	return std::string(indent, '\t') + "return" + (expression ? ' ' + expression->toString(indent) : "") + ";\n";
 }

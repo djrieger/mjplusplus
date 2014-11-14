@@ -6,7 +6,7 @@ ast::BinaryExpression::BinaryExpression(std::unique_ptr<Expression>& leftChild, 
 
 }
 
-std::string ast::BinaryExpression::toString() const
+std::string ast::BinaryExpression::toString(unsigned int indent) const
 {
 	std::string op = "";
 
@@ -200,5 +200,5 @@ std::string ast::BinaryExpression::toString() const
 			op = "NO_VALID_OPERATOR";
 	}
 
-	return leftChild->toString() + " " + op + " " + rightChild->toString();
+	return leftChild->toString(indent) + ' ' + op + ' ' + rightChild->toString(indent);
 }

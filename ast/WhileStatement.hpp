@@ -14,7 +14,7 @@ namespace ast
 
 		public:
 			WhileStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& statement);
-			virtual std::string toString() const;
+			virtual std::string toString(unsigned int indent) const;
 	};
 }
 

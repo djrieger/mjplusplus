@@ -7,7 +7,7 @@ namespace ast
 	{
 		;
 	}
-	std::string Block::toString() const
+	std::string Block::toString(unsigned int indent) const
 	{
 		if (block_statements->size() == 0)
 			return "{ }";
@@ -15,10 +15,10 @@ namespace ast
 		{
 			std::string r("{\n");
 
-			for (auto& it : *block_statements)
-				r += it->toString();
+			for (auto& stamtement : *block_statements)
+				r += stamtement->toString(indent);
 
-			r += '}';
+			r += std::string(indent - 1, '\t') + "}\n";
 
 			return r;
 		}

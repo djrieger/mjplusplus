@@ -9,7 +9,7 @@ namespace ast
 	class Node
 	{
 		public:
-			virtual std::string toString() const = 0;
+			virtual std::string toString(unsigned int indent) const = 0;
 	};
 }
 
