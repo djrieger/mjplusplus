@@ -93,7 +93,7 @@ class Parser
 		uptr<ast::MainMethodDeclaration> parseMainMethod();
 
 		uptr<ast::TypeIdent> parseTypeIdent();
-		uptr<ast::Type> parseBasicType();
+		uptr<ast::Type> parseType();
 		int parseArrayDecl();
 		void parseNewArrayExpression();
 		void parseOptionalBrackets(); // does not need to return anything
