@@ -10,8 +10,8 @@ namespace ast
 	{
 		std::string r("class " + class_name->toString() + " {\n");
 
-		for (auto it : *members)
-			r += (**it).toString();
+		for (auto& it : *members)
+			r += it->toString();
 
 		r += '\n';
 		r += '}';
