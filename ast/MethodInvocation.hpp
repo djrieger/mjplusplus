@@ -1,10 +1,11 @@
 #ifndef METHOD_INVOCATION_HPP
 #define METHOD_INVOCATION_HPP
 
+#include <vector>
 #include "PostfixOp.hpp"
 #include "Ident.hpp"
-#include <vector>
 #include "Expression.hpp"
+#include "Arguments.hpp"
 
 namespace ast
 {
@@ -12,10 +13,10 @@ namespace ast
 	{
 		private:
 			std::unique_ptr<Ident> method_name;
-			std::unique_ptr<std::vector<std::unique_ptr<Expression>>> arguments;
+			std::unique_ptr<Arguments> arguments;
 
 		public:
-			MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<std::vector<std::unique_ptr<Expression>>>& arguments);
+			MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<Arguments>& arguments);
 			virtual std::string toString() const;
 	};
 }
