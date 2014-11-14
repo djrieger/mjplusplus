@@ -101,8 +101,8 @@ class Parser
 
 		uptr<ast::ClassMember> parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent);
 		uptr<vec<uptr<ast::TypeIdent>>> parseOptionalParameters();
-		uptr<vec<uptr<ast::Expression>>> parseIdentOrIdentWithArguments();
-		uptr<vec<uptr<ast::Expression>>> parseArguments();
+		uptr<ast::Arguments> parseIdentOrIdentWithArguments();
+		uptr<ast::Arguments> parseArguments();
 
 		uptr<ast::Statement> parseStatement();
 		uptr<ast::Statement> parseBlock();
@@ -120,8 +120,8 @@ class Parser
 		uptr<vec<uptr<ast::PostfixOp>>> parsePostfixOps();
 		uptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
 
-		void parseNewObjectExpression();
-		void parseNewObjectOrNewArrayExpression();
+		uptr<ast::pe::NewObjectExpression> parseNewObjectExpression();
+		uptr<ast::pe::PrimaryExpression> parseNewObjectOrNewArrayExpression();
 };
 
 #endif
