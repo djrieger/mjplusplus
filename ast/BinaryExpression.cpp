@@ -195,8 +195,10 @@ std::string ast::BinaryExpression::toString() const
 		case Token::Token_type::OPERATOR_OR:
 			op = "|";
 			break;
+
+		default:
+			op = "NO_VALID_OPERATOR";
 	}
 
-	//TODO operator_type -> string
-	return leftChild->toString() + " + " + rightChild->toString();
+	return leftChild->toString() + " " + op + " " + rightChild->toString();
 }
