@@ -8,5 +8,5 @@ ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident>& method_name, std
 
 std::string ast::MethodInvocation::toString() const
 {
-	return method_name->toString() + "(" + arguments->toString() + ")";
+	return '.' + method_name->toString() + "(" + arguments->toString() + ")";
 }
