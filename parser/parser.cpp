@@ -663,42 +663,66 @@ uptr<ast::UnaryExpression> Parser::parseUnaryExpression()
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
 uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 {
+	uptr<ast::pe::PrimaryExpression> pe;
+
 	switch (current.token_type)
 	{
-		case Token::Token_type::KEYWORD_NULL:
 		case Token::Token_type::KEYWORD_FALSE:
+			pe = std::make_unique<ast::pe::Bool>(false);
+			break;
+
 		case Token::Token_type::KEYWORD_TRUE:
+			pe = std::make_unique<ast::pe::Bool>(true);
+			break;
+
+		case Token::Token_type::KEYWORD_NULL:
+			pe = std::make_unique<ast::pe::Object>(ast::pe::Object::Object_Type::NULL_OBJECT);
+			break;
+
 		case Token::Token_type::KEYWORD_THIS:
+			pe = std::make_unique<ast::pe::Object>(ast::pe::Object::Object_Type::THIS_OBJECT);
+			break;
+
 		case Token::Token_type::TOKEN_INT_LIT:
+			pe = std::make_unique<ast::pe::Integer>(current.string_value);
 			nextToken();
 			break;
 
 		case Token::Token_type::TOKEN_IDENT:
+		{
+			auto ident = std::make_unique<ast::Ident>(current.string_value);
 			nextToken();
-			parseIdentOrIdentWithArguments();
+			auto identOrIdentWithArguments = parseIdentOrIdentWithArguments();
+			pe = std::make_unique<ast::pe::IdentWithArguments>(ident, identOrIdentWithArguments);
 			break;
+		}
 
 		case Token::Token_type::OPERATOR_LPAREN:
+		{
 			nextToken();
-			parseExpression();
+			auto expression = parseExpression();
+			pe = std::make_unique<ast::pe::ExpressionWithParens>(expression);
 			expect(Token::Token_type::OPERATOR_RPAREN);
 			break;
+		}
 
 		case Token::Token_type::KEYWORD_NEW:
 			nextToken();
-			parseNewObjectOrNewArrayExpression();
+			pe = parseNewObjectOrNewArrayExpression();
 			break;
 
 		default:
 			throw "expected Expression";
 	}
+
+	return pe;
 }
 
 // IdentOrIdentWithArguments -> ( Arguments )
 //     | .
-uptr<vec<uptr<ast::Expression>>> Parser::parseIdentOrIdentWithArguments()
+uptr<ast::Arguments> Parser::parseIdentOrIdentWithArguments()
 {
-	uptr<vec<uptr<ast::Expression>>> arguments;
+	uptr<ast::Arguments> arguments;
 
 	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
 	{
@@ -711,7 +735,7 @@ uptr<vec<uptr<ast::Expression>>> Parser::parseIdentOrIdentWithArguments()
 }
 
 // NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
-void Parser::parseNewObjectOrNewArrayExpression()
+uptr<ast::pe::PrimaryExpression> Parser::parseNewObjectOrNewArrayExpression()
 {
 	Token id = current;
 
@@ -720,18 +744,27 @@ void Parser::parseNewObjectOrNewArrayExpression()
 	lexer.unget_token(next);
 	current = id;
 
+	uptr<ast::pe::PrimaryExpression> pe;
+
 	if (next.token_type == Token::Token_type::OPERATOR_LPAREN)
-		parseNewObjectExpression();
+	{
+		auto newObjectExpression = parseNewObjectExpression();
+		return std::move(newObjectExpression);
+	}
 	else
-		parseNewArrayExpression();
+		pe = parseNewArrayExpression();
+
+	return pe;
 }
 
 // NewObjectExpression -> IDENT ( ) .
-void Parser::parseNewObjectExpression()
+uptr<ast::pe::NewObjectExpression> Parser::parseNewObjectExpression()
 {
+	auto ident = std::make_unique<ast::Ident>(current.string_value);
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
 	expect(Token::Token_type::OPERATOR_RPAREN);
+	return std::make_unique<ast::pe::NewObjectExpression>(ident);
 }
 
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
@@ -776,18 +809,18 @@ int Parser::parseOptionalBrackets()
 
 // Arguments -> Expression ArgumentsExpressions | .
 // ArgumentsExpressions -> , Expression ArgumentsExpressions | .
-uptr<vec<uptr<ast::Expression>>> Parser::parseArguments()
+uptr<ast::Arguments> Parser::parseArguments()
 {
-	auto arguments = std::make_unique<vec<uptr<ast::Expression>>>();
+	auto args_vec = std::make_unique<vec<uptr<ast::Expression>>>();
 	bool isFirstArgument = true;
 
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
-		arguments->push_back(std::move(parseExpression()));
+		args_vec->push_back(std::move(parseExpression()));
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
-			return arguments;
+			return std::make_unique<ast::Arguments>(std::move(args_vec));
 		else
 			nextToken();
 	}
@@ -795,7 +828,7 @@ uptr<vec<uptr<ast::Expression>>> Parser::parseArguments()
 	if (!isFirstArgument)
 		throw "trailing comma";
 
-	return arguments;
+	return std::make_unique<ast::Arguments>(std::move(args_vec));
 }
 
 // MethodInvocationOrFieldAccess -> IDENT MethodInvocation | .
