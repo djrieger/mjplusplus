@@ -10,12 +10,12 @@ namespace ast
 	{
 
 		public:
-			ArrayType(std::unique_ptr<BasicType>& basic_type);
+			ArrayType(std::unique_ptr<BasicType>& basic_type, int dimension);
 			virtual std::string toString() const;
 
 		private:
-			// dimension is implicitly defined to 1
 			std::unique_ptr<BasicType> basic_type;
+			int dimension = 1;
 	};
 }
 
