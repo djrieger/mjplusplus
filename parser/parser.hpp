@@ -101,7 +101,6 @@ class Parser
 
 		uptr<ast::ClassMember> parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent);
 		uptr<vec<uptr<ast::TypeIdent>>> parseOptionalParameters();
-		uptr<ast::Arguments> parseIdentOrIdentWithArguments();
 		uptr<ast::Arguments> parseArguments();
 
 		uptr<ast::Statement> parseStatement();

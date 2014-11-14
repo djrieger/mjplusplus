@@ -76,14 +76,14 @@ namespace ast
 			return "new " + identifier->toString() + "()";
 		}
 
-		IdentWithArguments::IdentWithArguments(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
+		MethodInvocation::MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
 			Ident(identifier),
 			arguments(std::move(arguments))
 		{
 
 		}
 
-		std::string IdentWithArguments::toString() const
+		std::string MethodInvocation::toString() const
 		{
 			return identifier->toString() + arguments->toString();
 		}
