@@ -21,6 +21,8 @@
 #include "../ast/ArrayAccess.hpp"
 #include "../ast/FieldAccess.hpp"
 #include "../ast/MethodInvocation.hpp"
+#include "../ast/UnaryExpression.hpp"
+#include "../ast/BinaryExpression.hpp"
 
 template <class T> using uptr = std::unique_ptr<T>;
 template <class T> using vec = std::vector<T>;
@@ -92,8 +94,8 @@ class Parser
 
 		uptr<ast::ClassMember> parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent);
 		uptr<vec<uptr<ast::TypeIdent>>> parseOptionalParameters();
-		uptr<vec<uptr<ast::Ident>>> parseIdentOrIdentWithArguments();
-		uptr<vec<uptr<ast::Ident>>> parseArguments();
+		uptr<vec<uptr<ast::Expression>>> parseIdentOrIdentWithArguments();
+		uptr<vec<uptr<ast::Expression>>> parseArguments();
 
 		uptr<ast::Statement> parseStatement();
 		uptr<ast::Statement> parseBlock();
@@ -102,14 +104,14 @@ class Parser
 		uptr<ast::IfStatement> parseIfStatement();
 		uptr<ast::WhileStatement> parseWhileStatement();
 		uptr<ast::ReturnStatement> parseReturnStatement();
-		void parseExpression();
-		void parseAssignmentExpression();
-		void precedenceClimb(int minPrec);
-		void parseUnaryExpression();
-		std::unique_ptr<std::vector<std::unique_ptr<ast::PostfixOp>>> parsePostfixOps();
-		void parsePrimaryExpression();
-		void parseMethodInvocation();
-		std::unique_ptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
+
+		uptr<ast::Expression> parseExpression();
+		uptr<ast::Expression> precedenceClimb(int minPrec);
+		uptr<ast::UnaryExpression> parseUnaryExpression();
+		uptr<ast::PrimaryExpression> parsePrimaryExpression();
+		uptr<vec<uptr<ast::PostfixOp>>> parsePostfixOps();
+		//void parseMethodInvocation();
+		uptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
 		void parseNewObjectExpression();
 		void parseNewObjectOrNewArrayExpression();
 };
