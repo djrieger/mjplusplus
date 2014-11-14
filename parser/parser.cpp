@@ -199,13 +199,8 @@ uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	expect(Token::Token_type::OPERATOR_RBRACKET);
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_RPAREN);
-	// TODO: Implemented Statement AST Node, update parseBlock() to return AST Node and then:
 	auto block = parseBlock();
-	// instead of this:
-	//parseBlock();
-	//uptr<ast::Statement> emptyStatement;
-	// TODO: return block instead of emptyStatement:
-	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, block);//emptyStatement);
+	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, block);
 }
 
 // TypeIdent -> Type IDENT
@@ -288,11 +283,8 @@ uptr<ast::ClassMember> Parser::parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent
 		auto parameters = parseOptionalParameters();
 		expect(Token::Token_type::OPERATOR_RPAREN);
 		auto block = parseBlock();
-		//parseBlock();
-		// TODO: remove this:
-		//uptr<ast::Statement> emptyStatement;
 
-		classMember = std::make_unique<ast::MethodDeclaration>(typeIdent, parameters, block);//emptyStatement);
+		classMember = std::make_unique<ast::MethodDeclaration>(typeIdent, parameters, block);;
 	}
 
 	return classMember;
@@ -770,10 +762,7 @@ uptr<vec<uptr<ast::Expression>>> Parser::parseArguments()
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
-		// TODO:
 		arguments->push_back(std::move(parseExpression()));
-		// instead of
-		//parseExpression();
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
 			return arguments;
