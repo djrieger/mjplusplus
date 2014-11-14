@@ -17,6 +17,7 @@ namespace ast
 			IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement);
 			IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement, std::unique_ptr<Statement>& elseStatement);
 			virtual std::string toString(unsigned int indent) const;
+			virtual Statement::Type getType() const;
 	};
 }
 

@@ -23,4 +23,9 @@ namespace ast
 			return r;
 		}
 	}
+
+	Statement::Type Block::getType() const
+	{
+		return Type::TYPE_BLOCK;
+	}
 }
