@@ -29,10 +29,10 @@ namespace ast
 		class Ident : public PrimaryExpression
 		{
 			public:
-				Ident(std::unique_ptr<Ident>& identifier);
+				Ident(std::unique_ptr<ast::Ident>& identifier);
 				virtual std::string toString() const;
 			protected:
-				std::unique_ptr<Ident> identifier;
+				std::unique_ptr<ast::Ident> identifier;
 		};
 
 		class Object : public PrimaryExpression
@@ -73,19 +73,19 @@ namespace ast
 		class NewObjectExpression : public PrimaryExpression
 		{
 			public:
-				NewObjectExpression(std::unique_ptr<Ident>& identifier);
+				NewObjectExpression(std::unique_ptr<ast::Ident>& identifier);
 				virtual std::string toString() const;
 			private:
-				std::unique_ptr<Ident> identifier;
+				std::unique_ptr<ast::Ident> identifier;
 		};
 
 		class IdentWithArguments : public Ident
 		{
 			public:
-				IdentWithArguments(std::unique_ptr<Ident>& identifier, std::unique_ptr<Arguments>& arguments);
+				IdentWithArguments(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments);
 				virtual std::string toString() const;
 			private:
-				std::unique_ptr<Ident> identifier;
+				std::unique_ptr<ast::Ident> identifier;
 				std::unique_ptr<Arguments> arguments;
 		};
 

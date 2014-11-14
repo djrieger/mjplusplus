@@ -14,7 +14,7 @@ namespace ast
 			return value ? "true" : "false";
 		}
 
-		Ident::Ident(std::unique_ptr<Ident>& identifier) : identifier(std::move(identifier))
+		Ident::Ident(std::unique_ptr<ast::Ident>& identifier) : identifier(std::move(identifier))
 		{
 		}
 
@@ -66,7 +66,7 @@ namespace ast
 			return s;
 		}
 
-		NewObjectExpression::NewObjectExpression(std::unique_ptr<Ident>& identifier) : identifier(std::move(identifier))
+		NewObjectExpression::NewObjectExpression(std::unique_ptr<ast::Ident>& identifier) : identifier(std::move(identifier))
 		{
 
 		}
@@ -76,7 +76,7 @@ namespace ast
 			return "new " + identifier->toString() + "()";
 		}
 
-		IdentWithArguments::IdentWithArguments(std::unique_ptr<Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
+		IdentWithArguments::IdentWithArguments(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
 			Ident(identifier),
 			arguments(std::move(arguments))
 		{

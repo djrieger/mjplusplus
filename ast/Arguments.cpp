@@ -1,6 +1,6 @@
 #include "Arguments.hpp"
 
-ast::Arguments::Arguments(std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>>& arguments) : arguments(std::move(arguments))
+ast::Arguments::Arguments(std::unique_ptr<std::vector<std::unique_ptr<Expression> > >& arguments) : arguments(std::move(arguments))
 {
 
 }
