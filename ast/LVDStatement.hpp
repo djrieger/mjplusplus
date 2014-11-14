@@ -16,7 +16,7 @@ namespace ast
 		public:
 			LVDStatement(std::unique_ptr<TypeIdent>& type_ident);
 			LVDStatement(std::unique_ptr<TypeIdent>& type_ident, std::unique_ptr<Expression>& init_expr);
-			virtual std::string toString() const;
+			virtual std::string toString(unsigned int indent) const;
 	};
 }
 

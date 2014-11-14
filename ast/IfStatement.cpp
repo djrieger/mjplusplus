@@ -13,8 +13,9 @@ namespace ast
 		;
 	}
 
-	std::string IfStatement::toString() const
+	std::string IfStatement::toString(unsigned int indent) const
 	{
-		return "if (" + condition->toString() + ")" + (thenStatement ? thenStatement->toString() : "{ }") + (elseStatement ? "else " + elseStatement->toString() : "");
+		std::string r(indent, '\t');
+		return r + "if (" + condition->toString(indent) + ") " + (thenStatement ? thenStatement->toString(indent + 1) : "{ }") + (elseStatement ? " else " + elseStatement->toString(indent + 1) : "");
 	}
 }

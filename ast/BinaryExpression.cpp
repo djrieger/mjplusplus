@@ -6,8 +6,8 @@ ast::BinaryExpression::BinaryExpression(std::unique_ptr<Expression>& leftChild, 
 
 }
 
-std::string ast::BinaryExpression::toString() const
+std::string ast::BinaryExpression::toString(unsigned int indent) const
 {
 	//TODO operator_type -> string
-	return leftChild->toString() + " + " + rightChild->toString();
+	return leftChild->toString(indent) + " + " + rightChild->toString(indent);
 }
