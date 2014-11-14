@@ -820,7 +820,7 @@ uptr<ast::Arguments> Parser::parseArguments()
 		args_vec->push_back(std::move(parseExpression()));
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
-			return std::make_unique<ast::Arguments>(std::move(args_vec));
+			return std::make_unique<ast::Arguments>(args_vec);
 		else
 			nextToken();
 	}
@@ -828,7 +828,7 @@ uptr<ast::Arguments> Parser::parseArguments()
 	if (!isFirstArgument)
 		throw "trailing comma";
 
-	return std::make_unique<ast::Arguments>(std::move(args_vec));
+	return std::make_unique<ast::Arguments>(args_vec);
 }
 
 // MethodInvocationOrFieldAccess -> IDENT MethodInvocation | .
