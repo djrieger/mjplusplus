@@ -9,16 +9,13 @@ ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_typ
 std::string ast::MethodDeclaration::toString() const
 {
 	std::string ret = "public " + return_type_and_name->toString() + "(";
-	auto it = parameters->begin();
 
-	while (1)
+	for (auto it = parameters->begin(); it != parameters->end(); it++)
 	{
 		ret += (**it).toString();
 
-		if (++it != parameters->end())
+		if (it + 1 != parameters->end())
 			ret += ", ";
-		else
-			break;
 	}
 
 	ret += ")\n" + (block ? block->toString() : "{ }");
