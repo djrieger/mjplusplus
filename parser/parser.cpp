@@ -791,8 +791,8 @@ std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 	{
 		nextToken();
 		auto args = parseArguments();
-		return std::make_unique<ast::MethodInvocation>(id, args);
 		expect(Token::Token_type::OPERATOR_RPAREN);
+		return std::make_unique<ast::MethodInvocation>(id, args);
 	}
 	else
 		return std::make_unique<ast::FieldAccess>(id);
