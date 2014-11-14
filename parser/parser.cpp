@@ -181,18 +181,18 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .
 uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
+	std::unique_ptr<ast::Type> basicType( new ast::BasicType(ast::Type::Primitive_type::VOID));
 	expect(Token::Token_type::KEYWORD_VOID);
 	auto mainMethodName = std::make_unique<ast::Ident>(current.string_value);
-	auto typeIdent = std::make_unique<ast::TypeIdent>(
-	                     mainMethodName,
-	                     ast::TypeIdent::Primitive_type::VOID);
+	auto typeIdent = std::make_unique<ast::TypeIdent>(basicType, mainMethodName);
 
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
 
 	auto parameterName = std::make_unique<ast::Ident>(current.string_value);
 	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
-	parameters->push_back(std::make_unique<ast::TypeIdent>(parameterName, ast::TypeIdent::Primitive_type::VOID));
+	std::unique_ptr<ast::Type> parType( new ast::BasicType(ast::Type::Primitive_type::VOID));
+	parameters->push_back(std::make_unique<ast::TypeIdent>(parType, parameterName));
 
 	expect(Token::Token_type::TOKEN_IDENT, "String");
 	expect(Token::Token_type::OPERATOR_LBRACKET);
@@ -213,8 +213,7 @@ uptr<ast::TypeIdent> Parser::parseTypeIdent()
 	// retrieve variable name:
 	auto variable_name = std::make_unique<ast::Ident>(current.string_value);
 	expect(Token::Token_type::TOKEN_IDENT);
-
-	auto typeIdent = std::make_unique<ast::TypeIdent>(variable_name, basicType.first, basicType.second, dimension);
+	auto typeIdent = std::make_unique<ast::TypeIdent>(basicType, variable_name);
 	return typeIdent;
 }
 
@@ -234,23 +233,23 @@ int Parser::parseArrayDecl()
 }
 
 // BasicType -> int | boolean | void | IDENT .
-std::pair<ast::TypeIdent::Primitive_type, std::string> Parser::parseBasicType()
+uptr<ast::Type> Parser::parseBasicType()
 {
 	std::string class_name = "";
-	ast::TypeIdent::Primitive_type primitive_type = ast::TypeIdent::Primitive_type::NONE;
+	ast::Type::Primitive_type primitive_type = ast::Type::Primitive_type::NONE;
 
 	switch (current.token_type)
 	{
 		case Token::Token_type::KEYWORD_INT:
-			primitive_type = ast::TypeIdent::Primitive_type::INT;
+			primitive_type = ast::Type::Primitive_type::INT;
 			break;
 
 		case Token::Token_type::KEYWORD_BOOLEAN:
-			primitive_type = ast::TypeIdent::Primitive_type::BOOLEAN;
+			primitive_type = ast::Type::Primitive_type::BOOLEAN;
 			break;
 
 		case Token::Token_type::KEYWORD_VOID:
-			primitive_type = ast::TypeIdent::Primitive_type::VOID;
+			primitive_type = ast::Type::Primitive_type::VOID;
 			break;
 
 		case Token::Token_type::TOKEN_IDENT:
@@ -259,10 +258,16 @@ std::pair<ast::TypeIdent::Primitive_type, std::string> Parser::parseBasicType()
 
 		default:
 			throw "expected Type";
-	}
 
+	}
 	nextToken();
-	return std::make_pair(primitive_type, class_name);
+	if (class_name.empty()) {
+		uptr<ast::Type> ret(new ast::BasicType(primitive_type));
+		return ret;
+	} else {
+		uptr<ast::Type> ret(new ast::BasicType(class_name));
+		return ret;
+	}
 }
 
 // FieldOrMethod -> Field | Method .
@@ -644,7 +649,7 @@ uptr<ast::UnaryExpression> Parser::parseUnaryExpression()
 }
 
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
-uptr<ast::PrimaryExpression> Parser::parsePrimaryExpression()
+uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 {
 	switch (current.token_type)
 	{
