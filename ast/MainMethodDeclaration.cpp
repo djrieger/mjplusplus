@@ -10,19 +10,6 @@ ast::MainMethodDeclaration::MainMethodDeclaration(std::unique_ptr<TypeIdent>& re
 
 std::string ast::MainMethodDeclaration::toString() const
 {
-	std::string ret = "public static " + return_type_and_name->toString() + "(";
-
-	for (auto it = parameters->begin(); it != parameters->end(); it++)
-	{
-		ret += (**it).toString();
-
-		if (it + 1 != parameters->end())
-			ret += ", ";
-	}
-
-	ret += ")\n" + (block ? block->toString() : "{ }");
-
-	return ret;
+	// Prints this method including the "static" modifier
+	return MethodDeclaration::toString(true);
 }
-
-

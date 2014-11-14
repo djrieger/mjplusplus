@@ -8,7 +8,13 @@ ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_typ
 
 std::string ast::MethodDeclaration::toString() const
 {
-	std::string ret = "public " + return_type_and_name->toString() + "(";
+	return toString(false);
+}
+
+std::string ast::MethodDeclaration::toString(bool isStatic) const
+{
+	std::string modifier = isStatic ? "static " : "";
+	std::string ret = "public " + modifier + return_type_and_name->toString() + "(";
 
 	for (auto it = parameters->begin(); it != parameters->end(); it++)
 	{
