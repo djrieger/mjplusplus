@@ -8,11 +8,12 @@ namespace ast
 	}
 	std::string ClassDeclaration::toString() const
 	{
-		std::string r("class " + class_name->toString() + "\n{");
+		std::string r("class " + class_name->toString() + " {\n");
 
 		for (auto it = members->begin(); it != members->end(); it++)
 			r += (**it).toString();
 
+		r += '\n';
 		r += '}';
 
 		return r;

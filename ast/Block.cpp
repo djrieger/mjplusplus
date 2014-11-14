@@ -9,13 +9,19 @@ namespace ast
 	}
 	std::string Block::toString() const
 	{
-		std::string r("{");
+		if (block_statements->size() == 0)
+			return "{ }";
+		else
+		{
+			std::string r("{\n");
 
-		for (auto it = block_statements->begin(); it != block_statements->end(); it++)
-			r += (**it).toString();
+			for (auto it = block_statements->begin(); it != block_statements->end(); it++)
+				r += (**it).toString();
 
-		r += '}';
+			r += '\n';
+			r += '}';
 
-		return r;
+			return r;
+		}
 	}
 }
