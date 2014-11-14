@@ -13,6 +13,7 @@ namespace ast
 		public:
 			Ident(std::string const& string_value);
 			virtual std::string toString() const;
+			virtual std::string getName() const;
 	};
 }
 #endif // IDENT_HPP

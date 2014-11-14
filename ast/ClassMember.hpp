@@ -7,6 +7,9 @@ namespace ast
 {
 	class ClassMember : public Node
 	{
+
+		public:
+			virtual std::string getName() const = 0;
 	};
 }
 

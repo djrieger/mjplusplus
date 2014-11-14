@@ -1,4 +1,5 @@
 #include "ClassDeclaration.hpp"
+#include "MethodDeclaration.hpp"
 
 namespace ast
 {
@@ -9,6 +10,13 @@ namespace ast
 	std::string ClassDeclaration::toString() const
 	{
 		std::string r("class " + class_name->toString() + " {\n");
+
+		auto sortMembers = [](const std::unique_ptr<ast::ClassMember>& a,
+		                      const std::unique_ptr<ast::ClassMember>& b) -> bool
+		{
+			return a->getName() < b->getName();
+		};
+		std::sort(members->begin(), members->end(), sortMembers);
 
 		for (auto& it : *members)
 			r += it->toString();

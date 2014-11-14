@@ -13,6 +13,7 @@ namespace ast
 		public:
 			TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& identifier);
 			virtual std::string toString() const;
+			virtual std::string getName() const;
 
 		private:
 			std::unique_ptr<Type> type;

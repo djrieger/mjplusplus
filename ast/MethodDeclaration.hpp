@@ -25,6 +25,7 @@ namespace ast
 			 * Prints this method without a "static" modifier
 			 */
 			virtual std::string toString() const;
+			virtual std::string getName() const;
 	};
 }
 
