@@ -10,14 +10,12 @@ std::string ast::Arguments::toString() const
 	std::string ret = "(";
 	auto it = arguments->begin();
 
-	while (1)
+	for (auto it = arguments->begin(); it != arguments->end(); it++)
 	{
 		ret += (**it).toString();
 
-		if (++it != arguments->end())
+		if (it + 1 != arguments->end())
 			ret += ", ";
-		else
-			break;
 	}
 
 	ret += ")";
