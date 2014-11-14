@@ -8,7 +8,13 @@ ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_typ
 
 std::string ast::MethodDeclaration::toString(unsigned int indent) const
 {
-	std::string ret = std::string(indent, '\t') + "public " + return_type_and_name->toString(indent) + "(";
+	return toString(indent, false);
+}
+
+std::string ast::MethodDeclaration::toString(unsigned int indent, bool isStatic) const
+{
+	std::string modifier = isStatic ? "static " : "";
+	std::string ret = std::string(indent, '\t') + "public " + modifier + return_type_and_name->toString(indent) + "(";
 
 	for (auto it = parameters->begin(); it != parameters->end(); it++)
 	{

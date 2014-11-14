@@ -8,6 +8,197 @@ ast::BinaryExpression::BinaryExpression(std::unique_ptr<Expression>& leftChild, 
 
 std::string ast::BinaryExpression::toString(unsigned int indent) const
 {
-	//TODO operator_type -> string
-	return leftChild->toString(indent) + " + " + rightChild->toString(indent);
+	std::string op = "";
+
+	switch (operator_type)
+	{
+		case Token::Token_type::OPERATOR_NOTEQ:
+			op = "!=";
+			break;
+
+		case Token::Token_type::OPERATOR_NOT:
+			op = "!";
+			break;
+
+		case Token::Token_type::OPERATOR_LPAREN:
+			op = "(";
+			break;
+
+		case Token::Token_type::OPERATOR_RPAREN:
+			op = ")";
+			break;
+
+		case Token::Token_type::OPERATOR_MULTEQ:
+			op = "*=";
+			break;
+
+		case Token::Token_type::OPERATOR_MULT:
+			op = "*";
+			break;
+
+		case Token::Token_type::OPERATOR_PLUPLUS:
+			op = "++";
+			break;
+
+		case Token::Token_type::OPERATOR_PLUSEQ:
+			op = "+=";
+			break;
+
+		case Token::Token_type::OPERATOR_PLUS:
+			op = "+";
+			break;
+
+		case Token::Token_type::OPERATOR_COMMA:
+			op = ",";
+			break;
+
+		case Token::Token_type::OPERATOR_MINUSEQ:
+			op = "-=";
+			break;
+
+		case Token::Token_type::OPERATOR_MINUSMINUS:
+			op = "--";
+			break;
+
+		case Token::Token_type::OPERATOR_MINUS:
+			op = "-";
+			break;
+
+		case Token::Token_type::OPERATOR_DOT:
+			op = ".";
+			break;
+
+		case Token::Token_type::OPERATOR_SLASHEQ:
+			op = "/=";
+			break;
+
+		case Token::Token_type::OPERATOR_SLASH:
+			op = "/";
+			break;
+
+		case Token::Token_type::OPERATOR_COLON:
+			op = ":";
+			break;
+
+		case Token::Token_type::OPERATOR_SEMICOLON:
+			op = ";";
+			break;
+
+		case Token::Token_type::OPERATOR_LTLTEQ:
+			op = "<<=";
+			break;
+
+		case Token::Token_type::OPERATOR_LTLT:
+			op = "<<";
+			break;
+
+		case Token::Token_type::OPERATOR_LTEQ:
+			op = "<=";
+			break;
+
+		case Token::Token_type::OPERATOR_LT:
+			op = "<";
+			break;
+
+		case Token::Token_type::OPERATOR_EQEQ:
+			op = "==";
+			break;
+
+		case Token::Token_type::OPERATOR_EQ:
+			op = "=";
+			break;
+
+		case Token::Token_type::OPERATOR_GTEQ:
+			op = ">=";
+			break;
+
+		case Token::Token_type::OPERATOR_GTGTEQ:
+			op = ">>=";
+			break;
+
+		case Token::Token_type::OPERATOR_GTGTGTEQ:
+			op = ">>>=";
+			break;
+
+		case Token::Token_type::OPERATOR_GTGTGT:
+			op = ">>>";
+			break;
+
+		case Token::Token_type::OPERATOR_GTGT:
+			op = ">>";
+			break;
+
+		case Token::Token_type::OPERATOR_GT:
+			op = ">";
+			break;
+
+		case Token::Token_type::OPERATOR_QUESTION:
+			op = "?";
+			break;
+
+		case Token::Token_type::OPERATOR_MODEQ:
+			op = "%=";
+			break;
+
+		case Token::Token_type::OPERATOR_MOD:
+			op = "%";
+			break;
+
+		case Token::Token_type::OPERATOR_ANDEQ:
+			op = "&=";
+			break;
+
+		case Token::Token_type::OPERATOR_ANDAND:
+			op = "&&";
+			break;
+
+		case Token::Token_type::OPERATOR_AND:
+			op = "&";
+			break;
+
+		case Token::Token_type::OPERATOR_LBRACKET:
+			op = "[";
+			break;
+
+		case Token::Token_type::OPERATOR_RBRACKET:
+			op = "]";
+			break;
+
+		case Token::Token_type::OPERATOR_XOREQ:
+			op = "^=";
+			break;
+
+		case Token::Token_type::OPERATOR_XOR:
+			op = "^";
+			break;
+
+		case Token::Token_type::OPERATOR_LBRACE:
+			op = "{";
+			break;
+
+		case Token::Token_type::OPERATOR_RBRACE:
+			op = "}";
+			break;
+
+		case Token::Token_type::OPERATOR_NEG:
+			op = "-";
+			break;
+
+		case Token::Token_type::OPERATOR_OREQ:
+			op = "|=";
+			break;
+
+		case Token::Token_type::OPERATOR_OROR:
+			op = "||";
+			break;
+
+		case Token::Token_type::OPERATOR_OR:
+			op = "|";
+			break;
+
+		default:
+			op = "NO_VALID_OPERATOR";
+	}
+
+	return leftChild->toString(indent) + ' ' + op + ' ' + rightChild->toString(indent);
 }

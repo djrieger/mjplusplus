@@ -11,10 +11,9 @@ namespace ast
 		std::string r(indent, '\t');
 		r += "class " + class_name->toString(indent) + " {\n";
 
-		for (auto it = members->begin(); it != members->end(); it++)
-			r += (**it).toString(indent + 1);
+		for (auto& it : *members)
+			r += it->toString(indent + 1);
 
-		r += '\n';
 		r += '}';
 
 		return r;
