@@ -170,8 +170,7 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 		else
 		{
 			auto typeIdent = parseTypeIdent();
-			// TODO
-			parseFieldOrMethod(std::move(typeIdent));
+			classMembers->push_back(std::move(parseFieldOrMethod(std::move(typeIdent))));
 		}
 	}
 
@@ -260,11 +259,16 @@ uptr<ast::Type> Parser::parseBasicType()
 			throw "expected Type";
 
 	}
+
 	nextToken();
-	if (class_name.empty()) {
+
+	if (class_name.empty())
+	{
 		uptr<ast::Type> ret(new ast::BasicType(primitive_type));
 		return ret;
-	} else {
+	}
+	else
+	{
 		uptr<ast::Type> ret(new ast::BasicType(class_name));
 		return ret;
 	}
