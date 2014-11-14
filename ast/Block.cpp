@@ -7,7 +7,7 @@ namespace ast
 	{
 		;
 	}
-	std::string Block::toString()
+	std::string Block::toString() const
 	{
 		std::string r("{");
 

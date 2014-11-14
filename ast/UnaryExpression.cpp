@@ -1,6 +1,6 @@
 #include "UnaryExpression.hpp"
 
-std::string ast::UnaryExpression::toString()
+std::string ast::UnaryExpression::toString() const
 {
 	std::string s = "";
 

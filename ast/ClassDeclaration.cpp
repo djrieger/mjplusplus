@@ -6,7 +6,7 @@ namespace ast
 	{
 		;
 	}
-	std::string ClassDeclaration::toString()
+	std::string ClassDeclaration::toString() const
 	{
 		std::string r("class " + class_name->toString() + "\n{");
 

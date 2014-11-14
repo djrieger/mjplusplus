@@ -6,7 +6,7 @@ ast::BinaryExpression::BinaryExpression(std::unique_ptr<Expression>& leftChild, 
 
 }
 
-std::string ast::BinaryExpression::toString()
+std::string ast::BinaryExpression::toString() const
 {
 	//TODO operator_type -> string
 	return leftChild->toString() + " + " + rightChild->toString();

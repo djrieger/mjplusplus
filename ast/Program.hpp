@@ -14,7 +14,7 @@ namespace ast
 
 		public:
 			Program(std::unique_ptr<std::vector<ClassDeclaration>>& classes);
-			virtual std::string toString();
+			virtual std::string toString() const;
 
 	};
 

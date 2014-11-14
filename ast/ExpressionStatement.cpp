@@ -5,7 +5,7 @@ ast::ExpressionStatement::ExpressionStatement(std::unique_ptr<Expression>& expr)
 
 }
 
-std::string ast::ExpressionStatement::toString()
+std::string ast::ExpressionStatement::toString() const
 {
 	return expression->toString();
 }

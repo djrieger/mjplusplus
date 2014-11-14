@@ -16,7 +16,7 @@ namespace ast
 		public:
 			IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement);
 			IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement, std::unique_ptr<Statement>& elseStatement);
-			virtual std::string toString();
+			virtual std::string toString() const;
 	};
 }
 

@@ -9,7 +9,7 @@ namespace ast
 			;
 		}
 
-		std::string Bool::toString()
+		std::string Bool::toString() const
 		{
 			return value ? "true" : "false";
 		}
@@ -18,7 +18,7 @@ namespace ast
 		{
 		}
 
-		std::string Ident::toString()
+		std::string Ident::toString() const
 		{
 			return identifier->toString();
 		}
@@ -28,7 +28,7 @@ namespace ast
 		{
 		}
 
-		std::string Object::toString()
+		std::string Object::toString() const
 		{
 			return (object_type == Object_Type::THIS_OBJECT) ? "this" : "null";
 		}
@@ -39,7 +39,7 @@ namespace ast
 
 		}
 
-		std::string Integer::toString()
+		std::string Integer::toString() const
 		{
 			return string_value;
 		}
@@ -53,7 +53,7 @@ namespace ast
 
 		}
 
-		std::string NewArrayExpression::toString()
+		std::string NewArrayExpression::toString() const
 		{
 			std::string s = "";
 
@@ -71,7 +71,7 @@ namespace ast
 
 		}
 
-		std::string NewObjectExpression::toString()
+		std::string NewObjectExpression::toString() const
 		{
 			return "new " + identifier->toString() + "()";
 		}
@@ -83,7 +83,7 @@ namespace ast
 
 		}
 
-		std::string IdentWithArguments::toString()
+		std::string IdentWithArguments::toString() const
 		{
 			return identifier->toString() + arguments->toString();
 		}
@@ -93,7 +93,7 @@ namespace ast
 
 		}
 
-		std::string ExpressionWithParens::toString()
+		std::string ExpressionWithParens::toString() const
 		{
 			return "(" + expr->toString() + ")";
 		}

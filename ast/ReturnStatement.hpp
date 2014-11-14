@@ -14,7 +14,7 @@ namespace ast
 		public:
 			ReturnStatement();
 			ReturnStatement(std::unique_ptr<Expression>& expression);
-			virtual std::string toString();
+			virtual std::string toString() const;
 	};
 }
 

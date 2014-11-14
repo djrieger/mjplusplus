@@ -12,7 +12,7 @@ namespace ast
 			std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>> arguments;
 		public:
 			Arguments(std::unique_ptr<std::vector<std::unique_ptr<ast::Ident>>>& arguments);
-			virtual std::string toString();
+			virtual std::string toString() const;
 	};
 }
 #endif // ARGUMENTS_HPP

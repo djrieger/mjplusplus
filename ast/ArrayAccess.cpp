@@ -7,7 +7,7 @@ namespace ast
 		;
 	}
 
-	std::string ArrayAccess::toString()
+	std::string ArrayAccess::toString() const
 	{
 		return '[' + access_offset->toString() + ']';
 	}

@@ -5,7 +5,7 @@ ast::ArrayType::ArrayType(std::unique_ptr<BasicType>& basic_type) : basic_type(s
 
 }
 
-std::string ast::ArrayType::toString()
+std::string ast::ArrayType::toString() const
 {
 	return basic_type->toString() + "[]";
 }
