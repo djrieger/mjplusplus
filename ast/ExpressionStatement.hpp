@@ -13,7 +13,7 @@ namespace ast
 
 		public:
 			ExpressionStatement(std::unique_ptr<Expression>& expr);
-			virtual std::string toString();
+			virtual std::string toString() const;
 	};
 }
 #endif // EXPRESIONSTATEMENT

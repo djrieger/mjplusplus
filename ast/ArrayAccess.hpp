@@ -13,7 +13,7 @@ namespace ast
 
 		public:
 			ArrayAccess(std::unique_ptr<Expression>& access_offset);
-			virtual std::string toString();
+			virtual std::string toString() const;
 	};
 }
 

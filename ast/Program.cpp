@@ -5,7 +5,7 @@ ast::Program::Program(std::unique_ptr<std::vector<ClassDeclaration>>& classes) :
 
 }
 
-std::string ast::Program::toString()
+std::string ast::Program::toString() const
 {
 	std::string class_def = "";
 

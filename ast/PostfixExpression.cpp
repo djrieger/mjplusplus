@@ -5,7 +5,7 @@ ast::PostfixExpression::PostfixExpression(std::unique_ptr<pe::PrimaryExpression>
 
 }
 
-std::string ast::PostfixExpression::toString()
+std::string ast::PostfixExpression::toString() const
 {
 	std::string str = child->toString();
 

@@ -6,7 +6,7 @@ ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_typ
 
 }
 
-std::string ast::MethodDeclaration::toString()
+std::string ast::MethodDeclaration::toString() const
 {
 	std::string ret = "public " + return_type_and_name->toString() + "(";
 	auto it = parameters->begin();

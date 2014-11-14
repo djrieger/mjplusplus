@@ -5,7 +5,7 @@ ast::Arguments::Arguments(std::unique_ptr<std::vector<std::unique_ptr<ast::Ident
 
 }
 
-std::string ast::Arguments::toString()
+std::string ast::Arguments::toString() const
 {
 	std::string ret = "(";
 	auto it = arguments->begin();

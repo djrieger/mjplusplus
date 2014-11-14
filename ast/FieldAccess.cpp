@@ -7,7 +7,7 @@ namespace ast
 		;
 	}
 
-	std::string FieldAccess::toString()
+	std::string FieldAccess::toString() const
 	{
 		return '.' + field_name->toString();
 	}

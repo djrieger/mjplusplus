@@ -6,7 +6,7 @@ ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident>& method_name, std
 
 }
 
-std::string ast::MethodInvocation::toString()
+std::string ast::MethodInvocation::toString() const
 {
 	std::string ret = method_name->toString() + "(";
 	auto it = arguments->begin();
