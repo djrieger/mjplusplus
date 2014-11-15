@@ -8,5 +8,5 @@ ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident>& method_name, std
 
 std::string ast::MethodInvocation::toString(unsigned int indent) const
 {
-	return '.' + method_name->toString(indent) + "(" + arguments->toString(indent) + ")";
+	return '.' + method_name->toString(indent) + arguments->toString(indent);
 }
