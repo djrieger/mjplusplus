@@ -9,18 +9,18 @@ namespace ast
 			;
 		}
 
-		std::string Bool::toString(unsigned int) const
+		void Bool::toString(std::ostream& out, unsigned int) const
 		{
-			return value ? "true" : "false";
+			out << (value ? "true" : "false");
 		}
 
 		Ident::Ident(std::unique_ptr<ast::Ident>& identifier) : identifier(std::move(identifier))
 		{
 		}
 
-		std::string Ident::toString(unsigned int ident) const
+		void Ident::toString(std::ostream& out, unsigned int ident) const
 		{
-			return identifier->toString(ident);
+			identifier->toString(out, ident);
 		}
 
 
@@ -28,9 +28,9 @@ namespace ast
 		{
 		}
 
-		std::string Object::toString(unsigned int) const
+		void Object::toString(std::ostream& out, unsigned int) const
 		{
-			return (object_type == Object_Type::THIS_OBJECT) ? "this" : "null";
+			out << ((object_type == Object_Type::THIS_OBJECT) ? "this" : "null");
 		}
 
 		Integer::Integer(std::string const& string_value)
@@ -39,9 +39,9 @@ namespace ast
 
 		}
 
-		std::string Integer::toString(unsigned int) const
+		void Integer::toString(std::ostream& out, unsigned int) const
 		{
-			return string_value;
+			out << string_value;
 		}
 
 
@@ -53,17 +53,13 @@ namespace ast
 
 		}
 
-		std::string NewArrayExpression::toString(unsigned int) const
+		void NewArrayExpression::toString(std::ostream& out, unsigned int) const
 		{
-			std::string s = "";
-
 			if (dimension > 1)
 			{
 				for (int i = 0; i < dimension - 1; ++i)
-					s += "[]";
+					out << "[]";
 			}
-
-			return s;
 		}
 
 		NewObjectExpression::NewObjectExpression(std::unique_ptr<ast::Ident>& identifier) : identifier(std::move(identifier))
@@ -71,9 +67,11 @@ namespace ast
 
 		}
 
-		std::string NewObjectExpression::toString(unsigned int indent) const
+		void NewObjectExpression::toString(std::ostream& out, unsigned int indent) const
 		{
-			return "new " + identifier->toString(indent) + "()";
+			out << "new ";
+			identifier->toString(out, indent);
+			out << "()";
 		}
 
 		MethodInvocation::MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
@@ -83,9 +81,10 @@ namespace ast
 
 		}
 
-		std::string MethodInvocation::toString(unsigned int indent) const
+		void MethodInvocation::toString(std::ostream& out, unsigned int indent) const
 		{
-			return identifier->toString(indent) + arguments->toString(indent);
+			identifier->toString(out, indent);
+			arguments->toString(out, indent);
 		}
 
 		ExpressionWithParens::ExpressionWithParens(std::unique_ptr<Expression>& expr) : expr(std::move(expr))
@@ -93,9 +92,11 @@ namespace ast
 
 		}
 
-		std::string ExpressionWithParens::toString(unsigned int indent) const
+		void ExpressionWithParens::toString(std::ostream& out, unsigned int indent) const
 		{
-			return "(" + expr->toString(indent) + ")";
+			out << "(";
+			expr->toString(out, indent);
+			out << ")";
 		}
 
 	} // namespace pe

@@ -10,28 +10,24 @@ ast::BasicType::BasicType(std::string class_name) : primitive_type(Type::Primiti
 
 }
 
-std::string ast::BasicType::toString(unsigned int) const
+void ast::BasicType::toString(std::ostream& out, unsigned int) const
 {
-	std::string s = "";
-
 	switch (primitive_type)
 	{
 		case Type::Primitive_type::INT:
-			s += "int";
+			out << "int";
 			break;
 
 		case Type::Primitive_type::BOOLEAN:
-			s += "boolean";
+			out << "boolean";
 			break;
 
 		case Type::Primitive_type::VOID:
-			s += "void";
+			out << "void";
 			break;
 
 		case Type::Primitive_type::NONE:
-			s += class_name;
+			out << class_name;
 			break;
 	}
-
-	return s;
 }

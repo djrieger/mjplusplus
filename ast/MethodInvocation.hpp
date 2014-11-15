@@ -17,7 +17,7 @@ namespace ast
 
 		public:
 			MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<Arguments>& arguments);
-			virtual std::string toString(unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent) const;
 	};
 }
 

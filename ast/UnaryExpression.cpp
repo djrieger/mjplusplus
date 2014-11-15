@@ -6,24 +6,21 @@ ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression>& child,
 
 }
 
-std::string ast::UnaryExpression::toString(unsigned int indent) const
+void ast::UnaryExpression::toString(std::ostream& out, unsigned int indent) const
 {
-	std::string s = "";
-
 	for (auto& unary_operator : *unary_operators)
 	{
 		switch (unary_operator)
 		{
 			case UnaryExpression::Unary_Operator::UNARY_NOT:
-				s += "!";
+				out << "!";
 				break;
 
 			case UnaryExpression::Unary_Operator::UNARY_MINUS:
-				s += "-";
+				out << "-";
 				break;
 		}
 	}
 
-	s += child->toString(indent);
-	return s;
+	child->toString(out, indent);
 }

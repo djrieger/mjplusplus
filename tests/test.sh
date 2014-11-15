@@ -5,7 +5,7 @@ failed=0
 
 for i in $1/* ; do
 	echo $i
-	../mj++ --print-ast $i
+	../mj++ --print-ast $i > /dev/null
 	ret=$?
 	echo $ret
 	if [ $ret -eq 0 ] ; then

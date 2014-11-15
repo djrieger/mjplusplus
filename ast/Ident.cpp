@@ -5,9 +5,9 @@ ast::Ident::Ident(std::string const& string_value) : string_value(string_value)
 
 }
 
-std::string ast::Ident::toString(unsigned int) const
+void ast::Ident::toString(std::ostream& out, unsigned int) const
 {
-	return string_value;
+	out << string_value;
 }
 
 std::string ast::Ident::getName() const

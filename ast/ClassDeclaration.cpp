@@ -10,10 +10,12 @@ namespace ast
 	{
 		;
 	}
-	std::string ClassDeclaration::toString(unsigned int indent) const
+	void ClassDeclaration::toString(std::ostream& out, unsigned int indent) const
 	{
-		std::string r(indent, '\t');
-		r += "class " + class_name->toString(indent) + " {\n";
+		out << std::string(indent, '\t');
+		out << "class ";
+		class_name->toString(out, indent);
+		out << " {\n";
 
 		auto sortMembers = [](const std::unique_ptr<ast::ClassMember>& a,
 		                      const std::unique_ptr<ast::ClassMember>& b) -> bool
@@ -23,10 +25,8 @@ namespace ast
 		std::sort(members->begin(), members->end(), sortMembers);
 
 		for (auto& it : *members)
-			r += it->toString(indent + 1);
+			it->toString(out, indent + 1);
 
-		r += '}';
-
-		return r;
+		out << '}';
 	}
 }
