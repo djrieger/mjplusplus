@@ -10,6 +10,7 @@ namespace ast
 	{
 		;
 	}
+
 	void ClassDeclaration::toString(std::ostream& out, unsigned int indent) const
 	{
 		out << std::string(indent, '\t');
@@ -27,6 +28,11 @@ namespace ast
 		for (auto& it : *members)
 			it->toString(out, indent + 1);
 
-		out << '}';
+		out << "}\n";
+	}
+
+	std::string ClassDeclaration::getName() const
+	{
+		return class_name->getName();
 	}
 }

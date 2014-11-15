@@ -10,12 +10,11 @@ namespace ast
 	class Program : public Node
 	{
 		private:
-			std::unique_ptr<std::vector<ClassDeclaration>> classes;
+			std::unique_ptr<std::vector<std::unique_ptr<ClassDeclaration>>> classes;
 
 		public:
-			Program(std::unique_ptr<std::vector<ClassDeclaration>>& classes);
+			Program(std::unique_ptr<std::vector<std::unique_ptr<ClassDeclaration>>>& classes);
 			virtual void toString(std::ostream& out, unsigned int indent) const;
-
 	};
 
 }
