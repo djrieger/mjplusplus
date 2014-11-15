@@ -73,7 +73,7 @@ namespace ast
 
 		std::string NewObjectExpression::toString(unsigned int indent) const
 		{
-			return "new " + identifier->toString(indent) + "()";
+			return "(new " + identifier->toString(indent) + "())";
 		}
 
 		MethodInvocation::MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
