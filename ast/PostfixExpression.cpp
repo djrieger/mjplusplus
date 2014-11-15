@@ -7,8 +7,16 @@ ast::PostfixExpression::PostfixExpression(std::unique_ptr<pe::PrimaryExpression>
 
 void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent) const
 {
+	if (postfix_op->size() > 1)
+		out << std::string(postfix_op->size() - 1, '(');
+
 	child->toString(out, indent);
 
-	for (auto& p : *postfix_op)
-		p->toString(out, indent);
+	for (auto it = postfix_op->begin(); it != postfix_op->end();)
+	{
+		(**it).toString(out, indent);
+
+		if (++it != postfix_op->end())
+			out << ')';
+	}
 }
