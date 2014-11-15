@@ -5,9 +5,11 @@ ast::TypeIdent::TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& i
 {
 }
 
-std::string ast::TypeIdent::toString(unsigned int indent) const
+void ast::TypeIdent::toString(std::ostream& out, unsigned int indent) const
 {
-	return type->toString(indent) + " " + identifier->toString(indent);
+	type->toString(out, indent);
+	out << " ";
+	identifier->toString(out, indent);
 }
 
 std::string ast::TypeIdent::getName() const

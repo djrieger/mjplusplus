@@ -13,25 +13,32 @@ namespace ast
 		;
 	}
 
-	std::string IfStatement::toString(unsigned int indent) const
+	void IfStatement::toString(std::ostream& out, unsigned int indent) const
 	{
-		std::string r(indent, '\t');
+		out << std::string(indent, '\t');
 		bool then_block = thenStatement && thenStatement->getType() == Statement::Type::TYPE_BLOCK;
 
-		r += "if (" + condition->toString(indent) + ')';
-		r += then_block ? ' ' : '\n';
-		r += (thenStatement ? thenStatement->toString(indent + 1) : "{ }");
+		out << "if (";
+		condition->toString(out, indent);
+		out << ')';
+		out << then_block ? ' ' : '\n';
 
-		if (elseStatement && then_block)
-			r[r.size() - 1] = ' ';// replace newline after block, else goes on the same line
+		if (thenStatement)
+			thenStatement->toString(out, indent + 1);
+		else
+			out << "{ }";
+
+		//if (elseStatement && then_block)
+		//TODO: r[r.size() - 1] = ' ';// replace newline after block, else goes on the same line
 
 		//TODO: remove indentation from else if
-		r += (elseStatement ? (then_block ? "" : std::string(indent, '\t')) + "else" +
-		      (elseStatement->getType() == Statement::Type::TYPE_SINGLE ? '\n' : ' ') +
-		      elseStatement->toString(indent + (elseStatement->getType() == Statement::Type::TYPE_IF ? 0 : 1))
-		      : ""
-		     );
-		return r;
+		if (elseStatement)
+		{
+			out << (then_block ? "" : std::string(indent, '\t')) << "else" <<
+			    (elseStatement->getType() == Statement::Type::TYPE_SINGLE ? '\n' : ' ');
+			elseStatement->toString(out, indent + (elseStatement->getType() == Statement::Type::TYPE_IF ? 0 : 1));
+		}
+
 	}
 
 	Statement::Type IfStatement::getType() const

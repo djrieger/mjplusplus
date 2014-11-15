@@ -10,19 +10,17 @@ ast::Arguments::Arguments() : arguments(std::make_unique<std::vector<std::unique
 
 }
 
-std::string ast::Arguments::toString(unsigned int indent) const
+void ast::Arguments::toString(std::ostream& out, unsigned int indent) const
 {
-	std::string ret = "(";
+	out << "(";
 
 	for (auto it = arguments->begin(); it != arguments->end(); it++)
 	{
-		ret += (**it).toString(indent);
+		(**it).toString(out, indent);
 
 		if (it + 1 != arguments->end())
-			ret += ", ";
+			out << ", ";
 	}
 
-	ret += ")";
-
-	return ret;
+	out << ")";
 }

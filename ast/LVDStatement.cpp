@@ -11,8 +11,16 @@ ast::LVDStatement::LVDStatement(std::unique_ptr<TypeIdent>& type_ident, std::uni
 	;
 }
 
-std::string ast::LVDStatement::toString(unsigned int indent) const
+void ast::LVDStatement::toString(std::ostream& out, unsigned int indent) const
 {
-	std::string r(indent, '\t');
-	return r + type_ident->toString(indent) + (init_expr ? " = " + init_expr->toString(indent) : "") + ";\n";
+	out << std::string(indent, '\t');
+	type_ident->toString(out, indent);
+
+	if (init_expr)
+	{
+		out << " = ";
+		init_expr->toString(out, indent);
+	}
+
+	out << ";\n";
 }

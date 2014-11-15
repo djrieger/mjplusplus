@@ -7,8 +7,10 @@ namespace ast
 		;
 	}
 
-	std::string ArrayAccess::toString(unsigned int indent) const
+	void ArrayAccess::toString(std::ostream& out, unsigned int indent) const
 	{
-		return '[' + access_offset->toString(indent) + ']';
+		out << '[';
+		access_offset->toString(out, indent);
+		out << ']';
 	}
 }

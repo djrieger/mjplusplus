@@ -11,7 +11,7 @@ namespace ast
 
 		public:
 			ArrayType(std::unique_ptr<BasicType>& basic_type, int dimension);
-			virtual std::string toString(unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent) const;
 
 		private:
 			std::unique_ptr<BasicType> basic_type;

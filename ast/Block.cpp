@@ -7,20 +7,18 @@ namespace ast
 	{
 		;
 	}
-	std::string Block::toString(unsigned int indent) const
+	void Block::toString(std::ostream& out, unsigned int indent) const
 	{
 		if (block_statements->size() == 0)
-			return "{ }";
+			out << "{ }";
 		else
 		{
-			std::string r("{\n");
+			out << "{\n";
 
 			for (auto& stamtement : *block_statements)
-				r += stamtement->toString(indent);
+				stamtement->toString(out, indent);
 
-			r += std::string(indent - 1, '\t') + "}\n";
-
-			return r;
+			out << std::string(indent - 1, '\t') << "}\n";
 		}
 	}
 
