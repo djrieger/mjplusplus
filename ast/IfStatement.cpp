@@ -21,7 +21,7 @@ namespace ast
 		out << "if (";
 		condition->toString(out, indent);
 		out << ')';
-		out << then_block ? ' ' : '\n';
+		out << (then_block ? ' ' : '\n');
 
 		if (thenStatement)
 			thenStatement->toString(out, indent + 1);

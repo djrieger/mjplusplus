@@ -134,7 +134,7 @@ void Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 // ClassDeclaration -> IDENT { ClassMembers } .
 uptr<ast::Program> Parser::parseProgram()
 {
-	auto classes = std::make_unique<vec<ast::ClassDeclaration>>();
+	auto classes = std::make_unique<vec<uptr<ast::ClassDeclaration>>>();
 
 	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
 	{
@@ -145,7 +145,7 @@ uptr<ast::Program> Parser::parseProgram()
 		expect(Token::Token_type::OPERATOR_LBRACE);
 		auto members = parseClassMembers();
 		expect(Token::Token_type::OPERATOR_RBRACE);
-		classes->emplace_back(className, members);
+		classes->push_back(std::make_unique<ast::ClassDeclaration>(className, members));
 	}
 
 	expect(Token::Token_type::TOKEN_EOF);
