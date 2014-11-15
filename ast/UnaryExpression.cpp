@@ -8,6 +8,8 @@ ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression>& child,
 
 void ast::UnaryExpression::toString(std::ostream& out, unsigned int indent) const
 {
+	bool last_was_minus = false;
+
 	for (auto& unary_operator : *unary_operators)
 	{
 		switch (unary_operator)
@@ -17,7 +19,7 @@ void ast::UnaryExpression::toString(std::ostream& out, unsigned int indent) cons
 				break;
 
 			case UnaryExpression::Unary_Operator::UNARY_MINUS:
-				out << "-";
+				out << (last_was_minus ? " -" : "-");
 				break;
 		}
 	}
