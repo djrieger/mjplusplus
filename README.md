@@ -10,4 +10,5 @@ Run the compiler like this:
 `./mj++ [--lextest|--print-ast] FILE`
 
 `--lextest`: Run a test on the compiler's lexer on the given `FILE`
+
 `--print-ast`: Pretty print the parsed file.
