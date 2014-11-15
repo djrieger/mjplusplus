@@ -10,7 +10,5 @@ void ast::MethodInvocation::toString(std::ostream& out, unsigned int indent) con
 {
 	out << '.';
 	method_name->toString(out, indent);
-	out << "(";
 	arguments->toString(out, indent);
-	out << ")";
 }

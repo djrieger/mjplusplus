@@ -69,9 +69,9 @@ namespace ast
 
 		void NewObjectExpression::toString(std::ostream& out, unsigned int indent) const
 		{
-			out << "new ";
+			out << "(new ";
 			identifier->toString(out, indent);
-			out << "()";
+			out << "())";
 		}
 
 		MethodInvocation::MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
