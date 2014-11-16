@@ -13,7 +13,7 @@ namespace ast
 
 		public:
 			ArrayAccess(std::unique_ptr<Expression>& access_offset);
-			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }
 

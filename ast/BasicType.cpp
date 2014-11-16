@@ -10,7 +10,7 @@ ast::BasicType::BasicType(std::string class_name) : primitive_type(Type::Primiti
 
 }
 
-void ast::BasicType::toString(std::ostream& out, unsigned int, bool special) const
+void ast::BasicType::toString(std::ostream& out, unsigned int, bool) const
 {
 	switch (primitive_type)
 	{

@@ -29,7 +29,6 @@
 #include "../ast/TypeIdent.hpp"
 #include "../ast/ArrayType.hpp"
 
-
 template <class T> using uptr = std::unique_ptr<T>;
 template <class T> using vec = std::vector<T>;
 
@@ -96,7 +95,7 @@ class Parser
 		uptr<ast::Type> parseType();
 		uptr<ast::BasicType> parseBasicType();
 		int parseArrayDecl();
-		uptr<ast::pe::NewArrayExpression> parseNewArrayExpression();
+		uptr<ast::Expression> parseNewArrayExpression();
 		int parseOptionalBrackets();
 
 		uptr<ast::ClassMember> parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent);
@@ -115,12 +114,12 @@ class Parser
 		uptr<ast::Expression> precedenceClimb(int minPrec);
 		uptr<ast::Expression> parseUnaryExpression();
 
-		uptr<ast::pe::PrimaryExpression> parsePrimaryExpression();
+		uptr<ast::Expression> parsePrimaryExpression();
 		uptr<vec<uptr<ast::PostfixOp>>> parsePostfixOps();
 		uptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
 
-		uptr<ast::pe::NewObjectExpression> parseNewObjectExpression();
-		uptr<ast::pe::PrimaryExpression> parseNewObjectOrNewArrayExpression();
+		uptr<ast::Expression> parseNewObjectExpression();
+		uptr<ast::Expression> parseNewObjectOrNewArrayExpression();
 };
 
 #endif

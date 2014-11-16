@@ -1,13 +1,13 @@
 #include "PostfixExpression.hpp"
 
-ast::PostfixExpression::PostfixExpression(std::unique_ptr<pe::PrimaryExpression>& child, std::unique_ptr<std::vector<std::unique_ptr<PostfixOp>>>& postfix_op) : child(std::move(child)), postfix_op(std::move(postfix_op))
+ast::PostfixExpression::PostfixExpression(std::unique_ptr<Expression>& child, std::unique_ptr<std::vector<std::unique_ptr<PostfixOp>>>& postfix_op) : child(std::move(child)), postfix_op(std::move(postfix_op))
 {
 
 }
 
 void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent, bool special) const
 {
-	if (special)
+	if (!special && !postfix_op->empty())
 		out << '(';
 
 	if (postfix_op->size() > 1)
@@ -23,6 +23,6 @@ void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent, bo
 			out << ')';
 	}
 
-	if (special)
+	if (!special && !postfix_op->empty())
 		out << ')';
 }

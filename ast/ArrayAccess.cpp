@@ -7,7 +7,7 @@ namespace ast
 		;
 	}
 
-	void ArrayAccess::toString(std::ostream& out, unsigned int indent, bool special) const
+	void ArrayAccess::toString(std::ostream& out, unsigned int indent, bool) const
 	{
 		out << '[';
 		access_offset->toString(out, indent, true);

@@ -11,7 +11,7 @@ ast::ReturnStatement::ReturnStatement()
 
 }
 
-void ast::ReturnStatement::toString(std::ostream& out, unsigned int indent, bool special) const
+void ast::ReturnStatement::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	out << std::string(indent, '\t') << "return";
 

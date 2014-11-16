@@ -12,11 +12,11 @@ namespace ast
 		public:
 			/**
 			 * writes a representation of the Node to out, including all children.
-			 * @param special invokes "special" behavior for certain nodes
-			 *     Block: don't print newline after trailing }
-			 *     Expression: don't print surrounding parens
+			 * special invokes "special" behavior for certain nodes
 			 *     MethodDeclaration: print static keyword
-			 *     If: skip indetation
+			 *     Block & If: skip indentation
+			 *     Expression: don't print surrounding parens
+			 * in addition Block doesn't print newline after trailing } if ~indent is passed instead of indent
 			 */
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 	};

@@ -23,9 +23,9 @@ void ast::MethodDeclaration::toString(std::ostream& out, unsigned int indent, bo
 	out << ") ";
 
 	if (block)
-		block->toString(out, indent + 1);
+		block->toString(out, indent, true);
 	else
-		out << "{ }";
+		out << "{ }\n";
 }
 
 std::string ast::MethodDeclaration::getName() const
