@@ -12,12 +12,12 @@ namespace ast
 	class BinaryExpression : public Expression
 	{
 		private:
-			std::unique_ptr<Expression> leftChild;
-			std::unique_ptr<Expression> rightChild;
+			uptr<Expression> leftChild;
+			uptr<Expression> rightChild;
 			Token::Token_type operator_type;
 
 		public:
-			BinaryExpression(std::unique_ptr<Expression>& leftChild, std::unique_ptr<Expression>& rightChild, Token::Token_type const& operator_type);
+			BinaryExpression(uptr<Expression>& leftChild, uptr<Expression>& rightChild, Token::Token_type const& operator_type);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 }

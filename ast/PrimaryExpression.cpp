@@ -15,7 +15,7 @@ namespace ast
 			out << (value ? "true" : "false");
 		}
 
-		Ident::Ident(std::unique_ptr<ast::Ident>& identifier) : identifier(std::move(identifier))
+		Ident::Ident(uptr<ast::Ident>& identifier) : identifier(std::move(identifier))
 		{
 		}
 
@@ -46,7 +46,7 @@ namespace ast
 		}
 
 
-		NewArrayExpression::NewArrayExpression(std::unique_ptr<BasicType>& basic_type, std::unique_ptr<Expression>& expr, int dimension) :
+		NewArrayExpression::NewArrayExpression(uptr<BasicType>& basic_type, uptr<Expression>& expr, int dimension) :
 			basic_type(std::move(basic_type)),
 			expr(std::move(expr)),
 			dimension(dimension)
@@ -71,7 +71,7 @@ namespace ast
 			out << ')';
 		}
 
-		NewObjectExpression::NewObjectExpression(std::unique_ptr<ast::Ident>& identifier) : identifier(std::move(identifier))
+		NewObjectExpression::NewObjectExpression(uptr<ast::Ident>& identifier) : identifier(std::move(identifier))
 		{
 
 		}
@@ -83,7 +83,7 @@ namespace ast
 			out << "())";
 		}
 
-		MethodInvocation::MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments) :
+		MethodInvocation::MethodInvocation(uptr<ast::Ident>& identifier, uptr<Arguments>& arguments) :
 			Ident(identifier),
 			arguments(std::move(arguments))
 		{

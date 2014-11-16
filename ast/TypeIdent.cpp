@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "TypeIdent.hpp"
 
-ast::TypeIdent::TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& identifier) :
+ast::TypeIdent::TypeIdent(uptr<Type>& type, uptr<Ident>& identifier) :
 	type(std::move(type)), identifier(std::move(identifier))
 {
 }

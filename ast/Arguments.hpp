@@ -11,10 +11,10 @@ namespace ast
 	class Arguments : public Node
 	{
 		private:
-			std::unique_ptr<std::vector<std::unique_ptr<ast::Expression>>> arguments;
+			uptr<vec<uptr<ast::Expression>>> arguments;
 		public:
 			Arguments();
-			Arguments(std::unique_ptr<std::vector<std::unique_ptr<ast::Expression>>>& arguments);
+			Arguments(uptr<vec<uptr<ast::Expression>>>& arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "MethodDeclaration.hpp"
 
-ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>>& parameters, std::unique_ptr<Statement>& block)
+ast::MethodDeclaration::MethodDeclaration(uptr<TypeIdent>& return_type_and_name, uptr<vec<uptr<TypeIdent>>>& parameters, uptr<Statement>& block)
 	: return_type_and_name(std::move(return_type_and_name)), parameters(std::move(parameters)), block(std::move(block))
 {
 }

@@ -9,10 +9,10 @@ namespace ast
 	class FieldAccess : public PostfixOp
 	{
 		private:
-			std::unique_ptr<Ident> field_name;
+			uptr<Ident> field_name;
 
 		public:
-			FieldAccess(std::unique_ptr<Ident>& field_name);
+			FieldAccess(uptr<Ident>& field_name);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

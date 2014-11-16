@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "PostfixExpression.hpp"
 
-ast::PostfixExpression::PostfixExpression(std::unique_ptr<Expression>& child, std::unique_ptr<std::vector<std::unique_ptr<PostfixOp>>>& postfix_op) : child(std::move(child)), postfix_op(std::move(postfix_op))
+ast::PostfixExpression::PostfixExpression(uptr<Expression>& child, uptr<vec<uptr<PostfixOp>>>& postfix_op) : child(std::move(child)), postfix_op(std::move(postfix_op))
 {
 
 }

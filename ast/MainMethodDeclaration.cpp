@@ -3,7 +3,7 @@
 #include "TypeIdent.hpp"
 
 
-ast::MainMethodDeclaration::MainMethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>>& parameters, std::unique_ptr<Statement>& block)
+ast::MainMethodDeclaration::MainMethodDeclaration(uptr<TypeIdent>& return_type_and_name, uptr<vec<uptr<TypeIdent>>>& parameters, uptr<Statement>& block)
 	: MethodDeclaration(return_type_and_name, parameters, block)
 {
 	;

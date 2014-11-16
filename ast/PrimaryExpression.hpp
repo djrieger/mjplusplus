@@ -30,10 +30,10 @@ namespace ast
 		class Ident : public PrimaryExpression
 		{
 			public:
-				Ident(std::unique_ptr<ast::Ident>& identifier);
+				Ident(uptr<ast::Ident>& identifier);
 				virtual void toString(std::ostream& out, unsigned int ident, bool = false) const;
 			protected:
-				std::unique_ptr<ast::Ident> identifier;
+				uptr<ast::Ident> identifier;
 		};
 
 		class Object : public PrimaryExpression
@@ -63,30 +63,30 @@ namespace ast
 		class NewArrayExpression : public PrimaryExpression
 		{
 			public:
-				NewArrayExpression(std::unique_ptr<BasicType>& basic_type, std::unique_ptr<Expression>& expr, int dimension);
+				NewArrayExpression(uptr<BasicType>& basic_type, uptr<Expression>& expr, int dimension);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
-				std::unique_ptr<BasicType> basic_type;
-				std::unique_ptr<Expression> expr;
+				uptr<BasicType> basic_type;
+				uptr<Expression> expr;
 				int dimension;
 		};
 
 		class NewObjectExpression : public PrimaryExpression
 		{
 			public:
-				NewObjectExpression(std::unique_ptr<ast::Ident>& identifier);
+				NewObjectExpression(uptr<ast::Ident>& identifier);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
-				std::unique_ptr<ast::Ident> identifier;
+				uptr<ast::Ident> identifier;
 		};
 
 		class MethodInvocation : public Ident
 		{
 			public:
-				MethodInvocation(std::unique_ptr<ast::Ident>& identifier, std::unique_ptr<Arguments>& arguments);
+				MethodInvocation(uptr<ast::Ident>& identifier, uptr<Arguments>& arguments);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
-				std::unique_ptr<Arguments> arguments;
+				uptr<Arguments> arguments;
 		};
 	} // namespace pe
 
