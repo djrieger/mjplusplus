@@ -17,7 +17,7 @@ namespace ast
 
 		public:
 			BinaryExpression(std::unique_ptr<Expression>& leftChild, std::unique_ptr<Expression>& rightChild, Token::Token_type const& operator_type);
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 }
 

@@ -10,13 +10,13 @@ ast::Arguments::Arguments() : arguments(std::make_unique<std::vector<std::unique
 
 }
 
-void ast::Arguments::toString(std::ostream& out, unsigned int indent) const
+void ast::Arguments::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	out << "(";
 
 	for (auto it = arguments->begin(); it != arguments->end(); it++)
 	{
-		(**it).toString(out, indent);
+		(**it).toString(out, indent, true);
 
 		if (it + 1 != arguments->end())
 			out << ", ";

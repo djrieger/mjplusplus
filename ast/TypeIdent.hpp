@@ -12,7 +12,7 @@ namespace ast
 
 		public:
 			TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& identifier);
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual std::string getName() const;
 		private:
 			std::unique_ptr<Type> type;

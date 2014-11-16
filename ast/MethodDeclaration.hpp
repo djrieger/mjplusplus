@@ -14,18 +14,14 @@ namespace ast
 			std::unique_ptr<TypeIdent> return_type_and_name;
 			std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>> parameters;
 			std::unique_ptr<Statement> block;
-			/*
-			 * Prints this method including an optional "static" modifier (depending on isStatic)
-			 */
-			virtual void toString(std::ostream& out, unsigned int indent, bool isStatic) const;
 
 		public:
 			MethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>>& parameters, std::unique_ptr<Statement>& block);
-			/*
-			 * Prints this method without a "static" modifier
-			 */
 
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			/*
+			 * Prints this method including an optional "static" modifier (depending on isStatic)
+			 */
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual std::string getName() const;
 	};
 }

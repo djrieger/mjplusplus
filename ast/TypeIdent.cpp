@@ -5,7 +5,7 @@ ast::TypeIdent::TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& i
 {
 }
 
-void ast::TypeIdent::toString(std::ostream& out, unsigned int indent) const
+void ast::TypeIdent::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	type->toString(out, indent);
 	out << " ";

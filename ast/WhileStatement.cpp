@@ -6,7 +6,7 @@ ast::WhileStatement::WhileStatement(std::unique_ptr<Expression>& condition, std:
 
 }
 
-void ast::WhileStatement::toString(std::ostream& out, unsigned int indent) const
+void ast::WhileStatement::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	out << std::string(indent, '\t') << "while (";
 	condition->toString(out, indent);

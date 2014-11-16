@@ -14,7 +14,7 @@ namespace ast
 
 		public:
 			WhileStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& statement);
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 }
 

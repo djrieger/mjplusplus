@@ -19,7 +19,7 @@ namespace ast
 
 			//We could replace the unary-operator vector to a token_type vector to move the conversion into this class.
 			UnaryExpression(std::unique_ptr<PostfixExpression>& child, std::unique_ptr<std::vector<Unary_Operator>>& unary_operators);
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 
 		private:
 			std::unique_ptr<PostfixExpression> child;

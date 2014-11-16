@@ -5,8 +5,11 @@ ast::PostfixExpression::PostfixExpression(std::unique_ptr<pe::PrimaryExpression>
 
 }
 
-void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent) const
+void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent, bool special) const
 {
+	if (special)
+		out << '(';
+
 	if (postfix_op->size() > 1)
 		out << std::string(postfix_op->size() - 1, '(');
 
@@ -19,4 +22,7 @@ void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent) co
 		if (++it != postfix_op->end())
 			out << ')';
 	}
+
+	if (special)
+		out << ')';
 }

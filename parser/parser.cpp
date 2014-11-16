@@ -638,7 +638,7 @@ uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 
 // UnaryExpression -> PostfixExpression | ExclMarkOrHyphen UnaryExpression .
 // PostfixExpression -> PrimaryExpression PostfixOps .
-uptr<ast::UnaryExpression> Parser::parseUnaryExpression()
+uptr<ast::Expression> Parser::parseUnaryExpression()
 {
 	auto unary_operators = std::make_unique<std::vector<ast::UnaryExpression::Unary_Operator>>();
 
@@ -664,6 +664,11 @@ uptr<ast::UnaryExpression> Parser::parseUnaryExpression()
 
 	auto primaryExpr = parsePrimaryExpression();
 	auto postfix_ops = parsePostfixOps();
+	/*if(postfix_ops->empty())
+	{
+		return uptr<ast::Expression>(std::move(primaryExpr));
+		//return primaryExpr;
+	}*/
 	auto postfixExpr = std::make_unique<ast::PostfixExpression>(primaryExpr, postfix_ops);
 	return std::make_unique<ast::UnaryExpression>(postfixExpr, unary_operators);
 }
