@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "FieldDeclaration.hpp"
 
 ast::FieldDeclaration::FieldDeclaration(std::unique_ptr<TypeIdent>& type_and_name) : type_and_name(std::move(type_and_name))

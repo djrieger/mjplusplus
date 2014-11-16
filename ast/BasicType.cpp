@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "BasicType.hpp"
 
 ast::BasicType::BasicType(Type::Primitive_type primitive_type) : primitive_type(primitive_type)

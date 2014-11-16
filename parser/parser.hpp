@@ -2,6 +2,7 @@
 #define PARSER_HPP
 
 #include <memory>
+#include "../globals.hpp"
 
 #include "../lexer/lexer.hpp"
 #include "../ast/Program.hpp"
@@ -28,9 +29,6 @@
 #include "../ast/BasicType.hpp"
 #include "../ast/TypeIdent.hpp"
 #include "../ast/ArrayType.hpp"
-
-template <class T> using uptr = std::unique_ptr<T>;
-template <class T> using vec = std::vector<T>;
 
 class Parser
 {

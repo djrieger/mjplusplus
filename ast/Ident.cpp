@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "Ident.hpp"
 
 ast::Ident::Ident(std::string const& string_value) : string_value(string_value)

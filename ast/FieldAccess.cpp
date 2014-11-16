@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "FieldAccess.hpp"
 
 namespace ast

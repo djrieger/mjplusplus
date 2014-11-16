@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "LVDStatement.hpp"
 
 ast::LVDStatement::LVDStatement(std::unique_ptr<TypeIdent>& type_ident)

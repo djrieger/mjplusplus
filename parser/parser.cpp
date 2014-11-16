@@ -1,10 +1,8 @@
 #include <iostream>
 #include <algorithm>
 #include <memory>
+#include "../globals.hpp"
 #include "parser.hpp"
-
-template <class T> using uptr = std::unique_ptr<T>;
-template <class T> using vec = std::vector<T>;
 
 Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
 {
