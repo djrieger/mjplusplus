@@ -1,6 +1,7 @@
 #ifndef TYPEIDENT_HPP
 #define TYPEIDENT_HPP
 
+#include "../globals.hpp"
 #include "Node.hpp"
 #include "Type.hpp"
 #include "Ident.hpp"

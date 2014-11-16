@@ -1,6 +1,7 @@
 #ifndef BINARY_EXPRESSION_HPP
 #define BINARY_EXPRESSION_HPP
 
+#include "../globals.hpp"
 #include "Node.hpp"
 #include "Expression.hpp"
 #include "../lexer/token.hpp"

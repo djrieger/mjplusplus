@@ -1,6 +1,7 @@
 #ifndef BLOCK_HPP
 #define BLOCK_HPP
 
+#include "../globals.hpp"
 #include "Statement.hpp"
 #include <vector>
 

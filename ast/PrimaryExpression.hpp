@@ -1,6 +1,7 @@
 #ifndef PRIMARYEXPRESSION_HPP
 #define PRIMARYEXPRESSION_HPP
 
+#include "../globals.hpp"
 #include "Expression.hpp"
 #include "Arguments.hpp"
 #include "Ident.hpp"

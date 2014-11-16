@@ -1,6 +1,7 @@
 #ifndef WHILESTATEMENT_HPP
 #define WHILESTATEMENT_HPP
 
+#include "../globals.hpp"
 #include "Expression.hpp"
 #include "Statement.hpp"
 

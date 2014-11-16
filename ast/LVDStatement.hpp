@@ -1,6 +1,7 @@
 #ifndef LVD_STATEMENT_HPP
 #define LVD_STATEMENT_HPP
 
+#include "../globals.hpp"
 #include "Expression.hpp"
 #include "Statement.hpp"
 #include "TypeIdent.hpp"
