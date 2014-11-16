@@ -5,9 +5,9 @@ ast::ExpressionStatement::ExpressionStatement(std::unique_ptr<Expression>& expr)
 
 }
 
-void ast::ExpressionStatement::toString(std::ostream& out, unsigned int indent) const
+void ast::ExpressionStatement::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	out << std::string(indent, '\t');
-	expression->toString(out, indent);
+	expression->toString(out, indent, true);
 	out << ";\n";
 }

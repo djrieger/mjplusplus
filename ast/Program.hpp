@@ -14,7 +14,7 @@ namespace ast
 
 		public:
 			Program(std::unique_ptr<std::vector<std::unique_ptr<ClassDeclaration>>>& classes);
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 
 }

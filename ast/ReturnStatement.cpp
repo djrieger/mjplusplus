@@ -11,14 +11,14 @@ ast::ReturnStatement::ReturnStatement()
 
 }
 
-void ast::ReturnStatement::toString(std::ostream& out, unsigned int indent) const
+void ast::ReturnStatement::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	out << std::string(indent, '\t') << "return";
 
 	if (expression)
 	{
 		out << ' ';
-		expression->toString(out, indent);
+		expression->toString(out, indent, true);
 	}
 
 	out << ";\n";

@@ -9,7 +9,7 @@ namespace ast
 			;
 		}
 
-		void Bool::toString(std::ostream& out, unsigned int) const
+		void Bool::toString(std::ostream& out, unsigned int, bool special) const
 		{
 			out << (value ? "true" : "false");
 		}
@@ -18,7 +18,7 @@ namespace ast
 		{
 		}
 
-		void Ident::toString(std::ostream& out, unsigned int ident) const
+		void Ident::toString(std::ostream& out, unsigned int ident, bool special) const
 		{
 			identifier->toString(out, ident);
 		}
@@ -28,7 +28,7 @@ namespace ast
 		{
 		}
 
-		void Object::toString(std::ostream& out, unsigned int) const
+		void Object::toString(std::ostream& out, unsigned int, bool special) const
 		{
 			out << ((object_type == Object_Type::THIS_OBJECT) ? "this" : "null");
 		}
@@ -39,7 +39,7 @@ namespace ast
 
 		}
 
-		void Integer::toString(std::ostream& out, unsigned int) const
+		void Integer::toString(std::ostream& out, unsigned int, bool special) const
 		{
 			out << string_value;
 		}
@@ -53,7 +53,7 @@ namespace ast
 
 		}
 
-		void NewArrayExpression::toString(std::ostream& out, unsigned int) const
+		void NewArrayExpression::toString(std::ostream& out, unsigned int, bool special) const
 		{
 			if (dimension > 1)
 			{
@@ -67,7 +67,7 @@ namespace ast
 
 		}
 
-		void NewObjectExpression::toString(std::ostream& out, unsigned int indent) const
+		void NewObjectExpression::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			out << "(new ";
 			identifier->toString(out, indent);
@@ -81,7 +81,7 @@ namespace ast
 
 		}
 
-		void MethodInvocation::toString(std::ostream& out, unsigned int indent) const
+		void MethodInvocation::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			identifier->toString(out, indent);
 			arguments->toString(out, indent);
@@ -92,11 +92,13 @@ namespace ast
 
 		}
 
-		void ExpressionWithParens::toString(std::ostream& out, unsigned int indent) const
+		void ExpressionWithParens::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
-			out << "(";
+			//if(special)
+			//out << "(";
 			expr->toString(out, indent);
-			out << ")";
+			//if(special)
+			//out << ")";
 		}
 
 	} // namespace pe

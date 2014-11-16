@@ -11,7 +11,7 @@ namespace ast
 		public:
 			BasicType(Type::Primitive_type primitive_type);
 			BasicType(std::string class_name);
-			virtual void toString(std::ostream& out, unsigned int) const;
+			virtual void toString(std::ostream& out, unsigned int, bool special = false) const;
 
 		private:
 			Primitive_type primitive_type;

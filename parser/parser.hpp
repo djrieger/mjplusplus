@@ -113,7 +113,7 @@ class Parser
 
 		uptr<ast::Expression> parseExpression();
 		uptr<ast::Expression> precedenceClimb(int minPrec);
-		uptr<ast::UnaryExpression> parseUnaryExpression();
+		uptr<ast::Expression> parseUnaryExpression();
 
 		uptr<ast::pe::PrimaryExpression> parsePrimaryExpression();
 		uptr<vec<uptr<ast::PostfixOp>>> parsePostfixOps();

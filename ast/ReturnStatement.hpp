@@ -14,7 +14,7 @@ namespace ast
 		public:
 			ReturnStatement();
 			ReturnStatement(std::unique_ptr<Expression>& expression);
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 }
 

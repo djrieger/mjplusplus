@@ -10,7 +10,15 @@ namespace ast
 	class Node
 	{
 		public:
-			virtual void toString(std::ostream& out, unsigned int indent) const = 0;
+			/**
+			 * writes a representation of the Node to out, including all children.
+			 * @param special invokes "special" behavior for certain nodes
+			 *     Block: don't print newline after trailing }
+			 *     Expression: don't print surrounding parens
+			 *     MethodDeclaration: print static keyword
+			 *     If: skip indetation
+			 */
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 	};
 }
 

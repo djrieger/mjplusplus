@@ -7,7 +7,7 @@ ast::Program::Program(std::unique_ptr<std::vector<std::unique_ptr<ClassDeclarati
 
 }
 
-void ast::Program::toString(std::ostream& out, unsigned int indent) const
+void ast::Program::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	//TODO: sort
 	auto sortClasses = [](const std::unique_ptr<ast::ClassDeclaration>& a,

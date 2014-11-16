@@ -6,9 +6,12 @@ ast::UnaryExpression::UnaryExpression(std::unique_ptr<PostfixExpression>& child,
 
 }
 
-void ast::UnaryExpression::toString(std::ostream& out, unsigned int indent) const
+void ast::UnaryExpression::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	bool last_was_minus = false;
+
+	if (!special && !unary_operators->empty())
+		out << '(';
 
 	for (auto& unary_operator : *unary_operators)
 	{
@@ -24,5 +27,8 @@ void ast::UnaryExpression::toString(std::ostream& out, unsigned int indent) cons
 		}
 	}
 
-	child->toString(out, indent);
+	child->toString(out, indent, !unary_operators->empty());
+
+	if (!special && !unary_operators->empty())
+		out << ')';
 }

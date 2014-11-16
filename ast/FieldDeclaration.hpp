@@ -14,7 +14,7 @@ namespace ast
 		public:
 			FieldDeclaration(std::unique_ptr<TypeIdent>& type_and_name);
 
-			virtual void toString(std::ostream& out, unsigned int indent) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual std::string getName() const;
 	};
 }

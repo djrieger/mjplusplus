@@ -7,7 +7,7 @@ namespace ast
 	{
 		;
 	}
-	void Block::toString(std::ostream& out, unsigned int indent) const
+	void Block::toString(std::ostream& out, unsigned int indent, bool special) const
 	{
 		if (block_statements->size() == 0)
 			out << "{ }";
@@ -18,7 +18,8 @@ namespace ast
 			for (auto& stamtement : *block_statements)
 				stamtement->toString(out, indent);
 
-			out << std::string(indent - 1, '\t') << "}\n";
+			out << std::string(indent - 1, '\t') << "}";
+			out << (special ? ' ' : '\n');
 		}
 	}
 

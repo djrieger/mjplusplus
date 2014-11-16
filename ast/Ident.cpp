@@ -5,7 +5,7 @@ ast::Ident::Ident(std::string const& string_value) : string_value(string_value)
 
 }
 
-void ast::Ident::toString(std::ostream& out, unsigned int) const
+void ast::Ident::toString(std::ostream& out, unsigned int, bool special) const
 {
 	out << string_value;
 }

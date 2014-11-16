@@ -5,11 +5,6 @@ ast::MethodDeclaration::MethodDeclaration(std::unique_ptr<TypeIdent>& return_typ
 {
 }
 
-void ast::MethodDeclaration::toString(std::ostream& out, unsigned int indent) const
-{
-	return toString(out, indent, false);
-}
-
 void ast::MethodDeclaration::toString(std::ostream& out, unsigned int indent, bool isStatic) const
 {
 	std::string modifier = isStatic ? "static " : "";

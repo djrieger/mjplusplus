@@ -8,8 +8,8 @@ ast::MainMethodDeclaration::MainMethodDeclaration(std::unique_ptr<TypeIdent>& re
 	;
 }
 
-void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent) const
+void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent, bool special) const
 {
 	// Prints this method including the "static" modifier
-	return MethodDeclaration::toString(out, indent, true);
+	MethodDeclaration::toString(out, indent, true);
 }

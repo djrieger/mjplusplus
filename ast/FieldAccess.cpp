@@ -7,7 +7,7 @@ namespace ast
 		;
 	}
 
-	void FieldAccess::toString(std::ostream& out, unsigned int indent) const
+	void FieldAccess::toString(std::ostream& out, unsigned int indent, bool special) const
 	{
 		out << '.';
 		field_name->toString(out, indent);
