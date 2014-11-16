@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "WhileStatement.hpp"
 
 ast::WhileStatement::WhileStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& statement) :

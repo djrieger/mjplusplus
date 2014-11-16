@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "MainMethodDeclaration.hpp"
 #include "TypeIdent.hpp"
 

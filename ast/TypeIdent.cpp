@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "TypeIdent.hpp"
 
 ast::TypeIdent::TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& identifier) :

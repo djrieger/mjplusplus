@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "BinaryExpression.hpp"
 
 ast::BinaryExpression::BinaryExpression(std::unique_ptr<Expression>& leftChild, std::unique_ptr<Expression>& rightChild, Token::Token_type const& operator_type)

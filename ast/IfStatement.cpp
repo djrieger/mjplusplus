@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "IfStatement.hpp"
 
 namespace ast

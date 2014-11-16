@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "ExpressionStatement.hpp"
 
 ast::ExpressionStatement::ExpressionStatement(std::unique_ptr<Expression>& expr) : expression(std::move(expr))

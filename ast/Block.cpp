@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "Block.hpp"
 
 namespace ast

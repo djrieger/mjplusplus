@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "ArrayAccess.hpp"
 
 namespace ast

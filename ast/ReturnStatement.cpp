@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "ReturnStatement.hpp"
 
 ast::ReturnStatement::ReturnStatement(std::unique_ptr<Expression>& expression):

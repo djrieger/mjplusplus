@@ -1,3 +1,4 @@
+#include "../globals.hpp"
 #include "MethodInvocation.hpp"
 
 ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident>& method_name, std::unique_ptr<Arguments>& arguments)
