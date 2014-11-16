@@ -14,7 +14,7 @@ namespace ast
 		public:
 			Arguments();
 			Arguments(std::unique_ptr<std::vector<std::unique_ptr<ast::Expression>>>& arguments);
-			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }
 #endif // ARGUMENTS_HPP

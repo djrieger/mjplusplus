@@ -9,7 +9,7 @@ namespace ast
 			;
 		}
 
-		void Bool::toString(std::ostream& out, unsigned int, bool special) const
+		void Bool::toString(std::ostream& out, unsigned int, bool) const
 		{
 			out << (value ? "true" : "false");
 		}
@@ -18,7 +18,7 @@ namespace ast
 		{
 		}
 
-		void Ident::toString(std::ostream& out, unsigned int ident, bool special) const
+		void Ident::toString(std::ostream& out, unsigned int ident, bool) const
 		{
 			identifier->toString(out, ident);
 		}
@@ -28,7 +28,7 @@ namespace ast
 		{
 		}
 
-		void Object::toString(std::ostream& out, unsigned int, bool special) const
+		void Object::toString(std::ostream& out, unsigned int, bool) const
 		{
 			out << ((object_type == Object_Type::THIS_OBJECT) ? "this" : "null");
 		}
@@ -39,7 +39,7 @@ namespace ast
 
 		}
 
-		void Integer::toString(std::ostream& out, unsigned int, bool special) const
+		void Integer::toString(std::ostream& out, unsigned int, bool) const
 		{
 			out << string_value;
 		}
@@ -53,13 +53,21 @@ namespace ast
 
 		}
 
-		void NewArrayExpression::toString(std::ostream& out, unsigned int, bool special) const
+		void NewArrayExpression::toString(std::ostream& out, unsigned int indent, bool) const
 		{
+			out << "(new ";
+			basic_type->toString(out, indent);
+			out << '[';
+			expr->toString(out, indent, true);
+			out << ']';
+
 			if (dimension > 1)
 			{
 				for (int i = 0; i < dimension - 1; ++i)
 					out << "[]";
 			}
+
+			out << ')';
 		}
 
 		NewObjectExpression::NewObjectExpression(std::unique_ptr<ast::Ident>& identifier) : identifier(std::move(identifier))
@@ -67,7 +75,7 @@ namespace ast
 
 		}
 
-		void NewObjectExpression::toString(std::ostream& out, unsigned int indent, bool special) const
+		void NewObjectExpression::toString(std::ostream& out, unsigned int indent, bool) const
 		{
 			out << "(new ";
 			identifier->toString(out, indent);
@@ -81,25 +89,10 @@ namespace ast
 
 		}
 
-		void MethodInvocation::toString(std::ostream& out, unsigned int indent, bool special) const
+		void MethodInvocation::toString(std::ostream& out, unsigned int indent, bool) const
 		{
 			identifier->toString(out, indent);
 			arguments->toString(out, indent);
 		}
-
-		ExpressionWithParens::ExpressionWithParens(std::unique_ptr<Expression>& expr) : expr(std::move(expr))
-		{
-
-		}
-
-		void ExpressionWithParens::toString(std::ostream& out, unsigned int indent, bool special) const
-		{
-			//if(special)
-			//out << "(";
-			expr->toString(out, indent);
-			//if(special)
-			//out << ")";
-		}
-
 	} // namespace pe
 } // namespace ast

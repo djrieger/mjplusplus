@@ -9,18 +9,18 @@ namespace ast
 	}
 	void Block::toString(std::ostream& out, unsigned int indent, bool special) const
 	{
-		if (block_statements->size() == 0)
-			out << "{ }";
-		else
-		{
-			out << "{\n";
+		unsigned int real_indent = (indent > ~indent ? ~indent : indent);
 
-			for (auto& stamtement : *block_statements)
-				stamtement->toString(out, indent);
+		if (!special)
+			out << std::string(real_indent, '\t');
 
-			out << std::string(indent - 1, '\t') << "}";
-			out << (special ? ' ' : '\n');
-		}
+		out << "{\n";
+
+		for (auto& stamtement : *block_statements)
+			stamtement->toString(out, real_indent + 1);
+
+		out << std::string(real_indent, '\t') << "}";
+		out << (real_indent != indent ? ' ' : '\n');
 	}
 
 	Statement::Type Block::getType() const

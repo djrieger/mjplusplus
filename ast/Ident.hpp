@@ -12,7 +12,7 @@ namespace ast
 
 		public:
 			Ident(std::string const& string_value);
-			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual std::string getName() const;
 	};
 }

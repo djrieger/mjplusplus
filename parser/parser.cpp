@@ -355,7 +355,6 @@ uptr<ast::Statement> Parser::parseStatement()
 		case Token::Token_type::OPERATOR_SEMICOLON:
 		{
 			nextToken();
-			// TODO
 			uptr<ast::Statement> stmt;
 			return stmt;
 			break;
@@ -395,12 +394,7 @@ uptr<ast::Statement> Parser::parseStatement()
 		}
 
 		default:
-		{
 			throw "expected Statement";
-			// TODO
-			uptr<ast::Statement> stmt;
-			return stmt;
-		}
 	}
 }
 
@@ -416,6 +410,7 @@ uptr<ast::Statement> Parser::parseBlock()
 	{
 		auto block_statement = parseBlockStatement();
 
+		//skip emtpy statements
 		if (block_statement)
 			statements->push_back(std::move(block_statement));
 	}
@@ -427,7 +422,6 @@ uptr<ast::Statement> Parser::parseBlock()
 		return std::make_unique<ast::Block>(statements);
 	else
 	{
-		// TODO
 		uptr<ast::Statement> stmt;
 		return stmt;
 	}
@@ -640,7 +634,7 @@ uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 // PostfixExpression -> PrimaryExpression PostfixOps .
 uptr<ast::Expression> Parser::parseUnaryExpression()
 {
-	auto unary_operators = std::make_unique<std::vector<ast::UnaryExpression::Unary_Operator>>();
+	auto unary_operators = std::make_unique<vec<ast::UnaryExpression::Unary_Operator>>();
 
 	while (current.token_type == Token::Token_type::OPERATOR_NOT ||
 	        current.token_type == Token::Token_type::OPERATOR_MINUS)
@@ -664,21 +658,27 @@ uptr<ast::Expression> Parser::parseUnaryExpression()
 
 	auto primaryExpr = parsePrimaryExpression();
 	auto postfix_ops = parsePostfixOps();
-	/*if(postfix_ops->empty())
-	{
-		return uptr<ast::Expression>(std::move(primaryExpr));
-		//return primaryExpr;
-	}*/
-	auto postfixExpr = std::make_unique<ast::PostfixExpression>(primaryExpr, postfix_ops);
-	return std::make_unique<ast::UnaryExpression>(postfixExpr, unary_operators);
+	uptr<ast::Expression> postfixExpr;
+
+	// skip creating postfixExpr if no postfix operators present
+	if (postfix_ops->empty())
+		postfixExpr = std::move(primaryExpr);
+	else
+		postfixExpr = std::make_unique<ast::PostfixExpression>(primaryExpr, postfix_ops);
+
+	//dito for unary expressions
+	if (unary_operators->empty())
+		return postfixExpr;
+	else
+		return std::make_unique<ast::UnaryExpression>(postfixExpr, unary_operators);
 }
 
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
 // IdentOrIdentWithArguments -> ( Arguments )
 //     | .
-uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
+uptr<ast::Expression> Parser::parsePrimaryExpression()
 {
-	uptr<ast::pe::PrimaryExpression> pe;
+	uptr<ast::Expression> pe;
 
 	switch (current.token_type)
 	{
@@ -728,8 +728,7 @@ uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 		case Token::Token_type::OPERATOR_LPAREN:
 		{
 			nextToken();
-			auto expression = parseExpression();
-			pe = std::make_unique<ast::pe::ExpressionWithParens>(expression);
+			pe = parseExpression();
 			expect(Token::Token_type::OPERATOR_RPAREN);
 			break;
 		}
@@ -747,7 +746,7 @@ uptr<ast::pe::PrimaryExpression> Parser::parsePrimaryExpression()
 }
 
 // NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
-uptr<ast::pe::PrimaryExpression> Parser::parseNewObjectOrNewArrayExpression()
+uptr<ast::Expression> Parser::parseNewObjectOrNewArrayExpression()
 {
 	Token id = current;
 
@@ -756,7 +755,7 @@ uptr<ast::pe::PrimaryExpression> Parser::parseNewObjectOrNewArrayExpression()
 	lexer.unget_token(next);
 	current = id;
 
-	uptr<ast::pe::PrimaryExpression> pe;
+	uptr<ast::Expression> pe;
 
 	if (next.token_type == Token::Token_type::OPERATOR_LPAREN)
 	{
@@ -770,7 +769,7 @@ uptr<ast::pe::PrimaryExpression> Parser::parseNewObjectOrNewArrayExpression()
 }
 
 // NewObjectExpression -> IDENT ( ) .
-uptr<ast::pe::NewObjectExpression> Parser::parseNewObjectExpression()
+uptr<ast::Expression> Parser::parseNewObjectExpression()
 {
 	auto ident = std::make_unique<ast::Ident>(current.string_value);
 	expect(Token::Token_type::TOKEN_IDENT);
@@ -780,7 +779,7 @@ uptr<ast::pe::NewObjectExpression> Parser::parseNewObjectExpression()
 }
 
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
-uptr<ast::pe::NewArrayExpression> Parser::parseNewArrayExpression()
+uptr<ast::Expression> Parser::parseNewArrayExpression()
 {
 	auto basicType = parseBasicType();
 	expect(Token::Token_type::OPERATOR_LBRACKET);
@@ -788,7 +787,7 @@ uptr<ast::pe::NewArrayExpression> Parser::parseNewArrayExpression()
 	expect(Token::Token_type::OPERATOR_RBRACKET);
 	int dimension = parseOptionalBrackets();
 
-	return std::make_unique<ast::pe::NewArrayExpression>(basicType, expression, dimension);
+	return std::make_unique<ast::pe::NewArrayExpression>(basicType, expression, dimension + 1);
 }
 
 // OptionalBrackets -> [ ] OptionalBrackets
@@ -823,16 +822,16 @@ int Parser::parseOptionalBrackets()
 // ArgumentsExpressions -> , Expression ArgumentsExpressions | .
 uptr<ast::Arguments> Parser::parseArguments()
 {
-	auto args_vec = std::make_unique<vec<uptr<ast::Expression>>>();
+	auto args = std::make_unique<vec<uptr<ast::Expression>>>();
 	bool isFirstArgument = true;
 
 	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
-		args_vec->push_back(std::move(parseExpression()));
+		args->push_back(std::move(parseExpression()));
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
-			return std::make_unique<ast::Arguments>(args_vec);
+			return std::make_unique<ast::Arguments>(args);
 		else
 			nextToken();
 	}
@@ -840,7 +839,7 @@ uptr<ast::Arguments> Parser::parseArguments()
 	if (!isFirstArgument)
 		throw "trailing comma";
 
-	return std::make_unique<ast::Arguments>(args_vec);
+	return std::make_unique<ast::Arguments>(args);
 }
 
 // MethodInvocationOrFieldAccess -> IDENT MethodInvocation | .
@@ -864,7 +863,7 @@ std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 // PostfixOps -> PostfixOp PostfixOps | .
 // PostfixOp -> DOT MethodInvocationOrFieldAccess
 //     | [ Expression ] .
-uptr<vec<uptr<ast::PostfixOp> > > Parser::parsePostfixOps()
+uptr<vec<uptr<ast::PostfixOp>>> Parser::parsePostfixOps()
 {
 	auto postfixops = std::make_unique<std::vector<std::unique_ptr<ast::PostfixOp>>>();
 

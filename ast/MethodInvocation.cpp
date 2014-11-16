@@ -6,7 +6,7 @@ ast::MethodInvocation::MethodInvocation(std::unique_ptr<Ident>& method_name, std
 
 }
 
-void ast::MethodInvocation::toString(std::ostream& out, unsigned int indent, bool special) const
+void ast::MethodInvocation::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	out << '.';
 	method_name->toString(out, indent);

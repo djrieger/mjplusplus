@@ -23,20 +23,33 @@ namespace ast
 		out << "if (";
 		condition->toString(out, indent, true);
 		out << ')';
-		out << (then_block ? ' ' : '\n');
+		out << (!thenStatement || then_block ? ' ' : '\n');
 
 		if (thenStatement)
-			thenStatement->toString(out, indent + 1, !!elseStatement);
+		{
+			if (then_block)
+				thenStatement->toString(out, (elseStatement ? ~indent : indent), true);
+			else
+				thenStatement->toString(out, indent + 1);
+		}
 		else
-			out << "{ }";
+			out << "{ }\n";
 
 		if (elseStatement)
 		{
 			if (!then_block)
 				out << std::string(indent, '\t');
 
-			out << "else" << (elseStatement->getType() == Statement::Type::TYPE_SINGLE ? '\n' : ' ');
-			elseStatement->toString(out, indent + (elseStatement->getType() == Statement::Type::TYPE_IF ? 0 : 1), elseStatement->getType() == Statement::Type::TYPE_IF);
+			if (elseStatement->getType() == Statement::Type::TYPE_SINGLE)
+			{
+				out << "else\n";
+				elseStatement->toString(out, indent + 1);
+			}
+			else
+			{
+				out << "else ";
+				elseStatement->toString(out, indent, true);
+			}
 		}
 
 	}

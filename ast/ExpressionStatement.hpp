@@ -13,7 +13,7 @@ namespace ast
 
 		public:
 			ExpressionStatement(std::unique_ptr<Expression>& expr);
-			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
+			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }
 #endif // EXPRESIONSTATEMENT

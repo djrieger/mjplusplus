@@ -5,7 +5,7 @@ ast::FieldDeclaration::FieldDeclaration(std::unique_ptr<TypeIdent>& type_and_nam
 
 }
 
-void ast::FieldDeclaration::toString(std::ostream& out, unsigned int indent, bool special) const
+void ast::FieldDeclaration::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	out << std::string(indent, '\t');
 	out << "public ";

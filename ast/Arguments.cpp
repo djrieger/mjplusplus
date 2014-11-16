@@ -10,7 +10,7 @@ ast::Arguments::Arguments() : arguments(std::make_unique<std::vector<std::unique
 
 }
 
-void ast::Arguments::toString(std::ostream& out, unsigned int indent, bool special) const
+void ast::Arguments::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	out << "(";
 
