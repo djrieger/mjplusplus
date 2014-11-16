@@ -1,6 +1,7 @@
 #ifndef PROGRAM_HPP
 #define PROGRAM_HPP
 
+#include "../globals.hpp"
 #include "Node.hpp"
 #include "ClassDeclaration.hpp"
 #include <vector>

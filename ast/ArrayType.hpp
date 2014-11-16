@@ -1,6 +1,7 @@
 #ifndef ARRAYTYPE_HPP
 #define ARRAYTYPE_HPP
 
+#include "../globals.hpp"
 #include "Type.hpp"
 #include "BasicType.hpp"
 

@@ -1,6 +1,7 @@
 #ifndef RETURNSTATEMENT_HPP
 #define RETURNSTATEMENT_HPP
 
+#include "../globals.hpp"
 #include "Statement.hpp"
 #include "Expression.hpp"
 

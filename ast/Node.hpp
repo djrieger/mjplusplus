@@ -1,6 +1,7 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
+#include "../globals.hpp"
 #include <iostream>
 #include <memory>
 #include <string>

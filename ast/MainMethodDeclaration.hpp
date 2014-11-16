@@ -1,6 +1,7 @@
 #ifndef MAIN_METHOD_DECLARATION_HPP
 #define MAIN_METHOD_DECLARATION_HPP
 
+#include "../globals.hpp"
 #include "MethodDeclaration.hpp"
 #include "Statement.hpp"
 

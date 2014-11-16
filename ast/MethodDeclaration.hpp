@@ -1,6 +1,7 @@
 #ifndef METHOD_DECLARATION_HPP
 #define METHOD_DECLARATION_HPP
 
+#include "../globals.hpp"
 #include "ClassMember.hpp"
 #include <vector>
 #include "TypeIdent.hpp"

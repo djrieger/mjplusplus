@@ -1,6 +1,7 @@
 #ifndef BASICTYPE_HPP
 #define BASICTYPE_HPP
 
+#include "../globals.hpp"
 #include "Type.hpp"
 
 namespace ast

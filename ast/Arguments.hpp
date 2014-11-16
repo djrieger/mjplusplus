@@ -1,6 +1,7 @@
 #ifndef ARGUMENTS_HPP
 #define ARGUMENTS_HPP
 
+#include "../globals.hpp"
 #include "Node.hpp"
 #include "Expression.hpp"
 

@@ -1,6 +1,7 @@
 #ifndef IDENT_HPP
 #define IDENT_HPP
 
+#include "../globals.hpp"
 #include "Node.hpp"
 
 namespace ast

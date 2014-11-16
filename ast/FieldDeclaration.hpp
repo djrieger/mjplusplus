@@ -1,6 +1,7 @@
 #ifndef FIELDDECLARATION_HPP
 #define FIELDDECLARATION_HPP
 
+#include "../globals.hpp"
 #include "ClassMember.hpp"
 #include "TypeIdent.hpp"
 

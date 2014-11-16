@@ -1,6 +1,7 @@
 #ifndef METHOD_INVOCATION_HPP
 #define METHOD_INVOCATION_HPP
 
+#include "../globals.hpp"
 #include <vector>
 #include "PostfixOp.hpp"
 #include "Ident.hpp"
