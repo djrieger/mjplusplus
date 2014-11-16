@@ -9,10 +9,10 @@ namespace ast
 	class ArrayAccess : public PostfixOp
 	{
 		private:
-			std::unique_ptr<Expression> access_offset;
+			uptr<Expression> access_offset;
 
 		public:
-			ArrayAccess(std::unique_ptr<Expression>& access_offset);
+			ArrayAccess(uptr<Expression>& access_offset);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

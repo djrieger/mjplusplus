@@ -3,12 +3,12 @@
 
 namespace ast
 {
-	IfStatement::IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement)
+	IfStatement::IfStatement(uptr<Expression>& condition, uptr<Statement>& thenStatement)
 		: condition(std::move(condition)), thenStatement(std::move(thenStatement))
 	{
 		;
 	}
-	IfStatement::IfStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& thenStatement, std::unique_ptr<Statement>& elseStatement)
+	IfStatement::IfStatement(uptr<Expression>& condition, uptr<Statement>& thenStatement, uptr<Statement>& elseStatement)
 		: condition(std::move(condition)), thenStatement(std::move(thenStatement)), elseStatement(std::move(elseStatement))
 	{
 		;

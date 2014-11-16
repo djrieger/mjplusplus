@@ -12,12 +12,12 @@ namespace ast
 	class MethodDeclaration : public ClassMember
 	{
 		protected:
-			std::unique_ptr<TypeIdent> return_type_and_name;
-			std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>> parameters;
-			std::unique_ptr<Statement> block;
+			uptr<TypeIdent> return_type_and_name;
+			uptr<vec<uptr<TypeIdent>>> parameters;
+			uptr<Statement> block;
 
 		public:
-			MethodDeclaration(std::unique_ptr<TypeIdent>& return_type_and_name, std::unique_ptr<std::vector<std::unique_ptr<TypeIdent>>>& parameters, std::unique_ptr<Statement>& block);
+			MethodDeclaration(uptr<TypeIdent>& return_type_and_name, uptr<vec<uptr<TypeIdent>>>& parameters, uptr<Statement>& block);
 
 			/*
 			 * Prints this method including an optional "static" modifier (depending on isStatic)

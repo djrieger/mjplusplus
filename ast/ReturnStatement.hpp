@@ -10,11 +10,11 @@ namespace ast
 	class ReturnStatement : public Statement
 	{
 		private:
-			std::unique_ptr<Expression> expression;
+			uptr<Expression> expression;
 
 		public:
 			ReturnStatement();
-			ReturnStatement(std::unique_ptr<Expression>& expression);
+			ReturnStatement(uptr<Expression>& expression);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

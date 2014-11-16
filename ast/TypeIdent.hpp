@@ -12,12 +12,12 @@ namespace ast
 	{
 
 		public:
-			TypeIdent(std::unique_ptr<Type>& type, std::unique_ptr<Ident>& identifier);
+			TypeIdent(uptr<Type>& type, uptr<Ident>& identifier);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual std::string getName() const;
 		private:
-			std::unique_ptr<Type> type;
-			std::unique_ptr<Ident> identifier;
+			uptr<Type> type;
+			uptr<Ident> identifier;
 	};
 }
 

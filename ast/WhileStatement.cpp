@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "WhileStatement.hpp"
 
-ast::WhileStatement::WhileStatement(std::unique_ptr<Expression>& condition, std::unique_ptr<Statement>& statement) :
+ast::WhileStatement::WhileStatement(uptr<Expression>& condition, uptr<Statement>& statement) :
 	condition(std::move(condition)), statement(std::move(statement))
 {
 

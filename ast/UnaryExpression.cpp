@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "UnaryExpression.hpp"
 
-ast::UnaryExpression::UnaryExpression(std::unique_ptr<Expression>& child, std::unique_ptr<std::vector<Unary_Operator>>& unary_operators) :
+ast::UnaryExpression::UnaryExpression(uptr<Expression>& child, uptr<vec<Unary_Operator>>& unary_operators) :
 	child(std::move(child)), unary_operators(std::move(unary_operators))
 {
 

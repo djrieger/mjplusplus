@@ -3,7 +3,7 @@
 
 #include "Program.hpp"
 
-ast::Program::Program(std::unique_ptr<std::vector<std::unique_ptr<ClassDeclaration>>>& classes) : classes(std::move(classes))
+ast::Program::Program(uptr<vec<uptr<ClassDeclaration>>>& classes) : classes(std::move(classes))
 {
 
 }
@@ -11,8 +11,8 @@ ast::Program::Program(std::unique_ptr<std::vector<std::unique_ptr<ClassDeclarati
 void ast::Program::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	//TODO: sort
-	auto sortClasses = [](const std::unique_ptr<ast::ClassDeclaration>& a,
-	                      const std::unique_ptr<ast::ClassDeclaration>& b) -> bool
+	auto sortClasses = [](const uptr<ast::ClassDeclaration>& a,
+	                      const uptr<ast::ClassDeclaration>& b) -> bool
 	{
 		return a->getName() < b->getName();
 	};

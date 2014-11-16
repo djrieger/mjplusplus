@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "ExpressionStatement.hpp"
 
-ast::ExpressionStatement::ExpressionStatement(std::unique_ptr<Expression>& expr) : expression(std::move(expr))
+ast::ExpressionStatement::ExpressionStatement(uptr<Expression>& expr) : expression(std::move(expr))
 {
 
 }
