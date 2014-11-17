@@ -5,14 +5,14 @@ PROFILEFLAGS := -pg -ggdb -O3
 CPPFLAGS := -std=c++1y -pedantic -W -Wall -Wextra
 
 ASTYLE := astyle
-ASTYLEFLAGS := --options=meta/astyle.rc
+ASTYLEFLAGS := --options=config/astyle.rc
 ASTYLESUFFIX := .orig
 
 TARGET := mj++
 
 # this looks for .cpp/.hpp-files in the current directory and all subdirectories. (recursive-depth = 1)
-SOURCE_FILES := $(sort $(wildcard *.cpp)) $(sort $(wildcard **/*.cpp))
-HEADER_FILES := $(sort $(wildcard *.hpp)) $(sort $(wildcard **/*.hpp))
+SOURCE_FILES := $(sort $(wildcard src/*.cpp)) $(sort $(wildcard src/**/*.cpp))
+HEADER_FILES := $(sort $(wildcard src/*.hpp)) $(sort $(wildcard src/**/*.hpp))
 
 all: $(TARGET)
 
@@ -40,7 +40,7 @@ styleclean:
 	rm -f $(addsuffix $(ASTYLESUFFIX), $(SOURCE_FILES) $(HEADER_FILES))
 
 doc: $(SOURCE_FILES) $(HEADER_FILES) 
-	rm -rf doc/doxygen/html; doxygen doc/doxygen/doxygen.config
+	rm -rf doc/doxygen/html; doxygen config/doxygen.config
 
 docclean:
 	rm -rf doc/doxygen/html
