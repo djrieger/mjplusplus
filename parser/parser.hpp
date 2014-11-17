@@ -118,6 +118,7 @@ class Parser
 
 		uptr<ast::Expression> parseNewObjectExpression();
 		uptr<ast::Expression> parseNewObjectOrNewArrayExpression();
+
 };
 
 #endif
