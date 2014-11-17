@@ -40,9 +40,14 @@ styleclean:
 	rm -f $(addsuffix $(ASTYLESUFFIX), $(SOURCE_FILES) $(HEADER_FILES))
 
 doc: $(SOURCE_FILES) $(HEADER_FILES) 
-	rm -rf doc/doxygen/html; doxygen config/doxygen.config
-
-docclean:
-	rm -rf doc/doxygen/html
+	BRANCH=$$(git rev-parse --abbrev-ref HEAD) && \
+	git checkout gh-pages && \
+	git pull origin gh-pages && \
+	git merge dev -m "merged dev" && \
+	doxygen config/doxygen.config && \
+	git add -A doc/doxygen/html/ && \
+	git commit -m "generated documentation" && \
+	git push origin gh-pages && \
+	git checkout $$BRANCH
 
 .PHONY: doc
