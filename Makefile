@@ -5,7 +5,7 @@ PROFILEFLAGS := -pg -ggdb -O3
 CPPFLAGS := -std=c++1y -pedantic -W -Wall -Wextra
 
 ASTYLE := astyle
-ASTYLEFLAGS := --options=meta/astyle.rc
+ASTYLEFLAGS := --options=config/astyle.rc
 ASTYLESUFFIX := .orig
 
 TARGET := mj++
@@ -40,7 +40,7 @@ styleclean:
 	rm -f $(addsuffix $(ASTYLESUFFIX), $(SOURCE_FILES) $(HEADER_FILES))
 
 doc: $(SOURCE_FILES) $(HEADER_FILES) 
-	rm -rf doc/doxygen/html; doxygen doc/doxygen/doxygen.config
+	rm -rf doc/doxygen/html; doxygen config/doxygen.config
 
 docclean:
 	rm -rf doc/doxygen/html
