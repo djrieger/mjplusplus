@@ -14,7 +14,7 @@
         	"options_c++":
             {
                 "use_only_additional_options": true,
-                "additional_options_file": "meta/astyle.rc"
+                "additional_options_file": "config/astyle.rc"
             }
         }
     },
