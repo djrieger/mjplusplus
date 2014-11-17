@@ -230,14 +230,15 @@ Lexer::Lexer(const char* file_name, Stateomat const& stateomat)
 
 	fd = open(file_name, O_RDONLY);
 
-if (fd == -1)
-            throw "Error opening file \"" + std::string(file_name) + "\" (" + std::string(strerror(errno)) + ")";
+	if (fd == -1)
+		throw "Error opening file \"" + std::string(file_name) + "\" (" + std::string(strerror(errno)) + ")";
 
 #ifndef __APPLE__
 
 	int fadvise_result = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
-        if (fadvise_result != 0)
-            throw "Error advising kernel about file access on \"" + std::string(file_name) + "\" (" + std::string(strerror(fadvise_result)) + ")";
+
+	if (fadvise_result != 0)
+		throw "Error advising kernel about file access on \"" + std::string(file_name) + "\" (" + std::string(strerror(fadvise_result)) + ")";
 
 #endif
 
