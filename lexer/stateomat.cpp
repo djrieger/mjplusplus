@@ -144,6 +144,7 @@ Stateomat::Stateomat()
 		}
 	};
 
+	// fill reverse table with all string representations
 	reverse = {{Token::Token_type::TOKEN_EOF, "end of file"}, {Token::Token_type::TOKEN_INT_LIT, "integer"},
 		{Token::Token_type::TOKEN_IDENT, "identifier"}, {Token::Token_type::TOKEN_OPERATOR, "unknown operator"},
 		{Token::Token_type::TOKEN_ERROR, "lexer error"}

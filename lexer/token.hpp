@@ -5,6 +5,7 @@
 
 struct Token
 {
+	/** enum containing the different token types */
 	enum Token_type
 	{
 		TOKEN_EOF,
@@ -52,12 +53,14 @@ struct Token
 		OPERATOR_NEG,
 		OPERATOR_OREQ, OPERATOR_OROR, OPERATOR_OR
 	};
-
+	/** this token's type */
 	Token_type token_type = TOKEN_ERROR;
+	/** this token's string value */
 	std::string string_value;
-	// line, column
+	/** position of current token in source file (line, column) */
 	std::pair<unsigned int, unsigned int> position;
 
+	/** prints a string representation of this token */
 	void print() const;
 };
 

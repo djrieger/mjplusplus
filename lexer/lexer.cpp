@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 
+/** (partial) state list for keyword checking automaton */
 enum kw_states
 {
 	CHECK_ABSTRACT = 30,
@@ -68,6 +69,9 @@ enum kw_states
 	IDENT,
 };
 
+/** keyword list to be used as lookup in keyword automaton.
+ *  used for words that can only be recognised at the end of the string
+ */
 Token::Token_type kw_array[] =
 {
 	Token::Token_type::KEYWORD_DO,
@@ -78,6 +82,9 @@ Token::Token_type kw_array[] =
 	Token::Token_type::KEYWORD_THROWS,
 };
 
+/** lookup for keyword automaton check
+ *  used when only one possible keyword remains in the middle of the string
+ */
 std::vector<std::pair<const char*, Token::Token_type>> kw_vector =
 {
 	std::make_pair("abstract", Token::Token_type::KEYWORD_ABSTRACT),
@@ -129,6 +136,7 @@ std::vector<std::pair<const char*, Token::Token_type>> kw_vector =
 	std::make_pair("while", Token::Token_type::KEYWORD_WHILE),
 };
 
+/** transition table for keyword automaton */
 const int kw_lex_table[][26] = {{ 1,  2,  3,  4,  5,  6, 50, 83,  7, 83, 83, 55, 83,  8, 83,  9, 83, 63, 10, 11, 83, 12, 76, 83, 83, 83, },
 	{83, 30, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 31, 83, 83, 83, 83, 83, 83, 83, },
 	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 32, 83, 83, 33, 83, 83, 83, 83, 83, 83, 34, 83, },
@@ -236,6 +244,7 @@ Lexer::Lexer(const char* file_name, Stateomat const& stateomat)
 	buf_off = 0;
 	buf_len = 0;
 
+	//get first character so that get_next_token starts on first char of token
 	c = getc();
 }
 
@@ -310,22 +319,32 @@ Token::Token_type Lexer::lex_keyword_or_ident(const char* s)
 
 	for (int i = 0; s[i] != '\0'; i++)
 	{
+		//we know that s consists only of lowercase letters,
+		//so we project them to [0..25] in the transition table
 		state = kw_lex_table[state][s[i] - 'a'];
 
 		if (state == IDENT)
-			return Token::Token_type::TOKEN_IDENT;
+			return Token::Token_type::TOKEN_IDENT;//we don't have a keyword => we have an ident
 
 		if (CHECK_ABSTRACT <= state && state <= CHECK_WHILE)
 		{
+			/* now it can only be one keyword, or an ident.
+			   so we need to check whether s is indeed that keyword */
+
+			//fetch that keyword (string and token type)
 			auto kw_pair = kw_vector[state - CHECK_ABSTRACT];
 
+			//compare s to keyword
 			if (strcmp(kw_pair.first, s) == 0)
-				return kw_pair.second;
+				return kw_pair.second;//we have found our keyword
 			else
-				return Token::Token_type::TOKEN_IDENT;
+				return Token::Token_type::TOKEN_IDENT;//we have an ident
 		}
 	}
 
+	//if we are at the end of the string, we check whether we have a keyword
+	//that is only recognised at the end (e.g. "do" cannot be recognised earlier
+	//because of "double")
 	if (KEYWORD_DO <= state && state <= KEYWORD_THROWS)
 		return kw_array[state - KEYWORD_DO];
 	else
@@ -334,6 +353,7 @@ Token::Token_type Lexer::lex_keyword_or_ident(const char* s)
 
 Token Lexer::get_next_token()
 {
+	//if we have token that were ungetted, use them first
 	if (!token_stack.empty())
 	{
 		Token t(token_stack[token_stack.size() - 1]);
@@ -341,44 +361,57 @@ Token Lexer::get_next_token()
 		return t;
 	}
 
+	//initialize automaton
 	Token t;
 	t.position = position;
 	int state = STATE_START;
 
+	//run the automaton
 	while (1)
 	{
 		int new_state = stateomat.transitions[state][c == EOF ? 128 : c];
 
 		if (new_state == STATE_STOP)
 		{
+			//here we know our token is complete
+
+			//check whether token is valid
 			if (stateomat.state_is_accepting(state))
 			{
 
 				if (t.token_type == Token::Token_type::TOKEN_OPERATOR)
+					//if we have an operator, we look up which one we have
 					t.token_type = stateomat.operators[state][t.string_value];
 				else if (t.token_type == Token::Token_type::TOKEN_IDENT_OR_KEYWORD)
+					//if we have a (lowercase) string, it can be a keyword or an ident
+					//so we run a check with a special keyword automaton that returns
+					//the appropriate keyword token or ident
 					t.token_type = lex_keyword_or_ident(t.string_value.c_str());
 
+				//return token
 				return t;
 			}
 			else
 			{
+				//token is invalid
 				t.token_type = Token::Token_type::TOKEN_ERROR;
 				t.position = position;
 				return t;
 			}
 		}
 		else if (!stateomat.state_is_accepting(new_state))
+			//we had a whitespace or are within a comment
 			t.string_value.clear();
 		else
 		{
 			if (state == STATE_START)
-				t.position = position;
+				t.position = position;//new position after whitespace/comment
 
-			t.string_value.push_back(c);
+			t.string_value.push_back(c);//append character to lexed string
 			t.token_type = stateomat.state_type[new_state];
 		}
 
+		//advance token
 		advancePosition(c);
 		c = getc();
 
