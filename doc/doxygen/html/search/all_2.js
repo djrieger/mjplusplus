@@ -4,8 +4,8 @@ var searchData=
   ['basictype',['BasicType',['../classast_1_1_basic_type.html#a827818a89d3adc99e7b61bad09ac77d9',1,'ast::BasicType::BasicType(Type::Primitive_type primitive_type)'],['../classast_1_1_basic_type.html#a4fcc9c67b5f8ff0ac9f953f1f1312e2f',1,'ast::BasicType::BasicType(std::string class_name)']]],
   ['basictype_2ecpp',['BasicType.cpp',['../_basic_type_8cpp.html',1,'']]],
   ['basictype_2ehpp',['BasicType.hpp',['../_basic_type_8hpp.html',1,'']]],
-  ['binaryexpression',['BinaryExpression',['../classast_1_1_binary_expression.html',1,'ast']]],
-  ['binaryexpression',['BinaryExpression',['../classast_1_1_binary_expression.html#ad69a1335c6ef5b5eb52043fd79290823',1,'ast::BinaryExpression']]],
+  ['binaryexpression',['BinaryExpression',['../classast_1_1be_1_1_binary_expression.html',1,'ast::be']]],
+  ['binaryexpression',['BinaryExpression',['../classast_1_1be_1_1_binary_expression.html#a846efa1318ef834d2736b1e33d00162d',1,'ast::be::BinaryExpression']]],
   ['binaryexpression_2ecpp',['BinaryExpression.cpp',['../_binary_expression_8cpp.html',1,'']]],
   ['binaryexpression_2ehpp',['BinaryExpression.hpp',['../_binary_expression_8hpp.html',1,'']]],
   ['block',['Block',['../classast_1_1_block.html',1,'ast']]],
@@ -18,5 +18,6 @@ var searchData=
   ['buf',['buf',['../class_lexer.html#a33782a04a3806f9fb5670f2dd3382fb9',1,'Lexer']]],
   ['buf_5flen',['buf_len',['../class_lexer.html#a2de7ac419faa4372dc6c7d8c48a13aa3',1,'Lexer']]],
   ['buf_5foff',['buf_off',['../class_lexer.html#ac0b86ae7d87d03bab38969f29e252f77',1,'Lexer']]],
-  ['buf_5fsize',['BUF_SIZE',['../lexer_8hpp.html#a6821bafc3c88dfb2e433a095df9940c6',1,'lexer.hpp']]]
+  ['buf_5fsize',['BUF_SIZE',['../lexer_8hpp.html#a6821bafc3c88dfb2e433a095df9940c6',1,'lexer.hpp']]],
+  ['buffer_5fmax',['buffer_max',['../structoption_1_1_stats.html#a2c9a7b4174f91ba8bcadaa9ad6f0db06',1,'option::Stats']]]
 ];

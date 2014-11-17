@@ -75,6 +75,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
       <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
       <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
+      <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
@@ -86,6 +87,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_e.html#index_e"><span>e</span></a></li>
       <li><a href="functions_f.html#index_f"><span>f</span></a></li>
       <li><a href="functions_g.html#index_g"><span>g</span></a></li>
+      <li><a href="functions_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_i.html#index_i"><span>i</span></a></li>
       <li><a href="functions_k.html#index_k"><span>k</span></a></li>
       <li><a href="functions_l.html#index_l"><span>l</span></a></li>
@@ -93,12 +95,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_n.html#index_n"><span>n</span></a></li>
       <li><a href="functions_o.html#index_o"><span>o</span></a></li>
       <li class="current"><a href="functions_p.html#index_p"><span>p</span></a></li>
+      <li><a href="functions_q.html#index_q"><span>q</span></a></li>
       <li><a href="functions_r.html#index_r"><span>r</span></a></li>
       <li><a href="functions_s.html#index_s"><span>s</span></a></li>
       <li><a href="functions_t.html#index_t"><span>t</span></a></li>
       <li><a href="functions_u.html#index_u"><span>u</span></a></li>
       <li><a href="functions_v.html#index_v"><span>v</span></a></li>
       <li><a href="functions_w.html#index_w"><span>w</span></a></li>
+      <li><a href="functions_x.html#index_x"><span>x</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -107,7 +111,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(11)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -123,8 +127,26 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>parameters
 : <a class="el" href="classast_1_1_method_declaration.html#a336426a1a575a62d6126b7fb7f71ce7d">ast::MethodDeclaration</a>
 </li>
+<li>parse()
+: <a class="el" href="classoption_1_1_parser.html#a3e7f53004d87265f3cdfe7eeacdfbb61">option::Parser</a>
+</li>
 <li>Parser()
-: <a class="el" href="class_parser.html#aad62d18342589cdba466cd75d3f29cc3">Parser</a>
+: <a class="el" href="classoption_1_1_parser.html#aa747e9792c9c08ede32b6c323438db71">option::Parser</a>
+, <a class="el" href="class_parser.html#aad62d18342589cdba466cd75d3f29cc3">Parser</a>
+</li>
+<li>perform()
+: <a class="el" href="structoption_1_1_parser_1_1_action.html#a176b5f783bb35eb015b6d2c09422457d">option::Parser::Action</a>
+, <a class="el" href="classoption_1_1_parser_1_1_store_option_action.html#a8931919fba5516377c202920db2b2f84">option::Parser::StoreOptionAction</a>
+, <a class="el" href="classoption_1_1_stats_1_1_count_options_action.html#a29ab8a68d0a30736b99b4d2e5dece489">option::Stats::CountOptionsAction</a>
+</li>
+<li>Plus()
+: <a class="el" href="classast_1_1be_1_1_plus.html#ac6f52c1ccf0d39e29d7ebc7a1ccfc19c">ast::be::Plus</a>
+</li>
+<li>PlusEq()
+: <a class="el" href="classast_1_1be_1_1_plus_eq.html#a3f680de103cb48ccec6b53c8b2a305f0">ast::be::PlusEq</a>
+</li>
+<li>PlusPlus()
+: <a class="el" href="classast_1_1be_1_1_plus_plus.html#ae584084fa7564f3e5de231fa2d97278b">ast::be::PlusPlus</a>
 </li>
 <li>position
 : <a class="el" href="class_lexer.html#a5b23a44e5f44151eb22bbad81889448e">Lexer</a>
@@ -133,11 +155,23 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>PostfixExpression()
 : <a class="el" href="classast_1_1_postfix_expression.html#acf679000ce062579c924dd1753934a1b">ast::PostfixExpression</a>
 </li>
+<li>prev()
+: <a class="el" href="classoption_1_1_option.html#a4d12001a91b0b35cf47437d0c60d2b52">option::Option</a>
+</li>
+<li>prevwrap()
+: <a class="el" href="classoption_1_1_option.html#a1226e45dc2de30f269b2aff1784bbee7">option::Option</a>
+</li>
 <li>Primitive_type
 : <a class="el" href="classast_1_1_type.html#a119974420fa79d23ae44e3527d70cc56">ast::Type</a>
 </li>
 <li>print()
 : <a class="el" href="struct_token.html#aa278003cdd37896c2b254f066adf5c9e">Token</a>
+</li>
+<li>printUsage()
+: <a class="el" href="structoption_1_1_print_usage_implementation.html#ab38c4198c5cccea2ccd992c8e014df70">option::PrintUsageImplementation</a>
+</li>
+<li>process()
+: <a class="el" href="classoption_1_1_print_usage_implementation_1_1_line_wrapper.html#add20eca40865ad892d6c28b412ac14d5">option::PrintUsageImplementation::LineWrapper</a>
 </li>
 <li>Program()
 : <a class="el" href="classast_1_1_program.html#ae7ef9a6682b8387c94c79fffe1323485">ast::Program</a>
@@ -146,7 +180,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 17 2014 14:31:04 for mjplusplus by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 17 2014 23:54:31 for mjplusplus by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>
