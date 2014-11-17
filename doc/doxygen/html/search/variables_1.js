@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['c',['c',['../class_lexer.html#a7d2b43c92d095c7c3c5516a054baa516',1,'Lexer']]],
-  ['condition',['condition',['../classast_1_1_while_statement.html#a79b73278103a9d6d804a146bd6665cb0',1,'ast::WhileStatement']]]
+  ['block',['block',['../classast_1_1_method_declaration.html#a5c2be8f115e3654ed4956b953181ba43',1,'ast::MethodDeclaration']]],
+  ['buf',['buf',['../class_lexer.html#a33782a04a3806f9fb5670f2dd3382fb9',1,'Lexer']]],
+  ['buf_5flen',['buf_len',['../class_lexer.html#a2de7ac419faa4372dc6c7d8c48a13aa3',1,'Lexer']]],
+  ['buf_5foff',['buf_off',['../class_lexer.html#ac0b86ae7d87d03bab38969f29e252f77',1,'Lexer']]],
+  ['buffer_5fmax',['buffer_max',['../structoption_1_1_stats.html#a2c9a7b4174f91ba8bcadaa9ad6f0db06',1,'option::Stats']]]
 ];

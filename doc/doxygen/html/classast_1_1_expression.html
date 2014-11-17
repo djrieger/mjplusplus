@@ -73,7 +73,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Friends</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(10)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(11)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -102,18 +102,64 @@ Inheritance diagram for ast::Expression:</div>
  <div class="center">
   <img src="classast_1_1_expression.png" usemap="#ast::Expression_map" alt=""/>
   <map id="ast::Expression_map" name="ast::Expression_map">
-<area href="classast_1_1_node.html" alt="ast::Node" shape="rect" coords="564,0,742,24"/>
-<area href="classast_1_1_binary_expression.html" alt="ast::BinaryExpression" shape="rect" coords="0,112,178,136"/>
-<area href="classast_1_1pe_1_1_primary_expression.html" alt="ast::pe::PrimaryExpression" shape="rect" coords="470,112,648,136"/>
-<area href="classast_1_1_postfix_expression.html" alt="ast::PostfixExpression" shape="rect" coords="658,112,836,136"/>
-<area href="classast_1_1_unary_expression.html" alt="ast::UnaryExpression" shape="rect" coords="846,112,1024,136"/>
-<area href="classast_1_1pe_1_1_bool.html" alt="ast::pe::Bool" shape="rect" coords="0,168,178,192"/>
-<area href="classast_1_1pe_1_1_ident.html" alt="ast::pe::Ident" shape="rect" coords="188,168,366,192"/>
-<area href="classast_1_1pe_1_1_integer.html" alt="ast::pe::Integer" shape="rect" coords="376,168,554,192"/>
-<area href="classast_1_1pe_1_1_new_array_expression.html" alt="ast::pe::NewArrayExpression" shape="rect" coords="564,168,742,192"/>
-<area href="classast_1_1pe_1_1_new_object_expression.html" alt="ast::pe::NewObjectExpression" shape="rect" coords="752,168,930,192"/>
-<area href="classast_1_1pe_1_1_object.html" alt="ast::pe::Object" shape="rect" coords="940,168,1118,192"/>
-<area href="classast_1_1pe_1_1_method_invocation.html" alt="ast::pe::MethodInvocation" shape="rect" coords="188,224,366,248"/>
+<area href="classast_1_1_node.html" alt="ast::Node" shape="rect" coords="727,0,1008,24"/>
+<area href="classast_1_1be_1_1_binary_expression.html" alt="ast::be::BinaryExpression" shape="rect" coords="0,112,281,136"/>
+<area href="classast_1_1pe_1_1_primary_expression.html" alt="ast::pe::PrimaryExpression" shape="rect" coords="582,112,863,136"/>
+<area href="classast_1_1_postfix_expression.html" alt="ast::PostfixExpression" shape="rect" coords="873,112,1154,136"/>
+<area href="classast_1_1_unary_expression.html" alt="ast::UnaryExpression" shape="rect" coords="1164,112,1445,136"/>
+<area href="classast_1_1be_1_1_and.html" alt="ast::be::And" shape="rect" coords="291,168,572,192"/>
+<area href="classast_1_1be_1_1_and_and.html" alt="ast::be::AndAnd" shape="rect" coords="291,224,572,248"/>
+<area href="classast_1_1be_1_1_and_eq.html" alt="ast::be::AndEq" shape="rect" coords="291,280,572,304"/>
+<area href="classast_1_1be_1_1_colon.html" alt="ast::be::Colon" shape="rect" coords="291,336,572,360"/>
+<area href="classast_1_1be_1_1_comma.html" alt="ast::be::Comma" shape="rect" coords="291,392,572,416"/>
+<area href="classast_1_1be_1_1_dot.html" alt="ast::be::Dot" shape="rect" coords="291,448,572,472"/>
+<area href="classast_1_1be_1_1_eq.html" alt="ast::be::Eq" shape="rect" coords="291,504,572,528"/>
+<area href="classast_1_1be_1_1_eq_eq.html" alt="ast::be::EqEq" shape="rect" coords="291,560,572,584"/>
+<area href="classast_1_1be_1_1_greater_than.html" alt="ast::be::GreaterThan" shape="rect" coords="291,616,572,640"/>
+<area href="classast_1_1be_1_1_greater_than_eq.html" alt="ast::be::GreaterThanEq" shape="rect" coords="291,672,572,696"/>
+<area href="classast_1_1be_1_1_greater_than_greater_than.html" alt="ast::be::GreaterThanGreaterThan" shape="rect" coords="291,728,572,752"/>
+<area href="classast_1_1be_1_1_greater_than_greater_than_eq.html" alt="ast::be::GreaterThanGreaterThanEq" shape="rect" coords="291,784,572,808"/>
+<area href="classast_1_1be_1_1_greater_than_greater_than_greater_than.html" alt="ast::be::GreaterThanGreaterThanGreaterThan" shape="rect" coords="291,840,572,864"/>
+<area href="classast_1_1be_1_1_greater_than_greater_than_greater_than_eq.html" alt="ast::be::GreaterThanGreaterThanGreaterThanEq" shape="rect" coords="291,896,572,920"/>
+<area href="classast_1_1be_1_1_invalid.html" alt="ast::be::Invalid" shape="rect" coords="291,952,572,976"/>
+<area href="classast_1_1be_1_1_left_brace.html" alt="ast::be::LeftBrace" shape="rect" coords="291,1008,572,1032"/>
+<area href="classast_1_1be_1_1_left_bracket.html" alt="ast::be::LeftBracket" shape="rect" coords="291,1064,572,1088"/>
+<area href="classast_1_1be_1_1_left_paren.html" alt="ast::be::LeftParen" shape="rect" coords="291,1120,572,1144"/>
+<area href="classast_1_1be_1_1_less_than.html" alt="ast::be::LessThan" shape="rect" coords="291,1176,572,1200"/>
+<area href="classast_1_1be_1_1_less_than_eq.html" alt="ast::be::LessThanEq" shape="rect" coords="291,1232,572,1256"/>
+<area href="classast_1_1be_1_1_less_than_less_than.html" alt="ast::be::LessThanLessThan" shape="rect" coords="291,1288,572,1312"/>
+<area href="classast_1_1be_1_1_less_than_less_than_eq.html" alt="ast::be::LessThanLessThanEq" shape="rect" coords="291,1344,572,1368"/>
+<area href="classast_1_1be_1_1_minus.html" alt="ast::be::Minus" shape="rect" coords="291,1400,572,1424"/>
+<area href="classast_1_1be_1_1_minus_eq.html" alt="ast::be::MinusEq" shape="rect" coords="291,1456,572,1480"/>
+<area href="classast_1_1be_1_1_minus_minus.html" alt="ast::be::MinusMinus" shape="rect" coords="291,1512,572,1536"/>
+<area href="classast_1_1be_1_1_mod.html" alt="ast::be::Mod" shape="rect" coords="291,1568,572,1592"/>
+<area href="classast_1_1be_1_1_mod_eq.html" alt="ast::be::ModEq" shape="rect" coords="291,1624,572,1648"/>
+<area href="classast_1_1be_1_1_mult.html" alt="ast::be::Mult" shape="rect" coords="291,1680,572,1704"/>
+<area href="classast_1_1be_1_1_mult_eq.html" alt="ast::be::MultEq" shape="rect" coords="291,1736,572,1760"/>
+<area href="classast_1_1be_1_1_neg.html" alt="ast::be::Neg" shape="rect" coords="291,1792,572,1816"/>
+<area href="classast_1_1be_1_1_not.html" alt="ast::be::Not" shape="rect" coords="291,1848,572,1872"/>
+<area href="classast_1_1be_1_1_not_eq.html" alt="ast::be::NotEq" shape="rect" coords="291,1904,572,1928"/>
+<area href="classast_1_1be_1_1_or.html" alt="ast::be::Or" shape="rect" coords="291,1960,572,1984"/>
+<area href="classast_1_1be_1_1_or_eq.html" alt="ast::be::OrEq" shape="rect" coords="291,2016,572,2040"/>
+<area href="classast_1_1be_1_1_or_or.html" alt="ast::be::OrOr" shape="rect" coords="291,2072,572,2096"/>
+<area href="classast_1_1be_1_1_plus.html" alt="ast::be::Plus" shape="rect" coords="291,2128,572,2152"/>
+<area href="classast_1_1be_1_1_plus_eq.html" alt="ast::be::PlusEq" shape="rect" coords="291,2184,572,2208"/>
+<area href="classast_1_1be_1_1_plus_plus.html" alt="ast::be::PlusPlus" shape="rect" coords="291,2240,572,2264"/>
+<area href="classast_1_1be_1_1_question.html" alt="ast::be::Question" shape="rect" coords="291,2296,572,2320"/>
+<area href="classast_1_1be_1_1_right_brace.html" alt="ast::be::RightBrace" shape="rect" coords="291,2352,572,2376"/>
+<area href="classast_1_1be_1_1_right_bracket.html" alt="ast::be::RightBracket" shape="rect" coords="291,2408,572,2432"/>
+<area href="classast_1_1be_1_1_right_paren.html" alt="ast::be::RightParen" shape="rect" coords="291,2464,572,2488"/>
+<area href="classast_1_1be_1_1_semi_colon.html" alt="ast::be::SemiColon" shape="rect" coords="291,2520,572,2544"/>
+<area href="classast_1_1be_1_1_slash.html" alt="ast::be::Slash" shape="rect" coords="291,2576,572,2600"/>
+<area href="classast_1_1be_1_1_slash_eq.html" alt="ast::be::SlashEq" shape="rect" coords="291,2632,572,2656"/>
+<area href="classast_1_1be_1_1_xor.html" alt="ast::be::Xor" shape="rect" coords="291,2688,572,2712"/>
+<area href="classast_1_1be_1_1_xor_eq.html" alt="ast::be::XorEq" shape="rect" coords="291,2744,572,2768"/>
+<area href="classast_1_1pe_1_1_bool.html" alt="ast::pe::Bool" shape="rect" coords="873,168,1154,192"/>
+<area href="classast_1_1pe_1_1_ident.html" alt="ast::pe::Ident" shape="rect" coords="873,224,1154,248"/>
+<area href="classast_1_1pe_1_1_integer.html" alt="ast::pe::Integer" shape="rect" coords="873,280,1154,304"/>
+<area href="classast_1_1pe_1_1_new_array_expression.html" alt="ast::pe::NewArrayExpression" shape="rect" coords="873,336,1154,360"/>
+<area href="classast_1_1pe_1_1_new_object_expression.html" alt="ast::pe::NewObjectExpression" shape="rect" coords="873,392,1154,416"/>
+<area href="classast_1_1pe_1_1_object.html" alt="ast::pe::Object" shape="rect" coords="873,448,1154,472"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -124,12 +170,12 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a4c37bd65152ed6cb20a5010feef9ac41 inherit pub_methods_classast_1_1_node"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>ast/<a class="el" href="_expression_8hpp_source.html">Expression.hpp</a></li>
+<li>src/ast/<a class="el" href="_expression_8hpp_source.html">Expression.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Nov 17 2014 14:31:04 for mjplusplus by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 17 2014 23:54:30 for mjplusplus by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.8
 </small></address>

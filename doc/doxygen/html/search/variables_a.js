@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['token_5fstack',['token_stack',['../class_lexer.html#ae589b51682954de08598c4f03cf0ce9a',1,'Lexer']]],
-  ['token_5ftype',['token_type',['../struct_token.html#a371bd3a7fb36e7f09de6af959133ab7e',1,'Token']]],
-  ['transitions',['transitions',['../class_stateomat.html#a808c4210efc713a115e9a487e6ef5995',1,'Stateomat']]],
-  ['type_5fand_5fname',['type_and_name',['../classast_1_1_field_declaration.html#a826359823444cf6a7f804379916bc328',1,'ast::FieldDeclaration']]],
-  ['type_5fident',['type_ident',['../classast_1_1_l_v_d_statement.html#a39b93146fdded845fd0be04d61fc35be',1,'ast::LVDStatement']]]
+  ['operators',['operators',['../class_stateomat.html#aed5c1f8aa126194ef843bc48d248d6e2',1,'Stateomat']]],
+  ['options_5fmax',['options_max',['../structoption_1_1_stats.html#a8121787feb1c7db84fca3ccb012b0473',1,'option::Stats']]],
+  ['ostream',['ostream',['../structoption_1_1_print_usage_implementation_1_1_o_stream_writer.html#a9b808696e204a834acd4362c62b9f4c1',1,'option::PrintUsageImplementation::OStreamWriter']]]
 ];

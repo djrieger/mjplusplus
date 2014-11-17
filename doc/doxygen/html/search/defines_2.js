@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['cmd_5fline_5foption_5fprefix',['CMD_LINE_OPTION_PREFIX',['../main_8cpp.html#a8a2a68b79be47773c29bf4baa6ab3e3e',1,'main.cpp']]]
+  ['state_5fstart',['STATE_START',['../stateomat_8hpp.html#addcbd0eec71cda69580487f74a2c24c4',1,'stateomat.hpp']]],
+  ['state_5fstop',['STATE_STOP',['../stateomat_8hpp.html#aacae076377c971590fc9d8a116c0e4e6',1,'stateomat.hpp']]]
 ];
