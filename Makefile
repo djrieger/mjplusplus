@@ -39,3 +39,10 @@ style: $(SOURCE_FILES) $(HEADER_FILES)
 styleclean:
 	rm -f $(addsuffix $(ASTYLESUFFIX), $(SOURCE_FILES) $(HEADER_FILES))
 
+doc: $(SOURCE_FILES) $(HEADER_FILES) 
+	rm -rf doc/doxygen/html; doxygen doc/doxygen/doxygen.config
+
+docclean:
+	rm -rf doc/doxygen/html
+
+.PHONY: doc
