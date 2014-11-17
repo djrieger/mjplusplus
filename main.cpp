@@ -32,16 +32,20 @@ int main(int argc, const char** argv)
 	if (has_option("dumplexgraph"))
 	{
 		Stateomat stateomat;
-		stateomat.dump_graph(file_name);
+        try {
+            stateomat.dump_graph(file_name);
+        } catch (std::string e) {
+            std::cerr << e << std::endl;
+        }
 		return EXIT_SUCCESS;
 	}
 
 	Stateomat stateomat;
-	Lexer lexer(file_name.c_str(), stateomat);
+        Lexer lexer(file_name.c_str(), stateomat);
 
 	if (has_option("lextest"))
 	{
-		Token t(lexer.get_next_token());
+        Token t(lexer.get_next_token());
 
 		while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF)
 		{

@@ -176,7 +176,7 @@ void Stateomat::dump_graph(std::string const& file_name)
 	std::ofstream f(file_name, std::ios::out | std::ios::binary | std::ios::trunc);
 
 	if (!f.is_open())
-		throw 42;
+		throw "Failed to open file.";
 
 	auto write_line = [&f](int indent_level, std::string const & s)
 	{
