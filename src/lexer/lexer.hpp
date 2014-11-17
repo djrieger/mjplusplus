@@ -46,6 +46,78 @@ class Lexer
 		void advancePosition(int nextCharacter);
 		Token::Token_type lex_keyword_or_ident(const char* s);
 
+		/** (partial) state list for keyword checking automaton */
+		enum kw_states
+		{
+			CHECK_ABSTRACT = 30,
+			CHECK_ASSERT,
+			CHECK_BOOLEAN,
+			CHECK_BREAK,
+			CHECK_BYTE,
+			CHECK_CASE,
+			CHECK_CATCH,
+			CHECK_CHAR,
+			CHECK_CLASS,
+			CHECK_CONST,
+			CHECK_CONTINUE,
+			CHECK_DEFAULT,
+			CHECK_DOUBLE,
+			CHECK_ELSE,
+			CHECK_ENUM,
+			CHECK_EXTENDS,
+			CHECK_FALSE,
+			CHECK_FINALLY,
+			CHECK_FLOAT,
+			CHECK_FOR,
+			CHECK_GOTO,
+			CHECK_IMPLEMENTS,
+			CHECK_IMPORT,
+			CHECK_INSTANCEOF,
+			CHECK_INTERFACE,
+			CHECK_LONG,
+			CHECK_NATIVE,
+			CHECK_NEW,
+			CHECK_NULL,
+			CHECK_PACKAGE,
+			CHECK_PRIVATE,
+			CHECK_PROTECTED,
+			CHECK_PUBLIC,
+			CHECK_RETURN,
+			CHECK_SHORT,
+			CHECK_STATIC,
+			CHECK_STRICTFP,
+			CHECK_SUPER,
+			CHECK_SWITCH,
+			CHECK_SYNCHRONIZED,
+			CHECK_THIS,
+			CHECK_TRANSIENT,
+			CHECK_TRUE,
+			CHECK_TRY,
+			CHECK_VOID,
+			CHECK_VOLATILE,
+			CHECK_WHILE,
+			KEYWORD_DO,
+			KEYWORD_FINAL,
+			KEYWORD_IF,
+			KEYWORD_INT,
+			KEYWORD_THROW,
+			KEYWORD_THROWS,
+			IDENT,
+		};
+
+		/** keyword list to be used as lookup in keyword automaton.
+		 *  used for words that can only be recognised at the end of the string
+		 */
+		static Token::Token_type kw_array[];
+
+		/** lookup for keyword automaton check
+		 *  used when only one possible keyword remains in the middle of the string
+		 */
+		static std::vector<std::pair<const char*, Token::Token_type>> kw_vector;
+
+		/** transition table for keyword automaton */
+		static const int kw_lex_table[][26];
+
 	public:
 		/**
 		 *  Constructor.

@@ -1,5 +1,5 @@
-#ifndef ARRAYACCESS_H
-#define ARRAYACCESS_H
+#ifndef ARRAYACCESS_HPP
+#define ARRAYACCESS_HPP
 
 #include "Expression.hpp"
 #include "PostfixOp.hpp"

@@ -1,5 +1,5 @@
-#ifndef CLASSDECLARATION_H
-#define CLASSDECLARATION_H
+#ifndef CLASSDECLARATION_HPP
+#define CLASSDECLARATION_HPP
 
 #include <vector>
 

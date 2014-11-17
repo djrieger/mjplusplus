@@ -2,6 +2,14 @@
 
 #include "token.hpp"
 
+std::unordered_map<std::string, std::string> Token::stringTable;
+
+Token::Token(Token_type const& token_type, std::string const& string_value, std::pair<unsigned int, unsigned int> const& position)
+	: token_type(token_type), string_value(&stringTable.insert({string_value, string_value}).first->second), position(position)
+{
+	;
+}
+
 void Token::print() const
 {
 	// uncommenting the following line is for debug purposes during lextest
