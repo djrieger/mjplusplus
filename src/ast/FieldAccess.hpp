@@ -1,5 +1,5 @@
-#ifndef FIELDACCESS_H
-#define FIELDACCESS_H
+#ifndef FIELDACCESS_HPP
+#define FIELDACCESS_HPP
 
 #include "PostfixOp.hpp"
 #include "Ident.hpp"

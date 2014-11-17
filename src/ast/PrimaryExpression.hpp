@@ -54,7 +54,7 @@ namespace ast
 		class Integer : public PrimaryExpression
 		{
 			private:
-				std::string string_value;
+				std::string const& string_value;
 			public:
 				Integer(std::string const& string_value);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;

@@ -1,12 +1,12 @@
 #include "../globals.hpp"
 #include "BasicType.hpp"
 
-ast::BasicType::BasicType(Type::Primitive_type primitive_type) : primitive_type(primitive_type)
+ast::BasicType::BasicType(Type::Primitive_type primitive_type, std::string const& _) : primitive_type(primitive_type), class_name(_)
 {
 
 }
 
-ast::BasicType::BasicType(std::string class_name) : primitive_type(Type::Primitive_type::NONE), class_name(class_name)
+ast::BasicType::BasicType(std::string const& class_name) : primitive_type(Type::Primitive_type::NONE), class_name(class_name)
 {
 
 }

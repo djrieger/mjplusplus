@@ -10,13 +10,13 @@ namespace ast
 	{
 
 		public:
-			BasicType(Type::Primitive_type primitive_type);
-			BasicType(std::string class_name);
+			BasicType(Type::Primitive_type primitive_type, std::string const& = "");
+			BasicType(std::string const& class_name);
 			virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 
 		private:
 			Primitive_type primitive_type;
-			std::string class_name; // maybe a pointer to the string table
+			std::string const& class_name;
 	};
 }
 

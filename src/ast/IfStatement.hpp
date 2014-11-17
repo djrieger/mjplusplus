@@ -1,5 +1,5 @@
-#ifndef IFSTATEMENT_H
-#define IFSTATEMENT_H
+#ifndef IFSTATEMENT_HPP
+#define IFSTATEMENT_HPP
 
 #include "Expression.hpp"
 #include "Statement.hpp"

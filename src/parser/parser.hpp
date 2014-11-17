@@ -96,7 +96,7 @@ class Parser
 		uptr<ast::Expression> parseNewArrayExpression();
 		int parseOptionalBrackets();
 
-		uptr<ast::ClassMember> parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent);
+		uptr<ast::ClassMember> parseFieldOrMethod();
 		uptr<vec<uptr<ast::TypeIdent>>> parseOptionalParameters();
 		uptr<ast::Arguments> parseArguments();
 

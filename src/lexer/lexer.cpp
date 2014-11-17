@@ -10,69 +10,10 @@
 #include <cstdlib>
 #include <cstring>
 
-/** (partial) state list for keyword checking automaton */
-enum kw_states
-{
-	CHECK_ABSTRACT = 30,
-	CHECK_ASSERT,
-	CHECK_BOOLEAN,
-	CHECK_BREAK,
-	CHECK_BYTE,
-	CHECK_CASE,
-	CHECK_CATCH,
-	CHECK_CHAR,
-	CHECK_CLASS,
-	CHECK_CONST,
-	CHECK_CONTINUE,
-	CHECK_DEFAULT,
-	CHECK_DOUBLE,
-	CHECK_ELSE,
-	CHECK_ENUM,
-	CHECK_EXTENDS,
-	CHECK_FALSE,
-	CHECK_FINALLY,
-	CHECK_FLOAT,
-	CHECK_FOR,
-	CHECK_GOTO,
-	CHECK_IMPLEMENTS,
-	CHECK_IMPORT,
-	CHECK_INSTANCEOF,
-	CHECK_INTERFACE,
-	CHECK_LONG,
-	CHECK_NATIVE,
-	CHECK_NEW,
-	CHECK_NULL,
-	CHECK_PACKAGE,
-	CHECK_PRIVATE,
-	CHECK_PROTECTED,
-	CHECK_PUBLIC,
-	CHECK_RETURN,
-	CHECK_SHORT,
-	CHECK_STATIC,
-	CHECK_STRICTFP,
-	CHECK_SUPER,
-	CHECK_SWITCH,
-	CHECK_SYNCHRONIZED,
-	CHECK_THIS,
-	CHECK_TRANSIENT,
-	CHECK_TRUE,
-	CHECK_TRY,
-	CHECK_VOID,
-	CHECK_VOLATILE,
-	CHECK_WHILE,
-	KEYWORD_DO,
-	KEYWORD_FINAL,
-	KEYWORD_IF,
-	KEYWORD_INT,
-	KEYWORD_THROW,
-	KEYWORD_THROWS,
-	IDENT,
-};
-
 /** keyword list to be used as lookup in keyword automaton.
  *  used for words that can only be recognised at the end of the string
  */
-Token::Token_type kw_array[] =
+Token::Token_type Lexer::kw_array[] =
 {
 	Token::Token_type::KEYWORD_DO,
 	Token::Token_type::KEYWORD_FINAL,
@@ -85,7 +26,7 @@ Token::Token_type kw_array[] =
 /** lookup for keyword automaton check
  *  used when only one possible keyword remains in the middle of the string
  */
-std::vector<std::pair<const char*, Token::Token_type>> kw_vector =
+std::vector<std::pair<const char*, Token::Token_type>> Lexer::kw_vector =
 {
 	std::make_pair("abstract", Token::Token_type::KEYWORD_ABSTRACT),
 	std::make_pair("assert", Token::Token_type::KEYWORD_ASSERT),
@@ -137,7 +78,7 @@ std::vector<std::pair<const char*, Token::Token_type>> kw_vector =
 };
 
 /** transition table for keyword automaton */
-const int kw_lex_table[][26] = {{ 1,  2,  3,  4,  5,  6, 50, 83,  7, 83, 83, 55, 83,  8, 83,  9, 83, 63, 10, 11, 83, 12, 76, 83, 83, 83, },
+const int Lexer::kw_lex_table[][26] = {{ 1,  2,  3,  4,  5,  6, 50, 83,  7, 83, 83, 55, 83,  8, 83,  9, 83, 63, 10, 11, 83, 12, 76, 83, 83, 83, },
 	{83, 30, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 31, 83, 83, 83, 83, 83, 83, 83, },
 	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 32, 83, 83, 33, 83, 83, 83, 83, 83, 83, 34, 83, },
 	{13, 83, 83, 83, 83, 83, 83, 37, 83, 83, 83, 38, 83, 83, 14, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
@@ -357,14 +298,15 @@ Token Lexer::get_next_token()
 	//if we have token that were ungetted, use them first
 	if (!token_stack.empty())
 	{
-		Token t(token_stack[token_stack.size() - 1]);
+		Token t(token_stack.back());
 		token_stack.pop_back();
 		return t;
 	}
 
 	//initialize automaton
-	Token t;
-	t.position = position;
+	Token::Token_type type = Token::Token_type::TOKEN_ERROR;
+	auto token_position(position);
+	std::string value;
 	int state = STATE_START;
 
 	//run the automaton
@@ -380,36 +322,34 @@ Token Lexer::get_next_token()
 			if (stateomat.state_is_accepting(state))
 			{
 
-				if (t.token_type == Token::Token_type::TOKEN_OPERATOR)
+				if (type == Token::Token_type::TOKEN_OPERATOR)
 					//if we have an operator, we look up which one we have
-					t.token_type = stateomat.operators[state][t.string_value];
-				else if (t.token_type == Token::Token_type::TOKEN_IDENT_OR_KEYWORD)
+					type = stateomat.operators[state][value];
+				else if (type == Token::Token_type::TOKEN_IDENT_OR_KEYWORD)
 					//if we have a (lowercase) string, it can be a keyword or an ident
 					//so we run a check with a special keyword automaton that returns
 					//the appropriate keyword token or ident
-					t.token_type = lex_keyword_or_ident(t.string_value.c_str());
+					type = lex_keyword_or_ident(value.c_str());
 
 				//return token
-				return t;
+				return Token(type, value, token_position);
 			}
 			else
 			{
 				//token is invalid
-				t.token_type = Token::Token_type::TOKEN_ERROR;
-				t.position = position;
-				return t;
+				return Token(Token::Token_type::TOKEN_ERROR, value, position);
 			}
 		}
 		else if (!stateomat.state_is_accepting(new_state))
 			//we had a whitespace or are within a comment
-			t.string_value.clear();
+			value.clear();
 		else
 		{
 			if (state == STATE_START)
-				t.position = position;//new position after whitespace/comment
+				token_position = position;//new position after whitespace/comment
 
-			t.string_value.push_back(c);//append character to lexed string
-			t.token_type = stateomat.state_type[new_state];
+			value.push_back(c);//append character to lexed string
+			type = stateomat.state_type[new_state];
 		}
 
 		//advance token
@@ -418,10 +358,6 @@ Token Lexer::get_next_token()
 
 		state = new_state;
 	}
-
-	t.token_type = Token::Token_type::TOKEN_ERROR;
-	t.position = position;
-	return t;
 }
 
 std::string Lexer::describe(Token::Token_type const& t) const
