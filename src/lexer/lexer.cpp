@@ -231,13 +231,14 @@ Lexer::Lexer(const char* file_name, Stateomat const& stateomat)
 	fd = open(file_name, O_RDONLY);
 
 	if (fd == -1)
-		throw 42;
+		throw "Error opening file \"" + std::string(file_name) + "\" (" + std::string(strerror(errno)) + ")";
 
-	// Does not work on Mac OS X yet:
 #ifndef __APPLE__
 
-	if (posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL) != 0)
-		throw 42;
+	int fadvise_result = posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+
+	if (fadvise_result != 0)
+		throw "Error advising kernel about file access on \"" + std::string(file_name) + "\" (" + std::string(strerror(fadvise_result)) + ")";
 
 #endif
 
@@ -275,7 +276,7 @@ char Lexer::getc()
 		ssize_t bytes_read = read(fd, buf, BUF_SIZE);
 
 		if (bytes_read == -1)
-			throw 42;
+			throw "Error reading file (" + std::string(strerror(errno)) + ").";
 		else if (bytes_read == 0)
 			foo = EOF;
 		else

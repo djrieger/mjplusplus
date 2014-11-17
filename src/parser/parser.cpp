@@ -620,8 +620,8 @@ uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 		Token::Token_type t = current.token_type;
 		nextToken();
 		auto exprRHS = precedenceClimb(prec);
-		expr = std::make_unique<ast::BinaryExpression>(expr, exprRHS, t);
 
+		expr = ast::be::BinaryExpression::createBinaryExpr(expr, exprRHS, t);
 		prec = operator_precs(current.token_type);
 	}
 
@@ -663,6 +663,8 @@ uptr<ast::Expression> Parser::parseUnaryExpression()
 		postfixExpr = std::move(primaryExpr);
 	else
 		postfixExpr = std::make_unique<ast::PostfixExpression>(primaryExpr, postfix_ops);
+
+	//TODO: chose the correct unary-operator subclass
 
 	//dito for unary expressions
 	if (unary_operators->empty())
