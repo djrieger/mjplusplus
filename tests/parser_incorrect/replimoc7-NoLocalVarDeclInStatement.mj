@@ -1,0 +1,9 @@
+/* local variables can only be declared in BlockStatements, not in Statements */
+class A {
+  public void foo() {
+    if (true)
+      int a = 3;
+    while (false)
+      boolean c = true;
+  }
+}

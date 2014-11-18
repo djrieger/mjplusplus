@@ -27,9 +27,9 @@ class Oo {
 
         new basic_type[42][][][15];
 
-        !null * -false; 
+        !null * -false;
 
-        c = a - -b; 
+        c = a - -b;
 
         this[15] = 1;
         

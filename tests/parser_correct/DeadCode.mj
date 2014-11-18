@@ -1,0 +1,19 @@
+/* test for dead code elimination and constant propagation.
+ * resulting asm shouldn't include a single call to println if both work
+ */
+class A {
+  public static void main(String[] args) {
+    if (false)
+      System.out.println(3735929054);
+    while (false)
+      System.out.println(3735929054);
+
+    boolean a = false;
+    boolean b = true;
+
+    if (a && b)
+      System.out.println(51717);
+
+
+  }
+}
