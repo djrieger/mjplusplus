@@ -3,8 +3,8 @@
 #include "TypeIdent.hpp"
 
 
-ast::MainMethodDeclaration::MainMethodDeclaration(uptr<TypeIdent>& return_type_and_name, uptr<vec<uptr<TypeIdent>>>& parameters, uptr<Statement>& block)
-	: MethodDeclaration(return_type_and_name, parameters, block)
+ast::MainMethodDeclaration::MainMethodDeclaration(uptr<TypeIdent> return_type_and_name, uptr<vec<uptr<TypeIdent> > > parameters, uptr<Statement> block)
+	: MethodDeclaration(std::move(return_type_and_name), std::move(parameters), std::move(block))
 {
 	;
 }

@@ -11,7 +11,7 @@ namespace ast
 	{
 
 		public:
-			ArrayType(uptr<BasicType>& basic_type, int dimension);
+			ArrayType(uptr<BasicType> basic_type, int dimension);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 
 		private:

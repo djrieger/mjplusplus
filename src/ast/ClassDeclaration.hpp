@@ -16,7 +16,7 @@ namespace ast
 			uptr<vec<uptr<ClassMember>>> members;
 
 		public:
-			ClassDeclaration(uptr<Ident>& class_name, uptr<vec<uptr<ClassMember>>>& members);
+			ClassDeclaration(uptr<Ident> class_name, uptr<vec<uptr<ClassMember>>> members);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			std::string getName() const;
 	};

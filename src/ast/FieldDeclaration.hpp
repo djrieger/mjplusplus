@@ -13,7 +13,7 @@ namespace ast
 			uptr<TypeIdent> type_and_name;
 
 		public:
-			FieldDeclaration(uptr<TypeIdent>& type_and_name);
+			FieldDeclaration(uptr<TypeIdent> type_and_name);
 
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual std::string getName() const;

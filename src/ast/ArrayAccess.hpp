@@ -12,7 +12,7 @@ namespace ast
 			uptr<Expression> access_offset;
 
 		public:
-			ArrayAccess(uptr<Expression>& access_offset);
+			ArrayAccess(uptr<Expression> access_offset);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

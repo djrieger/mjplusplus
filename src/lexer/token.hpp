@@ -68,10 +68,21 @@ class Token
 		/** position of current token in source file (line, column) */
 		std::pair<unsigned int, unsigned int> position;
 
+		/** construct Token and insert string_value into stringTable */
 		Token(Token_type const& token_type, std::string const& string_value, std::pair<unsigned int, unsigned int> const& position);
+
+		/** constructor to skip lookup of string_value in stringTable. string_value MUST BE in stringTable already */
+		Token(Token_type const& token_type, std::string const* string_value, std::pair<unsigned int, unsigned int> const& position);
 
 		/** prints a string representation of this token */
 		void print() const;
+
+		static std::string const& getTableReference(std::string const& value);
+
+		/** lookup table from token type to entry in stringtable
+		 *  used to prepopulate stringtable with allowed keywords and operators
+		 */
+		static std::string const* type_to_ref[];
 };
 
 #endif
