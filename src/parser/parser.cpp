@@ -183,13 +183,13 @@ uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 
 	// expect "(String[]"
 	expect(Token::Token_type::OPERATOR_LPAREN);
-	std::string* arg_type = current.string_value;
+	std::string const& arg_type = *current.string_value;
 	expect(Token::Token_type::TOKEN_IDENT, "String");
 	expect(Token::Token_type::OPERATOR_LBRACKET);
 	expect(Token::Token_type::OPERATOR_RBRACKET);
 
 	// build "String[] PARAMETERNAME"
-	auto basicType = std::make_unique<ast::BasicType>(*arg_type);
+	auto basicType = std::make_unique<ast::BasicType>(arg_type);
 	std::unique_ptr<ast::Type> parType( new ast::ArrayType(basicType, 1) );
 	auto parameterName = std::make_unique<ast::Ident>(*current.string_value);
 	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
@@ -252,9 +252,9 @@ uptr<ast::BasicType> Parser::parseBasicType()
 
 		case Token::Token_type::TOKEN_IDENT:
 		{
-			std::string* class_name = current.string_value;
+			std::string const& class_name = *current.string_value;
 			nextToken();
-			return std::make_unique<ast::BasicType>(*class_name);
+			return std::make_unique<ast::BasicType>(class_name);
 			break;
 		}
 

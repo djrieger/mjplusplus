@@ -2,7 +2,7 @@
 #define TOKEN_HPP
 
 #include <string>
-#include <unordered_map>
+#include <unordered_set>
 
 class Token
 {
@@ -10,7 +10,7 @@ class Token
 		/**
 		 * string table to store all strings (identifier, keywords, integers) seen by the lexer
 		 */
-		static std::unordered_map<std::string, std::string> stringTable;
+		static std::unordered_set<std::string> stringTable;
 
 	public:
 		/** enum containing the different token types */
@@ -64,7 +64,7 @@ class Token
 		/** this token's type */
 		Token_type token_type;
 		/** this token's string value */
-		std::string* string_value;
+		std::string const* string_value;
 		/** position of current token in source file (line, column) */
 		std::pair<unsigned int, unsigned int> position;
 
