@@ -164,7 +164,6 @@ const int Lexer::kw_lex_table[][26] = {{ 1,  2,  3,  4,  5,  6, 50, 83,  7, 83, 
 	{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
 };
 
-
 Lexer::Lexer(const char* file_name, Stateomat const& stateomat)
 	: position {1, 1}, stateomat(stateomat), line_start(0)
 {
@@ -268,7 +267,7 @@ Token::Token_type Lexer::lex_keyword_or_ident(const char* s)
 		if (state == IDENT)
 			return Token::Token_type::TOKEN_IDENT;//we don't have a keyword => we have an ident
 
-		if (CHECK_ABSTRACT <= state && state <= CHECK_WHILE)
+		else if (CHECK_ABSTRACT <= state && state <= CHECK_WHILE)
 		{
 			/* now it can only be one keyword, or an ident.
 			   so we need to check whether s is indeed that keyword */
@@ -331,8 +330,12 @@ Token Lexer::get_next_token()
 					//the appropriate keyword token or ident
 					type = lex_keyword_or_ident(value.c_str());
 
-				//return token
-				return Token(type, value, token_position);
+				std::string const* inTable = Token::type_to_ref[type];
+
+				if (inTable)
+					return Token(type, inTable, token_position);
+				else
+					return Token(type, value, token_position);
 			}
 			else
 			{

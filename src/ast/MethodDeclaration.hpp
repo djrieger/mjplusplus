@@ -17,7 +17,7 @@ namespace ast
 			uptr<Statement> block;
 
 		public:
-			MethodDeclaration(uptr<TypeIdent>& return_type_and_name, uptr<vec<uptr<TypeIdent>>>& parameters, uptr<Statement>& block);
+			MethodDeclaration(uptr<TypeIdent> return_type_and_name, uptr<vec<uptr<TypeIdent>>> parameters, uptr<Statement> block);
 
 			/*
 			 * Prints this method including an optional "static" modifier (depending on isStatic)
