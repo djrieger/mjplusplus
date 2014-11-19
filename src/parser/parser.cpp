@@ -222,24 +222,24 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .
 uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
-    // build "void METHODNAME"
-    std::unique_ptr<ast::Type> voidType( new ast::Type(ast::Type::Primitive_type::VOID));
-    expect(Token::Token_type::KEYWORD_VOID);
-    auto mainMethodName = std::make_unique<ast::Ident>(*current.string_value);
-    auto typeIdent = std::make_unique<ast::TypeIdent>(std::move(voidType), std::move(mainMethodName));
-    expect(Token::Token_type::TOKEN_IDENT);
+	// build "void METHODNAME"
+	std::unique_ptr<ast::Type> voidType( new ast::Type(ast::Type::Primitive_type::VOID));
+	expect(Token::Token_type::KEYWORD_VOID);
+	auto mainMethodName = std::make_unique<ast::Ident>(*current.string_value);
+	auto typeIdent = std::make_unique<ast::TypeIdent>(std::move(voidType), std::move(mainMethodName));
+	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
 
-    // build "String[] PARAMETERNAME"
-    auto stringType = std::make_unique<ast::Ident>(*current.string_value);
-    auto type = std::make_unique<ast::Type>(std::move(stringType), 1);
+	// build "String[] PARAMETERNAME"
+	auto stringType = std::make_unique<ast::Ident>(*current.string_value);
+	auto type = std::make_unique<ast::Type>(std::move(stringType), 1);
 	expect(Token::Token_type::TOKEN_IDENT, "String");
 	expect(Token::Token_type::OPERATOR_LBRACKET);
 	expect(Token::Token_type::OPERATOR_RBRACKET);
-    auto parameterName = std::make_unique<ast::Ident>(*current.string_value);
-    expect(Token::Token_type::TOKEN_IDENT);
-    auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
-    parameters->push_back(std::make_unique<ast::TypeIdent>(std::move(type), std::move(parameterName)));
+	auto parameterName = std::make_unique<ast::Ident>(*current.string_value);
+	expect(Token::Token_type::TOKEN_IDENT);
+	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
+	parameters->push_back(std::make_unique<ast::TypeIdent>(std::move(type), std::move(parameterName)));
 	expect(Token::Token_type::OPERATOR_RPAREN);
 
 	return std::make_unique<ast::MainMethodDeclaration>(std::move(typeIdent), std::move(parameters), parseBlock());
@@ -303,17 +303,17 @@ uptr<ast::Type> Parser::parseBasicType()
 			throw "expected Type";
 	}
 
-    nextToken();
-        return  std::make_unique<ast::Type>(primitive_type);
+	nextToken();
+	return  std::make_unique<ast::Type>(primitive_type);
 }
 
 // Type -> BasicType ArrayDecl .
 uptr<ast::Type> Parser::parseType()
 {
-    auto type = parseBasicType();
-    int dimension = parseArrayDecl();
-    type->setDimension(dimension);
-    return type;
+	auto type = parseBasicType();
+	int dimension = parseArrayDecl();
+	type->setDimension(dimension);
+	return type;
 }
 
 // FieldOrMethod -> Field | Method .
@@ -650,25 +650,12 @@ uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 // PostfixExpression -> PrimaryExpression PostfixOps .
 uptr<ast::Expression> Parser::parseUnaryExpression()
 {
-	auto unary_operators = std::make_unique<vec<ast::UnaryExpression::Unary_Operator>>();
+	auto unary_operators = std::make_unique<vec<Token::Token_type>>();
 
 	while (current.token_type == Token::Token_type::OPERATOR_NOT ||
 	        current.token_type == Token::Token_type::OPERATOR_MINUS)
 	{
-		switch (current.token_type)
-		{
-			case Token::Token_type::OPERATOR_NOT:
-				unary_operators->push_back(ast::UnaryExpression::Unary_Operator::UNARY_NOT);
-				break;
-
-			case Token::Token_type::OPERATOR_MINUS:
-				unary_operators->push_back(ast::UnaryExpression::Unary_Operator::UNARY_MINUS);
-				break;
-
-			default:
-				break;
-		}
-
+		unary_operators->push_back(current.token_type);
 		nextToken();
 	}
 
@@ -682,13 +669,11 @@ uptr<ast::Expression> Parser::parseUnaryExpression()
 	else
 		postfixExpr = std::make_unique<ast::PostfixExpression>(std::move(primaryExpr), std::move(postfix_ops));
 
-	//TODO: chose the correct unary-operator subclass
-
 	//dito for unary expressions
 	if (unary_operators->empty())
 		return postfixExpr;
 	else
-		return std::make_unique<ast::UnaryExpression>(std::move(postfixExpr), std::move(unary_operators));
+		return ast::ue::UnaryExpression::createUnaryExpr(std::move(postfixExpr), std::move(unary_operators));
 }
 
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
@@ -792,13 +777,13 @@ uptr<ast::Expression> Parser::parseNewObjectExpression()
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
 uptr<ast::Expression> Parser::parseNewArrayExpression()
 {
-    auto type = parseBasicType();
-    expect(Token::Token_type::OPERATOR_LBRACKET);
-    auto expression = parseExpression();
-    expect(Token::Token_type::OPERATOR_RBRACKET);
-    type->setDimension(parseOptionalBrackets() + 1);
+	auto type = parseBasicType();
+	expect(Token::Token_type::OPERATOR_LBRACKET);
+	auto expression = parseExpression();
+	expect(Token::Token_type::OPERATOR_RBRACKET);
+	type->setDimension(parseOptionalBrackets() + 1);
 
-    return std::make_unique<ast::pe::NewArrayExpression>(std::move(type), std::move(expression));
+	return std::make_unique<ast::pe::NewArrayExpression>(std::move(type), std::move(expression));
 }
 
 // OptionalBrackets -> [ ] OptionalBrackets
