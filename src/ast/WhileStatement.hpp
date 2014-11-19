@@ -14,7 +14,7 @@ namespace ast
 			uptr<Statement> statement;
 
 		public:
-			WhileStatement(uptr<Expression>& condition, uptr<Statement>& statement);
+			WhileStatement(uptr<Expression> condition, uptr<Statement> statement);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 }

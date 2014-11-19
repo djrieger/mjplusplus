@@ -20,9 +20,9 @@ namespace ast
 			};
 
 			Type(Type::Primitive_type primitive_type);
-			Type(uptr<Ident> &class_name);			
+			Type(uptr<Ident> class_name);			
 			Type(Type::Primitive_type primitive_type, int dimension);
-			Type(uptr<Ident> &class_name, int dimension);
+			Type(uptr<Ident> class_name, int dimension);
 
 			virtual void toString(std::ostream& out, unsigned int indent, uptr<Expression> &expression, bool = false) const;
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;

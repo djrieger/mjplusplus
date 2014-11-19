@@ -67,7 +67,6 @@ int main(int argc, const char** argv)
 
 		if (options[DUMPLEXGRAPH])
 		{
-			//Stateomat stateomat;
 			try
 			{
 				stateomat.dump_graph(file_name);
@@ -135,6 +134,4 @@ int main(int argc, const char** argv)
 		std::cout << "You can only specify up to 1 option. See --help for usage." << std::endl;
 		return EXIT_FAILURE;
 	}
-
-
 }
