@@ -1,7 +1,7 @@
 class a {
 	public static void main(String[] a) {}
 	public int assign() {
-		a[] x=new a[5];
+		int[] x=new int[5];
 		int y=0;
 		int z;
 		x[z=y=0]=x[1]=y;

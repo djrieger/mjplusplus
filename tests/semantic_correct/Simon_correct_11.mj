@@ -5,7 +5,7 @@ class a {
 	public a a;
 	public a a(a a) {
 		a.a = a.a;
-		return a=a.a.a().a();
+		return a=a.a.a(a).a(a);
 	}
 	public String b;
 	public a b(int b) {
