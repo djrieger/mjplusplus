@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public int x;
+	public void y() {
+		x=null; /* null to primitive type */
+	}
+}

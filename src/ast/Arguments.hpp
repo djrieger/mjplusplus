@@ -14,7 +14,7 @@ namespace ast
 			uptr<vec<uptr<ast::Expression>>> arguments;
 		public:
 			Arguments();
-			Arguments(uptr<vec<uptr<ast::Expression>>>& arguments);
+			Arguments(uptr<vec<uptr<ast::Expression>>> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

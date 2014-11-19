@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "FieldDeclaration.hpp"
 
-ast::FieldDeclaration::FieldDeclaration(uptr<TypeIdent>& type_and_name) : type_and_name(std::move(type_and_name))
+ast::FieldDeclaration::FieldDeclaration(uptr<TypeIdent> type_and_name) : type_and_name(std::move(type_and_name))
 {
 
 }

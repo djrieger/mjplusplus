@@ -1,0 +1,35 @@
+#!/bin/sh
+
+if [ $# -lt 3 ] ; then
+	echo "Usage:" $0 "executable" "min" "max"
+fi
+
+exe=$1
+min=$2
+max=$3
+shift 2
+
+while [ $min -lt $max ] ; do
+	echo "class foo { public foo foo() {" > test.mj
+	now=$(( (min+max)/2 ))
+	for i in $(seq $now) ; do
+		echo -n "f(" >> test.mj
+	done
+	echo "\nnull" >> test.mj
+	for i in $(seq $now) ; do
+		echo -n ")" >> test.mj
+	done
+	echo ";\n} }" >>  test.mj
+	$exe test.mj
+	if [ $? -eq 0 ] ; then
+		if [ $min -eq $now ] ; then
+			min=$((min+1))
+		else
+			min=$now
+		fi
+	else
+		max=$now
+	fi
+	echo $min $now $max
+done
+rm test.mj

@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		main(new String[1]); /* illegal main call */
+	}
+}
+class String {}

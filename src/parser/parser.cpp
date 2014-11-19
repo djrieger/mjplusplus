@@ -4,7 +4,7 @@
 #include "../globals.hpp"
 #include "parser.hpp"
 
-Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages)
+Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages), current {Token::Token_type::TOKEN_ERROR, "", {0, 0}}
 {
 }
 
@@ -70,10 +70,10 @@ bool Parser::start()
 		printError("expected \"" + string_val + '"');
 	}
 
-	if (!r)
+	if (!r || errors_found)
 		std::cerr << "Error during compilation." << std::endl;
 
-	return r;
+	return r && !errors_found;
 }
 
 std::shared_ptr<ast::Program> Parser::getRoot()
@@ -81,7 +81,7 @@ std::shared_ptr<ast::Program> Parser::getRoot()
 	return astRoot;
 }
 
-void Parser::nextToken()
+void __attribute__ ((noinline)) Parser::nextToken()
 {
 	current = lexer.get_next_token();
 
@@ -115,17 +115,65 @@ void Parser::printError(std::string const& error_msg)
 void Parser::expect(Token::Token_type const& tokenType)
 {
 	if (current.token_type != tokenType)
-		throw tokenType;
+	{
+		errors_found = true;
+
+		if (!error_mode)
+		{
+			if (print_messages)
+				printError("expected " + lexer.describe(tokenType));
+
+			error_mode = true;
+		}
+
+		// skip until token found
+		do
+		{
+			if (current.token_type != Token::Token_type::TOKEN_EOF)
+				return;
+
+			nextToken();
+		}
+		while (current.token_type != tokenType);
+
+		nextToken();
+		error_mode = false;
+
+	}
 
 	nextToken();
 }
 
 void Parser::expect(Token::Token_type const& tokenType, std::string const& string_val)
 {
-	if (current.token_type != tokenType || current.string_value != string_val)
-		throw string_val;
+	if (current.token_type != tokenType || *current.string_value != string_val)
+	{
+		errors_found = true;
 
-	return nextToken();
+		if (!error_mode)
+		{
+			if (print_messages)
+				printError("expected \"" + string_val + '"');
+
+			error_mode = true;
+		}
+
+		// skip until token found
+		do
+		{
+			if (current.token_type != Token::Token_type::TOKEN_EOF)
+				return;
+
+			nextToken();
+		}
+		while (current.token_type != tokenType || *current.string_value != string_val);
+
+		nextToken();
+		error_mode = false;
+
+	}
+
+	nextToken();
 }
 
 // Program -> class ClassDeclaration Program | .
@@ -138,16 +186,15 @@ uptr<ast::Program> Parser::parseProgram()
 	{
 		nextToken();
 		// now current.string_value contains the name of the class:
-		auto className = std::make_unique<ast::Ident>(current.string_value);
+		auto className = std::make_unique<ast::Ident>(*current.string_value);
 		expect(Token::Token_type::TOKEN_IDENT);
 		expect(Token::Token_type::OPERATOR_LBRACE);
-		auto members = parseClassMembers();
+		classes->push_back(std::make_unique<ast::ClassDeclaration>(std::move(className), parseClassMembers()));
 		expect(Token::Token_type::OPERATOR_RBRACE);
-		classes->push_back(std::make_unique<ast::ClassDeclaration>(className, members));
 	}
 
 	expect(Token::Token_type::TOKEN_EOF);
-	return std::make_unique<ast::Program>(classes);
+	return std::make_unique<ast::Program>(std::move(classes));
 }
 
 // ClassMembers -> public ClassMember ClassMembers | .
@@ -166,11 +213,7 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 			classMembers->push_back(std::move(parseMainMethod()));
 		}
 		else
-		{
-
-			auto typeIdent = parseTypeIdent();
-			classMembers->push_back(std::move(parseFieldOrMethod(std::move(typeIdent))));
-		}
+			classMembers->push_back(std::move(parseFieldOrMethod()));
 	}
 
 	return classMembers;
@@ -179,46 +222,39 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 // MainMethod -> void IDENT ( String [ ] IDENT ) Block .
 uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
-	// build "void METHODNAME"
-	std::unique_ptr<ast::Type> voidType( new ast::BasicType(ast::Type::Primitive_type::VOID));
-	expect(Token::Token_type::KEYWORD_VOID);
-	auto mainMethodName = std::make_unique<ast::Ident>(current.string_value);
-	auto typeIdent = std::make_unique<ast::TypeIdent>(voidType, mainMethodName);
-
-	// expect "METHODNAME (String[]"
-	expect(Token::Token_type::TOKEN_IDENT);
+    // build "void METHODNAME"
+    std::unique_ptr<ast::Type> voidType( new ast::Type(ast::Type::Primitive_type::VOID));
+    expect(Token::Token_type::KEYWORD_VOID);
+    auto mainMethodName = std::make_unique<ast::Ident>(*current.string_value);
+    auto typeIdent = std::make_unique<ast::TypeIdent>(std::move(voidType), std::move(mainMethodName));
+    expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
+
+    // build "String[] PARAMETERNAME"
+    auto stringType = std::make_unique<ast::Ident>(*current.string_value);
+    auto type = std::make_unique<ast::Type>(std::move(stringType), 1);
 	expect(Token::Token_type::TOKEN_IDENT, "String");
 	expect(Token::Token_type::OPERATOR_LBRACKET);
 	expect(Token::Token_type::OPERATOR_RBRACKET);
-
-	// build "String[] PARAMETERNAME"
-	auto parameterName = std::make_unique<ast::Ident>(current.string_value);
-	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
-	auto basicType = std::make_unique<ast::BasicType>("String");
-	std::unique_ptr<ast::Type> parType( new ast::ArrayType(basicType, 1) );
-	parameters->push_back(std::make_unique<ast::TypeIdent>(parType, parameterName));
-
-	expect(Token::Token_type::TOKEN_IDENT);
+    auto parameterName = std::make_unique<ast::Ident>(*current.string_value);
+    expect(Token::Token_type::TOKEN_IDENT);
+    auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
+    parameters->push_back(std::make_unique<ast::TypeIdent>(std::move(type), std::move(parameterName)));
 	expect(Token::Token_type::OPERATOR_RPAREN);
 
-	auto block = parseBlock();
-
-	return std::make_unique<ast::MainMethodDeclaration>(typeIdent, parameters, block);
+	return std::make_unique<ast::MainMethodDeclaration>(std::move(typeIdent), std::move(parameters), parseBlock());
 }
 
 // TypeIdent -> Type IDENT
-// Type -> BasicType ArrayDecl .
 uptr<ast::TypeIdent> Parser::parseTypeIdent()
 {
 	auto type = parseType();
 
 	// retrieve variable name:
-	auto variable_name = std::make_unique<ast::Ident>(current.string_value);
+	auto variable_name = std::make_unique<ast::Ident>(*current.string_value);
 	expect(Token::Token_type::TOKEN_IDENT);
 
-	auto typeIdent = std::make_unique<ast::TypeIdent>(type, variable_name);
-	return typeIdent;
+	return std::make_unique<ast::TypeIdent>(std::move(type), std::move(variable_name));
 }
 
 // ArrayDecl -> [ ] ArrayDecl | .
@@ -236,9 +272,9 @@ int Parser::parseArrayDecl()
 	return dimension;
 }
 
-uptr<ast::BasicType> Parser::parseBasicType()
+// BasicType -> int | boolean | void | IDENT .
+uptr<ast::Type> Parser::parseBasicType()
 {
-	std::string class_name = "";
 	ast::Type::Primitive_type primitive_type = ast::Type::Primitive_type::NONE;
 
 	switch (current.token_type)
@@ -256,61 +292,49 @@ uptr<ast::BasicType> Parser::parseBasicType()
 			break;
 
 		case Token::Token_type::TOKEN_IDENT:
-			class_name = current.string_value;
+		{
+			auto class_name = std::make_unique<ast::Ident>(*current.string_value);
+			nextToken();
+			return std::make_unique<ast::Type>(std::move(class_name));
 			break;
+		}
 
 		default:
 			throw "expected Type";
-
 	}
 
-	nextToken();
-
-	if (class_name.empty())
-		return  std::make_unique<ast::BasicType>(primitive_type);
-	else
-		return std::make_unique<ast::BasicType>(class_name);
+    nextToken();
+        return  std::make_unique<ast::Type>(primitive_type);
 }
 
-// BasicType -> int | boolean | void | IDENT .
+// Type -> BasicType ArrayDecl .
 uptr<ast::Type> Parser::parseType()
 {
-	auto basicType = parseBasicType();
-
-	int dimension = parseArrayDecl();
-	uptr<ast::Type> type;
-
-	if (dimension > 0)
-		type = std::make_unique<ast::ArrayType>(basicType, dimension);
-	else
-		type = std::move(basicType);
-
-	return type;
+    auto type = parseBasicType();
+    int dimension = parseArrayDecl();
+    type->setDimension(dimension);
+    return type;
 }
 
 // FieldOrMethod -> Field | Method .
 // Field -> ; .
 // Method -> ( OptionalParameters ) Block .
-uptr<ast::ClassMember> Parser::parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent)
+uptr<ast::ClassMember> Parser::parseFieldOrMethod()
 {
-	uptr<ast::ClassMember> classMember;
+	auto typeIdent = parseTypeIdent();
 
 	if (current.token_type == Token::Token_type::OPERATOR_SEMICOLON)
 	{
-		classMember = std::make_unique<ast::FieldDeclaration>(typeIdent);
 		nextToken();
+		return std::make_unique<ast::FieldDeclaration>(std::move(typeIdent));
 	}
 	else
 	{
 		expect(Token::Token_type::OPERATOR_LPAREN);
 		auto parameters = parseOptionalParameters();
 		expect(Token::Token_type::OPERATOR_RPAREN);
-		auto block = parseBlock();
-
-		classMember = std::make_unique<ast::MethodDeclaration>(typeIdent, parameters, block);;
+		return std::make_unique<ast::MethodDeclaration>(std::move(typeIdent), std::move(parameters), parseBlock());
 	}
-
-	return classMember;
 }
 
 // OptionalParameters -> Parameters | .
@@ -387,7 +411,7 @@ uptr<ast::Statement> Parser::parseStatement()
 		{
 			auto expr = parseExpression();
 			expect(Token::Token_type::OPERATOR_SEMICOLON);
-			return std::make_unique<ast::ExpressionStatement>(expr);
+			return std::make_unique<ast::ExpressionStatement>(std::move(expr));
 			break;
 		}
 
@@ -417,7 +441,7 @@ uptr<ast::Statement> Parser::parseBlock()
 
 	//If there are no block_statements we can skip the block.
 	if (!statements->empty())
-		return std::make_unique<ast::Block>(statements);
+		return std::make_unique<ast::Block>(std::move(statements));
 	else
 	{
 		uptr<ast::Statement> stmt;
@@ -430,10 +454,6 @@ uptr<ast::Statement> Parser::parseBlockStatement()
 {
 	// Statement first = IDENT, {, (, ;, while, if, return, -, !, null, false, true, INTEGER_LITERAL, this, new
 	// LVDS first =      IDENT, void, int, boolean
-
-	Token idToken;
-	Token maybeLBracketToken;
-	Token maybeRBracketToken;
 
 	switch (current.token_type)
 	{
@@ -461,9 +481,10 @@ uptr<ast::Statement> Parser::parseBlockStatement()
 			break;
 
 		case Token::Token_type::TOKEN_IDENT:
-			idToken = current;
+		{
+			Token idToken = current;
 			nextToken();
-			maybeLBracketToken = current;
+			Token maybeLBracketToken = current;
 
 			if (maybeLBracketToken.token_type == Token::Token_type::TOKEN_IDENT)
 			{
@@ -480,7 +501,7 @@ uptr<ast::Statement> Parser::parseBlockStatement()
 			else
 			{
 				nextToken();
-				maybeRBracketToken = current;
+				Token maybeRBracketToken = current;
 				bool isRBracket = maybeRBracketToken.token_type == Token::Token_type::OPERATOR_RBRACKET;
 				lexer.unget_token(maybeRBracketToken);
 				lexer.unget_token(maybeLBracketToken);
@@ -493,6 +514,7 @@ uptr<ast::Statement> Parser::parseBlockStatement()
 			}
 
 			break;
+		}
 
 		default:
 			throw "expected Statement";
@@ -512,11 +534,10 @@ uptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 	if (current.token_type == Token::Token_type::OPERATOR_EQ)
 	{
 		nextToken();
-		auto expression = parseExpression();
-		lvdStatement = std::make_unique<ast::LVDStatement>(type_ident, expression);
+		lvdStatement = std::make_unique<ast::LVDStatement>(std::move(type_ident), parseExpression());
 	}
 	else
-		lvdStatement = std::make_unique<ast::LVDStatement>(type_ident);
+		lvdStatement = std::make_unique<ast::LVDStatement>(std::move(type_ident));
 
 	expect(Token::Token_type::OPERATOR_SEMICOLON);
 	return lvdStatement;
@@ -535,11 +556,10 @@ uptr<ast::IfStatement> Parser::parseIfStatement()
 	if (current.token_type == Token::Token_type::KEYWORD_ELSE)
 	{
 		nextToken();
-		auto elseStmt = parseStatement();
-		return std::make_unique<ast::IfStatement>(cond, then, elseStmt);
+		return std::make_unique<ast::IfStatement>(std::move(cond), std::move(then), parseStatement());
 	}
 	else
-		return std::make_unique<ast::IfStatement>(cond, then);
+		return std::make_unique<ast::IfStatement>(std::move(cond), std::move(then));
 }
 
 // WhileStatement -> ( Expression ) Statement .
@@ -548,8 +568,7 @@ uptr<ast::WhileStatement> Parser::parseWhileStatement()
 	expect(Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
 	expect(Token::Token_type::OPERATOR_RPAREN);
-	auto stmt = parseStatement();
-	return std::make_unique<ast::WhileStatement>(cond, stmt);
+	return std::make_unique<ast::WhileStatement>(std::move(cond), parseStatement());
 }
 
 // ReturnStatement -> OptionalExpression ; .
@@ -561,7 +580,7 @@ uptr<ast::ReturnStatement> Parser::parseReturnStatement()
 	{
 		auto expr = parseExpression();
 		expect(Token::Token_type::OPERATOR_SEMICOLON);
-		return std::make_unique<ast::ReturnStatement>(expr);
+		return std::make_unique<ast::ReturnStatement>(std::move(expr));
 	}
 
 	expect(Token::Token_type::OPERATOR_SEMICOLON);
@@ -619,9 +638,8 @@ uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 
 		Token::Token_type t = current.token_type;
 		nextToken();
-		auto exprRHS = precedenceClimb(prec);
 
-		expr = ast::be::BinaryExpression::createBinaryExpr(expr, exprRHS, t);
+		expr = ast::be::BinaryExpression::createBinaryExpr(std::move(expr), precedenceClimb(prec), t);
 		prec = operator_precs(current.token_type);
 	}
 
@@ -662,7 +680,7 @@ uptr<ast::Expression> Parser::parseUnaryExpression()
 	if (postfix_ops->empty())
 		postfixExpr = std::move(primaryExpr);
 	else
-		postfixExpr = std::make_unique<ast::PostfixExpression>(primaryExpr, postfix_ops);
+		postfixExpr = std::make_unique<ast::PostfixExpression>(std::move(primaryExpr), std::move(postfix_ops));
 
 	//TODO: chose the correct unary-operator subclass
 
@@ -670,7 +688,7 @@ uptr<ast::Expression> Parser::parseUnaryExpression()
 	if (unary_operators->empty())
 		return postfixExpr;
 	else
-		return std::make_unique<ast::UnaryExpression>(postfixExpr, unary_operators);
+		return std::make_unique<ast::UnaryExpression>(std::move(postfixExpr), std::move(unary_operators));
 }
 
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
@@ -703,13 +721,13 @@ uptr<ast::Expression> Parser::parsePrimaryExpression()
 			break;
 
 		case Token::Token_type::TOKEN_INT_LIT:
-			pe = std::make_unique<ast::pe::Integer>(current.string_value);
+			pe = std::make_unique<ast::pe::Integer>(*current.string_value);
 			nextToken();
 			break;
 
 		case Token::Token_type::TOKEN_IDENT:
 		{
-			auto ident = std::make_unique<ast::Ident>(current.string_value);
+			auto ident = std::make_unique<ast::Ident>(*current.string_value);
 			nextToken();
 
 			if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
@@ -717,10 +735,10 @@ uptr<ast::Expression> Parser::parsePrimaryExpression()
 				nextToken();
 				auto arguments = parseArguments();
 				expect(Token::Token_type::OPERATOR_RPAREN);
-				pe = std::make_unique<ast::pe::MethodInvocation>(ident, arguments);
+				pe = std::make_unique<ast::pe::MethodInvocation>(std::move(ident), std::move(arguments));
 			}
 			else
-				pe = std::make_unique<ast::pe::Ident>(ident);
+				pe = std::make_unique<ast::pe::Ident>(std::move(ident));
 
 			break;
 		}
@@ -755,39 +773,32 @@ uptr<ast::Expression> Parser::parseNewObjectOrNewArrayExpression()
 	lexer.unget_token(next);
 	current = id;
 
-	uptr<ast::Expression> pe;
-
 	if (next.token_type == Token::Token_type::OPERATOR_LPAREN)
-	{
-		auto newObjectExpression = parseNewObjectExpression();
-		return std::move(newObjectExpression);
-	}
+		return parseNewObjectExpression();
 	else
-		pe = parseNewArrayExpression();
-
-	return pe;
+		return parseNewArrayExpression();
 }
 
 // NewObjectExpression -> IDENT ( ) .
 uptr<ast::Expression> Parser::parseNewObjectExpression()
 {
-	auto ident = std::make_unique<ast::Ident>(current.string_value);
+	auto ident = std::make_unique<ast::Ident>(*current.string_value);
 	expect(Token::Token_type::TOKEN_IDENT);
 	expect(Token::Token_type::OPERATOR_LPAREN);
 	expect(Token::Token_type::OPERATOR_RPAREN);
-	return std::make_unique<ast::pe::NewObjectExpression>(ident);
+	return std::make_unique<ast::pe::NewObjectExpression>(std::move(ident));
 }
 
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
 uptr<ast::Expression> Parser::parseNewArrayExpression()
 {
-	auto basicType = parseBasicType();
-	expect(Token::Token_type::OPERATOR_LBRACKET);
-	auto expression = parseExpression();
-	expect(Token::Token_type::OPERATOR_RBRACKET);
-	int dimension = parseOptionalBrackets();
+    auto type = parseBasicType();
+    expect(Token::Token_type::OPERATOR_LBRACKET);
+    auto expression = parseExpression();
+    expect(Token::Token_type::OPERATOR_RBRACKET);
+    type->setDimension(parseOptionalBrackets() + 1);
 
-	return std::make_unique<ast::pe::NewArrayExpression>(basicType, expression, dimension + 1);
+    return std::make_unique<ast::pe::NewArrayExpression>(std::move(type), std::move(expression));
 }
 
 // OptionalBrackets -> [ ] OptionalBrackets
@@ -831,7 +842,7 @@ uptr<ast::Arguments> Parser::parseArguments()
 		args->push_back(std::move(parseExpression()));
 
 		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
-			return std::make_unique<ast::Arguments>(args);
+			return std::make_unique<ast::Arguments>(std::move(args));
 		else
 			nextToken();
 	}
@@ -839,14 +850,14 @@ uptr<ast::Arguments> Parser::parseArguments()
 	if (!isFirstArgument)
 		throw "trailing comma";
 
-	return std::make_unique<ast::Arguments>(args);
+	return std::make_unique<ast::Arguments>(std::move(args));
 }
 
 // MethodInvocationOrFieldAccess -> IDENT MethodInvocation | .
 // MethodInvocation -> ( Arguments ) .
 std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 {
-	auto id = std::make_unique<ast::Ident>(current.string_value);
+	auto id = std::make_unique<ast::Ident>(*current.string_value);
 	expect(Token::Token_type::TOKEN_IDENT);
 
 	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
@@ -854,10 +865,10 @@ std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 		nextToken();
 		auto args = parseArguments();
 		expect(Token::Token_type::OPERATOR_RPAREN);
-		return std::make_unique<ast::MethodInvocation>(id, args);
+		return std::make_unique<ast::MethodInvocation>(std::move(id), std::move(args));
 	}
 	else
-		return std::make_unique<ast::FieldAccess>(id);
+		return std::make_unique<ast::FieldAccess>(std::move(id));
 }
 
 // PostfixOps -> PostfixOp PostfixOps | .
@@ -877,8 +888,7 @@ uptr<vec<uptr<ast::PostfixOp>>> Parser::parsePostfixOps()
 		else if (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
 		{
 			nextToken();
-			auto expr = parseExpression();
-			postfixops->push_back(std::make_unique<ast::ArrayAccess>(expr));
+			postfixops->push_back(std::make_unique<ast::ArrayAccess>(parseExpression()));
 			expect(Token::Token_type::OPERATOR_RBRACKET);
 		}
 		else

@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "ReturnStatement.hpp"
 
-ast::ReturnStatement::ReturnStatement(uptr<Expression>& expression):
+ast::ReturnStatement::ReturnStatement(uptr<Expression> expression):
 	expression(std::move(expression))
 {
 

@@ -26,9 +26,7 @@
 #include "../ast/BinaryExpression.hpp"
 #include "../ast/PrimaryExpression.hpp"
 #include "../ast/Type.hpp"
-#include "../ast/BasicType.hpp"
 #include "../ast/TypeIdent.hpp"
-#include "../ast/ArrayType.hpp"
 
 class Parser
 {
@@ -51,6 +49,15 @@ class Parser
 		std::shared_ptr<ast::Program> getRoot();
 
 	private:
+		/**
+		 * Whether we are in error mode (true between invalid token and next occurrence of expected token)
+		 */
+		bool error_mode = false;
+		/**
+		 * False at start. Set to true when at least one parser error has been detected.
+		 */
+		bool errors_found = false;
+
 		std::shared_ptr<ast::Program> astRoot;
 
 		Lexer& lexer;
@@ -91,12 +98,12 @@ class Parser
 
 		uptr<ast::TypeIdent> parseTypeIdent();
 		uptr<ast::Type> parseType();
-		uptr<ast::BasicType> parseBasicType();
+		uptr<ast::Type> parseBasicType();
 		int parseArrayDecl();
 		uptr<ast::Expression> parseNewArrayExpression();
 		int parseOptionalBrackets();
 
-		uptr<ast::ClassMember> parseFieldOrMethod(uptr<ast::TypeIdent> typeIdent);
+		uptr<ast::ClassMember> parseFieldOrMethod();
 		uptr<vec<uptr<ast::TypeIdent>>> parseOptionalParameters();
 		uptr<ast::Arguments> parseArguments();
 

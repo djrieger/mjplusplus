@@ -1,0 +1,8 @@
+class one {
+	public static void main(String[] a) {}
+	public one succ;
+	public void succ(one one) {
+		succ(one);
+		succ = one.succ.succ;
+	}
+}

@@ -14,7 +14,7 @@ namespace ast
 			uptr<vec<uptr<PostfixOp>>> postfix_op;
 
 		public:
-			PostfixExpression(uptr<Expression>& child, uptr<vec<uptr<PostfixOp>>>& postfix_op);
+			PostfixExpression(uptr<Expression> child, uptr<vec<uptr<PostfixOp> > > postfix_op);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 }
