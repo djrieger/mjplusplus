@@ -1,0 +1,9 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		int y;
+		if (true) {
+			int y;/* illegal shadowing */
+		}
+	}
+}

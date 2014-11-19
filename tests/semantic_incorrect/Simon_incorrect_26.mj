@@ -1,0 +1,6 @@
+class a {
+	public static void main(String[] a) {}
+	public int x() {
+		return true; /* wrong return type */
+	}
+}
