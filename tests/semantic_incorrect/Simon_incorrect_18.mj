@@ -1,0 +1,14 @@
+class a {
+	public static void main(String[] a) {}
+	public int deepIf() {
+		if (true) {
+			if (true) {
+				if (true) return 1;
+			} else return 2;
+		} else return 3;
+		while (true) {
+			return 4;
+		}
+		/* no return on then-then-else-(not while loop)-path */
+	}
+}

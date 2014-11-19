@@ -1,0 +1,8 @@
+class System {
+	public System System;
+	public System out;
+	public static void main(String[] a) {}
+	public void println() {
+		System.out.println();
+	}
+}

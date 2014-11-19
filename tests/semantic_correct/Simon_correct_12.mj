@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public int c() {
+		boolean d = new boolean[1][][0][0];
+		/* throw */ return 42;
+	}
+}

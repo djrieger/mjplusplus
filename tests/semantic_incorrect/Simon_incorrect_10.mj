@@ -1,0 +1,9 @@
+class a {
+	public static void main(String[] a) {}
+	public a System;
+	public a out;
+	public void println() {
+		System.out.println(42);
+		/* System is defined and println(int) is shadowed */
+	}
+}

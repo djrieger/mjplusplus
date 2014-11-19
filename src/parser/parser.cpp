@@ -70,10 +70,10 @@ bool Parser::start()
 		printError("expected \"" + string_val + '"');
 	}
 
-	if (!r)
+	if (!r || errors_found)
 		std::cerr << "Error during compilation." << std::endl;
 
-	return r;
+	return r && !errors_found;
 }
 
 std::shared_ptr<ast::Program> Parser::getRoot()
@@ -94,7 +94,7 @@ void Parser::printError(std::string const& error_msg)
 	if (print_messages)   // only print error messages if they are wanted
 	{
 		std::cerr << "at line " << current.position.first << ", column " << current.position.second <<
-		          ", parsing \"" << *current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
+		          ", parsing \"" << current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
 		          error_msg << std::endl;
 
 		// read current line
@@ -115,7 +115,31 @@ void Parser::printError(std::string const& error_msg)
 void Parser::expect(Token::Token_type const& tokenType)
 {
 	if (current.token_type != tokenType)
-		throw tokenType;
+	{
+		errors_found = true;
+
+		if (!error_mode)
+		{
+			if (print_messages)
+				printError("expected " + lexer.describe(tokenType));
+
+			error_mode = true;
+		}
+
+		// skip until token found
+		do
+		{
+			if (current.token_type != Token::Token_type::TOKEN_EOF)
+				return;
+
+			nextToken();
+		}
+		while (current.token_type != tokenType);
+
+		nextToken();
+		error_mode = false;
+
+	}
 
 	nextToken();
 }
@@ -123,9 +147,33 @@ void Parser::expect(Token::Token_type const& tokenType)
 void Parser::expect(Token::Token_type const& tokenType, std::string const& string_val)
 {
 	if (current.token_type != tokenType || *current.string_value != string_val)
-		throw string_val;
+	{
+		errors_found = true;
 
-	return nextToken();
+		if (!error_mode)
+		{
+			if (print_messages)
+				printError("expected \"" + *string_val + '"');
+
+			error_mode = true;
+		}
+
+		// skip until token found
+		do
+		{
+			if (current.token_type != Token::Token_type::TOKEN_EOF)
+				return;
+
+			nextToken();
+		}
+		while (current.token_type != tokenType || *current.string_value != string_val);
+
+		nextToken();
+		error_mode = false;
+
+	}
+
+	nextToken();
 }
 
 // Program -> class ClassDeclaration Program | .

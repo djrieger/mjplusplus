@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public a System;
+	public void b() {
+		System.out.println(42);/* System defined, but not out */
+	}
+}

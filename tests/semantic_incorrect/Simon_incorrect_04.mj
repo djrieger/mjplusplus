@@ -1,0 +1,4 @@
+class a {
+	public static void main(String[] a) {}
+	public int main() {}/* two mains: overloading special case */
+}

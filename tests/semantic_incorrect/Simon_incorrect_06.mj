@@ -1,0 +1,3 @@
+class a {
+	public static void x(String[] a) {}/* static method is not main */
+}

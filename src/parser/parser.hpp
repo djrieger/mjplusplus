@@ -51,6 +51,15 @@ class Parser
 		std::shared_ptr<ast::Program> getRoot();
 
 	private:
+		/**
+		 * Whether we are in error mode (true between invalid token and next occurrence of expected token)
+		 */
+		bool error_mode = false;
+		/**
+		 * False at start. Set to true when at least one parser error has been detected.
+		 */
+		bool errors_found = false;
+
 		std::shared_ptr<ast::Program> astRoot;
 
 		Lexer& lexer;
