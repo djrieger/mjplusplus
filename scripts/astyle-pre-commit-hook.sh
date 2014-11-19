@@ -22,10 +22,9 @@ if [ -z "${CHANGEDFILES}" ]; then
   echo "No files found for hook-astyling"
 else
   echo "Hook-astyling files..."
-  echo "$CHANGEDFILES" 
   # Only perform commit if astyle completes successful
-  set +e
-  astyle --options=config/astyle.rc ${CHANGEDFILES}
-  set -e
-  git add $CHANGEDFILES
+  for i in ${CHANGEDFILES} ; do
+    [ -e $i ] && astyle --options=config/astyle.rc $i || echo $i deleted && continue
+    git add $i
+  done
 fi
