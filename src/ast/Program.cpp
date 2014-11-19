@@ -3,7 +3,7 @@
 
 #include "Program.hpp"
 
-ast::Program::Program(uptr<vec<uptr<ClassDeclaration>>>& classes) : classes(std::move(classes))
+ast::Program::Program(uptr<vec<uptr<ClassDeclaration>>> classes) : classes(std::move(classes))
 {
 
 }

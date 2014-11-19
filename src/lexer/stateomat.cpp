@@ -150,18 +150,18 @@ Stateomat::Stateomat()
 		{Token::Token_type::TOKEN_ERROR, "lexer error"}
 	};
 
-	for (auto it = keywords.begin(); it != keywords.end(); it++)
-		reverse[it->second] = '"' + it->first + '"';
+	for (auto& kw : keywords)
+		reverse[kw.second] = '"' + kw.first + '"';
 
 	for (int i = 4; i <= 15; i++)
 	{
-		for (auto ops : operators[i])
+		for (auto& ops : operators[i])
 			reverse[ops.second] = '"' + ops.first + '"';
 	}
 
 	for (int i = 21; i <= 23; i++)
 	{
-		for (auto ops : operators[i])
+		for (auto& ops : operators[i])
 			reverse[ops.second] = '"' + ops.first + '"';
 	}
 }

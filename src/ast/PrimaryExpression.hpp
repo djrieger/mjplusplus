@@ -30,7 +30,7 @@ namespace ast
 		class Ident : public PrimaryExpression
 		{
 			public:
-				Ident(uptr<ast::Ident>& identifier);
+				Ident(uptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int ident, bool = false) const;
 			protected:
 				uptr<ast::Ident> identifier;
@@ -54,7 +54,7 @@ namespace ast
 		class Integer : public PrimaryExpression
 		{
 			private:
-				std::string string_value;
+				std::string const& string_value;
 			public:
 				Integer(std::string const& string_value);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
@@ -63,7 +63,7 @@ namespace ast
 		class NewArrayExpression : public PrimaryExpression
 		{
 			public:
-				NewArrayExpression(uptr<Type>& type, uptr<Expression>& expr);
+				NewArrayExpression(uptr<Type> type, uptr<Expression> expr);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
 				uptr<Type> type;
@@ -73,7 +73,7 @@ namespace ast
 		class NewObjectExpression : public PrimaryExpression
 		{
 			public:
-				NewObjectExpression(uptr<ast::Ident>& identifier);
+				NewObjectExpression(uptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
 				uptr<ast::Ident> identifier;
@@ -82,7 +82,7 @@ namespace ast
 		class MethodInvocation : public Ident
 		{
 			public:
-				MethodInvocation(uptr<ast::Ident>& identifier, uptr<Arguments>& arguments);
+				MethodInvocation(uptr<ast::Ident> identifier, uptr<Arguments> arguments);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
 				uptr<Arguments> arguments;

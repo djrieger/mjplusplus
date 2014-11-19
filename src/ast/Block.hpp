@@ -13,7 +13,7 @@ namespace ast
 			uptr<vec<uptr<Statement>>> block_statements;
 
 		public:
-			Block(uptr<vec<uptr<Statement>>>& block_statements);
+			Block(uptr<vec<uptr<Statement> > > block_statements);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual Statement::Type getType() const;
 	};

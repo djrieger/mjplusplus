@@ -1,9 +1,9 @@
 #include "Type.hpp"
 
 ast::Type::Type(Type::Primitive_type primitive_type): primitive_type(primitive_type), dimension(0) {}
-ast::Type::Type(uptr<Ident> &class_name): primitive_type(Type::Primitive_type::NONE), class_name(std::move(class_name)), dimension(0) {}
+ast::Type::Type(uptr<Ident> class_name): primitive_type(Type::Primitive_type::NONE), class_name(std::move(class_name)), dimension(0) {}
 ast::Type::Type(Type::Primitive_type primitive_type, int dimension): primitive_type(primitive_type), dimension(dimension) {}
-ast::Type::Type(uptr<Ident> &class_name, int dimension): primitive_type(Type::Primitive_type::NONE), class_name(std::move(class_name)), dimension(dimension) {}
+ast::Type::Type(uptr<Ident> class_name, int dimension): primitive_type(Type::Primitive_type::NONE), class_name(std::move(class_name)), dimension(dimension) {}
 
 void ast::Type::toString(std::ostream& out, unsigned int indent, bool special) const
 {

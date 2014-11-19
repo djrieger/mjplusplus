@@ -14,7 +14,7 @@ namespace ast
 			uptr<vec<uptr<ClassDeclaration>>> classes;
 
 		public:
-			Program(uptr<vec<uptr<ClassDeclaration>>>& classes);
+			Program(uptr<vec<uptr<ClassDeclaration>>> classes);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 

@@ -15,8 +15,8 @@ namespace ast
 			uptr<Expression> init_expr;
 
 		public:
-			LVDStatement(uptr<TypeIdent>& type_ident);
-			LVDStatement(uptr<TypeIdent>& type_ident, uptr<Expression>& init_expr);
+			LVDStatement(uptr<TypeIdent> type_ident);
+			LVDStatement(uptr<TypeIdent> type_ident, uptr<Expression> init_expr);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }
