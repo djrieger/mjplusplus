@@ -153,7 +153,7 @@ void Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 		if (!error_mode)
 		{
 			if (print_messages)
-				printError("expected \"" + *string_val + '"');
+				printError("expected \"" + string_val + '"');
 
 			error_mode = true;
 		}
