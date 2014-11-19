@@ -1,0 +1,13 @@
+class a {
+	public static void main(String[] a) {}
+	public int a(a a) {
+		return a.a(a);
+	}
+}
+class b {
+	public int a() {
+		a x = null;
+		a[] y;
+		y = null;
+	}
+}

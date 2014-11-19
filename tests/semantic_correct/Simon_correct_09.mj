@@ -1,0 +1,11 @@
+class a {
+	public static void main(String[] a) {}
+	public void b() {
+		int y=0;
+		while(y<(y+1)) {
+			return;
+		}
+		System.out.println(7);
+		boolean b=true==(1==2);
+	}
+}

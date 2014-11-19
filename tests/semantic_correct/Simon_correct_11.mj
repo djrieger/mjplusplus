@@ -1,0 +1,20 @@
+class String {
+	public static void main(String[] a) {}
+}
+class a {
+	public a a;
+	public a a(a a) {
+		a.a = a.a;
+		return a=a.a.a().a();
+	}
+	public String b;
+	public a b(int b) {
+		b=7;
+		while (false) {
+			int a;
+			a=8;
+		}
+		a=a(a);
+		return this;
+	}
+}
