@@ -47,71 +47,91 @@ int main(int argc, const char** argv)
 		return EXIT_FAILURE;
 	}
 
-	std::string file_name = parse.nonOption(0);
-	Stateomat stateomat;
+	// iterate over options to detect if multiple options are specified
+	int num_options = 0;
 
-	if (options[DUMPLEXGRAPH])
+	for (int begin = HELP; begin <= CHECK; ++begin)
+		num_options += options[begin] ? 1 : 0;
+
+	// require exactly one of the options
+	if (num_options <= 1)
 	{
-		//Stateomat stateomat;
+		if (argc - num_options != 1)
+		{
+			std::cout << "Missing file." << std::endl;
+			return EXIT_FAILURE;
+		}
+
+		std::string file_name = argv[argc - 1];
+		Stateomat stateomat;
+
+		if (options[DUMPLEXGRAPH])
+		{
+			try
+			{
+				stateomat.dump_graph(file_name);
+			}
+			catch (std::string e)
+			{
+				std::cerr << e << std::endl;
+			}
+
+			return EXIT_SUCCESS;
+		}
+
 		try
 		{
-			stateomat.dump_graph(file_name);
-		}
-		catch (std::string e)
-		{
-			std::cerr << e << std::endl;
-		}
-
-		return EXIT_SUCCESS;
-	}
-
-	try
-	{
-		Lexer lexer(file_name.c_str(), stateomat);
+			Lexer lexer(file_name.c_str(), stateomat);
 
 
-		if (options[LEXTEST])
-		{
-			Token t(lexer.get_next_token());
-
-			while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF)
+			if (options[LEXTEST])
 			{
-				t.print();
-				t = lexer.get_next_token();
+				Token t(lexer.get_next_token());
+
+				while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF)
+				{
+					t.print();
+					t = lexer.get_next_token();
+				}
+
+				if (t.token_type != Token::Token_type::TOKEN_EOF)
+				{
+					std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
+					return EXIT_FAILURE;
+				}
+
+				return EXIT_SUCCESS;
 			}
 
-			if (t.token_type != Token::Token_type::TOKEN_EOF)
+			if (options[CHECK])
 			{
-				std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
+				std::cout << "Not implemented yet, exiting..." << std::endl;
+				return EXIT_SUCCESS;
+			}
+
+			Parser parser(lexer, true);
+			bool valid = parser.start();
+
+			if (!valid)
 				return EXIT_FAILURE;
-			}
-			t.print();
+
+			if (options[PRINT_AST])
+				parser.getRoot()->toString(std::cout, 0);
 
 			return EXIT_SUCCESS;
-		}
 
-		if (options[CHECK])
+		}
+		catch (std::string msg)
 		{
-			std::cout << "Not implemented yet, exiting..." << std::endl;
-			return EXIT_SUCCESS;
-		}
-
-		Parser parser(lexer, true);
-		bool valid = parser.start();
-
-		if (!valid)
+			std::cout << msg << std::endl;
+			option::printUsage(std::cout, usage);
 			return EXIT_FAILURE;
-
-		if (options[PRINT_AST])
-			parser.getRoot()->toString(std::cout, 0);
-
-		return EXIT_SUCCESS;
+		}
 
 	}
-	catch (std::string msg)
+	else
 	{
-		std::cout << msg << std::endl;
+		std::cout << "You can only specify up to 1 option. See --help for usage." << std::endl;
 		return EXIT_FAILURE;
 	}
-
 }

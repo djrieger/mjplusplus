@@ -1,5 +1,5 @@
-#ifndef FIELDACCESS_H
-#define FIELDACCESS_H
+#ifndef FIELDACCESS_HPP
+#define FIELDACCESS_HPP
 
 #include "PostfixOp.hpp"
 #include "Ident.hpp"
@@ -12,7 +12,7 @@ namespace ast
 			uptr<Ident> field_name;
 
 		public:
-			FieldAccess(uptr<Ident>& field_name);
+			FieldAccess(uptr<Ident> field_name);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

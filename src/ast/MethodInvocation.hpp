@@ -17,7 +17,7 @@ namespace ast
 			uptr<Arguments> arguments;
 
 		public:
-			MethodInvocation(uptr<Ident>& method_name, uptr<Arguments>& arguments);
+			MethodInvocation(uptr<Ident> method_name, uptr<Arguments> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

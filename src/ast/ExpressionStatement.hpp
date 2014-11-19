@@ -12,7 +12,7 @@ namespace ast
 			uptr<Expression> expression;
 
 		public:
-			ExpressionStatement(uptr<Expression>& expr);
+			ExpressionStatement(uptr<Expression> expr);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }
