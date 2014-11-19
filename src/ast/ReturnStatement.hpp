@@ -14,7 +14,7 @@ namespace ast
 
 		public:
 			ReturnStatement();
-			ReturnStatement(uptr<Expression>& expression);
+			ReturnStatement(uptr<Expression> expression);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

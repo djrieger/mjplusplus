@@ -7,7 +7,7 @@
 
 namespace ast
 {
-	ClassDeclaration::ClassDeclaration(uptr<Ident>& class_name, uptr<vec<uptr<ClassMember>>>& members) : class_name(std::move(class_name)), members(std::move(members))
+	ClassDeclaration::ClassDeclaration(uptr<Ident> class_name, uptr<vec<uptr<ClassMember> > > members) : class_name(std::move(class_name)), members(std::move(members))
 	{
 		;
 	}

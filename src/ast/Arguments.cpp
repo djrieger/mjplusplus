@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "Arguments.hpp"
 
-ast::Arguments::Arguments(uptr<vec<uptr<Expression> > >& arguments) : arguments(std::move(arguments))
+ast::Arguments::Arguments(uptr<vec<uptr<Expression> > > arguments) : arguments(std::move(arguments))
 {
 
 }
