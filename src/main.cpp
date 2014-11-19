@@ -85,6 +85,7 @@ int main(int argc, const char** argv)
 				std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
 				return EXIT_FAILURE;
 			}
+			t.print();
 
 			return EXIT_SUCCESS;
 		}
