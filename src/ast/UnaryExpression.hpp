@@ -19,7 +19,7 @@ namespace ast
 			};
 
 			//We could replace the unary-operator vector to a token_type vector to move the conversion into this class.
-			UnaryExpression(uptr<Expression>& child, uptr<vec<Unary_Operator>>& unary_operators);
+			UnaryExpression(uptr<Expression> child, uptr<vec<Unary_Operator>> unary_operators);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 
 		private:

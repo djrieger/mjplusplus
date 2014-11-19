@@ -1,5 +1,5 @@
-#ifndef EXPRESSION_H
-#define EXPRESSION_H
+#ifndef EXPRESSION_HPP
+#define EXPRESSION_HPP
 
 #include "Node.hpp"
 #include "../lexer/token.hpp"

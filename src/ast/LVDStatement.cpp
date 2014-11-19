@@ -1,12 +1,12 @@
 #include "../globals.hpp"
 #include "LVDStatement.hpp"
 
-ast::LVDStatement::LVDStatement(uptr<TypeIdent>& type_ident)
+ast::LVDStatement::LVDStatement(uptr<TypeIdent> type_ident)
 	: type_ident(std::move(type_ident))
 {
 
 }
-ast::LVDStatement::LVDStatement(uptr<TypeIdent>& type_ident, uptr<Expression>& init_expr)
+ast::LVDStatement::LVDStatement(uptr<TypeIdent> type_ident, uptr<Expression> init_expr)
 	: type_ident(std::move(type_ident)), init_expr(std::move(init_expr))
 {
 	;

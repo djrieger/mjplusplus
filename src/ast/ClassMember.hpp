@@ -1,5 +1,5 @@
-#ifndef CLASSMEMBER_H
-#define CLASSMEMBER_H
+#ifndef CLASSMEMBER_HPP
+#define CLASSMEMBER_HPP
 
 #include "Node.hpp"
 

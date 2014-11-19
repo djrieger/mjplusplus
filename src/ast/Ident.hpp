@@ -9,7 +9,7 @@ namespace ast
 	class Ident : public Node
 	{
 		private:
-			std::string string_value;
+			std::string const& string_value;
 
 		public:
 			Ident(std::string const& string_value);
