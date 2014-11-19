@@ -81,7 +81,7 @@ std::shared_ptr<ast::Program> Parser::getRoot()
 	return astRoot;
 }
 
-void Parser::nextToken()
+void __attribute__ ((noinline)) Parser::nextToken()
 {
 	current = lexer.get_next_token();
 
