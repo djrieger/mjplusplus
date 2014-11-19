@@ -25,7 +25,7 @@ else
   echo "$CHANGEDFILES" 
   # Only perform commit if astyle completes successful
   set +e
-  #astyle --options=config/astyle.rc ${CHANGEDFILES}
+  astyle --options=config/astyle.rc ${CHANGEDFILES}
   set -e
   git add $CHANGEDFILES
 fi
