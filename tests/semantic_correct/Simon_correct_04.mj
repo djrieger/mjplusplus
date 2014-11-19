@@ -1,0 +1,9 @@
+class a {
+	public static void main(String[] a) {}
+	public int chaos() {
+		boolean b= - -1==0==5<4;
+		int x=5*4+new int[7+1][1];
+		b=true != false;
+		return chaos();
+	}
+}

@@ -3,6 +3,6 @@ class one {
 	public one succ;
 	public void succ(one one) {
 		succ(one);
-		one.succ.succ;
+		succ = one.succ.succ;
 	}
 }
