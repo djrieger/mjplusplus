@@ -3,7 +3,7 @@
 PROHIBITEDEMAILHASHES="f2151a35773b112c3cdec537203dac46 e9ff8469316bf427550ef651afbb8c3f"
 GITUSEREMAIL=$(git config user.email)
 
-which md5
+which md5 > /dev/null 
 if [ $? -eq 0 ]; then
 	GITUSEREMAILHASH=$(md5 -qs ${GITUSEREMAIL})
 else
