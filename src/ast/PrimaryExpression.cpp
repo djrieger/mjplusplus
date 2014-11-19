@@ -46,10 +46,9 @@ namespace ast
 		}
 
 
-		NewArrayExpression::NewArrayExpression(uptr<BasicType>& basic_type, uptr<Expression>& expr, int dimension) :
-			basic_type(std::move(basic_type)),
-			expr(std::move(expr)),
-			dimension(dimension)
+		NewArrayExpression::NewArrayExpression(uptr<Type>& type, uptr<Expression>& expr) :
+			type(std::move(type)),
+			expr(std::move(expr))
 		{
 
 		}
@@ -57,17 +56,7 @@ namespace ast
 		void NewArrayExpression::toString(std::ostream& out, unsigned int indent, bool) const
 		{
 			out << "(new ";
-			basic_type->toString(out, indent);
-			out << '[';
-			expr->toString(out, indent, true);
-			out << ']';
-
-			if (dimension > 1)
-			{
-				for (int i = 0; i < dimension - 1; ++i)
-					out << "[]";
-			}
-
+			type->toString(out, indent, &expr);
 			out << ')';
 		}
 

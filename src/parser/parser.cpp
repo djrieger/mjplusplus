@@ -222,7 +222,7 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
     // build "void METHODNAME"
-    std::unique_ptr<ast::Type> voidType( new ast::BasicType(ast::Type::Primitive_type::VOID));
+    std::unique_ptr<ast::Type> voidType( new ast::Type(ast::Type::Primitive_type::VOID));
     expect(Token::Token_type::KEYWORD_VOID);
     auto mainMethodName = std::make_unique<ast::Ident>(current.string_value);
     auto typeIdent = std::make_unique<ast::TypeIdent>(voidType, mainMethodName);
@@ -237,9 +237,9 @@ uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
     // build "String[] PARAMETERNAME"
     auto parameterName = std::make_unique<ast::Ident>(current.string_value);
     auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
-    auto basicType = std::make_unique<ast::BasicType>("String");
-    std::unique_ptr<ast::Type> parType( new ast::ArrayType(basicType, 1) );
-    parameters->push_back(std::make_unique<ast::TypeIdent>(parType, parameterName));
+    auto stringType = std::make_unique<ast::Ident>("String");
+    auto type = std::make_unique<ast::Type>(stringType, 1);
+    parameters->push_back(std::make_unique<ast::TypeIdent>(type, parameterName));
 
     expect(Token::Token_type::TOKEN_IDENT);
     expect(Token::Token_type::OPERATOR_RPAREN);
@@ -278,7 +278,7 @@ int Parser::parseArrayDecl()
     return dimension;
 }
 
-uptr<ast::BasicType> Parser::parseBasicType()
+uptr<ast::Type> Parser::parseBasicType()
 {
     std::string class_name = "";
     ast::Type::Primitive_type primitive_type = ast::Type::Primitive_type::NONE;
@@ -309,24 +309,19 @@ uptr<ast::BasicType> Parser::parseBasicType()
     nextToken();
 
     if (class_name.empty())
-        return  std::make_unique<ast::BasicType>(primitive_type);
-    else
-        return std::make_unique<ast::BasicType>(class_name);
+        return  std::make_unique<ast::Type>(primitive_type);
+    else {
+        auto classnameIdent = std::make_unique<ast::Ident>(class_name);
+        return std::make_unique<ast::Type>(classnameIdent);
+    }
 }
 
 // BasicType -> int | boolean | void | IDENT .
 uptr<ast::Type> Parser::parseType()
 {
-    auto basicType = parseBasicType();
-
+    auto type = parseBasicType();
     int dimension = parseArrayDecl();
-    uptr<ast::Type> type;
-
-    if (dimension > 0)
-        type = std::make_unique<ast::ArrayType>(basicType, dimension);
-    else
-        type = std::move(basicType);
-
+    type->setDimension(dimension);
     return type;
 }
 
@@ -823,13 +818,13 @@ uptr<ast::Expression> Parser::parseNewObjectExpression()
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
 uptr<ast::Expression> Parser::parseNewArrayExpression()
 {
-    auto basicType = parseBasicType();
+    auto type = parseBasicType();
     expect(Token::Token_type::OPERATOR_LBRACKET);
     auto expression = parseExpression();
     expect(Token::Token_type::OPERATOR_RBRACKET);
-    int dimension = parseOptionalBrackets();
+    type->setDimension(parseOptionalBrackets() + 1);
 
-    return std::make_unique<ast::pe::NewArrayExpression>(basicType, expression, dimension + 1);
+    return std::make_unique<ast::pe::NewArrayExpression>(type, expression);
 }
 
 // OptionalBrackets -> [ ] OptionalBrackets

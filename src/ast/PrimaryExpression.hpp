@@ -5,7 +5,7 @@
 #include "Expression.hpp"
 #include "Arguments.hpp"
 #include "Ident.hpp"
-#include "BasicType.hpp"
+#include "Type.hpp"
 #include <vector>
 
 namespace ast
@@ -63,12 +63,11 @@ namespace ast
 		class NewArrayExpression : public PrimaryExpression
 		{
 			public:
-				NewArrayExpression(uptr<BasicType>& basic_type, uptr<Expression>& expr, int dimension);
+				NewArrayExpression(uptr<Type>& type, uptr<Expression>& expr);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
-				uptr<BasicType> basic_type;
+				uptr<Type> type;
 				uptr<Expression> expr;
-				int dimension;
 		};
 
 		class NewObjectExpression : public PrimaryExpression
