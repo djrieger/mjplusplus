@@ -25,65 +25,65 @@ namespace ast
 				out << ')';
 		}
 
-		uptr<BinaryExpression> BinaryExpression::createBinaryExpr(uptr<Expression> leftChild, uptr<Expression> rightChild, Token::Token_type operator_type)
+		uptr<BinaryExpression> BinaryExpression::createBinaryExpr(uptr<Expression> leftChild, uptr<Expression> rightChild, lexer::Token::Token_type operator_type)
 		{
 			uptr<BinaryExpression> binaryExpr;
 
 			switch (operator_type)
 			{
-				case Token::Token_type::OPERATOR_NOTEQ:
+				case lexer::Token::Token_type::OPERATOR_NOTEQ:
 					binaryExpr = std::make_unique<NotEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_MULT:
+				case lexer::Token::Token_type::OPERATOR_MULT:
 					binaryExpr = std::make_unique<Mult>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_PLUS:
+				case lexer::Token::Token_type::OPERATOR_PLUS:
 					binaryExpr = std::make_unique<Plus>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_MINUS:
+				case lexer::Token::Token_type::OPERATOR_MINUS:
 					binaryExpr = std::make_unique<Minus>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_SLASH:
+				case lexer::Token::Token_type::OPERATOR_SLASH:
 					binaryExpr = std::make_unique<Slash>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_LTEQ:
+				case lexer::Token::Token_type::OPERATOR_LTEQ:
 					binaryExpr = std::make_unique<LessThanEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_LT:
+				case lexer::Token::Token_type::OPERATOR_LT:
 					binaryExpr = std::make_unique<LessThan>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_EQEQ:
+				case lexer::Token::Token_type::OPERATOR_EQEQ:
 					binaryExpr = std::make_unique<EqEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_EQ:
+				case lexer::Token::Token_type::OPERATOR_EQ:
 					binaryExpr = std::make_unique<Eq>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_GTEQ:
+				case lexer::Token::Token_type::OPERATOR_GTEQ:
 					binaryExpr = std::make_unique<GreaterThanEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_GT:
+				case lexer::Token::Token_type::OPERATOR_GT:
 					binaryExpr = std::make_unique<GreaterThan>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_MOD:
+				case lexer::Token::Token_type::OPERATOR_MOD:
 					binaryExpr = std::make_unique<Mod>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_ANDAND:
+				case lexer::Token::Token_type::OPERATOR_ANDAND:
 					binaryExpr = std::make_unique<AndAnd>(std::move(leftChild), std::move(rightChild));
 					break;
 
-				case Token::Token_type::OPERATOR_OROR:
+				case lexer::Token::Token_type::OPERATOR_OROR:
 					binaryExpr = std::make_unique<OrOr>(std::move(leftChild), std::move(rightChild));
 					break;
 

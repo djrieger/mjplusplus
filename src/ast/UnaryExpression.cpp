@@ -11,17 +11,17 @@ namespace ast
 
 		}
 
-		uptr<Expression> UnaryExpression::createUnaryExpr(uptr<Expression> child, uptr<vec<Token::Token_type>> operator_types)
+		uptr<Expression> UnaryExpression::createUnaryExpr(uptr<Expression> child, uptr<vec<lexer::Token::Token_type>> operator_types)
 		{
 			if (!operator_types->empty())
 			{
-				Token::Token_type last_type = Token::Token_type::TOKEN_ERROR;
+				lexer::Token::Token_type last_type = lexer::Token::Token_type::TOKEN_ERROR;
 				int size = 0;
 
 				for (auto rit = operator_types->rbegin(); rit != operator_types->rend(); ++rit)
 				{
 
-					Token::Token_type current_type = *rit;
+					lexer::Token::Token_type current_type = *rit;
 
 					if (current_type == last_type)
 						size++;
@@ -32,9 +32,9 @@ namespace ast
 					}
 					else
 					{
-						if (last_type == Token::Token_type::OPERATOR_MINUS)
+						if (last_type == lexer::Token::Token_type::OPERATOR_MINUS)
 							child = std::make_unique<Neg>(std::move(child), size);
-						else if (last_type == Token::Token_type::OPERATOR_NOT)
+						else if (last_type == lexer::Token::Token_type::OPERATOR_NOT)
 							child = std::make_unique<Not>(std::move(child), size);
 
 						size = 1;
@@ -42,9 +42,9 @@ namespace ast
 					}
 				}
 
-				if (last_type == Token::Token_type::OPERATOR_MINUS)
+				if (last_type == lexer::Token::Token_type::OPERATOR_MINUS)
 					child = std::make_unique<Neg>(std::move(child), size);
-				else if (last_type == Token::Token_type::OPERATOR_NOT)
+				else if (last_type == lexer::Token::Token_type::OPERATOR_NOT)
 					child = std::make_unique<Not>(std::move(child), size);
 			}
 
