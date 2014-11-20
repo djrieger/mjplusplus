@@ -2,12 +2,12 @@
 #include "LVDStatement.hpp"
 
 ast::LVDStatement::LVDStatement(shptr<TypeIdent> type_ident)
-	: type_ident(std::move(type_ident))
+	: type_ident(type_ident)
 {
 
 }
 ast::LVDStatement::LVDStatement(shptr<TypeIdent> type_ident, shptr<Expression> init_expr)
-	: type_ident(std::move(type_ident)), init_expr(std::move(init_expr))
+	: type_ident(type_ident), init_expr(init_expr)
 {
 	;
 }

@@ -1,9 +1,9 @@
 #include "Type.hpp"
 
 ast::Type::Type(Type::Primitive_type primitive_type): primitive_type(primitive_type), dimension(0) {}
-ast::Type::Type(shptr<Ident> class_name): primitive_type(Type::Primitive_type::NONE), class_name(std::move(class_name)), dimension(0) {}
+ast::Type::Type(shptr<Ident> class_name): primitive_type(Type::Primitive_type::NONE), class_name(class_name), dimension(0) {}
 ast::Type::Type(Type::Primitive_type primitive_type, int dimension): primitive_type(primitive_type), dimension(dimension) {}
-ast::Type::Type(shptr<Ident> class_name, int dimension): primitive_type(Type::Primitive_type::NONE), class_name(std::move(class_name)), dimension(dimension) {}
+ast::Type::Type(shptr<Ident> class_name, int dimension): primitive_type(Type::Primitive_type::NONE), class_name(class_name), dimension(dimension) {}
 
 void ast::Type::toString(std::ostream& out, unsigned int indent, bool special) const
 {
@@ -77,7 +77,7 @@ shptr<ast::Type> ast::Type::de_array()
 	if (primitive_type == ast::Type::Primitive_type::NONE)
 	{
 		auto ident = std::make_shared<ast::Ident>(class_name->getName());
-		return std::make_shared<ast::Type>(std::move(ident), dimension - 1);
+		return std::make_shared<ast::Type>(ident, dimension - 1);
 	}
 	else
 		return std::make_shared<ast::Type>(primitive_type, dimension - 1);

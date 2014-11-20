@@ -4,7 +4,7 @@
 namespace ast
 {
 	Block::Block(shptr<vec<shptr<Statement>>> block_statements)
-		: block_statements(std::move(block_statements))
+		: block_statements(block_statements)
 	{
 		;
 	}

@@ -54,7 +54,7 @@ bool Parser::start()
 	try
 	{
 		nextToken();
-		astRoot = std::move(parseProgram());
+		astRoot = parseProgram();
 		r = true;
 	}
 	catch (char const* msg)
@@ -189,12 +189,12 @@ shptr<ast::Program> Parser::parseProgram()
 		auto className = std::make_shared<ast::Ident>(*current.string_value);
 		expect(lexer::Token::Token_type::TOKEN_IDENT);
 		expect(lexer::Token::Token_type::OPERATOR_LBRACE);
-		classes->push_back(std::make_shared<ast::ClassDeclaration>(std::move(className), parseClassMembers()));
+		classes->push_back(std::make_shared<ast::ClassDeclaration>(className, parseClassMembers()));
 		expect(lexer::Token::Token_type::OPERATOR_RBRACE);
 	}
 
 	expect(lexer::Token::Token_type::TOKEN_EOF);
-	return std::make_shared<ast::Program>(std::move(classes));
+	return std::make_shared<ast::Program>(classes);
 }
 
 // ClassMembers -> public ClassMember ClassMembers | .
@@ -210,10 +210,10 @@ shptr<vec<shptr<ast::ClassMember>>> Parser::parseClassMembers()
 		if (current.token_type == lexer::Token::Token_type::KEYWORD_STATIC)
 		{
 			nextToken();
-			classMembers->push_back(std::move(parseMainMethod()));
+			classMembers->push_back(parseMainMethod());
 		}
 		else
-			classMembers->push_back(std::move(parseFieldOrMethod()));
+			classMembers->push_back(parseFieldOrMethod());
 	}
 
 	return classMembers;
@@ -226,23 +226,23 @@ shptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	std::shared_ptr<ast::Type> voidType( new ast::Type(ast::Type::Primitive_type::VOID));
 	expect(lexer::Token::Token_type::KEYWORD_VOID);
 	auto mainMethodName = std::make_shared<ast::Ident>(*current.string_value);
-	auto typeIdent = std::make_shared<ast::TypeIdent>(std::move(voidType), std::move(mainMethodName));
+	auto typeIdent = std::make_shared<ast::TypeIdent>(voidType, mainMethodName);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 
 	// build "String[] PARAMETERNAME"
 	auto stringType = std::make_shared<ast::Ident>(*current.string_value);
-	auto type = std::make_shared<ast::Type>(std::move(stringType), 1);
+	auto type = std::make_shared<ast::Type>(stringType, 1);
 	expect(lexer::Token::Token_type::TOKEN_IDENT, "String");
 	expect(lexer::Token::Token_type::OPERATOR_LBRACKET);
 	expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
 	auto parameterName = std::make_shared<ast::Ident>(*current.string_value);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 	auto parameters = std::make_shared<vec<shptr<ast::TypeIdent>>>();
-	parameters->push_back(std::make_shared<ast::TypeIdent>(std::move(type), std::move(parameterName)));
+	parameters->push_back(std::make_shared<ast::TypeIdent>(type, parameterName));
 	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 
-	return std::make_shared<ast::MainMethodDeclaration>(std::move(typeIdent), std::move(parameters), parseBlock());
+	return std::make_shared<ast::MainMethodDeclaration>(typeIdent, parameters, parseBlock());
 }
 
 // TypeIdent -> Type IDENT
@@ -254,7 +254,7 @@ shptr<ast::TypeIdent> Parser::parseTypeIdent()
 	auto variable_name = std::make_shared<ast::Ident>(*current.string_value);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 
-	return std::make_shared<ast::TypeIdent>(std::move(type), std::move(variable_name));
+	return std::make_shared<ast::TypeIdent>(type, variable_name);
 }
 
 // ArrayDecl -> [ ] ArrayDecl | .
@@ -295,7 +295,7 @@ shptr<ast::Type> Parser::parseBasicType()
 		{
 			auto class_name = std::make_shared<ast::Ident>(*current.string_value);
 			nextToken();
-			return std::make_shared<ast::Type>(std::move(class_name));
+			return std::make_shared<ast::Type>(class_name);
 			break;
 		}
 
@@ -326,14 +326,14 @@ shptr<ast::ClassMember> Parser::parseFieldOrMethod()
 	if (current.token_type == lexer::Token::Token_type::OPERATOR_SEMICOLON)
 	{
 		nextToken();
-		return std::make_shared<ast::FieldDeclaration>(std::move(typeIdent));
+		return std::make_shared<ast::FieldDeclaration>(typeIdent);
 	}
 	else
 	{
 		expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 		auto parameters = parseOptionalParameters();
 		expect(lexer::Token::Token_type::OPERATOR_RPAREN);
-		return std::make_shared<ast::MethodDeclaration>(std::move(typeIdent), std::move(parameters), parseBlock());
+		return std::make_shared<ast::MethodDeclaration>(typeIdent, parameters, parseBlock());
 	}
 }
 
@@ -350,7 +350,7 @@ shptr<vec<shptr<ast::TypeIdent>>> Parser::parseOptionalParameters()
 	while (current.token_type != lexer::Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstParameter = false;
-		parameters->push_back(std::move(parseTypeIdent()));
+		parameters->push_back(parseTypeIdent());
 
 		if (current.token_type != lexer::Token::Token_type::OPERATOR_COMMA)
 			return parameters;
@@ -411,7 +411,7 @@ shptr<ast::Statement> Parser::parseStatement()
 		{
 			auto expr = parseExpression();
 			expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
-			return std::make_shared<ast::ExpressionStatement>(std::move(expr));
+			return std::make_shared<ast::ExpressionStatement>(expr);
 			break;
 		}
 
@@ -434,14 +434,14 @@ shptr<ast::Statement> Parser::parseBlock()
 
 		//skip emtpy statements
 		if (block_statement)
-			statements->push_back(std::move(block_statement));
+			statements->push_back(block_statement);
 	}
 
 	nextToken();
 
 	//If there are no block_statements we can skip the block.
 	if (!statements->empty())
-		return std::make_shared<ast::Block>(std::move(statements));
+		return std::make_shared<ast::Block>(statements);
 	else
 	{
 		shptr<ast::Statement> stmt;
@@ -534,10 +534,10 @@ shptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 	if (current.token_type == lexer::Token::Token_type::OPERATOR_EQ)
 	{
 		nextToken();
-		lvdStatement = std::make_shared<ast::LVDStatement>(std::move(type_ident), parseExpression());
+		lvdStatement = std::make_shared<ast::LVDStatement>(type_ident, parseExpression());
 	}
 	else
-		lvdStatement = std::make_shared<ast::LVDStatement>(std::move(type_ident));
+		lvdStatement = std::make_shared<ast::LVDStatement>(type_ident);
 
 	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
 	return lvdStatement;
@@ -556,10 +556,10 @@ shptr<ast::IfStatement> Parser::parseIfStatement()
 	if (current.token_type == lexer::Token::Token_type::KEYWORD_ELSE)
 	{
 		nextToken();
-		return std::make_shared<ast::IfStatement>(std::move(cond), std::move(then), parseStatement());
+		return std::make_shared<ast::IfStatement>(cond, then, parseStatement());
 	}
 	else
-		return std::make_shared<ast::IfStatement>(std::move(cond), std::move(then));
+		return std::make_shared<ast::IfStatement>(cond, then);
 }
 
 // WhileStatement -> ( Expression ) Statement .
@@ -568,7 +568,7 @@ shptr<ast::WhileStatement> Parser::parseWhileStatement()
 	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
 	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
-	return std::make_shared<ast::WhileStatement>(std::move(cond), parseStatement());
+	return std::make_shared<ast::WhileStatement>(cond, parseStatement());
 }
 
 // ReturnStatement -> OptionalExpression ; .
@@ -580,7 +580,7 @@ shptr<ast::ReturnStatement> Parser::parseReturnStatement()
 	{
 		auto expr = parseExpression();
 		expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
-		return std::make_shared<ast::ReturnStatement>(std::move(expr));
+		return std::make_shared<ast::ReturnStatement>(expr);
 	}
 
 	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
@@ -639,7 +639,7 @@ shptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 		lexer::Token::Token_type t = current.token_type;
 		nextToken();
 
-		expr = ast::be::BinaryExpression::createBinaryExpr(std::move(expr), precedenceClimb(prec), t);
+		expr = ast::be::BinaryExpression::createBinaryExpr(expr, precedenceClimb(prec), t);
 		prec = operator_precs(current.token_type);
 	}
 
@@ -665,15 +665,15 @@ shptr<ast::Expression> Parser::parseUnaryExpression()
 
 	// skip creating postfixExpr if no postfix operators present
 	if (postfix_ops->empty())
-		postfixExpr = std::move(primaryExpr);
+		postfixExpr = primaryExpr;
 	else
-		postfixExpr = std::make_shared<ast::PostfixExpression>(std::move(primaryExpr), std::move(postfix_ops));
+		postfixExpr = std::make_shared<ast::PostfixExpression>(primaryExpr, postfix_ops);
 
 	//dito for unary expressions
 	if (unary_operators->empty())
 		return postfixExpr;
 	else
-		return ast::ue::UnaryExpression::createUnaryExpr(std::move(postfixExpr), std::move(unary_operators));
+		return ast::ue::UnaryExpression::createUnaryExpr(postfixExpr, unary_operators);
 }
 
 // PrimaryExpression -> null | false | true | INTEGER_LITERAL | IDENT IdentOrIdentWithArguments | this | ( Expression ) | new NewObjectOrNewArrayExpression .
@@ -720,10 +720,10 @@ shptr<ast::Expression> Parser::parsePrimaryExpression()
 				nextToken();
 				auto arguments = parseArguments();
 				expect(lexer::Token::Token_type::OPERATOR_RPAREN);
-				pe = std::make_shared<ast::pe::MethodInvocation>(std::move(ident), std::move(arguments));
+				pe = std::make_shared<ast::pe::MethodInvocation>(ident, arguments);
 			}
 			else
-				pe = std::make_shared<ast::pe::Ident>(std::move(ident));
+				pe = std::make_shared<ast::pe::Ident>(ident);
 
 			break;
 		}
@@ -771,7 +771,7 @@ shptr<ast::Expression> Parser::parseNewObjectExpression()
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
-	return std::make_shared<ast::pe::NewObjectExpression>(std::move(ident));
+	return std::make_shared<ast::pe::NewObjectExpression>(ident);
 }
 
 // NewArrayExpression -> BasicType [ Expression ] OptionalBrackets .
@@ -783,7 +783,7 @@ shptr<ast::Expression> Parser::parseNewArrayExpression()
 	expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
 	type->setDimension(parseOptionalBrackets() + 1);
 
-	return std::make_shared<ast::pe::NewArrayExpression>(std::move(type), std::move(expression));
+	return std::make_shared<ast::pe::NewArrayExpression>(type, expression);
 }
 
 // OptionalBrackets -> [ ] OptionalBrackets
@@ -824,10 +824,10 @@ shptr<ast::Arguments> Parser::parseArguments()
 	while (current.token_type != lexer::Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
-		args->push_back(std::move(parseExpression()));
+		args->push_back(parseExpression());
 
 		if (current.token_type != lexer::Token::Token_type::OPERATOR_COMMA)
-			return std::make_shared<ast::Arguments>(std::move(args));
+			return std::make_shared<ast::Arguments>(args);
 		else
 			nextToken();
 	}
@@ -835,7 +835,7 @@ shptr<ast::Arguments> Parser::parseArguments()
 	if (!isFirstArgument)
 		throw "trailing comma";
 
-	return std::make_shared<ast::Arguments>(std::move(args));
+	return std::make_shared<ast::Arguments>(args);
 }
 
 // MethodInvocationOrFieldAccess -> IDENT MethodInvocation | .
@@ -850,10 +850,10 @@ std::shared_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 		nextToken();
 		auto args = parseArguments();
 		expect(lexer::Token::Token_type::OPERATOR_RPAREN);
-		return std::make_shared<ast::MethodInvocation>(std::move(id), std::move(args));
+		return std::make_shared<ast::MethodInvocation>(id, args);
 	}
 	else
-		return std::make_shared<ast::FieldAccess>(std::move(id));
+		return std::make_shared<ast::FieldAccess>(id);
 }
 
 // PostfixOps -> PostfixOp PostfixOps | .

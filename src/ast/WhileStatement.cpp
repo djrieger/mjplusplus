@@ -2,7 +2,7 @@
 #include "WhileStatement.hpp"
 
 ast::WhileStatement::WhileStatement(shptr<Expression> condition, shptr<Statement> statement) :
-	condition(std::move(condition)), statement(std::move(statement))
+	condition(condition), statement(statement)
 {
 
 }
