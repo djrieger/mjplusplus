@@ -33,3 +33,29 @@ std::string ast::MethodDeclaration::getName() const
 {
 	return "M" + return_type_and_name->getName();
 }
+
+void ast::MethodDeclaration::collectDefinition(shptr<SemanticAnalysis> sa, shptr<SymbolTable> symbolTable) const
+{/*
+	auto primitiveType = return_type_and_name->getType()->getPrimitiveType();
+
+	if (primitiveType == Type::Primitive_type::VOID)
+		sa->printError("Field " + type_and_name->getName() + " cannot have type void.");
+	else if (primitiveType == Type::Primitive_type::NONE)
+	{
+		/*
+		auto iter = sa->getClassTable.find(type_and_name->getType()->getClassName());
+
+		if (iter == sa->getClassTable.end())
+			sa->printError("Type " + type_and_name->getType()->getClassName() + " undeclared.");
+		else
+		{
+			/*
+			Symbol s(&type_and_name->getType()->getClassName(), symbolTable->getCurrentScope(), );
+			Definition d()
+			s.setDefinition(d);
+			symbolTable->insert();
+			*/
+		//}
+
+	//}
+}

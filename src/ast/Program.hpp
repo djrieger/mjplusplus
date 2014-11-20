@@ -10,6 +10,8 @@ class SemanticAnalysis;
 
 namespace ast
 {
+	class ClassDeclaration;
+
 	class Program : public Node
 	{
 		private:

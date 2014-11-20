@@ -27,6 +27,7 @@ void ast::FieldDeclaration::collectDefinition(shptr<SemanticAnalysis> sa, shptr<
 		sa->printError("Field " + type_and_name->getName() + " cannot have type void.");
 	else if (primitiveType == Type::Primitive_type::NONE)
 	{
+		/*
 		auto iter = sa->getClassTable.find(type_and_name->getType()->getClassName());
 
 		if (iter == sa->getClassTable.end())
@@ -39,6 +40,7 @@ void ast::FieldDeclaration::collectDefinition(shptr<SemanticAnalysis> sa, shptr<
 			s.setDefinition(d);
 			symbolTable->insert();
 			*/
-		}
+		//}
+
 	}
 }

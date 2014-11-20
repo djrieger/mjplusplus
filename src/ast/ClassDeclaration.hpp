@@ -8,8 +8,12 @@
 #include "Node.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
 
+class SemanticAnalysis;
+
 namespace ast
 {
+	class ClassMember;
+
 	class ClassDeclaration : public Node
 	{
 		private:
