@@ -9,7 +9,7 @@
 class SemanticAnalysis
 {
 	public:
-		 struct ClassTableItem
+		struct ClassTableItem
 		{
 			shptr<ast::ClassDeclaration> classNode;
 			shptr<SymbolTable> symbolTable;

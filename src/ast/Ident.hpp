@@ -14,7 +14,7 @@ namespace ast
 		public:
 			Ident(std::string const& string_value);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-			std::string const &getName() const;
+			std::string const& getName() const;
 			bool operator==(Ident const& other);
 			bool operator!=(Ident const& other);
 	};

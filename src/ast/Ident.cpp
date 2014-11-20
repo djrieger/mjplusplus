@@ -11,7 +11,7 @@ void ast::Ident::toString(std::ostream& out, unsigned int, bool) const
 	out << string_value;
 }
 
-std::string const &ast::Ident::getName() const
+std::string const& ast::Ident::getName() const
 {
 	return string_value;
 }

@@ -45,10 +45,8 @@ void ast::Program::collectDefinitions(shptr<SemanticAnalysis> sa) const
 		// copy class symbol table to list of class symbol tables:
 	}
 
-	for (auto &item: sa->getClassTable())
-	{
+	for (auto& item : sa->getClassTable())
 		item.second.classNode->collectDefinitions(sa, item.second.symbolTable);
-	}
 
 	//sa->getSymbolTable()->leaveScope();
 }
