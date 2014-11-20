@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public void x(int y) {}
+	public void z() {
+		x(true); /* wrong type */
+	}
+}

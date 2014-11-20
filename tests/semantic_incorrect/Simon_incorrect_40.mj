@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		return p();/* can't return value in void method */
+	}
+	public void p(){}
+}

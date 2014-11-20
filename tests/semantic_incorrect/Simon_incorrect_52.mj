@@ -1,0 +1,8 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		boolean x = new a() == new b(); /* unequal types in == */
+	}
+}
+class b {
+}

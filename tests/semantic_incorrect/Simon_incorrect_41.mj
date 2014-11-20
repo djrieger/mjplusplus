@@ -1,0 +1,6 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		int x=true;/* can't assign boolean to int */
+	}
+}

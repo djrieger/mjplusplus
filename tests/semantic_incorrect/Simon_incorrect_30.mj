@@ -1,0 +1,5 @@
+class a {
+	public static void main(String[] a) {}
+	public int x;
+	public boolean x;/* x already defined */
+}
