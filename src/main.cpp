@@ -10,21 +10,22 @@
 #include "semantic_analysis/SemanticAnalysis.hpp"
 #include "util/optionparser.h"
 
-enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK};
-const option::Descriptor usage[] =
-{
-	{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
-	{HELP, 0, "-h", "help", option::Arg::None, "  --help, -h\tPrint usage and exit."},
-	{DUMPLEXGRAPH, 0, "", "dumplexgraph", option::Arg::None, "  --dumplexgraph\tPrint automaton of lexer to the given file name."},
-	{LEXTEST, 0, "", "lextest", option::Arg::None, "  --lextest\tOnly run the lexer on the input FILE."},
-	{PRINT_AST, 0, "", "print-ast", option::Arg::None, "  --print-ast\tPretty prints the content of the abstract syntax tree after a file has been parsed."},
-	{CHECK, 0, "", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
-	{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
-	{0, 0, 0, 0, 0, 0}
-};
 
 int main(int argc, const char** argv)
 {
+	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK};
+	static const option::Descriptor usage[] =
+	{
+		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
+		{HELP, 0, "-h", "help", option::Arg::None, "  --help, -h\tPrint usage and exit."},
+		{DUMPLEXGRAPH, 0, "", "dumplexgraph", option::Arg::None, "  --dumplexgraph\tPrint automaton of lexer to the given file name."},
+		{LEXTEST, 0, "", "lextest", option::Arg::None, "  --lextest\tOnly run the lexer on the input FILE."},
+		{PRINT_AST, 0, "", "print-ast", option::Arg::None, "  --print-ast\tPretty prints the content of the abstract syntax tree after a file has been parsed."},
+		{CHECK, 0, "", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
+		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
+		{0, 0, 0, 0, 0, 0}
+	};
+
 	argc -= (argc > 0);
 	argv += (argc > 0); // skip program name argv[0] if present
 	option::Stats stats(usage, argc, argv);
@@ -64,7 +65,7 @@ int main(int argc, const char** argv)
 		}
 
 		std::string file_name = argv[argc - 1];
-		Stateomat stateomat;
+		lexer::Stateomat stateomat;
 
 		if (options[DUMPLEXGRAPH])
 		{
@@ -82,20 +83,20 @@ int main(int argc, const char** argv)
 
 		try
 		{
-			Lexer lexer(file_name.c_str(), stateomat);
+			lexer::Lexer lexer(file_name.c_str(), stateomat);
 
 
 			if (options[LEXTEST])
 			{
-				Token t(lexer.get_next_token());
+				lexer::Token t(lexer.get_next_token());
 
-				while (t.token_type != Token::Token_type::TOKEN_ERROR && t.token_type != Token::Token_type::TOKEN_EOF)
+				while (t.token_type != lexer::Token::Token_type::TOKEN_ERROR && t.token_type != lexer::Token::Token_type::TOKEN_EOF)
 				{
 					t.print();
 					t = lexer.get_next_token();
 				}
 
-				if (t.token_type != Token::Token_type::TOKEN_EOF)
+				if (t.token_type != lexer::Token::Token_type::TOKEN_EOF)
 				{
 					std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
 					return EXIT_FAILURE;

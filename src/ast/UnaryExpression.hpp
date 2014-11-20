@@ -35,7 +35,7 @@ namespace ast
 				 * @param operator_types operator vector
 				 * @return expr, either the child or an UnaryExpression
 				 */
-				static uptr<Expression> createUnaryExpr(uptr<Expression> child, uptr<vec<Token::Token_type>> operator_types);
+				static uptr<Expression> createUnaryExpr(uptr<Expression> child, uptr<vec<lexer::Token::Token_type>> operator_types);
 
 		};
 

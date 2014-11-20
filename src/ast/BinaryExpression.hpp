@@ -19,7 +19,7 @@ namespace ast
 				void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
 				BinaryExpression(uptr<Expression> leftChild, uptr<Expression> rightChild);
 			public:
-				static uptr<BinaryExpression> createBinaryExpr(uptr<Expression> leftChild, uptr<Expression> rightChild, Token::Token_type operator_type);
+				static uptr<BinaryExpression> createBinaryExpr(uptr<Expression> leftChild, uptr<Expression> rightChild, lexer::Token::Token_type operator_type);
 		};
 
 		class NotEq : public BinaryExpression

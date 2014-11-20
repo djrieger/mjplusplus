@@ -37,7 +37,7 @@ class Parser
 		 * @param	lexer	instance of a lexer providing the tokens
 		 * @param   print_messages   sets whether error messages will be printed, default: true
 		 */
-		Parser(Lexer& lexer, bool print_messages = true); // TODO: determine parameters
+		Parser(lexer::Lexer& lexer, bool print_messages = true); // TODO: determine parameters
 
 		/**
 		 * Generic function to start the parser
@@ -60,16 +60,16 @@ class Parser
 
 		std::shared_ptr<ast::Program> astRoot;
 
-		Lexer& lexer;
+		lexer::Lexer& lexer;
 		/**
 		 * Whether parser prints error messages or suppresses them
 		 */
 		bool print_messages;
-		Token current;
+		lexer::Token current;
 		/*
 		 * Precedences of all operators, associativity is stored implicitly
 		 */
-		int operator_precs(Token::Token_type t);
+		int operator_precs(lexer::Token::Token_type t);
 
 		/**
 		 * Get next token from lexer.
@@ -80,12 +80,12 @@ class Parser
 		 * Checks whether type of current token is tokenType.
 		 * If this is the case, nextToken() is called to advance to the next token.
 		 */
-		void expect(Token::Token_type const& tokenType);
+		void expect(lexer::Token::Token_type const& tokenType);
 		/**
-		 * Same behavior as expect(Token::Token_type).
+		 * Same behavior as expect(lexer::Token::Token_type).
 		 * In addition, this method also compares the string_value of current to string_val.
 		 */
-		void expect(Token::Token_type const& tokenType, std::string const& string_val);
+		void expect(lexer::Token::Token_type const& tokenType, std::string const& string_val);
 
 		/**
 		 * Prints an error message, prepending current token position
