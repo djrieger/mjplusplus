@@ -1,10 +1,12 @@
 #ifndef PROGRAM_HPP
 #define PROGRAM_HPP
 
+#include <vector>
 #include "../globals.hpp"
 #include "Node.hpp"
 #include "ClassDeclaration.hpp"
-#include <vector>
+
+class SemanticAnalysis;
 
 namespace ast
 {
@@ -16,6 +18,7 @@ namespace ast
 		public:
 			Program(uptr<vec<uptr<ClassDeclaration>>> classes);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
+			virtual void collectDefinitions(shptr<SemanticAnalysis> sa) const;
 	};
 
 }
