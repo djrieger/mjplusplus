@@ -33,3 +33,8 @@ bool SymbolTable::definedInCurrentScope(shptr<Symbol> symbol) const
 {
 	return symbol->getCurrentScope() == this->currentScope;
 }
+
+shptr<Scope> const &SymbolTable::getCurrentScope() const 
+{
+	return this->currentScope;
+}

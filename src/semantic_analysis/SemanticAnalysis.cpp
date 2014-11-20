@@ -16,10 +16,15 @@ bool SemanticAnalysis::start()
 
 bool SemanticAnalysis::insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node)
 {
-	return classTable.insert(std::make_pair<const std::string&, shptr<ast::ClassDeclaration>&>(className, node)).second;
+	return classTable.insert(/*std::make_pair<const std::string&, ClassTableItem&>*/ {className, {node, std::make_shared<SymbolTable>()}}).second;
 }
 
 shptr<SymbolTable> SemanticAnalysis::getSymbolTable() const
 {
 	return this->symboltable;
+}
+
+std::unordered_map<std::string, SemanticAnalysis::ClassTableItem> const& SemanticAnalysis::getClassTable() const
+{
+	return this->classTable;
 }

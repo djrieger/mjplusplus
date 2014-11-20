@@ -18,3 +18,7 @@ std::string ast::TypeIdent::getName() const
 	return identifier->getName();
 }
 
+shptr<ast::Type> const &ast::TypeIdent::getType() const
+{
+	return this->type;
+}

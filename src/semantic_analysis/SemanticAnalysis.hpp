@@ -8,12 +8,19 @@
 
 class SemanticAnalysis
 {
+	public:
+		 struct ClassTableItem
+		{
+			shptr<ast::ClassDeclaration> classNode;
+			shptr<SymbolTable> symbolTable;
+		};
+
 	private:
 		bool valid;
 		shptr<ast::Program> root;
 		shptr<SymbolTable> symboltable;
 		//std::unordered_map<std::string, std::unordered_map<std::string, Symbol>> classMap;
-		std::unordered_map<std::string, shptr<ast::ClassDeclaration>> classTable;
+		std::unordered_map<std::string, ClassTableItem> classTable;
 
 	public:
 		SemanticAnalysis(shptr<ast::Program> program);
@@ -22,6 +29,7 @@ class SemanticAnalysis
 		bool start();
 		bool insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node);
 		shptr<SymbolTable> getSymbolTable() const;
+		std::unordered_map<std::string, ClassTableItem> const& getClassTable() const;
 };
 
 #endif

@@ -32,6 +32,8 @@ namespace ast
 			shptr<Type> de_array();
 
 			void setDimension(int dimension);
+			Primitive_type getPrimitiveType() const;
+			std::string const &getClassName() const;
 
 		private:
 			Primitive_type primitive_type;

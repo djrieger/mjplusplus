@@ -37,3 +37,11 @@ namespace ast
 		return class_name->getName();
 	}
 }
+
+void ClassDeclaration::collectDefinitions(shptr<SemanticAnalysis> sa, shptr<SymbolTable> symbolTable) const
+{
+	for (auto& classMemberNode : *members) 
+	{
+		classMemberNode->collectDefinition(sa, symbolTable);
+	}
+}

@@ -28,10 +28,10 @@ void ast::Program::collectDefinitions(shptr<SemanticAnalysis> sa) const
 	// pseudo
 	//sa->getSymbolTable()->enterScope();
 
-	for (auto& _class : *classes)
+	for (auto& classDeclNode : *classes)
 	{
-		if (!sa->insertClass(_class->getName(), _class))
-			sa->printError("Class with name \033[1m" + _class->getName() + "\033[0m already defined.");
+		if (!sa->insertClass(classDeclNode->getName(), classDeclNode))
+			sa->printError("Class with name \033[1m" + classDeclNode->getName() + "\033[0m already defined.");
 
 		/*
 				auto classSymbol = std::make_shared<Symbol>(_class->getName(), symboltable->getCurrentScope());
@@ -40,11 +40,14 @@ void ast::Program::collectDefinitions(shptr<SemanticAnalysis> sa) const
 				classesSymbolTable->insert(classSymbol);
 		*/
 		//symboltable.enterScope();
-		//_class.collectDefinitions(symboltable);
 		//symboltable.leaveScope();
 
 		// copy class symbol table to list of class symbol tables:
+	}
 
+	for (auto &item: sa->getClassTable())
+	{
+		item.second.classNode->collectDefinitions(sa, item.second.symbolTable);
 	}
 
 	//sa->getSymbolTable()->leaveScope();
