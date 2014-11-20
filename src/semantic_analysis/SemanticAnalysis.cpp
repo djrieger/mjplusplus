@@ -8,17 +8,18 @@ void SemanticAnalysis::printError(std::string s)
 	std::cout << s << std::endl;
 }
 
-bool SemanticAnalysis::start() 
+bool SemanticAnalysis::start()
 {
 	root->collectDefinitions(std::make_shared<SemanticAnalysis>(*this));
 	return valid;
 }
 
-bool SemanticAnalysis::insertClass(const std::string &className, shptr<ast::ClassDeclaration>& node) {
+bool SemanticAnalysis::insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node)
+{
 	return classTable.insert(std::make_pair<const std::string&, shptr<ast::ClassDeclaration>&>(className, node)).second;
 }
 
-shptr<SymbolTable> SemanticAnalysis::getSymbolTable() const 
+shptr<SymbolTable> SemanticAnalysis::getSymbolTable() const
 {
 	return this->symboltable;
 }
