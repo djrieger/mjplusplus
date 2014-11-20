@@ -5,7 +5,7 @@ SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program): valid(true), ro
 void SemanticAnalysis::printError(std::string s)
 {
 	valid = false;
-	std::cout << s << std::endl;
+	std::cout << "\033[1;31mSemantic error:\033[0m " << s << std::endl;
 }
 
 bool SemanticAnalysis::start()
