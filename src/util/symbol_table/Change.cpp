@@ -4,15 +4,18 @@ Change::Change(shptr<Symbol> symbol, shptr<Definition> const previousDefinition,
 
 Change::Change(shptr<Symbol> symbol): symbol(symbol), previousDefinition(symbol->getCurrentDefinition()), previousScope(symbol->getCurrentScope()) {}
 
-shptr<Symbol> Change::getSymbol() const {
+shptr<Symbol> Change::getSymbol() const
+{
 	return this->symbol;
 }
-shptr<Scope> const Change::getPreviousScope() const {
+shptr<Scope> const Change::getPreviousScope() const
+{
 
 	return this->previousScope;
 }
 
-shptr<Definition> const Change::getPreviousDefinition() const {
+shptr<Definition> const Change::getPreviousDefinition() const
+{
 	return this->previousDefinition;
 }
 

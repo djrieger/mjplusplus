@@ -6,16 +6,16 @@
 
 class Symbol;
 
-class Definition 
+class Definition
 {
 	private:
-		Symbol const &symbol;
-		ast::Type const &type;
+		Symbol const& symbol;
+		ast::Type const& type;
 	public:
 		Symbol const& getSymbol() const;
 		ast::Type const& getType() const;
 
-		Definition(Symbol const &symbol, ast::Type const &type);
+		Definition(Symbol const& symbol, ast::Type const& type);
 };
 
 #endif

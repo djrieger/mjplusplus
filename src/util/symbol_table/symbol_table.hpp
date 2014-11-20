@@ -10,18 +10,18 @@
 
 class SymbolTable
 {
-private:
-	std::stack<shptr<Change>> changes;
-	shptr<Scope> currentScope;
-public:
-	/* 
-	 * return definition of symbol
-	 */
-	shptr<Definition> lookup(shptr<Symbol> symbol) const;
-	void insert(shptr<Symbol> symbol, shptr<Definition> def);
-	void enterScope();
-	void leaveScope();
-	bool definedInCurrentScope(shptr<Symbol> symbol) const;
+	private:
+		std::stack<shptr<Change>> changes;
+		shptr<Scope> currentScope;
+	public:
+		/*
+		 * return definition of symbol
+		 */
+		shptr<Definition> lookup(shptr<Symbol> symbol) const;
+		void insert(shptr<Symbol> symbol, shptr<Definition> def);
+		void enterScope();
+		void leaveScope();
+		bool definedInCurrentScope(shptr<Symbol> symbol) const;
 };
 
 #endif
