@@ -4,12 +4,12 @@
 namespace ast
 {
 	IfStatement::IfStatement(shptr<Expression> condition, shptr<Statement> thenStatement)
-		: condition(std::move(condition)), thenStatement(std::move(thenStatement))
+		: condition(condition), thenStatement(thenStatement)
 	{
 		;
 	}
 	IfStatement::IfStatement(shptr<Expression> condition, shptr<Statement> thenStatement, shptr<Statement> elseStatement)
-		: condition(std::move(condition)), thenStatement(std::move(thenStatement)), elseStatement(std::move(elseStatement))
+		: condition(condition), thenStatement(thenStatement), elseStatement(elseStatement)
 	{
 		;
 	}
