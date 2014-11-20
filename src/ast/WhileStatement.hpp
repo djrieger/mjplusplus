@@ -10,11 +10,11 @@ namespace ast
 	class WhileStatement : public Statement
 	{
 		protected:
-			uptr<Expression> condition;
-			uptr<Statement> statement;
+			shptr<Expression> condition;
+			shptr<Statement> statement;
 
 		public:
-			WhileStatement(uptr<Expression> condition, uptr<Statement> statement);
+			WhileStatement(shptr<Expression> condition, shptr<Statement> statement);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 	};
 }

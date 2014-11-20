@@ -13,11 +13,11 @@ namespace ast
 	class MethodInvocation : public PostfixOp
 	{
 		private:
-			uptr<Ident> method_name;
-			uptr<Arguments> arguments;
+			shptr<Ident> method_name;
+			shptr<Arguments> arguments;
 
 		public:
-			MethodInvocation(uptr<Ident> method_name, uptr<Arguments> arguments);
+			MethodInvocation(shptr<Ident> method_name, shptr<Arguments> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

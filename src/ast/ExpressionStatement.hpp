@@ -9,10 +9,10 @@ namespace ast
 	class ExpressionStatement : public Statement
 	{
 		private:
-			uptr<Expression> expression;
+			shptr<Expression> expression;
 
 		public:
-			ExpressionStatement(uptr<Expression> expr);
+			ExpressionStatement(shptr<Expression> expr);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

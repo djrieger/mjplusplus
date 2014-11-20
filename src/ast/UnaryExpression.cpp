@@ -5,13 +5,13 @@ namespace ast
 {
 	namespace ue
 	{
-		UnaryExpression::UnaryExpression(uptr<Expression> child, int size)
+		UnaryExpression::UnaryExpression(shptr<Expression> child, int size)
 			: child(std::move(child)), size(size)
 		{
 
 		}
 
-		uptr<Expression> UnaryExpression::createUnaryExpr(uptr<Expression> child, uptr<vec<lexer::Token::Token_type>> operator_types)
+		shptr<Expression> UnaryExpression::createUnaryExpr(shptr<Expression> child, shptr<vec<lexer::Token::Token_type>> operator_types)
 		{
 			if (!operator_types->empty())
 			{
@@ -33,9 +33,9 @@ namespace ast
 					else
 					{
 						if (last_type == lexer::Token::Token_type::OPERATOR_MINUS)
-							child = std::make_unique<Neg>(std::move(child), size);
+							child = std::make_shared<Neg>(std::move(child), size);
 						else if (last_type == lexer::Token::Token_type::OPERATOR_NOT)
-							child = std::make_unique<Not>(std::move(child), size);
+							child = std::make_shared<Not>(std::move(child), size);
 
 						size = 1;
 						last_type = current_type;
@@ -43,9 +43,9 @@ namespace ast
 				}
 
 				if (last_type == lexer::Token::Token_type::OPERATOR_MINUS)
-					child = std::make_unique<Neg>(std::move(child), size);
+					child = std::make_shared<Neg>(std::move(child), size);
 				else if (last_type == lexer::Token::Token_type::OPERATOR_NOT)
-					child = std::make_unique<Not>(std::move(child), size);
+					child = std::make_shared<Not>(std::move(child), size);
 			}
 
 			return child;
@@ -65,7 +65,7 @@ namespace ast
 				out << ')';
 		}
 
-		Not::Not(uptr<Expression> child, int size)
+		Not::Not(shptr<Expression> child, int size)
 			: UnaryExpression::UnaryExpression(std::move(child), size)
 		{
 			;
@@ -76,7 +76,7 @@ namespace ast
 			UnaryExpression::toString(out, indent, "!", special);
 		}
 
-		Neg::Neg(uptr<Expression> child, int size)
+		Neg::Neg(shptr<Expression> child, int size)
 			: UnaryExpression::UnaryExpression(std::move(child), size)
 		{
 			;

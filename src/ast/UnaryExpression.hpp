@@ -21,10 +21,10 @@ namespace ast
 				};
 
 				//We could replace the unary-operator vector to a token_type vector to move the conversion into this class.
-				UnaryExpression(uptr<Expression> child, int size);
+				UnaryExpression(shptr<Expression> child, int size);
 				virtual void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
 
-				uptr<Expression> child;
+				shptr<Expression> child;
 				int size;
 			public:
 
@@ -35,21 +35,21 @@ namespace ast
 				 * @param operator_types operator vector
 				 * @return expr, either the child or an UnaryExpression
 				 */
-				static uptr<Expression> createUnaryExpr(uptr<Expression> child, uptr<vec<lexer::Token::Token_type>> operator_types);
+				static shptr<Expression> createUnaryExpr(shptr<Expression> child, shptr<vec<lexer::Token::Token_type>> operator_types);
 
 		};
 
 		class Not : public UnaryExpression
 		{
 			public:
-				Not(uptr<Expression> child, int size);
+				Not(shptr<Expression> child, int size);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 		};
 
 		class Neg : public UnaryExpression
 		{
 			public:
-				Neg(uptr<Expression> child, int size);
+				Neg(shptr<Expression> child, int size);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 		};
 

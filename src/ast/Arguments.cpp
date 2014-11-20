@@ -1,12 +1,12 @@
 #include "../globals.hpp"
 #include "Arguments.hpp"
 
-ast::Arguments::Arguments(uptr<vec<uptr<Expression> > > arguments) : arguments(std::move(arguments))
+ast::Arguments::Arguments(shptr<vec<shptr<Expression> > > arguments) : arguments(std::move(arguments))
 {
 
 }
 
-ast::Arguments::Arguments() : arguments(std::make_unique<vec<uptr<Expression>>>())
+ast::Arguments::Arguments() : arguments(std::make_shared<vec<shptr<Expression>>>())
 {
 
 }

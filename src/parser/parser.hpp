@@ -92,39 +92,39 @@ class Parser
 		 */
 		void printError(std::string const& error_msg);
 
-		uptr<ast::Program> parseProgram();
-		uptr<vec<uptr<ast::ClassMember>>> parseClassMembers();
-		uptr<ast::MainMethodDeclaration> parseMainMethod();
+		shptr<ast::Program> parseProgram();
+		shptr<vec<shptr<ast::ClassMember>>> parseClassMembers();
+		shptr<ast::MainMethodDeclaration> parseMainMethod();
 
-		uptr<ast::TypeIdent> parseTypeIdent();
-		uptr<ast::Type> parseType();
-		uptr<ast::Type> parseBasicType();
+		shptr<ast::TypeIdent> parseTypeIdent();
+		shptr<ast::Type> parseType();
+		shptr<ast::Type> parseBasicType();
 		int parseArrayDecl();
-		uptr<ast::Expression> parseNewArrayExpression();
+		shptr<ast::Expression> parseNewArrayExpression();
 		int parseOptionalBrackets();
 
-		uptr<ast::ClassMember> parseFieldOrMethod();
-		uptr<vec<uptr<ast::TypeIdent>>> parseOptionalParameters();
-		uptr<ast::Arguments> parseArguments();
+		shptr<ast::ClassMember> parseFieldOrMethod();
+		shptr<vec<shptr<ast::TypeIdent>>> parseOptionalParameters();
+		shptr<ast::Arguments> parseArguments();
 
-		uptr<ast::Statement> parseStatement();
-		uptr<ast::Statement> parseBlock();
-		uptr<ast::Statement> parseBlockStatement();
-		uptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
-		uptr<ast::IfStatement> parseIfStatement();
-		uptr<ast::WhileStatement> parseWhileStatement();
-		uptr<ast::ReturnStatement> parseReturnStatement();
+		shptr<ast::Statement> parseStatement();
+		shptr<ast::Statement> parseBlock();
+		shptr<ast::Statement> parseBlockStatement();
+		shptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
+		shptr<ast::IfStatement> parseIfStatement();
+		shptr<ast::WhileStatement> parseWhileStatement();
+		shptr<ast::ReturnStatement> parseReturnStatement();
 
-		uptr<ast::Expression> parseExpression();
-		uptr<ast::Expression> precedenceClimb(int minPrec);
-		uptr<ast::Expression> parseUnaryExpression();
+		shptr<ast::Expression> parseExpression();
+		shptr<ast::Expression> precedenceClimb(int minPrec);
+		shptr<ast::Expression> parseUnaryExpression();
 
-		uptr<ast::Expression> parsePrimaryExpression();
-		uptr<vec<uptr<ast::PostfixOp>>> parsePostfixOps();
-		uptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
+		shptr<ast::Expression> parsePrimaryExpression();
+		shptr<vec<shptr<ast::PostfixOp>>> parsePostfixOps();
+		shptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
 
-		uptr<ast::Expression> parseNewObjectExpression();
-		uptr<ast::Expression> parseNewObjectOrNewArrayExpression();
+		shptr<ast::Expression> parseNewObjectExpression();
+		shptr<ast::Expression> parseNewObjectOrNewArrayExpression();
 
 };
 

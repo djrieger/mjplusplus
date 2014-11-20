@@ -12,11 +12,11 @@ namespace ast
 	class ClassDeclaration : public Node
 	{
 		private:
-			uptr<Ident> class_name;
-			uptr<vec<uptr<ClassMember>>> members;
+			shptr<Ident> class_name;
+			shptr<vec<shptr<ClassMember>>> members;
 
 		public:
-			ClassDeclaration(uptr<Ident> class_name, uptr<vec<uptr<ClassMember>>> members);
+			ClassDeclaration(shptr<Ident> class_name, shptr<vec<shptr<ClassMember>>> members);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			std::string getName() const;
 	};

@@ -11,12 +11,12 @@ namespace ast
 	class LVDStatement : public Statement
 	{
 		protected:
-			uptr<TypeIdent> type_ident;
-			uptr<Expression> init_expr;
+			shptr<TypeIdent> type_ident;
+			shptr<Expression> init_expr;
 
 		public:
-			LVDStatement(uptr<TypeIdent> type_ident);
-			LVDStatement(uptr<TypeIdent> type_ident, uptr<Expression> init_expr);
+			LVDStatement(shptr<TypeIdent> type_ident);
+			LVDStatement(shptr<TypeIdent> type_ident, shptr<Expression> init_expr);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

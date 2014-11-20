@@ -11,10 +11,10 @@ namespace ast
 	class Arguments : public Node
 	{
 		private:
-			uptr<vec<uptr<ast::Expression>>> arguments;
+			shptr<vec<shptr<ast::Expression>>> arguments;
 		public:
 			Arguments();
-			Arguments(uptr<vec<uptr<ast::Expression>>> arguments);
+			Arguments(shptr<vec<shptr<ast::Expression>>> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 	};
 }

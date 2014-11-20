@@ -14,12 +14,12 @@ namespace ast
 		class BinaryExpression : public Expression
 		{
 			protected:
-				uptr<Expression> leftChild;
-				uptr<Expression> rightChild;
+				shptr<Expression> leftChild;
+				shptr<Expression> rightChild;
 				void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
-				BinaryExpression(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild);
 			public:
-				static uptr<BinaryExpression> createBinaryExpr(uptr<Expression> leftChild, uptr<Expression> rightChild, lexer::Token::Token_type operator_type);
+				static shptr<BinaryExpression> createBinaryExpr(shptr<Expression> leftChild, shptr<Expression> rightChild, lexer::Token::Token_type operator_type);
 		};
 
 		class NotEq : public BinaryExpression
@@ -27,7 +27,7 @@ namespace ast
 			private:
 
 			public:
-				NotEq(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -36,7 +36,7 @@ namespace ast
 			private:
 
 			public:
-				Mult(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				Mult(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -45,7 +45,7 @@ namespace ast
 			private:
 
 			public:
-				Plus(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				Plus(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -54,7 +54,7 @@ namespace ast
 			private:
 
 			public:
-				Minus(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				Minus(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -63,7 +63,7 @@ namespace ast
 			private:
 
 			public:
-				Slash(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				Slash(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -72,7 +72,7 @@ namespace ast
 			private:
 
 			public:
-				LessThanEq(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -81,7 +81,7 @@ namespace ast
 			private:
 
 			public:
-				LessThan(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -90,7 +90,7 @@ namespace ast
 			private:
 
 			public:
-				EqEq(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -99,7 +99,7 @@ namespace ast
 			private:
 
 			public:
-				Eq(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				Eq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -108,7 +108,7 @@ namespace ast
 			private:
 
 			public:
-				GreaterThanEq(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -117,7 +117,7 @@ namespace ast
 			private:
 
 			public:
-				GreaterThan(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -126,7 +126,7 @@ namespace ast
 			private:
 
 			public:
-				Mod(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				Mod(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -135,7 +135,7 @@ namespace ast
 			private:
 
 			public:
-				AndAnd(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -144,7 +144,7 @@ namespace ast
 			private:
 
 			public:
-				OrOr(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 
@@ -153,7 +153,7 @@ namespace ast
 			private:
 
 			public:
-				Invalid(uptr<Expression> leftChild, uptr<Expression> rightChild);
+				Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 		};
 

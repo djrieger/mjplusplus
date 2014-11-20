@@ -13,10 +13,10 @@ namespace ast
 	class Program : public Node
 	{
 		private:
-			uptr<vec<uptr<ClassDeclaration>>> classes;
+			shptr<vec<shptr<ClassDeclaration>>> classes;
 
 		public:
-			Program(uptr<vec<uptr<ClassDeclaration>>> classes);
+			Program(shptr<vec<shptr<ClassDeclaration>>> classes);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual void collectDefinitions(shptr<SemanticAnalysis> sa) const;
 	};

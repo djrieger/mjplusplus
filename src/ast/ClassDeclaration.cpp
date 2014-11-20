@@ -7,7 +7,7 @@
 
 namespace ast
 {
-	ClassDeclaration::ClassDeclaration(uptr<Ident> class_name, uptr<vec<uptr<ClassMember> > > members) : class_name(std::move(class_name)), members(std::move(members))
+	ClassDeclaration::ClassDeclaration(shptr<Ident> class_name, shptr<vec<shptr<ClassMember> > > members) : class_name(std::move(class_name)), members(std::move(members))
 	{
 		;
 	}
@@ -19,8 +19,8 @@ namespace ast
 		class_name->toString(out, indent);
 		out << " {\n";
 
-		auto sortMembers = [](const uptr<ast::ClassMember>& a,
-		                      const uptr<ast::ClassMember>& b) -> bool
+		auto sortMembers = [](const shptr<ast::ClassMember>& a,
+		                      const shptr<ast::ClassMember>& b) -> bool
 		{
 			return a->getName() < b->getName();
 		};

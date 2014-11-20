@@ -9,13 +9,13 @@ namespace ast
 	class IfStatement : public Statement
 	{
 		private:
-			uptr<Expression> condition;
-			uptr<Statement> thenStatement;
-			uptr<Statement> elseStatement;
+			shptr<Expression> condition;
+			shptr<Statement> thenStatement;
+			shptr<Statement> elseStatement;
 
 		public:
-			IfStatement(uptr<Expression> condition, uptr<Statement> thenStatement);
-			IfStatement(uptr<Expression> condition, uptr<Statement> thenStatement, uptr<Statement> elseStatement);
+			IfStatement(shptr<Expression> condition, shptr<Statement> thenStatement);
+			IfStatement(shptr<Expression> condition, shptr<Statement> thenStatement, shptr<Statement> elseStatement);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual Statement::Type getType() const;
 	};

@@ -3,7 +3,7 @@
 
 namespace ast
 {
-	Block::Block(uptr<vec<uptr<Statement>>> block_statements)
+	Block::Block(shptr<vec<shptr<Statement>>> block_statements)
 		: block_statements(std::move(block_statements))
 	{
 		;
