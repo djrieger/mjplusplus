@@ -7,6 +7,7 @@
 #include "lexer/stateomat.hpp"
 #include "lexer/token.hpp"
 #include "parser/parser.hpp"
+#include "semantic_analysis/SemanticAnalysis.hpp"
 #include "util/optionparser.h"
 
 enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK};
@@ -103,17 +104,17 @@ int main(int argc, const char** argv)
 				return EXIT_SUCCESS;
 			}
 
-			if (options[CHECK])
-			{
-				std::cout << "Not implemented yet, exiting..." << std::endl;
-				return EXIT_SUCCESS;
-			}
-
 			Parser parser(lexer, true);
 			bool valid = parser.start();
 
 			if (!valid)
 				return EXIT_FAILURE;
+
+			if (options[CHECK])
+			{
+				SemanticAnalysis sa(parser.getRoot());
+				return !sa.start();
+			}
 
 			if (options[PRINT_AST])
 				parser.getRoot()->toString(std::cout, 0);
