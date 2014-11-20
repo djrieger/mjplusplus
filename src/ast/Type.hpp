@@ -33,7 +33,7 @@ namespace ast
 
 			void setDimension(int dimension);
 			Primitive_type getPrimitiveType() const;
-			std::string const &getClassName() const;
+			std::string const& getClassName() const;
 
 		private:
 			Primitive_type primitive_type;
