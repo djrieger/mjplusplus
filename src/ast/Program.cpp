@@ -30,10 +30,8 @@ void ast::Program::collectDefinitions(shptr<SemanticAnalysis> sa) const
 
 	for (auto& _class : *classes)
 	{
-		shptr<ast::ClassDeclaration> foo(_class.get());
-
-		if (!sa->insertClass(_class->getName(), foo))
-			sa->printError("Class with name " + _class->getName() + " already defined.");
+		if (!sa->insertClass(_class->getName(), _class))
+			sa->printError("Class with name \033[1m" + _class->getName() + "\033[0m already defined.");
 
 		/*
 				auto classSymbol = std::make_shared<Symbol>(_class->getName(), symboltable->getCurrentScope());
