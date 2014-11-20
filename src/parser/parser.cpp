@@ -93,7 +93,7 @@ void Parser::printError(std::string const& error_msg)
 {
 	if (print_messages)   // only print error messages if they are wanted
 	{
-		std::cerr << "at line " << current.position.first << ", column " << current.position.second <<
+		std::cerr << "\033[1;31mParser error\033[0m at line " << current.position.first << ", column " << current.position.second <<
 		          ", parsing \"" << *current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
 		          error_msg << std::endl;
 
