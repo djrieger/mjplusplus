@@ -2,6 +2,7 @@
 #define SYMBOL_TABLE_HPP
 
 #include <stack>
+#include "../../globals.hpp"
 #include "Change.hpp"
 #include "Scope.hpp"
 #include "Definition.hpp"
@@ -10,17 +11,17 @@
 class SymbolTable
 {
 private:
-	std::stack<Change> changes;
-	Scope currentScope;
+	std::stack<shptr<Change>> changes;
+	shptr<Scope> currentScope;
 public:
 	/* 
 	 * return definition of symbol
 	 */
-	Definition lookup(Symbol &symbol) const;
-	void insert(Symbol &symbol, Definition const &def);
+	shptr<Definition> lookup(shptr<Symbol> symbol) const;
+	void insert(shptr<Symbol> symbol, shptr<Definition> def);
 	void enterScope();
 	void leaveScope();
-	bool definedInCurrentScope(Symbol &symbol) const;
+	bool definedInCurrentScope(shptr<Symbol> symbol) const;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef CHANGE_HPP
 #define CHANGE_HPP
 
+#include "../../globals.hpp"
 #include "Scope.hpp"
 #include "Definition.hpp"
 #include "Symbol.hpp"
@@ -8,16 +9,16 @@
 class Change 
 {
 private:
-	Symbol const &symbol;
-	Definition const &previousDefinition;
-	Scope const &previousScope;
+	shptr<Symbol> symbol;
+	shptr<Definition> const previousDefinition;
+	shptr<Scope> const previousScope;
 public:
-	Change(Symbol const &symbol, Definition const &previousDefinition, Scope const &previousScope);
-	Change(Symbol const &symbol);
+	Change(shptr<Symbol> symbol, shptr<Definition> const previousDefinition, shptr<Scope> const previousScope);
+	Change(shptr<Symbol> symbol);
 
-	Symbol const &getSymbol() const;
-	Definition const &getPreviousDefinition() const;
-	Scope const &getPreviousScope() const;
+	shptr<Symbol> getSymbol() const;
+	shptr<Definition> const getPreviousDefinition() const;
+	shptr<Scope> const getPreviousScope() const;
 };
 
 #endif

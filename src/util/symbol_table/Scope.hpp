@@ -1,13 +1,15 @@
 #ifndef SCOPE_HPP
 #define SCOPE_HPP
 
+#include "../../globals.hpp"
+
 class Scope
 {
 private:
-	Scope const &parent;
+	shptr<Scope> const parent;
 	int oldSize;
 public:
-	Scope(Scope const &parent, int oldSize);
+	Scope(shptr<Scope> const parent, int oldSize);
 
 	int getOldSize() const;
 };
