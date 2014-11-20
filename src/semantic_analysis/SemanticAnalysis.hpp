@@ -6,6 +6,12 @@
 #include "../util/symbol_table/symbol_table.hpp"
 #include "../ast/Program.hpp"
 
+namespace ast
+{
+	class ClassDeclaration;
+	class Program;
+}
+
 class SemanticAnalysis
 {
 	public:
