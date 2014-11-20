@@ -1,8 +1,7 @@
 class a {
 	public static void main(String[] a) {}
-	public int y;
 	public int b (int c) {
-		a[] y=new a[y];
+		int y=y;
 		a x;
 		return x.b(x.b(c));
 	}

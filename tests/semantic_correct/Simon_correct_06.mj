@@ -9,5 +9,6 @@ class b {
 		a x = null;
 		a[] y;
 		y = null;
+		return 0;
 	}
 }

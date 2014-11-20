@@ -15,3 +15,13 @@ std::string ast::Ident::getName() const
 {
 	return string_value;
 }
+
+bool ast::Ident::operator==(ast::Ident const& other)
+{
+	return &string_value == &other.string_value;
+}
+
+bool ast::Ident::operator!=(ast::Ident const& other)
+{
+	return !(*this == other);
+}

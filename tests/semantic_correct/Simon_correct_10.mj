@@ -7,6 +7,6 @@ class a {
 }
 class b {
 	public b y(a A) {
-		return A.x(this.y(A.x(this)));
+		return y(A.x(this.y(A.x(this))));
 	}
 }

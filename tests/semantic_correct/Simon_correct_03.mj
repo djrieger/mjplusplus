@@ -6,7 +6,7 @@ class b {
 	public a a;
 	public b b() {
 		b b = b();
-		b.a.b.b().b().b.b.b();
+		b.a.b.b().b().a.b.b();
 		return a.b.a.b;
 	}
 }
