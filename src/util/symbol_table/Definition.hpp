@@ -6,11 +6,11 @@
 
 class Symbol;
 
-class Definition 
+class Definition
 {
 	private:
-		Symbol const &symbol;
-		ast::Type const &type;
+		Symbol const& symbol;
+		ast::Type const& type;
 		shptr<ast::Node> declaringNode;
 	public:
 		Symbol const& getSymbol() const;

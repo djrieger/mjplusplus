@@ -1,7 +1,7 @@
 #include "Definition.hpp"
 #include "Symbol.hpp"
 
-Symbol const& Definition::getSymbol() const 
+Symbol const& Definition::getSymbol() const
 {
 	return symbol;
 }
