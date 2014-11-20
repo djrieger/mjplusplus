@@ -6,7 +6,7 @@ namespace ast
 	namespace be
 	{
 
-		BinaryExpression::BinaryExpression(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		BinaryExpression::BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: leftChild(std::move(leftChild)), rightChild(std::move(rightChild))
 		{
 			;
@@ -25,77 +25,77 @@ namespace ast
 				out << ')';
 		}
 
-		uptr<BinaryExpression> BinaryExpression::createBinaryExpr(uptr<Expression> leftChild, uptr<Expression> rightChild, lexer::Token::Token_type operator_type)
+		shptr<BinaryExpression> BinaryExpression::createBinaryExpr(shptr<Expression> leftChild, shptr<Expression> rightChild, lexer::Token::Token_type operator_type)
 		{
-			uptr<BinaryExpression> binaryExpr;
+			shptr<BinaryExpression> binaryExpr;
 
 			switch (operator_type)
 			{
 				case lexer::Token::Token_type::OPERATOR_NOTEQ:
-					binaryExpr = std::make_unique<NotEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<NotEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_MULT:
-					binaryExpr = std::make_unique<Mult>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Mult>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_PLUS:
-					binaryExpr = std::make_unique<Plus>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Plus>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_MINUS:
-					binaryExpr = std::make_unique<Minus>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Minus>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_SLASH:
-					binaryExpr = std::make_unique<Slash>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Slash>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_LTEQ:
-					binaryExpr = std::make_unique<LessThanEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<LessThanEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_LT:
-					binaryExpr = std::make_unique<LessThan>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<LessThan>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_EQEQ:
-					binaryExpr = std::make_unique<EqEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<EqEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_EQ:
-					binaryExpr = std::make_unique<Eq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Eq>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_GTEQ:
-					binaryExpr = std::make_unique<GreaterThanEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<GreaterThanEq>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_GT:
-					binaryExpr = std::make_unique<GreaterThan>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<GreaterThan>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_MOD:
-					binaryExpr = std::make_unique<Mod>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Mod>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_ANDAND:
-					binaryExpr = std::make_unique<AndAnd>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<AndAnd>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_OROR:
-					binaryExpr = std::make_unique<OrOr>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<OrOr>(std::move(leftChild), std::move(rightChild));
 					break;
 
 				default:
-					binaryExpr = std::make_unique<Invalid>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Invalid>(std::move(leftChild), std::move(rightChild));
 					break;
 			}
 
 			return binaryExpr;
 		}
 
-		NotEq::NotEq(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -107,7 +107,7 @@ namespace ast
 		}
 
 
-		Mult::Mult(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		Mult::Mult(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -118,7 +118,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "*", special);
 		}
 
-		Plus::Plus(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		Plus::Plus(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -129,7 +129,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "+", special);
 		}
 
-		Minus::Minus(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		Minus::Minus(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -140,7 +140,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "-", special);
 		}
 
-		Slash::Slash(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		Slash::Slash(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -151,7 +151,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "/", special);
 		}
 
-		LessThanEq::LessThanEq(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		LessThanEq::LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -162,7 +162,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "<=", special);
 		}
 
-		LessThan::LessThan(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		LessThan::LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -173,7 +173,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "<", special);
 		}
 
-		EqEq::EqEq(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		EqEq::EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -184,7 +184,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "==", special);
 		}
 
-		Eq::Eq(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -195,7 +195,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "=", special);
 		}
 
-		GreaterThanEq::GreaterThanEq(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -207,7 +207,7 @@ namespace ast
 		}
 
 
-		GreaterThan::GreaterThan(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		GreaterThan::GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -218,7 +218,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, ">", special);
 		}
 
-		Mod::Mod(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		Mod::Mod(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -229,7 +229,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "%", special);
 		}
 
-		AndAnd::AndAnd(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		AndAnd::AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -240,7 +240,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "&&", special);
 		}
 
-		OrOr::OrOr(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;
@@ -251,7 +251,7 @@ namespace ast
 			BinaryExpression::toString(out, indent, "||", special);
 		}
 
-		Invalid::Invalid(uptr<Expression> leftChild, uptr<Expression> rightChild)
+		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
 		{
 			;

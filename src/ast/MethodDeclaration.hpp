@@ -12,12 +12,12 @@ namespace ast
 	class MethodDeclaration : public ClassMember
 	{
 		protected:
-			uptr<TypeIdent> return_type_and_name;
-			uptr<vec<uptr<TypeIdent>>> parameters;
-			uptr<Statement> block;
+			shptr<TypeIdent> return_type_and_name;
+			shptr<vec<shptr<TypeIdent>>> parameters;
+			shptr<Statement> block;
 
 		public:
-			MethodDeclaration(uptr<TypeIdent> return_type_and_name, uptr<vec<uptr<TypeIdent>>> parameters, uptr<Statement> block);
+			MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Statement> block);
 
 			/*
 			 * Prints this method including an optional "static" modifier (depending on isStatic)

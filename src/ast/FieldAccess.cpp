@@ -3,7 +3,7 @@
 
 namespace ast
 {
-	FieldAccess::FieldAccess(uptr<Ident> field_name) : field_name(std::move(field_name))
+	FieldAccess::FieldAccess(shptr<Ident> field_name) : field_name(std::move(field_name))
 	{
 		;
 	}

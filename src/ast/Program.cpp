@@ -4,7 +4,7 @@
 #include "Program.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
 
-ast::Program::Program(uptr<vec<uptr<ClassDeclaration>>> classes) : classes(std::move(classes))
+ast::Program::Program(shptr<vec<shptr<ClassDeclaration>>> classes) : classes(std::move(classes))
 {
 
 }
@@ -12,8 +12,8 @@ ast::Program::Program(uptr<vec<uptr<ClassDeclaration>>> classes) : classes(std::
 void ast::Program::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	//TODO: sort
-	auto sortClasses = [](const uptr<ast::ClassDeclaration>& a,
-	                      const uptr<ast::ClassDeclaration>& b) -> bool
+	auto sortClasses = [](const shptr<ast::ClassDeclaration>& a,
+	                      const shptr<ast::ClassDeclaration>& b) -> bool
 	{
 		return a->getName() < b->getName();
 	};

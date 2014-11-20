@@ -30,10 +30,10 @@ namespace ast
 		class Ident : public PrimaryExpression
 		{
 			public:
-				Ident(uptr<ast::Ident> identifier);
+				Ident(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int ident, bool = false) const;
 			protected:
-				uptr<ast::Ident> identifier;
+				shptr<ast::Ident> identifier;
 		};
 
 		class Object : public PrimaryExpression
@@ -63,29 +63,29 @@ namespace ast
 		class NewArrayExpression : public PrimaryExpression
 		{
 			public:
-				NewArrayExpression(uptr<Type> type, uptr<Expression> expr);
+				NewArrayExpression(shptr<Type> type, shptr<Expression> expr);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
-				uptr<Type> type;
-				uptr<Expression> expr;
+				shptr<Type> type;
+				shptr<Expression> expr;
 		};
 
 		class NewObjectExpression : public PrimaryExpression
 		{
 			public:
-				NewObjectExpression(uptr<ast::Ident> identifier);
+				NewObjectExpression(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
-				uptr<ast::Ident> identifier;
+				shptr<ast::Ident> identifier;
 		};
 
 		class MethodInvocation : public Ident
 		{
 			public:
-				MethodInvocation(uptr<ast::Ident> identifier, uptr<Arguments> arguments);
+				MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			private:
-				uptr<Arguments> arguments;
+				shptr<Arguments> arguments;
 		};
 	} // namespace pe
 
