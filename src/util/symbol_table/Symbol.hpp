@@ -1,25 +1,25 @@
 #ifndef SYMBOL_HPP
 #define SYMBOL_HPP
 
+#include "../../globals.hpp"
+
 #include "Scope.hpp"
 #include "Definition.hpp"
-
-//class Definition;
 
 class Symbol
 {
 	private:
 		std::string const *name;
-		Scope const *currentScope;
-		Definition const *currentDefinition;
+		shptr<Scope> currentScope;
+		shptr<Definition> currentDefinition;
 	public:
-		Definition const &getCurrentDefinition() const;
-		Scope const &getCurrentScope() const;
+		shptr<Definition> getCurrentDefinition() const;
+		shptr<Scope> getCurrentScope() const;
 
-		void setCurrentDefinition(Definition const &definition);
-		void setCurrentScope(Scope const &scope);
+		void setCurrentDefinition(shptr<Definition> definition);
+		void setCurrentScope(shptr<Scope> scope);
 
-		Symbol(const std::string const *name, Scope &currentScope, Definition &currentDefinition);
+		Symbol(const std::string *name, shptr<Scope> currentScope, shptr<Definition> currentDefinition);
 };
 
 #endif

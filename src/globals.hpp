@@ -6,5 +6,6 @@
 
 template <class T> using uptr = std::unique_ptr<T>;
 template <class T> using vec = std::vector<T>;
+template <class T> using shptr = std::shared_ptr<T>;
 
 #endif
