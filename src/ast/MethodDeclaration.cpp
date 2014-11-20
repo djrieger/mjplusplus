@@ -2,7 +2,7 @@
 #include "MethodDeclaration.hpp"
 
 ast::MethodDeclaration::MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Statement> block)
-	: return_type_and_name(std::move(return_type_and_name)), parameters(std::move(parameters)), block(std::move(block))
+	: return_type_and_name(return_type_and_name), parameters(parameters), block(block)
 {
 }
 

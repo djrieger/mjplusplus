@@ -6,7 +6,7 @@ namespace ast
 	namespace ue
 	{
 		UnaryExpression::UnaryExpression(shptr<Expression> child, int size)
-			: child(std::move(child)), size(size)
+			: child(child), size(size)
 		{
 
 		}
@@ -33,9 +33,9 @@ namespace ast
 					else
 					{
 						if (last_type == lexer::Token::Token_type::OPERATOR_MINUS)
-							child = std::make_shared<Neg>(std::move(child), size);
+							child = std::make_shared<Neg>(child, size);
 						else if (last_type == lexer::Token::Token_type::OPERATOR_NOT)
-							child = std::make_shared<Not>(std::move(child), size);
+							child = std::make_shared<Not>(child, size);
 
 						size = 1;
 						last_type = current_type;
@@ -43,9 +43,9 @@ namespace ast
 				}
 
 				if (last_type == lexer::Token::Token_type::OPERATOR_MINUS)
-					child = std::make_shared<Neg>(std::move(child), size);
+					child = std::make_shared<Neg>(child, size);
 				else if (last_type == lexer::Token::Token_type::OPERATOR_NOT)
-					child = std::make_shared<Not>(std::move(child), size);
+					child = std::make_shared<Not>(child, size);
 			}
 
 			return child;
@@ -66,7 +66,7 @@ namespace ast
 		}
 
 		Not::Not(shptr<Expression> child, int size)
-			: UnaryExpression::UnaryExpression(std::move(child), size)
+			: UnaryExpression::UnaryExpression(child, size)
 		{
 			;
 		}
@@ -77,7 +77,7 @@ namespace ast
 		}
 
 		Neg::Neg(shptr<Expression> child, int size)
-			: UnaryExpression::UnaryExpression(std::move(child), size)
+			: UnaryExpression::UnaryExpression(child, size)
 		{
 			;
 		}

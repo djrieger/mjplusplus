@@ -2,7 +2,7 @@
 #include "TypeIdent.hpp"
 
 ast::TypeIdent::TypeIdent(shptr<Type> type, shptr<Ident> identifier) :
-	type(std::move(type)), identifier(std::move(identifier))
+	type(type), identifier(identifier)
 {
 }
 

@@ -2,7 +2,7 @@
 #include "ReturnStatement.hpp"
 
 ast::ReturnStatement::ReturnStatement(shptr<Expression> expression):
-	expression(std::move(expression))
+	expression(expression)
 {
 
 }

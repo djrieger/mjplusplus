@@ -4,7 +4,7 @@
 
 
 ast::MainMethodDeclaration::MainMethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent> > > parameters, shptr<Statement> block)
-	: MethodDeclaration(std::move(return_type_and_name), std::move(parameters), std::move(block))
+	: MethodDeclaration(return_type_and_name, parameters, block)
 {
 	;
 }
