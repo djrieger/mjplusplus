@@ -9,7 +9,7 @@
 class Symbol
 {
 	private:
-		std::string const *name;
+		std::string const* name;
 		shptr<Scope> currentScope;
 		shptr<Definition> currentDefinition;
 	public:
@@ -19,7 +19,7 @@ class Symbol
 		void setCurrentDefinition(shptr<Definition> definition);
 		void setCurrentScope(shptr<Scope> scope);
 
-		Symbol(const std::string *name, shptr<Scope> currentScope, shptr<Definition> currentDefinition);
+		Symbol(const std::string* name, shptr<Scope> currentScope, shptr<Definition> currentDefinition);
 };
 
 #endif

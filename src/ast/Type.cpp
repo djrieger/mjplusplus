@@ -28,7 +28,7 @@ void ast::Type::toString(std::ostream& out, unsigned int indent, uptr<Expression
 			break;
 
 		case Type::Primitive_type::NONE:
-			class_name->toString(out, 0, false);
+			class_name->toString(out, indent, false);
 			break;
 	}
 
@@ -37,7 +37,7 @@ void ast::Type::toString(std::ostream& out, unsigned int indent, uptr<Expression
 		out << "[";
 
 		if (i == 1 && expression)
-			expression->toString(out, 0, false);
+			expression->toString(out, indent, false);
 
 		out << "]";
 	}

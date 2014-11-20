@@ -4,40 +4,40 @@
 #include "../globals.hpp"
 #include "parser.hpp"
 
-Parser::Parser(Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages), current {Token::Token_type::TOKEN_ERROR, "", {0, 0}}
+Parser::Parser(lexer::Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages), current {lexer::Token::Token_type::TOKEN_ERROR, "", {0, 0}}
 {
 }
 
-int Parser::operator_precs(Token::Token_type t)
+int Parser::operator_precs(lexer::Token::Token_type t)
 {
 	switch (t)
 	{
-		case Token::Token_type::OPERATOR_EQ:
+		case lexer::Token::Token_type::OPERATOR_EQ:
 			return 1;
 
-		case Token::Token_type::OPERATOR_OROR:
+		case lexer::Token::Token_type::OPERATOR_OROR:
 			return 2;
 
-		case Token::Token_type::OPERATOR_ANDAND:
+		case lexer::Token::Token_type::OPERATOR_ANDAND:
 			return 3;
 
-		case Token::Token_type::OPERATOR_EQEQ:
-		case Token::Token_type::OPERATOR_NOTEQ:
+		case lexer::Token::Token_type::OPERATOR_EQEQ:
+		case lexer::Token::Token_type::OPERATOR_NOTEQ:
 			return 4;
 
-		case Token::Token_type::OPERATOR_LT:
-		case Token::Token_type::OPERATOR_LTEQ:
-		case Token::Token_type::OPERATOR_GT:
-		case Token::Token_type::OPERATOR_GTEQ:
+		case lexer::Token::Token_type::OPERATOR_LT:
+		case lexer::Token::Token_type::OPERATOR_LTEQ:
+		case lexer::Token::Token_type::OPERATOR_GT:
+		case lexer::Token::Token_type::OPERATOR_GTEQ:
 			return 5;
 
-		case Token::Token_type::OPERATOR_PLUS:
-		case Token::Token_type::OPERATOR_MINUS:
+		case lexer::Token::Token_type::OPERATOR_PLUS:
+		case lexer::Token::Token_type::OPERATOR_MINUS:
 			return 6;
 
-		case Token::Token_type::OPERATOR_MULT:
-		case Token::Token_type::OPERATOR_SLASH:
-		case Token::Token_type::OPERATOR_MOD:
+		case lexer::Token::Token_type::OPERATOR_MULT:
+		case lexer::Token::Token_type::OPERATOR_SLASH:
+		case lexer::Token::Token_type::OPERATOR_MOD:
 			return 7;
 
 		default:
@@ -61,7 +61,7 @@ bool Parser::start()
 	{
 		printError(msg);
 	}
-	catch (Token::Token_type tokenType)
+	catch (lexer::Token::Token_type tokenType)
 	{
 		printError("expected " + lexer.describe(tokenType));
 	}
@@ -85,7 +85,7 @@ void __attribute__ ((noinline)) Parser::nextToken()
 {
 	current = lexer.get_next_token();
 
-	if (current.token_type == Token::Token_type::TOKEN_ERROR)
+	if (current.token_type == lexer::Token::Token_type::TOKEN_ERROR)
 		throw "Error from lexer";
 }
 
@@ -94,7 +94,7 @@ void Parser::printError(std::string const& error_msg)
 	if (print_messages)   // only print error messages if they are wanted
 	{
 		std::cerr << "at line " << current.position.first << ", column " << current.position.second <<
-		          ", parsing \"" << current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
+		          ", parsing \"" << *current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
 		          error_msg << std::endl;
 
 		// read current line
@@ -112,7 +112,7 @@ void Parser::printError(std::string const& error_msg)
 	}
 }
 
-void Parser::expect(Token::Token_type const& tokenType)
+void Parser::expect(lexer::Token::Token_type const& tokenType)
 {
 	if (current.token_type != tokenType)
 	{
@@ -129,7 +129,7 @@ void Parser::expect(Token::Token_type const& tokenType)
 		// skip until token found
 		do
 		{
-			if (current.token_type != Token::Token_type::TOKEN_EOF)
+			if (current.token_type != lexer::Token::Token_type::TOKEN_EOF)
 				return;
 
 			nextToken();
@@ -144,7 +144,7 @@ void Parser::expect(Token::Token_type const& tokenType)
 	nextToken();
 }
 
-void Parser::expect(Token::Token_type const& tokenType, std::string const& string_val)
+void Parser::expect(lexer::Token::Token_type const& tokenType, std::string const& string_val)
 {
 	if (current.token_type != tokenType || *current.string_value != string_val)
 	{
@@ -161,7 +161,7 @@ void Parser::expect(Token::Token_type const& tokenType, std::string const& strin
 		// skip until token found
 		do
 		{
-			if (current.token_type != Token::Token_type::TOKEN_EOF)
+			if (current.token_type != lexer::Token::Token_type::TOKEN_EOF)
 				return;
 
 			nextToken();
@@ -182,18 +182,18 @@ uptr<ast::Program> Parser::parseProgram()
 {
 	auto classes = std::make_unique<vec<uptr<ast::ClassDeclaration>>>();
 
-	while (current.token_type == Token::Token_type::KEYWORD_CLASS)
+	while (current.token_type == lexer::Token::Token_type::KEYWORD_CLASS)
 	{
 		nextToken();
 		// now current.string_value contains the name of the class:
 		auto className = std::make_unique<ast::Ident>(*current.string_value);
-		expect(Token::Token_type::TOKEN_IDENT);
-		expect(Token::Token_type::OPERATOR_LBRACE);
+		expect(lexer::Token::Token_type::TOKEN_IDENT);
+		expect(lexer::Token::Token_type::OPERATOR_LBRACE);
 		classes->push_back(std::make_unique<ast::ClassDeclaration>(std::move(className), parseClassMembers()));
-		expect(Token::Token_type::OPERATOR_RBRACE);
+		expect(lexer::Token::Token_type::OPERATOR_RBRACE);
 	}
 
-	expect(Token::Token_type::TOKEN_EOF);
+	expect(lexer::Token::Token_type::TOKEN_EOF);
 	return std::make_unique<ast::Program>(std::move(classes));
 }
 
@@ -203,11 +203,11 @@ uptr<vec<uptr<ast::ClassMember>>> Parser::parseClassMembers()
 {
 	auto classMembers = std::make_unique<vec<uptr<ast::ClassMember>>>();
 
-	while (current.token_type == Token::Token_type::KEYWORD_PUBLIC)
+	while (current.token_type == lexer::Token::Token_type::KEYWORD_PUBLIC)
 	{
 		nextToken();
 
-		if (current.token_type == Token::Token_type::KEYWORD_STATIC)
+		if (current.token_type == lexer::Token::Token_type::KEYWORD_STATIC)
 		{
 			nextToken();
 			classMembers->push_back(std::move(parseMainMethod()));
@@ -224,23 +224,23 @@ uptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 {
 	// build "void METHODNAME"
 	std::unique_ptr<ast::Type> voidType( new ast::Type(ast::Type::Primitive_type::VOID));
-	expect(Token::Token_type::KEYWORD_VOID);
+	expect(lexer::Token::Token_type::KEYWORD_VOID);
 	auto mainMethodName = std::make_unique<ast::Ident>(*current.string_value);
 	auto typeIdent = std::make_unique<ast::TypeIdent>(std::move(voidType), std::move(mainMethodName));
-	expect(Token::Token_type::TOKEN_IDENT);
-	expect(Token::Token_type::OPERATOR_LPAREN);
+	expect(lexer::Token::Token_type::TOKEN_IDENT);
+	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 
 	// build "String[] PARAMETERNAME"
 	auto stringType = std::make_unique<ast::Ident>(*current.string_value);
 	auto type = std::make_unique<ast::Type>(std::move(stringType), 1);
-	expect(Token::Token_type::TOKEN_IDENT, "String");
-	expect(Token::Token_type::OPERATOR_LBRACKET);
-	expect(Token::Token_type::OPERATOR_RBRACKET);
+	expect(lexer::Token::Token_type::TOKEN_IDENT, "String");
+	expect(lexer::Token::Token_type::OPERATOR_LBRACKET);
+	expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
 	auto parameterName = std::make_unique<ast::Ident>(*current.string_value);
-	expect(Token::Token_type::TOKEN_IDENT);
+	expect(lexer::Token::Token_type::TOKEN_IDENT);
 	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
 	parameters->push_back(std::make_unique<ast::TypeIdent>(std::move(type), std::move(parameterName)));
-	expect(Token::Token_type::OPERATOR_RPAREN);
+	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 
 	return std::make_unique<ast::MainMethodDeclaration>(std::move(typeIdent), std::move(parameters), parseBlock());
 }
@@ -252,7 +252,7 @@ uptr<ast::TypeIdent> Parser::parseTypeIdent()
 
 	// retrieve variable name:
 	auto variable_name = std::make_unique<ast::Ident>(*current.string_value);
-	expect(Token::Token_type::TOKEN_IDENT);
+	expect(lexer::Token::Token_type::TOKEN_IDENT);
 
 	return std::make_unique<ast::TypeIdent>(std::move(type), std::move(variable_name));
 }
@@ -262,10 +262,10 @@ int Parser::parseArrayDecl()
 {
 	int dimension = 0;
 
-	while (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
+	while (current.token_type == lexer::Token::Token_type::OPERATOR_LBRACKET)
 	{
 		nextToken();
-		expect(Token::Token_type::OPERATOR_RBRACKET);
+		expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
 		dimension++;
 	}
 
@@ -279,19 +279,19 @@ uptr<ast::Type> Parser::parseBasicType()
 
 	switch (current.token_type)
 	{
-		case Token::Token_type::KEYWORD_INT:
+		case lexer::Token::Token_type::KEYWORD_INT:
 			primitive_type = ast::Type::Primitive_type::INT;
 			break;
 
-		case Token::Token_type::KEYWORD_BOOLEAN:
+		case lexer::Token::Token_type::KEYWORD_BOOLEAN:
 			primitive_type = ast::Type::Primitive_type::BOOLEAN;
 			break;
 
-		case Token::Token_type::KEYWORD_VOID:
+		case lexer::Token::Token_type::KEYWORD_VOID:
 			primitive_type = ast::Type::Primitive_type::VOID;
 			break;
 
-		case Token::Token_type::TOKEN_IDENT:
+		case lexer::Token::Token_type::TOKEN_IDENT:
 		{
 			auto class_name = std::make_unique<ast::Ident>(*current.string_value);
 			nextToken();
@@ -323,16 +323,16 @@ uptr<ast::ClassMember> Parser::parseFieldOrMethod()
 {
 	auto typeIdent = parseTypeIdent();
 
-	if (current.token_type == Token::Token_type::OPERATOR_SEMICOLON)
+	if (current.token_type == lexer::Token::Token_type::OPERATOR_SEMICOLON)
 	{
 		nextToken();
 		return std::make_unique<ast::FieldDeclaration>(std::move(typeIdent));
 	}
 	else
 	{
-		expect(Token::Token_type::OPERATOR_LPAREN);
+		expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 		auto parameters = parseOptionalParameters();
-		expect(Token::Token_type::OPERATOR_RPAREN);
+		expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 		return std::make_unique<ast::MethodDeclaration>(std::move(typeIdent), std::move(parameters), parseBlock());
 	}
 }
@@ -347,12 +347,12 @@ uptr<vec<uptr<ast::TypeIdent>>> Parser::parseOptionalParameters()
 	auto parameters = std::make_unique<vec<uptr<ast::TypeIdent>>>();
 	bool isFirstParameter = true;
 
-	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
+	while (current.token_type != lexer::Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstParameter = false;
 		parameters->push_back(std::move(parseTypeIdent()));
 
-		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
+		if (current.token_type != lexer::Token::Token_type::OPERATOR_COMMA)
 			return parameters;
 		else
 			nextToken();
@@ -370,11 +370,11 @@ uptr<ast::Statement> Parser::parseStatement()
 {
 	switch (current.token_type)
 	{
-		case Token::Token_type::OPERATOR_LBRACE:
+		case lexer::Token::Token_type::OPERATOR_LBRACE:
 			return parseBlock();
 			break;
 
-		case Token::Token_type::OPERATOR_SEMICOLON:
+		case lexer::Token::Token_type::OPERATOR_SEMICOLON:
 		{
 			nextToken();
 			uptr<ast::Statement> stmt;
@@ -382,35 +382,35 @@ uptr<ast::Statement> Parser::parseStatement()
 			break;
 		}
 
-		case Token::Token_type::KEYWORD_IF:
+		case lexer::Token::Token_type::KEYWORD_IF:
 			nextToken();
 			return parseIfStatement();
 			break;
 
-		case Token::Token_type::KEYWORD_WHILE:
+		case lexer::Token::Token_type::KEYWORD_WHILE:
 			nextToken();
 			return parseWhileStatement();
 			break;
 
-		case Token::Token_type::KEYWORD_RETURN:
+		case lexer::Token::Token_type::KEYWORD_RETURN:
 			nextToken();
 			return parseReturnStatement();
 			break;
 
 		// IDENT, (, -, !, null, false, true, INTEGER_LITERAL, this, new
-		case Token::Token_type::TOKEN_IDENT:
-		case Token::Token_type::TOKEN_INT_LIT:
-		case Token::Token_type::OPERATOR_LPAREN:
-		case Token::Token_type::OPERATOR_MINUS:
-		case Token::Token_type::OPERATOR_NOT:
-		case Token::Token_type::KEYWORD_NULL:
-		case Token::Token_type::KEYWORD_FALSE:
-		case Token::Token_type::KEYWORD_TRUE:
-		case Token::Token_type::KEYWORD_THIS:
-		case Token::Token_type::KEYWORD_NEW:
+		case lexer::Token::Token_type::TOKEN_IDENT:
+		case lexer::Token::Token_type::TOKEN_INT_LIT:
+		case lexer::Token::Token_type::OPERATOR_LPAREN:
+		case lexer::Token::Token_type::OPERATOR_MINUS:
+		case lexer::Token::Token_type::OPERATOR_NOT:
+		case lexer::Token::Token_type::KEYWORD_NULL:
+		case lexer::Token::Token_type::KEYWORD_FALSE:
+		case lexer::Token::Token_type::KEYWORD_TRUE:
+		case lexer::Token::Token_type::KEYWORD_THIS:
+		case lexer::Token::Token_type::KEYWORD_NEW:
 		{
 			auto expr = parseExpression();
-			expect(Token::Token_type::OPERATOR_SEMICOLON);
+			expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
 			return std::make_unique<ast::ExpressionStatement>(std::move(expr));
 			break;
 		}
@@ -424,11 +424,11 @@ uptr<ast::Statement> Parser::parseStatement()
 // BlockStatements -> BlockStatement BlockStatements | .
 uptr<ast::Statement> Parser::parseBlock()
 {
-	expect(Token::Token_type::OPERATOR_LBRACE);
+	expect(lexer::Token::Token_type::OPERATOR_LBRACE);
 
 	auto statements = std::make_unique<vec<uptr<ast::Statement>>>();
 
-	while (current.token_type != Token::Token_type::OPERATOR_RBRACE)
+	while (current.token_type != lexer::Token::Token_type::OPERATOR_RBRACE)
 	{
 		auto block_statement = parseBlockStatement();
 
@@ -457,42 +457,42 @@ uptr<ast::Statement> Parser::parseBlockStatement()
 
 	switch (current.token_type)
 	{
-		case Token::Token_type::OPERATOR_LBRACE:
-		case Token::Token_type::OPERATOR_LPAREN:
-		case Token::Token_type::OPERATOR_SEMICOLON:
-		case Token::Token_type::KEYWORD_WHILE:
-		case Token::Token_type::KEYWORD_IF:
-		case Token::Token_type::KEYWORD_RETURN:
-		case Token::Token_type::OPERATOR_MINUS:
-		case Token::Token_type::OPERATOR_NOT:
-		case Token::Token_type::KEYWORD_NULL:
-		case Token::Token_type::KEYWORD_FALSE:
-		case Token::Token_type::KEYWORD_TRUE:
-		case Token::Token_type::TOKEN_INT_LIT:
-		case Token::Token_type::KEYWORD_THIS:
-		case Token::Token_type::KEYWORD_NEW:
+		case lexer::Token::Token_type::OPERATOR_LBRACE:
+		case lexer::Token::Token_type::OPERATOR_LPAREN:
+		case lexer::Token::Token_type::OPERATOR_SEMICOLON:
+		case lexer::Token::Token_type::KEYWORD_WHILE:
+		case lexer::Token::Token_type::KEYWORD_IF:
+		case lexer::Token::Token_type::KEYWORD_RETURN:
+		case lexer::Token::Token_type::OPERATOR_MINUS:
+		case lexer::Token::Token_type::OPERATOR_NOT:
+		case lexer::Token::Token_type::KEYWORD_NULL:
+		case lexer::Token::Token_type::KEYWORD_FALSE:
+		case lexer::Token::Token_type::KEYWORD_TRUE:
+		case lexer::Token::Token_type::TOKEN_INT_LIT:
+		case lexer::Token::Token_type::KEYWORD_THIS:
+		case lexer::Token::Token_type::KEYWORD_NEW:
 			return parseStatement();
 			break;
 
-		case Token::Token_type::KEYWORD_VOID:
-		case Token::Token_type::KEYWORD_INT:
-		case Token::Token_type::KEYWORD_BOOLEAN:
+		case lexer::Token::Token_type::KEYWORD_VOID:
+		case lexer::Token::Token_type::KEYWORD_INT:
+		case lexer::Token::Token_type::KEYWORD_BOOLEAN:
 			return parseLocalVariableDeclarationStatement();
 			break;
 
-		case Token::Token_type::TOKEN_IDENT:
+		case lexer::Token::Token_type::TOKEN_IDENT:
 		{
-			Token idToken = current;
+			lexer::Token idToken = current;
 			nextToken();
-			Token maybeLBracketToken = current;
+			lexer::Token maybeLBracketToken = current;
 
-			if (maybeLBracketToken.token_type == Token::Token_type::TOKEN_IDENT)
+			if (maybeLBracketToken.token_type == lexer::Token::Token_type::TOKEN_IDENT)
 			{
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
 				return parseLocalVariableDeclarationStatement();
 			}
-			else if (maybeLBracketToken.token_type != Token::Token_type::OPERATOR_LBRACKET)
+			else if (maybeLBracketToken.token_type != lexer::Token::Token_type::OPERATOR_LBRACKET)
 			{
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
@@ -501,8 +501,8 @@ uptr<ast::Statement> Parser::parseBlockStatement()
 			else
 			{
 				nextToken();
-				Token maybeRBracketToken = current;
-				bool isRBracket = maybeRBracketToken.token_type == Token::Token_type::OPERATOR_RBRACKET;
+				lexer::Token maybeRBracketToken = current;
+				bool isRBracket = maybeRBracketToken.token_type == lexer::Token::Token_type::OPERATOR_RBRACKET;
 				lexer.unget_token(maybeRBracketToken);
 				lexer.unget_token(maybeLBracketToken);
 				current = idToken;
@@ -531,7 +531,7 @@ uptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 	auto type_ident = parseTypeIdent();
 	uptr<ast::LVDStatement> lvdStatement;
 
-	if (current.token_type == Token::Token_type::OPERATOR_EQ)
+	if (current.token_type == lexer::Token::Token_type::OPERATOR_EQ)
 	{
 		nextToken();
 		lvdStatement = std::make_unique<ast::LVDStatement>(std::move(type_ident), parseExpression());
@@ -539,7 +539,7 @@ uptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 	else
 		lvdStatement = std::make_unique<ast::LVDStatement>(std::move(type_ident));
 
-	expect(Token::Token_type::OPERATOR_SEMICOLON);
+	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
 	return lvdStatement;
 }
 
@@ -548,12 +548,12 @@ uptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 // 	| .
 uptr<ast::IfStatement> Parser::parseIfStatement()
 {
-	expect(Token::Token_type::OPERATOR_LPAREN);
+	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
-	expect(Token::Token_type::OPERATOR_RPAREN);
+	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 	auto then = parseStatement();
 
-	if (current.token_type == Token::Token_type::KEYWORD_ELSE)
+	if (current.token_type == lexer::Token::Token_type::KEYWORD_ELSE)
 	{
 		nextToken();
 		return std::make_unique<ast::IfStatement>(std::move(cond), std::move(then), parseStatement());
@@ -565,9 +565,9 @@ uptr<ast::IfStatement> Parser::parseIfStatement()
 // WhileStatement -> ( Expression ) Statement .
 uptr<ast::WhileStatement> Parser::parseWhileStatement()
 {
-	expect(Token::Token_type::OPERATOR_LPAREN);
+	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
-	expect(Token::Token_type::OPERATOR_RPAREN);
+	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 	return std::make_unique<ast::WhileStatement>(std::move(cond), parseStatement());
 }
 
@@ -576,14 +576,14 @@ uptr<ast::WhileStatement> Parser::parseWhileStatement()
 //  	| .
 uptr<ast::ReturnStatement> Parser::parseReturnStatement()
 {
-	if (current.token_type != Token::Token_type::OPERATOR_SEMICOLON)
+	if (current.token_type != lexer::Token::Token_type::OPERATOR_SEMICOLON)
 	{
 		auto expr = parseExpression();
-		expect(Token::Token_type::OPERATOR_SEMICOLON);
+		expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
 		return std::make_unique<ast::ReturnStatement>(std::move(expr));
 	}
 
-	expect(Token::Token_type::OPERATOR_SEMICOLON);
+	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
 	return std::make_unique<ast::ReturnStatement>();
 }
 
@@ -636,7 +636,7 @@ uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 		if (prec > 1) //equivalent to the fact that operator is left associative
 			prec++;
 
-		Token::Token_type t = current.token_type;
+		lexer::Token::Token_type t = current.token_type;
 		nextToken();
 
 		expr = ast::be::BinaryExpression::createBinaryExpr(std::move(expr), precedenceClimb(prec), t);
@@ -650,10 +650,10 @@ uptr<ast::Expression> Parser::precedenceClimb(int minPrec)
 // PostfixExpression -> PrimaryExpression PostfixOps .
 uptr<ast::Expression> Parser::parseUnaryExpression()
 {
-	auto unary_operators = std::make_unique<vec<Token::Token_type>>();
+	auto unary_operators = std::make_unique<vec<lexer::Token::Token_type>>();
 
-	while (current.token_type == Token::Token_type::OPERATOR_NOT ||
-	        current.token_type == Token::Token_type::OPERATOR_MINUS)
+	while (current.token_type == lexer::Token::Token_type::OPERATOR_NOT ||
+	        current.token_type == lexer::Token::Token_type::OPERATOR_MINUS)
 	{
 		unary_operators->push_back(current.token_type);
 		nextToken();
@@ -685,41 +685,41 @@ uptr<ast::Expression> Parser::parsePrimaryExpression()
 
 	switch (current.token_type)
 	{
-		case Token::Token_type::KEYWORD_FALSE:
+		case lexer::Token::Token_type::KEYWORD_FALSE:
 			pe = std::make_unique<ast::pe::Bool>(false);
 			nextToken();
 			break;
 
-		case Token::Token_type::KEYWORD_TRUE:
+		case lexer::Token::Token_type::KEYWORD_TRUE:
 			pe = std::make_unique<ast::pe::Bool>(true);
 			nextToken();
 			break;
 
-		case Token::Token_type::KEYWORD_NULL:
+		case lexer::Token::Token_type::KEYWORD_NULL:
 			pe = std::make_unique<ast::pe::Object>(ast::pe::Object::Object_Type::NULL_OBJECT);
 			nextToken();
 			break;
 
-		case Token::Token_type::KEYWORD_THIS:
+		case lexer::Token::Token_type::KEYWORD_THIS:
 			pe = std::make_unique<ast::pe::Object>(ast::pe::Object::Object_Type::THIS_OBJECT);
 			nextToken();
 			break;
 
-		case Token::Token_type::TOKEN_INT_LIT:
+		case lexer::Token::Token_type::TOKEN_INT_LIT:
 			pe = std::make_unique<ast::pe::Integer>(*current.string_value);
 			nextToken();
 			break;
 
-		case Token::Token_type::TOKEN_IDENT:
+		case lexer::Token::Token_type::TOKEN_IDENT:
 		{
 			auto ident = std::make_unique<ast::Ident>(*current.string_value);
 			nextToken();
 
-			if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
+			if (current.token_type == lexer::Token::Token_type::OPERATOR_LPAREN)
 			{
 				nextToken();
 				auto arguments = parseArguments();
-				expect(Token::Token_type::OPERATOR_RPAREN);
+				expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 				pe = std::make_unique<ast::pe::MethodInvocation>(std::move(ident), std::move(arguments));
 			}
 			else
@@ -728,15 +728,15 @@ uptr<ast::Expression> Parser::parsePrimaryExpression()
 			break;
 		}
 
-		case Token::Token_type::OPERATOR_LPAREN:
+		case lexer::Token::Token_type::OPERATOR_LPAREN:
 		{
 			nextToken();
 			pe = parseExpression();
-			expect(Token::Token_type::OPERATOR_RPAREN);
+			expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 			break;
 		}
 
-		case Token::Token_type::KEYWORD_NEW:
+		case lexer::Token::Token_type::KEYWORD_NEW:
 			nextToken();
 			pe = parseNewObjectOrNewArrayExpression();
 			break;
@@ -751,14 +751,14 @@ uptr<ast::Expression> Parser::parsePrimaryExpression()
 // NewObjectOrNewArrayExpression -> NewObjectExpression | NewArrayExpression .
 uptr<ast::Expression> Parser::parseNewObjectOrNewArrayExpression()
 {
-	Token id = current;
+	lexer::Token id = current;
 
 	nextToken();
-	Token next = current;
+	lexer::Token next = current;
 	lexer.unget_token(next);
 	current = id;
 
-	if (next.token_type == Token::Token_type::OPERATOR_LPAREN)
+	if (next.token_type == lexer::Token::Token_type::OPERATOR_LPAREN)
 		return parseNewObjectExpression();
 	else
 		return parseNewArrayExpression();
@@ -768,9 +768,9 @@ uptr<ast::Expression> Parser::parseNewObjectOrNewArrayExpression()
 uptr<ast::Expression> Parser::parseNewObjectExpression()
 {
 	auto ident = std::make_unique<ast::Ident>(*current.string_value);
-	expect(Token::Token_type::TOKEN_IDENT);
-	expect(Token::Token_type::OPERATOR_LPAREN);
-	expect(Token::Token_type::OPERATOR_RPAREN);
+	expect(lexer::Token::Token_type::TOKEN_IDENT);
+	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
+	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 	return std::make_unique<ast::pe::NewObjectExpression>(std::move(ident));
 }
 
@@ -778,9 +778,9 @@ uptr<ast::Expression> Parser::parseNewObjectExpression()
 uptr<ast::Expression> Parser::parseNewArrayExpression()
 {
 	auto type = parseBasicType();
-	expect(Token::Token_type::OPERATOR_LBRACKET);
+	expect(lexer::Token::Token_type::OPERATOR_LBRACKET);
 	auto expression = parseExpression();
-	expect(Token::Token_type::OPERATOR_RBRACKET);
+	expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
 	type->setDimension(parseOptionalBrackets() + 1);
 
 	return std::make_unique<ast::pe::NewArrayExpression>(std::move(type), std::move(expression));
@@ -791,13 +791,13 @@ uptr<ast::Expression> Parser::parseNewArrayExpression()
 int Parser::parseOptionalBrackets()
 {
 	int dimension = 0;
-	Token t = current;
+	lexer::Token t = current;
 
-	while (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
+	while (current.token_type == lexer::Token::Token_type::OPERATOR_LBRACKET)
 	{
 		nextToken();
 
-		if (current.token_type == Token::Token_type::OPERATOR_RBRACKET)
+		if (current.token_type == lexer::Token::Token_type::OPERATOR_RBRACKET)
 		{
 			dimension++;
 			nextToken();
@@ -821,12 +821,12 @@ uptr<ast::Arguments> Parser::parseArguments()
 	auto args = std::make_unique<vec<uptr<ast::Expression>>>();
 	bool isFirstArgument = true;
 
-	while (current.token_type != Token::Token_type::OPERATOR_RPAREN)
+	while (current.token_type != lexer::Token::Token_type::OPERATOR_RPAREN)
 	{
 		isFirstArgument = false;
 		args->push_back(std::move(parseExpression()));
 
-		if (current.token_type != Token::Token_type::OPERATOR_COMMA)
+		if (current.token_type != lexer::Token::Token_type::OPERATOR_COMMA)
 			return std::make_unique<ast::Arguments>(std::move(args));
 		else
 			nextToken();
@@ -843,13 +843,13 @@ uptr<ast::Arguments> Parser::parseArguments()
 std::unique_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 {
 	auto id = std::make_unique<ast::Ident>(*current.string_value);
-	expect(Token::Token_type::TOKEN_IDENT);
+	expect(lexer::Token::Token_type::TOKEN_IDENT);
 
-	if (current.token_type == Token::Token_type::OPERATOR_LPAREN)
+	if (current.token_type == lexer::Token::Token_type::OPERATOR_LPAREN)
 	{
 		nextToken();
 		auto args = parseArguments();
-		expect(Token::Token_type::OPERATOR_RPAREN);
+		expect(lexer::Token::Token_type::OPERATOR_RPAREN);
 		return std::make_unique<ast::MethodInvocation>(std::move(id), std::move(args));
 	}
 	else
@@ -865,16 +865,16 @@ uptr<vec<uptr<ast::PostfixOp>>> Parser::parsePostfixOps()
 
 	while (true)
 	{
-		if (current.token_type == Token::Token_type::OPERATOR_DOT)
+		if (current.token_type == lexer::Token::Token_type::OPERATOR_DOT)
 		{
 			nextToken();
 			postfixops->push_back(parseMethodInvocationOrFieldAccess());
 		}
-		else if (current.token_type == Token::Token_type::OPERATOR_LBRACKET)
+		else if (current.token_type == lexer::Token::Token_type::OPERATOR_LBRACKET)
 		{
 			nextToken();
 			postfixops->push_back(std::make_unique<ast::ArrayAccess>(parseExpression()));
-			expect(Token::Token_type::OPERATOR_RBRACKET);
+			expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
 		}
 		else
 			return postfixops;
