@@ -11,8 +11,8 @@ ASTYLESUFFIX := .orig
 TARGET := mj++
 
 # this looks for .cpp/.hpp-files in the current directory and all subdirectories. (recursive-depth = 1)
-SOURCE_FILES := $(sort $(wildcard src/*.cpp)) $(sort $(wildcard src/**/*.cpp))
-HEADER_FILES := $(sort $(wildcard src/*.hpp)) $(sort $(wildcard src/**/*.hpp))
+SOURCE_FILES := $(sort $(wildcard src/*.cpp)) $(sort $(wildcard src/**/*.cpp)) $(sort $(wildcard src/**/**/*.cpp))
+HEADER_FILES := $(sort $(wildcard src/*.hpp)) $(sort $(wildcard src/**/*.hpp)) $(sort $(wildcard src/**/**/*.hpp))
 
 all: $(TARGET)
 
