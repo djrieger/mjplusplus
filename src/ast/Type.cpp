@@ -82,3 +82,13 @@ shptr<ast::Type> ast::Type::de_array()
 	else
 		return std::make_shared<ast::Type>(primitive_type, dimension - 1);
 }
+
+ast::Type::Primitive_type ast::Type::getPrimitiveType() const
+{
+	return primitive_type;
+}
+
+std::string const &ast::Type::getClassName() const
+{
+	return class_name->getName();
+}
