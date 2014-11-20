@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		a x = new b(); /* cannot assign b to an a */
+	}
+}
+class b {}

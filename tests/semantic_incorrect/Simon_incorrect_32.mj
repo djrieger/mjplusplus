@@ -1,0 +1,4 @@
+class a {
+	public static void main(String[] a) {}
+	public void z(int x, boolean x)/* x used two times */ {}
+}

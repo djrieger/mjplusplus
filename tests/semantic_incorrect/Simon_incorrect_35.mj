@@ -1,0 +1,6 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		a[][] x=new a[4];/* incompatible types */
+	}
+}
