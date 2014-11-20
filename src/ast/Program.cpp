@@ -4,7 +4,7 @@
 #include "Program.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
 
-ast::Program::Program(shptr<vec<shptr<ClassDeclaration>>> classes) : classes(std::move(classes))
+ast::Program::Program(shptr<vec<shptr<ClassDeclaration>>> classes) : classes(classes)
 {
 
 }

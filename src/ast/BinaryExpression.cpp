@@ -7,7 +7,7 @@ namespace ast
 	{
 
 		BinaryExpression::BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: leftChild(std::move(leftChild)), rightChild(std::move(rightChild))
+			: leftChild(leftChild), rightChild(rightChild)
 		{
 			;
 		}
@@ -32,63 +32,63 @@ namespace ast
 			switch (operator_type)
 			{
 				case lexer::Token::Token_type::OPERATOR_NOTEQ:
-					binaryExpr = std::make_shared<NotEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<NotEq>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_MULT:
-					binaryExpr = std::make_shared<Mult>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Mult>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_PLUS:
-					binaryExpr = std::make_shared<Plus>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Plus>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_MINUS:
-					binaryExpr = std::make_shared<Minus>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Minus>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_SLASH:
-					binaryExpr = std::make_shared<Slash>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Slash>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_LTEQ:
-					binaryExpr = std::make_shared<LessThanEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<LessThanEq>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_LT:
-					binaryExpr = std::make_shared<LessThan>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<LessThan>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_EQEQ:
-					binaryExpr = std::make_shared<EqEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<EqEq>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_EQ:
-					binaryExpr = std::make_shared<Eq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Eq>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_GTEQ:
-					binaryExpr = std::make_shared<GreaterThanEq>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<GreaterThanEq>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_GT:
-					binaryExpr = std::make_shared<GreaterThan>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<GreaterThan>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_MOD:
-					binaryExpr = std::make_shared<Mod>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Mod>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_ANDAND:
-					binaryExpr = std::make_shared<AndAnd>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<AndAnd>(leftChild, rightChild);
 					break;
 
 				case lexer::Token::Token_type::OPERATOR_OROR:
-					binaryExpr = std::make_shared<OrOr>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<OrOr>(leftChild, rightChild);
 					break;
 
 				default:
-					binaryExpr = std::make_shared<Invalid>(std::move(leftChild), std::move(rightChild));
+					binaryExpr = std::make_shared<Invalid>(leftChild, rightChild);
 					break;
 			}
 
@@ -96,7 +96,7 @@ namespace ast
 		}
 
 		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -108,7 +108,7 @@ namespace ast
 
 
 		Mult::Mult(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -119,7 +119,7 @@ namespace ast
 		}
 
 		Plus::Plus(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -130,7 +130,7 @@ namespace ast
 		}
 
 		Minus::Minus(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -141,7 +141,7 @@ namespace ast
 		}
 
 		Slash::Slash(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -152,7 +152,7 @@ namespace ast
 		}
 
 		LessThanEq::LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -163,7 +163,7 @@ namespace ast
 		}
 
 		LessThan::LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -174,7 +174,7 @@ namespace ast
 		}
 
 		EqEq::EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -185,7 +185,7 @@ namespace ast
 		}
 
 		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -196,7 +196,7 @@ namespace ast
 		}
 
 		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -208,7 +208,7 @@ namespace ast
 
 
 		GreaterThan::GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -219,7 +219,7 @@ namespace ast
 		}
 
 		Mod::Mod(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -230,7 +230,7 @@ namespace ast
 		}
 
 		AndAnd::AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -241,7 +241,7 @@ namespace ast
 		}
 
 		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}
@@ -252,7 +252,7 @@ namespace ast
 		}
 
 		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(std::move(leftChild), std::move(rightChild))
+			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
 			;
 		}

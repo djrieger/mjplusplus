@@ -2,7 +2,7 @@
 #include "MethodInvocation.hpp"
 
 ast::MethodInvocation::MethodInvocation(shptr<Ident> method_name, shptr<Arguments> arguments)
-	: method_name(std::move(method_name)), arguments(std::move(arguments))
+	: method_name(method_name), arguments(arguments)
 {
 
 }
