@@ -9,8 +9,6 @@
 #include "parser/parser.hpp"
 #include "util/optionparser.h"
 
-// blablabla
-
 enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK};
 const option::Descriptor usage[] =
 {
