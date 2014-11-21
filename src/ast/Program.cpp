@@ -32,4 +32,8 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 
 	for (auto& item : sa.getClassTable())
 		item.second.classNode->collectDefinitions(sa, item.second.symbolTable);
+
+	for (auto& item : sa.getClassTable())
+		item.second.classNode->analyze(sa, item.second.symbolTable);
+
 }

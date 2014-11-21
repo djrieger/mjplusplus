@@ -81,13 +81,22 @@ void ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<Symbo
 	}
 }
 
-void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const
+void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	symboltable->enterScope();
-	auto s = Symbol::makeSymbol("return", symboltable->getCurrentScope());
-	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
-	symboltable->insert(s, d);
+	auto st = std::make_shared<SymbolTable>(*symbolTable);
 
-	block->analyze(sa, symboltable);
-	symboltable->leaveScope();
+	st->enterScope();
+	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
+	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
+	st->insert(s, d);
+
+	if (!block)
+	{
+		if (*return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
+			sa.printError("Method " + return_type_and_name->getName() + " returns non-void but body is empty");
+	}
+	else
+		block->analyze(sa, st);
+
+	st->leaveScope();
 }

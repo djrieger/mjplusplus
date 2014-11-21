@@ -1,9 +1,11 @@
-#include "../globals.hpp"
 #include <algorithm>
 
+#include "../globals.hpp"
 
 #include "ClassDeclaration.hpp"
 #include "MethodDeclaration.hpp"
+#include "Type.hpp"
+#include "../util/symbol_table/Symbol.hpp"
 
 namespace ast
 {
@@ -41,5 +43,19 @@ namespace ast
 	{
 		for (auto& classMemberNode : *members)
 			classMemberNode->collectDefinition(sa, symbolTable);
+	}
+
+	void ClassDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	{
+		auto t = std::make_shared<Type>(class_name);
+		auto s = Symbol::makeSymbol("this", std::make_shared<Scope>(*symbolTable->getCurrentScope()));
+		auto d = std::make_shared<Definition>(s, t);
+		symbolTable->enterScope();
+		symbolTable->insert(s, d);
+
+		for (auto& classMemberNode : *members)
+			classMemberNode->analyze(sa, symbolTable);
+
+		symbolTable->leaveScope();
 	}
 }

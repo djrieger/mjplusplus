@@ -29,11 +29,19 @@ void ast::LVDStatement::toString(std::ostream& out, unsigned int indent, bool) c
 void ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	//Test if symbol is in table
-	auto s = Symbol::makeSymbol(type_ident->getName(), symbolTable->getCurrentScope());
+	auto s = Symbol::makeSymbol(type_ident->getName(), shptr<Scope>());
 
 	if (symbolTable->definedInCurrentScope(s))
 	{
 		sa.printError("Symbol " + s->getName() + " already defined");
+		return;
+	}
+
+	auto type = type_ident->getType();
+
+	if (!sa.isTypeDefined(type))
+	{
+		sa.printError("Type " + type->getName() + " is not defined");
 		return;
 	}
 
