@@ -29,13 +29,13 @@ std::unordered_map<std::string, SemanticAnalysis::ClassTableItem> const& Semanti
 	return this->classTable;
 }
 
-bool SemanticAnalysis::isTypeDefined(Type t, bool isVoidAcceptable)
+bool SemanticAnalysis::isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptable)
 {
 	auto primitiveType = type->getPrimitiveType();
 
-	if (primitiveType == Type::Primitive_type::VOID)
+	if (primitiveType == ast::Type::Primitive_type::VOID)
 		return isVoidAcceptable;
-	else if (primitiveType == Type::Primitive_type::NONE)
+	else if (primitiveType == ast::Type::Primitive_type::NONE)
 	{
 		// We have a reference type. Find corresponding class in class table:
 		auto iter = getClassTable().find(type->getClassName());

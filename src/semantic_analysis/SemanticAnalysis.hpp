@@ -36,7 +36,7 @@ class SemanticAnalysis
 		bool insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node);
 		shptr<SymbolTable> getSymbolTable() const;
 		std::unordered_map<std::string, ClassTableItem> const& getClassTable() const;
-		bool isTypeDefined(shptr<Type> type, bool isVoidAcceptable = false);
+		bool isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptable = false);
 };
 
 #endif

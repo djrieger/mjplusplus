@@ -11,8 +11,14 @@ namespace ast
 	class Expression : public Node
 	{
 		public:
-			virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-			virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			/**
+			* Idea:
+			* When getting the type of an Expression, the Expression checks if it's own 
+			* and it's children Expressions type definitions are valid and then returns
+			* it's type. If something is invalid, an error is printed in the Expression
+			* that is invalid and an empty pointer is returned. 
+			*/
+			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const = 0;
 	};
 }
 
