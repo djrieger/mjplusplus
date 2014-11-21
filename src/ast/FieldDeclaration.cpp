@@ -26,30 +26,26 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 
 	// check if a field with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
-	{
 		sa.printError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.");
-		return;
-	}
 
 	auto type = type_and_name->getType();
 	auto primitiveType = type->getPrimitiveType();
 
 	if (primitiveType == Type::Primitive_type::VOID)
 		sa.printError("Field " + type_and_name->getName() + " cannot have type void.");
-	else if (primitiveType == Type::Primitive_type::NONE)
+	else
 	{
-		// We have a reference type. Find corresponding class in class table:
-		auto iter = sa.getClassTable().find(type->getClassName());
-
-		// not in class table:
-		if (iter == sa.getClassTable().end())
-			sa.printError("Type " + type->getClassName() + " undeclared.");
-		else
+		if (primitiveType == Type::Primitive_type::NONE)
 		{
-			// insert this field into symbol table of this class
-			auto definition = std::make_shared<Definition>(symbol, type);
-			symbolTable->insert(symbol, definition);
-		}
+			// We have a reference type. Find corresponding class in class table:
+			auto iter = sa.getClassTable().find(type->getClassName());
 
+			// not in class table:
+			if (iter == sa.getClassTable().end())
+				sa.printError("Type " + type->getClassName() + " undeclared.");
+		}
 	}
+
+	auto definition = std::make_shared<Definition>(symbol, type);
+	symbolTable->insert(symbol, definition);
 }
