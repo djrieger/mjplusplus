@@ -22,13 +22,12 @@ std::string ast::FieldDeclaration::getName() const
 
 void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	// check if a field with the same name already exists
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
-	std::cout << symbol->getCurrentScope() << std::endl;
 
+	// check if a field with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
 	{
-		sa.printError("Field with name " + type_and_name->getName() + " already declared.");
+		sa.printError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.");
 		return;
 	}
 
@@ -42,13 +41,14 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 		// We have a reference type. Find corresponding class in class table:
 		auto iter = sa.getClassTable().find(type->getClassName());
 
+		// not in class table:
 		if (iter == sa.getClassTable().end())
 			sa.printError("Type " + type->getClassName() + " undeclared.");
 		else
 		{
-			auto d = std::make_shared<Definition>(symbol, type);
-			symbolTable->insert(symbol, d);
-			std::cout << "after insertion symbol has scope "  << symbol->getCurrentScope() << std::endl;
+			// insert this field into symbol table of this class
+			auto definition = std::make_shared<Definition>(symbol, type);
+			symbolTable->insert(symbol, definition);
 		}
 
 	}
