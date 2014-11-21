@@ -4,10 +4,12 @@
 #include "../globals.hpp"
 #include "Node.hpp"
 #include "Ident.hpp"
-#include "Expression.hpp"
 
 namespace ast
 {
+
+	class Expression;
+
 	class Type : public Node
 	{
 		public:
