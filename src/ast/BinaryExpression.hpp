@@ -17,6 +17,7 @@ namespace ast
 				shptr<Expression> leftChild;
 				shptr<Expression> rightChild;
 				void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
+				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 				BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild);
 			public:
 				static shptr<BinaryExpression> createBinaryExpr(shptr<Expression> leftChild, shptr<Expression> rightChild, lexer::Token::Token_type operator_type);
