@@ -25,8 +25,7 @@ namespace ast
 			public:
 				Bool(bool value);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-				virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Ident : public PrimaryExpression
@@ -34,8 +33,7 @@ namespace ast
 			public:
 				Ident(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int ident, bool = false) const;
-				virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-				virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			protected:
 				shptr<ast::Ident> identifier;
 		};
@@ -51,8 +49,7 @@ namespace ast
 
 				Object(Object_Type object_type);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-				virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			private:
 				Object_Type object_type;
 		};
@@ -64,8 +61,7 @@ namespace ast
 			public:
 				Integer(std::string const& string_value);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-				virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class NewArrayExpression : public PrimaryExpression
@@ -73,8 +69,7 @@ namespace ast
 			public:
 				NewArrayExpression(shptr<Type> type, shptr<Expression> expr);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-				virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			private:
 				shptr<Type> type;
 				shptr<Expression> expr;
@@ -85,8 +80,7 @@ namespace ast
 			public:
 				NewObjectExpression(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-				virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			private:
 				shptr<ast::Ident> identifier;
 		};
@@ -96,8 +90,7 @@ namespace ast
 			public:
 				MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual bool check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-				virtual Type get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			private:
 				shptr<Arguments> arguments;
 		};

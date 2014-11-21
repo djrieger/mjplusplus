@@ -30,6 +30,7 @@ namespace ast
 			public:
 				NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Mult : public BinaryExpression
@@ -39,6 +40,7 @@ namespace ast
 			public:
 				Mult(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Plus : public BinaryExpression
@@ -48,6 +50,7 @@ namespace ast
 			public:
 				Plus(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Minus : public BinaryExpression
@@ -57,6 +60,7 @@ namespace ast
 			public:
 				Minus(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Slash : public BinaryExpression
@@ -66,6 +70,7 @@ namespace ast
 			public:
 				Slash(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class LessThanEq : public BinaryExpression
@@ -75,6 +80,7 @@ namespace ast
 			public:
 				LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class LessThan : public BinaryExpression
@@ -84,6 +90,7 @@ namespace ast
 			public:
 				LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class EqEq : public BinaryExpression
@@ -93,6 +100,7 @@ namespace ast
 			public:
 				EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Eq : public BinaryExpression
@@ -102,6 +110,7 @@ namespace ast
 			public:
 				Eq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class GreaterThanEq : public BinaryExpression
@@ -111,6 +120,7 @@ namespace ast
 			public:
 				GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class GreaterThan : public BinaryExpression
@@ -120,6 +130,7 @@ namespace ast
 			public:
 				GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Mod : public BinaryExpression
@@ -129,6 +140,7 @@ namespace ast
 			public:
 				Mod(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class AndAnd : public BinaryExpression
@@ -138,6 +150,7 @@ namespace ast
 			public:
 				AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class OrOr : public BinaryExpression
@@ -147,6 +160,7 @@ namespace ast
 			public:
 				OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 		class Invalid : public BinaryExpression
@@ -156,6 +170,7 @@ namespace ast
 			public:
 				Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 		};
 
 	}

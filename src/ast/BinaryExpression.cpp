@@ -106,6 +106,11 @@ namespace ast
 			BinaryExpression::toString(out, indent, "!=", special);
 		}
 
+		shptr<Type> NotEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
+
 
 		Mult::Mult(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
@@ -116,6 +121,11 @@ namespace ast
 		void Mult::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			BinaryExpression::toString(out, indent, "*", special);
+		}
+
+		shptr<Type> Mult::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
 		}
 
 		Plus::Plus(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -129,6 +139,11 @@ namespace ast
 			BinaryExpression::toString(out, indent, "+", special);
 		}
 
+		shptr<Type> Plus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
+
 		Minus::Minus(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -138,6 +153,11 @@ namespace ast
 		void Minus::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			BinaryExpression::toString(out, indent, "-", special);
+		}
+
+		shptr<Type> Minus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
 		}
 
 		Slash::Slash(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -151,6 +171,11 @@ namespace ast
 			BinaryExpression::toString(out, indent, "/", special);
 		}
 
+		shptr<Type> Slash::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
+
 		LessThanEq::LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -160,6 +185,11 @@ namespace ast
 		void LessThanEq::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			BinaryExpression::toString(out, indent, "<=", special);
+		}
+
+		shptr<Type> LessThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
 		}
 
 		LessThan::LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -173,6 +203,11 @@ namespace ast
 			BinaryExpression::toString(out, indent, "<", special);
 		}
 
+		shptr<Type> LessThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
+
 		EqEq::EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -182,6 +217,11 @@ namespace ast
 		void EqEq::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			BinaryExpression::toString(out, indent, "==", special);
+		}
+
+		shptr<Type> EqEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
 		}
 
 		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -195,6 +235,11 @@ namespace ast
 			BinaryExpression::toString(out, indent, "=", special);
 		}
 
+		shptr<Type> Eq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
+
 		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -206,6 +251,10 @@ namespace ast
 			BinaryExpression::toString(out, indent, ">=", special);
 		}
 
+		shptr<Type> GreaterThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
 
 		GreaterThan::GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
@@ -216,6 +265,11 @@ namespace ast
 		void GreaterThan::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			BinaryExpression::toString(out, indent, ">", special);
+		}
+
+		shptr<Type> GreaterThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
 		}
 
 		Mod::Mod(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -229,6 +283,11 @@ namespace ast
 			BinaryExpression::toString(out, indent, "%", special);
 		}
 
+		shptr<Type> Mod::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
+
 		AndAnd::AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -238,6 +297,11 @@ namespace ast
 		void AndAnd::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			BinaryExpression::toString(out, indent, "&&", special);
+		}
+
+		shptr<Type> AndAnd::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
 		}
 
 		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -251,6 +315,11 @@ namespace ast
 			BinaryExpression::toString(out, indent, "||", special);
 		}
 
+		shptr<Type> OrOr::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
+		}
+
 		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -260,6 +329,11 @@ namespace ast
 		void Invalid::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			BinaryExpression::toString(out, indent, "NO_VALID_OPERATOR", special);
+		}
+
+		shptr<Type> Invalid::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+			//TODO: implement this like in Unary- and PrimaryExpression
+			return shptr<Type>();
 		}
 
 	}

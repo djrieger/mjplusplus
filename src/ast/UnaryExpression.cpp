@@ -71,17 +71,22 @@ namespace ast
 			;
 		}
 
-		bool Not::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<Type> Not::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			if (child->check_type(sa, symbolTable))
-				return child->get_type(sa, symbolTable) == Type(Type::BOOLEAN);
-
-			return false;
-		}
-
-		Type Not::get_type(SemanticAnalysis&, shptr<SymbolTable>) const
-		{
-			return Type(Type::BOOLEAN);
+			shptr<Type> child_type = child->get_type(sa, symbolTable);
+			if (!child_type) {
+				/*TODO: 2 possibilities:
+				   1. pass the nullptr child_type OR
+				   2. pass Type::BOOLEAN
+				*/
+				return child_type; 
+			} //TODO: is there a better way than to create a new shared pointer for every boolean or int?
+			else if (*child_type == Type(Type::BOOLEAN)) 
+				return child_type;
+			else {
+				sa.printError("TODO: getName() should be boolean.");
+				return shptr<Type>();
+			}
 		}
 
 		void Not::toString(std::ostream& out, unsigned int indent, bool special) const
@@ -95,17 +100,18 @@ namespace ast
 			;
 		}
 
-		bool Neg::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<Type> Neg::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			if (child->check_type(sa, symbolTable))
-				return child->get_type(sa, symbolTable) == Type(Type::INT);
-
-			return false;
-		}
-
-		Type Neg::get_type(SemanticAnalysis&, shptr<SymbolTable>) const
-		{
-			return Type(Type::INT);
+			shptr<Type> child_type = child->get_type(sa, symbolTable);
+			if (!child_type) {
+				return child_type; 
+			}
+			else if (*child_type == Type(Type::INT)) 
+				return child_type;
+			else {
+				sa.printError("TODO: getName() should be int.");
+				return shptr<Type>();
+			}
 		}
 
 		void Neg::toString(std::ostream& out, unsigned int indent, bool special) const
