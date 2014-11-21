@@ -23,7 +23,7 @@ namespace ast
 		public:
 			ClassDeclaration(shptr<Ident> class_name, shptr<vec<shptr<ClassMember>>> members);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-			void collectDefinitions(shptr<SemanticAnalysis> sa, shptr<SymbolTable> symbolTable) const;
+			void collectDefinitions(SemanticAnalysis &sa, shptr<SymbolTable> symbolTable) const;
 			std::string getName() const;
 	};
 }

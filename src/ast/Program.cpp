@@ -23,15 +23,15 @@ void ast::Program::toString(std::ostream& out, unsigned int indent, bool) const
 		c->toString(out, indent);
 }
 
-void ast::Program::collectDefinitions(shptr<SemanticAnalysis> sa) const
+void ast::Program::collectDefinitions(SemanticAnalysis &sa) const
 {
 	// pseudo
-	//sa->getSymbolTable()->enterScope();
+	//sa.getSymbolTable()->enterScope();
 
 	for (auto& classDeclNode : *classes)
 	{
-		if (!sa->insertClass(classDeclNode->getName(), classDeclNode))
-			sa->printError("Class with name \033[1m" + classDeclNode->getName() + "\033[0m already defined.");
+		if (!sa.insertClass(classDeclNode->getName(), classDeclNode))
+			sa.printError("Class with name \033[1m" + classDeclNode->getName() + "\033[0m already defined.");
 
 		/*
 				auto classSymbol = std::make_shared<Symbol>(_class->getName(), symboltable->getCurrentScope());
@@ -45,8 +45,8 @@ void ast::Program::collectDefinitions(shptr<SemanticAnalysis> sa) const
 		// copy class symbol table to list of class symbol tables:
 	}
 
-	for (auto& item : sa->getClassTable())
+	for (auto& item : sa.getClassTable())
 		item.second.classNode->collectDefinitions(sa, item.second.symbolTable);
 
-	//sa->getSymbolTable()->leaveScope();
+	//sa.getSymbolTable()->leaveScope();
 }

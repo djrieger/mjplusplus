@@ -10,7 +10,7 @@ void SemanticAnalysis::printError(std::string s)
 
 bool SemanticAnalysis::start()
 {
-	root->collectDefinitions(std::make_shared<SemanticAnalysis>(*this));
+	root->collectDefinitions(*this);
 	return valid;
 }
 
