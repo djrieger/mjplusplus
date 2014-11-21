@@ -33,17 +33,22 @@ namespace ast
 		shptr<Type> Ident::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
 		{
 			shptr<Symbol> ident_symbol = Symbol::makeSymbol(identifier->getName());
-			if (ident_symbol) {
+
+			if (ident_symbol)
+			{
 				shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
-				if (ident_def) {
+
+				if (ident_def)
+				{
 					shptr<Type> ident_type = ident_def->getType();
-					if (sa.isTypeDefined(ident_type)) {
+
+					if (sa.isTypeDefined(ident_type))
 						return ident_type;
-					}
-				} else {
-					sa.printError("No current definition for " + identifier->getName());	
 				}
+				else
+					sa.printError("No current definition for " + identifier->getName());
 			}
+
 			return shptr<Type>();
 		}
 
@@ -59,18 +64,25 @@ namespace ast
 
 		shptr<Type> Object::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
 		{
-			if (object_type == Object_Type::THIS_OBJECT) {
-				shptr<Symbol> this_symbol = Symbol::makeSymbol("this");	
-				if (this_symbol) {
+			if (object_type == Object_Type::THIS_OBJECT)
+			{
+				shptr<Symbol> this_symbol = Symbol::makeSymbol("this");
+
+				if (this_symbol)
+				{
 					shptr<Definition> this_def = this_symbol->getCurrentDefinition();
-					if (this_def) {
-						shptr<Type> this_type = this_def->getType();	
-						if (sa.isTypeDefined(this_type)) {
+
+					if (this_def)
+					{
+						shptr<Type> this_type = this_def->getType();
+
+						if (sa.isTypeDefined(this_type))
 							return this_type;
-						}
 					}
 				}
-			} else if (object_type == Object_Type::NULL_OBJECT) {
+			}
+			else if (object_type == Object_Type::NULL_OBJECT)
+			{
 				//TODO: define a special type-value that has some special rules for the java "null"-object
 			}
 
@@ -103,14 +115,13 @@ namespace ast
 		shptr<Type>NewArrayExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
 			shptr<Type> child_type = expr->get_type(sa, symbolTable);
-			if (!child_type) {
+
+			if (!child_type)
 				return child_type;
-			}
-			else if (*child_type == Type(Type::INT) && sa.isTypeDefined(type)) {
+			else if (*child_type == Type(Type::INT) && sa.isTypeDefined(type))
 				return type;
-			} else {
+			else
 				return shptr<Type>();
-			}
 		}
 
 
@@ -136,11 +147,11 @@ namespace ast
 		shptr<Type> NewObjectExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
 		{
 			shptr<Type> type = std::make_shared<Type>(identifier);
-			if (sa.isTypeDefined(type)) {
-				return type;				
-			} else {
+
+			if (sa.isTypeDefined(type))
+				return type;
+			else
 				return shptr<Type>();
-			}
 		}
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
@@ -159,18 +170,25 @@ namespace ast
 		shptr<Type> MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
 		{
 			shptr<Symbol> methodSymbol = Symbol::makeSymbol(identifier->getName());
-			if (methodSymbol) {
+
+			if (methodSymbol)
+			{
 				shptr<Definition> method_def = methodSymbol->getCurrentDefinition();
-				if (method_def) {
+
+				if (method_def)
+				{
 					shptr<Type> method_type = method_def->getType();
-					if (sa.isTypeDefined(method_type)) {
+
+					if (sa.isTypeDefined(method_type))
+					{
 						//Now I know the type of the method-invocation...now I need to check the parameters.
 						//TODO: somehow get the declaration node of definition.
 
 						return method_type;
 					}
-				}	
+				}
 			}
+
 			return shptr<Type>();
 		}
 	} // namespace pe

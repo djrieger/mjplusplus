@@ -106,7 +106,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "!=", special);
 		}
 
-		shptr<Type> NotEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> NotEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -123,7 +124,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "*", special);
 		}
 
-		shptr<Type> Mult::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> Mult::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -139,7 +141,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "+", special);
 		}
 
-		shptr<Type> Plus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> Plus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -155,7 +158,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "-", special);
 		}
 
-		shptr<Type> Minus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> Minus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -171,7 +175,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "/", special);
 		}
 
-		shptr<Type> Slash::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> Slash::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -187,7 +192,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "<=", special);
 		}
 
-		shptr<Type> LessThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> LessThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -203,7 +209,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "<", special);
 		}
 
-		shptr<Type> LessThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> LessThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -219,7 +226,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "==", special);
 		}
 
-		shptr<Type> EqEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> EqEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -235,7 +243,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "=", special);
 		}
 
-		shptr<Type> Eq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> Eq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -251,7 +260,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, ">=", special);
 		}
 
-		shptr<Type> GreaterThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> GreaterThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -267,7 +277,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, ">", special);
 		}
 
-		shptr<Type> GreaterThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> GreaterThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -283,7 +294,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "%", special);
 		}
 
-		shptr<Type> Mod::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> Mod::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -299,7 +311,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "&&", special);
 		}
 
-		shptr<Type> AndAnd::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> AndAnd::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -315,7 +328,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "||", special);
 		}
 
-		shptr<Type> OrOr::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> OrOr::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
@@ -331,7 +345,8 @@ namespace ast
 			BinaryExpression::toString(out, indent, "NO_VALID_OPERATOR", special);
 		}
 
-		shptr<Type> Invalid::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const {
+		shptr<Type> Invalid::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
 			//TODO: implement this like in Unary- and PrimaryExpression
 			return shptr<Type>();
 		}
