@@ -49,3 +49,8 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 	auto definition = std::make_shared<Definition>(symbol, type);
 	symbolTable->insert(symbol, definition);
 }
+
+void ast::FieldDeclaration::analyze(SemanticAnalysis&, shptr<SymbolTable>) const
+{
+	/* does nothing */
+}

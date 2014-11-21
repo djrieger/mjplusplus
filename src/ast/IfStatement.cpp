@@ -63,7 +63,8 @@ namespace ast
 	void IfStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
 		//TODO: condition->isValid(sa, symbolTable);
-		thenStatement->analyze(sa, symbolTable);
+		if (thenStatement)
+			thenStatement->analyze(sa, symbolTable);
 
 		if (elseStatement)
 			elseStatement->analyze(sa, symbolTable);

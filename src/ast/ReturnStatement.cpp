@@ -32,9 +32,15 @@ void ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 
 	if (expression)
 	{
-		//TODO: expr_type = expression->getType();
+		if (*ret_type == expr_type)
+			sa.printError("Method returns void, but return statement has expression.");
+		else
+		{
+			//TODO: expr_type = expression->getType();
+			if (*ret_type != expr_type)
+				sa.printError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type.getName());
+		}
 	}
-
-	if (*ret_type != expr_type)
-		sa.printError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type.getName());
+	else if (*ret_type != expr_type)
+		sa.printError("Method returns " + ret_type->getName() + ", but return statement misses expression");
 }
