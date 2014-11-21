@@ -16,6 +16,7 @@ namespace ast
 			ReturnStatement();
 			ReturnStatement(shptr<Expression> expression);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
+			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 	};
 }
 

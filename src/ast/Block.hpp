@@ -16,6 +16,7 @@ namespace ast
 			Block(shptr<vec<shptr<Statement> > > block_statements);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual Statement::Type getType() const;
+			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 	};
 }
 

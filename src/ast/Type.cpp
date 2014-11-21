@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "Type.hpp"
 
 ast::Type::Type(Type::Primitive_type primitive_type): primitive_type(primitive_type), dimension(0) {}
@@ -91,4 +93,11 @@ ast::Type::Primitive_type ast::Type::getPrimitiveType() const
 std::string const& ast::Type::getClassName() const
 {
 	return class_name->getName();
+}
+
+std::string ast::Type::getName() const
+{
+	std::stringstream descr;
+	toString(descr, 0);
+	return descr.str();
 }
