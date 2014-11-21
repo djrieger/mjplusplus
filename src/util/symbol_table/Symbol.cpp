@@ -24,3 +24,8 @@ void Symbol::setCurrentScope(shptr<Scope> scope)
 {
 	this->currentScope = scope;
 }
+
+std::string const& Symbol::getName() const
+{
+	return this->name;
+}
