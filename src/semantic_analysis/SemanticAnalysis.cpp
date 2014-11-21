@@ -41,12 +41,15 @@ bool SemanticAnalysis::isTypeDefined(Type t, bool isVoidAcceptable)
 		auto iter = getClassTable().find(type->getClassName());
 
 		// not in class table:
-		if (iter == getClassTable().end()) {
+		if (iter == getClassTable().end())
+		{
 			printError("Type " + type->getClassName() + " undeclared.");
 			return false;
 		}
+
 		return true;
 	}
+
 	// Primary type
 	return true;
 }
