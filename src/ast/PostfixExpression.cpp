@@ -27,3 +27,9 @@ void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent, bo
 	if (!special && !postfix_op->empty())
 		out << ')';
 }
+
+shptr<ast::Type> ast::PostfixExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+{
+	//TODO: implement this like in Unary- and PrimaryExpression
+	return shptr<ast::Type>();
+}
