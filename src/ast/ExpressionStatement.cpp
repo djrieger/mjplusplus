@@ -15,5 +15,5 @@ void ast::ExpressionStatement::toString(std::ostream& out, unsigned int indent, 
 
 void ast::ExpressionStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	//TODO: expression->isValid(sa, symbolTable);
+	expression->get_type(sa, symbolTable);
 }

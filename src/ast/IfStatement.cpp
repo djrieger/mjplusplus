@@ -62,7 +62,11 @@ namespace ast
 
 	void IfStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
-		//TODO: condition->isValid(sa, symbolTable);
+		auto cond = condition->get_type(sa, symbolTable);
+
+		if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN))
+			sa.printError("If condition is not boolean");
+
 		if (thenStatement)
 			thenStatement->analyze(sa, symbolTable);
 

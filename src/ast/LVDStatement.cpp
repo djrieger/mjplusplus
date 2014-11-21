@@ -49,10 +49,8 @@ void ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	s->setCurrentDefinition(d);
 	symbolTable->insert(s, d);
 
-	//TODO: Test if types match
-	/*auto init_type = init_expr->getType(sa, symbolTable);
-	if(type_ident->getType() != init_type)
-	{
-		sa.printError("Mismatched Types: " + type_ident->getType()->toString() + " and " + init_type->toString());
-	}*/
+	auto init_type = init_expr->get_type(sa, symbolTable);
+
+	if (type_ident->getType() != init_type)
+		sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName());
 }
