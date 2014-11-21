@@ -5,6 +5,7 @@
 #include "Node.hpp"
 #include "Expression.hpp"
 #include "PostfixExpression.hpp"
+#include "../lexer/token.hpp"
 #include <vector>
 
 namespace ast

@@ -4,7 +4,7 @@
 
 namespace lexer
 {
-	std::unordered_set<std::string> Token::stringTable;
+	std::unordered_map<std::string, shptr<Symbol>> stringTable;
 
 	Token::Token(Token_type const& token_type, std::string const& string_value, std::pair<unsigned int, unsigned int> const& position)
 		: token_type(token_type), string_value(&getTableReference(string_value)), position(position)
@@ -47,7 +47,12 @@ namespace lexer
 
 	std::string const& Token::getTableReference(std::string const& value)
 	{
-		return *stringTable.insert(value).first;
+		return stringTable.insert({ value, shptr<Symbol>() }).first->first;
+	}
+
+	shptr<Symbol> Token::getSymbol(std::string const &value)
+	{
+		return stringTable.find(value)->second;
 	}
 
 	std::string const* Token::type_to_ref[] =

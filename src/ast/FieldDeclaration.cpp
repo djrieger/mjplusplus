@@ -35,10 +35,10 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 			sa.printError("Type " + type->getClassName() + " undeclared.");
 		else
 		{
-			auto s = std::make_shared<Symbol>(type_and_name->getName(), symbolTable->getCurrentScope());
-			auto d = std::make_shared<Definition>(s, type);
-			s->setCurrentDefinition(d);
-			symbolTable->insert(s, d);
+			auto symbol = Symbol::makeSymbol(type_and_name->getName(), symbolTable->getCurrentScope());
+			auto d = std::make_shared<Definition>(symbol, type);
+			symbol->setCurrentDefinition(d);
+			symbolTable->insert(symbol, d);
 		}
 
 	}
