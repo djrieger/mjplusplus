@@ -30,9 +30,13 @@ void ast::WhileStatement::toString(std::ostream& out, unsigned int indent, bool 
 		out << "{ }\n";
 }
 
-void ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const
+void ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	//TODO: condition->isValid();
+	auto cond = condition->get_type(sa, symbolTable);
+
+	if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN))
+		sa.printError("While condition is not boolean");
+
 	if (statement)
-		statement->analyze(sa, symboltable);
+		statement->analyze(sa, symbolTable);
 }
