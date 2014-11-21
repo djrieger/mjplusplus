@@ -1,0 +1,12 @@
+class a {
+	public static void main(String[] a) {}
+	public a a;
+	public int[][][] q;
+	public a x() {
+		int x=0;
+		(this.a) = new a();
+		((this).a.x()).a = null;
+		(((this).q)[3])[1][6] = 2;
+		return new a();
+	}
+}
