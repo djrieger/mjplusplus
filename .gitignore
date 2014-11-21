@@ -8,3 +8,4 @@ gmon.out
 *.sublime-workspace
 *.pro
 *.pro.user
+doc/doxygen
