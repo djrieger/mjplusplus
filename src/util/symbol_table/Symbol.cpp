@@ -31,11 +31,12 @@ std::string const& Symbol::getName() const
 	return this->name;
 }
 
-shptr<Symbol> Symbol::makeSymbol(std::string const &name, shptr<Scope> scope) 
+shptr<Symbol> Symbol::makeSymbol(std::string const& name, shptr<Scope> scope)
 {
 	shptr<Symbol> symbol = lexer::Token::getSymbol(name);
-	if (!symbol) {
+
+	if (!symbol)
 		symbol = shptr<Symbol>(new Symbol(name, scope));
-	}
+
 	return symbol;
 }
