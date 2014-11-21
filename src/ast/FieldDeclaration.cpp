@@ -1,5 +1,6 @@
 #include "../globals.hpp"
 #include "FieldDeclaration.hpp"
+#include "../lexer/token.hpp"
 
 ast::FieldDeclaration::FieldDeclaration(shptr<TypeIdent> type_and_name) : type_and_name(type_and_name)
 {
@@ -21,6 +22,16 @@ std::string ast::FieldDeclaration::getName() const
 
 void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
+	// check if a field with the same name already exists
+	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+	std::cout << symbol->getCurrentScope() << std::endl;
+
+	if (symbolTable->definedInCurrentScope(symbol))
+	{
+		sa.printError("Field with name " + type_and_name->getName() + " already declared.");
+		return;
+	}
+
 	auto type = type_and_name->getType();
 	auto primitiveType = type->getPrimitiveType();
 
@@ -35,10 +46,9 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 			sa.printError("Type " + type->getClassName() + " undeclared.");
 		else
 		{
-			auto symbol = Symbol::makeSymbol(type_and_name->getName(), symbolTable->getCurrentScope());
 			auto d = std::make_shared<Definition>(symbol, type);
-			symbol->setCurrentDefinition(d);
 			symbolTable->insert(symbol, d);
+			std::cout << "after insertion symbol has scope "  << symbol->getCurrentScope() << std::endl;
 		}
 
 	}

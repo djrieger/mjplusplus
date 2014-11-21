@@ -83,7 +83,7 @@ namespace lexer
 
 			static std::string const& getTableReference(std::string const& value);
 
-			static shptr<Symbol> getSymbol(std::string const& value);
+			static shptr<Symbol>& getSymbol(std::string const& value);
 
 			/** lookup table from token type to entry in stringtable
 			 *  used to prepopulate stringtable with allowed keywords and operators

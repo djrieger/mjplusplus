@@ -50,9 +50,9 @@ namespace lexer
 		return stringTable.insert({ value, shptr<Symbol>() }).first->first;
 	}
 
-	shptr<Symbol> Token::getSymbol(std::string const& value)
+	shptr<Symbol>& Token::getSymbol(std::string const& value)
 	{
-		return stringTable.find(value)->second;
+		return stringTable[value];
 	}
 
 	std::string const* Token::type_to_ref[] =

@@ -25,7 +25,6 @@ class SemanticAnalysis
 		bool valid;
 		shptr<ast::Program> root;
 		shptr<SymbolTable> symboltable;
-		//std::unordered_map<std::string, std::unordered_map<std::string, Symbol>> classMap;
 		std::unordered_map<std::string, ClassTableItem> classTable;
 
 	public:

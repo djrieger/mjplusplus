@@ -33,7 +33,7 @@ std::string const& Symbol::getName() const
 
 shptr<Symbol> Symbol::makeSymbol(std::string const& name, shptr<Scope> scope)
 {
-	shptr<Symbol> symbol = lexer::Token::getSymbol(name);
+	auto& symbol = lexer::Token::getSymbol(name);
 
 	if (!symbol)
 		symbol = shptr<Symbol>(new Symbol(name, scope));
