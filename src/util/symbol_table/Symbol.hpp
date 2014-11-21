@@ -20,7 +20,9 @@ class Symbol
 		void setCurrentDefinition(shptr<Definition> definition);
 		void setCurrentScope(shptr<Scope> scope);
 
-	private:
+		//shptr<Symbol> makeSymbol(std::string const &name, )
+
+	//private:
 		Symbol(const std::string& name, shptr<Scope> currentScope, shptr<Definition> currentDefinition);
 		Symbol(const std::string& name, shptr<Scope> currentScope);
 };
