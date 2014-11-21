@@ -29,3 +29,28 @@ std::unordered_map<std::string, SemanticAnalysis::ClassTableItem> const& Semanti
 {
 	return this->classTable;
 }
+
+bool SemanticAnalysis::isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptable)
+{
+	auto primitiveType = type->getPrimitiveType();
+
+	if (primitiveType == ast::Type::Primitive_type::VOID)
+		return isVoidAcceptable;
+	else if (primitiveType == ast::Type::Primitive_type::NONE)
+	{
+		// We have a reference type. Find corresponding class in class table:
+		auto iter = getClassTable().find(type->getClassName());
+
+		// not in class table:
+		if (iter == getClassTable().end())
+		{
+			printError("Type " + type->getClassName() + " undeclared.");
+			return false;
+		}
+
+		return true;
+	}
+
+	// Primary type
+	return true;
+}
