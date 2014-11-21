@@ -18,6 +18,7 @@ namespace ast
 			IfStatement(shptr<Expression> condition, shptr<Statement> thenStatement, shptr<Statement> elseStatement);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual Statement::Type getType() const;
+			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 	};
 }
 

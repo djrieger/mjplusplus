@@ -26,6 +26,7 @@ namespace ast
 			virtual std::string getName() const;
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			void collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const;
 	};
 }
 
