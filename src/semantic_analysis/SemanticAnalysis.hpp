@@ -5,6 +5,7 @@
 #include "../globals.hpp"
 #include "../util/symbol_table/symbol_table.hpp"
 #include "../ast/Program.hpp"
+#include "../ast/Type.hpp"
 
 namespace ast
 {
@@ -35,6 +36,7 @@ class SemanticAnalysis
 		bool insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node);
 		shptr<SymbolTable> getSymbolTable() const;
 		std::unordered_map<std::string, ClassTableItem> const& getClassTable() const;
+		bool isTypeDefined(shptr<Type> type, bool isVoidAcceptable = false);
 };
 
 #endif
