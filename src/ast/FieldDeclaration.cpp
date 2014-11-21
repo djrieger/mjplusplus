@@ -21,26 +21,25 @@ std::string ast::FieldDeclaration::getName() const
 
 void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	auto primitiveType = type_and_name->getType()->getPrimitiveType();
+	auto type = type_and_name->getType();
+	auto primitiveType = type->getPrimitiveType();
 
 	if (primitiveType == Type::Primitive_type::VOID)
 		sa.printError("Field " + type_and_name->getName() + " cannot have type void.");
 	else if (primitiveType == Type::Primitive_type::NONE)
 	{
-		/*
-		auto iter = sa.getClassTable.find(type_and_name->getType()->getClassName());
+		// We have a reference type. Find corresponding class in class table:
+		auto iter = sa.getClassTable().find(type->getClassName());
 
-		if (iter == sa.getClassTable.end())
-			sa.printError("Type " + type_and_name->getType()->getClassName() + " undeclared.");
+		if (iter == sa.getClassTable().end())
+			sa.printError("Type " + type->getClassName() + " undeclared.");
 		else
 		{
-			/*
-			Symbol s(&type_and_name->getType()->getClassName(), symbolTable->getCurrentScope(), );
-			Definition d()
-			s.setDefinition(d);
-			symbolTable->insert();
-			*/
-		//}
+			auto s = std::make_shared<Symbol>(type_and_name->getName(), symbolTable->getCurrentScope());
+			auto d = std::make_shared<Definition>(s, type);
+			s->setCurrentDefinition(d);
+			symbolTable->insert(s, d);
+		}
 
 	}
 }

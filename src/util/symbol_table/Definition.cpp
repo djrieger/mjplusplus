@@ -1,14 +1,14 @@
 #include "Definition.hpp"
 #include "Symbol.hpp"
 
-Symbol const& Definition::getSymbol() const
+shptr<Symbol>  Definition::getSymbol() const
 {
 	return symbol;
 }
 
-ast::Type const& Definition::getType() const
+shptr<ast::Type>  Definition::getType() const
 {
 	return type;
 }
 
-//Definition::Definition(Symbol const &symbol, ast::Type const &type): symbol(symbol), type(type) {}
+Definition::Definition(shptr<Symbol> symbol, shptr<ast::Type> type): symbol(symbol), type(type) {}
