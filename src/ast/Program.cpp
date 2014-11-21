@@ -23,7 +23,7 @@ void ast::Program::toString(std::ostream& out, unsigned int indent, bool) const
 		c->toString(out, indent);
 }
 
-void ast::Program::collectDefinitions(SemanticAnalysis &sa) const
+void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 {
 	// pseudo
 	//sa.getSymbolTable()->enterScope();

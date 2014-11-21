@@ -34,8 +34,9 @@ std::string ast::MethodDeclaration::getName() const
 	return "M" + return_type_and_name->getName();
 }
 
-void ast::MethodDeclaration::collectDefinition(SemanticAnalysis &sa, shptr<SymbolTable> symbolTable) const
-{/*
+void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+{
+	/*
 	auto primitiveType = return_type_and_name->getType()->getPrimitiveType();
 
 	if (primitiveType == Type::Primitive_type::VOID)
@@ -55,7 +56,7 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis &sa, shptr<Symbo
 			s.setDefinition(d);
 			symbolTable->insert();
 			*/
-		//}
+	//}
 
 	//}
 }
