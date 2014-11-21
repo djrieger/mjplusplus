@@ -114,7 +114,8 @@ int main(int argc, const char** argv)
 			if (options[CHECK])
 			{
 				SemanticAnalysis sa(parser.getRoot());
-				return sa.start();
+				bool valid = sa.start();
+				return !valid;
 			}
 
 			if (options[PRINT_AST])
