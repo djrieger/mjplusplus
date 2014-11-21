@@ -24,6 +24,8 @@ class SymbolTable
 		bool definedInCurrentScope(shptr<Symbol> symbol) const;
 
 		shptr<Scope> const& getCurrentScope() const;
+
+		SymbolTable();
 };
 
 #endif

@@ -1,5 +1,10 @@
 #include "symbol_table.hpp"
 
+SymbolTable::SymbolTable()
+{
+	enterScope();
+}
+
 shptr<Definition> SymbolTable::lookup(shptr<Symbol> symbol) const
 {
 	return symbol->getCurrentDefinition();
