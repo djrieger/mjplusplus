@@ -22,7 +22,8 @@ namespace ast
 
 				//We could replace the unary-operator vector to a token_type vector to move the conversion into this class.
 				UnaryExpression(shptr<Expression> child, int size);
-				virtual void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
+				void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
+				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 
 				shptr<Expression> child;
 				int size;
