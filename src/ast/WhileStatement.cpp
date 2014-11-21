@@ -29,3 +29,9 @@ void ast::WhileStatement::toString(std::ostream& out, unsigned int indent, bool 
 	else
 		out << "{ }\n";
 }
+
+void ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const
+{
+	//TODO: condition->isValid();
+	statement->analyze(sa, symboltable);
+}

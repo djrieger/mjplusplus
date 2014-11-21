@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include "../globals.hpp"
 #include "../util/symbol_table/symbol_table.hpp"
-#include "../ast/Program.hpp"
 
 namespace ast
 {

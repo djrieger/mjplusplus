@@ -14,6 +14,7 @@ namespace ast
 		public:
 			ExpressionStatement(shptr<Expression> expr);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
+			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 	};
 }
 #endif // EXPRESIONSTATEMENT

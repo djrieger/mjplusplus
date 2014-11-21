@@ -3,6 +3,8 @@
 
 #include "Node.hpp"
 
+#include "../semantic_analysis/SemanticAnalysis.hpp"
+
 namespace ast
 {
 	class Statement : public Node
@@ -16,7 +18,7 @@ namespace ast
 			};
 
 			virtual Type getType() const;
-
+			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const = 0;
 	};
 }
 

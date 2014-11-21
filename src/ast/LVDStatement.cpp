@@ -25,3 +25,26 @@ void ast::LVDStatement::toString(std::ostream& out, unsigned int indent, bool) c
 
 	out << ";\n";
 }
+
+void ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+{
+	//Test if symbol is in table
+	auto s = Symbol::makeSymbol(type_ident->getName(), symbolTable->getCurrentScope());
+
+	if (symbolTable->definedInCurrentScope(s))
+	{
+		sa.printError("Symbol " + s->getName() + " already defined");
+		return;
+	}
+
+	auto d = std::make_shared<Definition>(s, type_ident->getType());
+	s->setCurrentDefinition(d);
+	symbolTable->insert(s, d);
+
+	//TODO: Test if types match
+	/*auto init_type = init_expr->getType(sa, symbolTable);
+	if(type_ident->getType() != init_type)
+	{
+		sa.printError("Mismatched Types: " + type_ident->getType()->toString() + " and " + init_type->toString());
+	}*/
+}
