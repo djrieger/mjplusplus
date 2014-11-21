@@ -28,4 +28,14 @@ namespace ast
 	{
 		return Type::TYPE_BLOCK;
 	}
+
+	void Block::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	{
+		symbolTable->enterScope();
+
+		for (auto& stmt : *block_statements)
+			stmt->analyze(sa, symbolTable);
+
+		symbolTable->leaveScope();
+	}
 }

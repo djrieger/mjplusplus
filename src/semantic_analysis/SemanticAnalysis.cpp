@@ -1,4 +1,5 @@
 #include "SemanticAnalysis.hpp"
+#include "../ast/Program.hpp"
 
 SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program): valid(true), root(program), symboltable(), classTable() {}
 

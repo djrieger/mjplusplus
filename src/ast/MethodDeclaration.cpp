@@ -80,3 +80,14 @@ void ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<Symbo
 		symbolTable->insert(paramSymbol, paramDefinition);
 	}
 }
+
+void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const
+{
+	symboltable->enterScope();
+	auto s = Symbol::makeSymbol("return", symboltable->getCurrentScope());
+	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
+	symboltable->insert(s, d);
+
+	block->analyze(sa, symboltable);
+	symboltable->leaveScope();
+}
