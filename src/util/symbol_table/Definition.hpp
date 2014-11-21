@@ -9,14 +9,14 @@ class Symbol;
 class Definition
 {
 	private:
-		Symbol const& symbol;
-		ast::Type const& type;
+		shptr<Symbol>   symbol;
+		shptr<ast::Type>  type;
 		shptr<ast::Node> declaringNode;
 	public:
-		Symbol const& getSymbol() const;
-		ast::Type const& getType() const;
+		shptr<Symbol> getSymbol() const;
+		shptr<ast::Type>  getType() const;
 
-		//Definition(Symbol const &symbol, ast::Type const &type, shptr<ast::Node> declaringNode);
+		Definition(shptr<Symbol> symbol, shptr<ast::Type> type);
 		//Definition(Symbol const &symbol, shptr<ast::Node> declaringNode);
 };
 
