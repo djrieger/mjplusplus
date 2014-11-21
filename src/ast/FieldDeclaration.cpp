@@ -19,7 +19,7 @@ std::string ast::FieldDeclaration::getName() const
 	return "f" + type_and_name->getName();
 }
 
-void ast::FieldDeclaration::collectDefinition(SemanticAnalysis &sa, shptr<SymbolTable> symbolTable) const
+void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	auto primitiveType = type_and_name->getType()->getPrimitiveType();
 
