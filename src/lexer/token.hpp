@@ -2,7 +2,9 @@
 #define TOKEN_HPP
 
 #include <string>
-#include <unordered_set>
+#include <unordered_map>
+#include "../globals.hpp"
+#include "../util/symbol_table/Symbol.hpp"
 
 namespace lexer
 {
@@ -10,9 +12,9 @@ namespace lexer
 	{
 		private:
 			/**
-			 * string table to store all strings (identifier, keywords, integers) seen by the lexer
+			 * string table mapping all strings (identifier, keywords, integers) seen by the lexer to symbols
 			 */
-			static std::unordered_set<std::string> stringTable;
+			static std::unordered_map<std::string, shptr<Symbol>> stringTable;
 
 		public:
 			/** enum containing the different token types */
@@ -80,6 +82,8 @@ namespace lexer
 			void print() const;
 
 			static std::string const& getTableReference(std::string const& value);
+
+			static shptr<Symbol> getSymbol(std::string const &value);
 
 			/** lookup table from token type to entry in stringtable
 			 *  used to prepopulate stringtable with allowed keywords and operators

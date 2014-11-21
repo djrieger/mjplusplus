@@ -12,6 +12,7 @@ class Symbol
 		std::string const& name;
 		shptr<Scope> currentScope;
 		shptr<Definition> currentDefinition;
+
 	public:
 		shptr<Definition> getCurrentDefinition() const;
 		shptr<Scope> getCurrentScope() const;
@@ -20,9 +21,9 @@ class Symbol
 		void setCurrentDefinition(shptr<Definition> definition);
 		void setCurrentScope(shptr<Scope> scope);
 
-		//shptr<Symbol> makeSymbol(std::string const &name, )
+		static shptr<Symbol> makeSymbol(std::string const &name, shptr<Scope> scope);
 
-	//private:
+	private:
 		Symbol(const std::string& name, shptr<Scope> currentScope, shptr<Definition> currentDefinition);
 		Symbol(const std::string& name, shptr<Scope> currentScope);
 };

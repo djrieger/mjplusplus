@@ -1,4 +1,5 @@
 #include "Symbol.hpp"
+#include "../../lexer/token.hpp"
 
 Symbol::Symbol(std::string const& name, shptr<Scope> currentScope, shptr<Definition> currentDefinition): name(name), currentScope(currentScope), currentDefinition(currentDefinition) {}
 
@@ -28,4 +29,13 @@ void Symbol::setCurrentScope(shptr<Scope> scope)
 std::string const& Symbol::getName() const
 {
 	return this->name;
+}
+
+shptr<Symbol> Symbol::makeSymbol(std::string const &name, shptr<Scope> scope) 
+{
+	shptr<Symbol> symbol = lexer::Token::getSymbol(name);
+	if (!symbol) {
+		symbol = shptr<Symbol>(new Symbol(name, scope));
+	}
+	return symbol;
 }
