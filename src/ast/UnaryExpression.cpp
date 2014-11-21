@@ -71,6 +71,19 @@ namespace ast
 			;
 		}
 
+		bool Not::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			if (child->check_type(sa, symbolTable))
+				return child->get_type(sa, symbolTable) == Type(Type::BOOLEAN);
+
+			return false;
+		}
+
+		Type Not::get_type(SemanticAnalysis&, shptr<SymbolTable>) const
+		{
+			return Type(Type::BOOLEAN);
+		}
+
 		void Not::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			UnaryExpression::toString(out, indent, "!", special);
@@ -80,6 +93,19 @@ namespace ast
 			: UnaryExpression::UnaryExpression(child, size)
 		{
 			;
+		}
+
+		bool Neg::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			if (child->check_type(sa, symbolTable))
+				return child->get_type(sa, symbolTable) == Type(Type::INT);
+
+			return false;
+		}
+
+		Type Neg::get_type(SemanticAnalysis&, shptr<SymbolTable>) const
+		{
+			return Type(Type::INT);
 		}
 
 		void Neg::toString(std::ostream& out, unsigned int indent, bool special) const

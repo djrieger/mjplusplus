@@ -1,4 +1,5 @@
 #include "Type.hpp"
+#include "Expression.hpp"
 
 ast::Type::Type(Type::Primitive_type primitive_type): primitive_type(primitive_type), dimension(0) {}
 ast::Type::Type(shptr<Ident> class_name): primitive_type(Type::Primitive_type::NONE), class_name(class_name), dimension(0) {}

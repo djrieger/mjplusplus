@@ -10,6 +10,16 @@ namespace ast
 			;
 		}
 
+		bool Bool::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			return true;
+		}
+
+		Type Bool::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			return Type(Type::BOOLEAN);
+		}
+
 		void Bool::toString(std::ostream& out, unsigned int, bool) const
 		{
 			out << (value ? "true" : "false");
@@ -22,6 +32,16 @@ namespace ast
 		void Ident::toString(std::ostream& out, unsigned int ident, bool) const
 		{
 			identifier->toString(out, ident);
+		}
+
+		bool Ident::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			throw 42;
+		}
+
+		Type Ident::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			throw 42;
 		}
 
 
@@ -40,11 +60,20 @@ namespace ast
 
 		}
 
+		bool Integer::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			return true;
+		}
+
+		Type Integer::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			return Type(Type::INT);
+		}
+
 		void Integer::toString(std::ostream& out, unsigned int, bool) const
 		{
 			out << string_value;
 		}
-
 
 		NewArrayExpression::NewArrayExpression(shptr<Type> type, shptr<Expression> expr) :
 			type(type),
@@ -52,6 +81,23 @@ namespace ast
 		{
 
 		}
+
+		bool NewArrayExpression::check_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			if (child->check_type(sa, symbolTable) && (child->get_type(sa, symbolTable) == Type(Type::INT)))
+			{
+				//chekc type
+				auto symbol = Symbol::makeSymbol(this->`)
+			}
+
+			return false;
+		}
+
+		Type NewArrayExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			return Type(Type::INT);
+		}
+
 
 		void NewArrayExpression::toString(std::ostream& out, unsigned int indent, bool) const
 		{
