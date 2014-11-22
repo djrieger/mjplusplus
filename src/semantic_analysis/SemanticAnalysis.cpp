@@ -1,11 +1,21 @@
 #include "SemanticAnalysis.hpp"
+#include "../ast/Program.hpp"
+#include "../util/ErrorReporter.hpp"
 
-SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program): valid(true), root(program), symboltable(), classTable() {}
+SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorReporter> errorReporter): errorReporter(errorReporter), valid(true), root(program), symboltable(), classTable() {}
 
+// TODO:
+// Remove this method as soon as possible
 void SemanticAnalysis::printError(std::string s)
 {
 	valid = false;
-	std::cout << "\033[1;31mSemantic error:\033[0m " << s << std::endl;
+	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, s, std::pair<unsigned int, unsigned int>(1, 1));
+}
+
+void SemanticAnalysis::printError(std::string s, shptr<ast::PositionAwareNode> node)
+{
+	valid = false;
+	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, s, node->getPosition());
 }
 
 bool SemanticAnalysis::start()
@@ -43,7 +53,7 @@ bool SemanticAnalysis::isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptabl
 		// not in class table:
 		if (iter == getClassTable().end())
 		{
-			printError("Type " + type->getClassName() + " undeclared.");
+			printError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
 			return false;
 		}
 

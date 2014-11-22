@@ -9,6 +9,7 @@
 #include "parser/parser.hpp"
 #include "semantic_analysis/SemanticAnalysis.hpp"
 #include "util/optionparser.h"
+#include "util/ErrorReporter.hpp"
 
 
 int main(int argc, const char** argv)
@@ -84,6 +85,7 @@ int main(int argc, const char** argv)
 		try
 		{
 			lexer::Lexer lexer(file_name.c_str(), stateomat);
+			auto errorReporter = std::make_shared<ErrorReporter>();
 
 
 			if (options[LEXTEST])
@@ -105,23 +107,26 @@ int main(int argc, const char** argv)
 				return EXIT_SUCCESS;
 			}
 
-			Parser parser(lexer, true);
+			Parser parser(lexer, errorReporter);
 			bool valid = parser.start();
 
-			if (!valid)
-				return EXIT_FAILURE;
-
-			if (options[CHECK])
+			if (options[CHECK] && valid)
 			{
-				SemanticAnalysis sa(parser.getRoot());
-				bool valid = sa.start();
-				return !valid;
+				SemanticAnalysis sa(parser.getRoot(), errorReporter);
+
+				if (!sa.start())
+					valid = false;
 			}
 
 			if (options[PRINT_AST])
 				parser.getRoot()->toString(std::cout, 0);
 
-			return EXIT_SUCCESS;
+			errorReporter->printErrors();
+
+			if (!valid)
+				return EXIT_FAILURE;
+			else
+				return EXIT_SUCCESS;
 
 		}
 		catch (std::string msg)
