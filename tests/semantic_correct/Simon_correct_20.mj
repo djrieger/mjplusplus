@@ -1,0 +1,10 @@
+class a {
+	public static void main(String[] a) {}
+}
+class b {
+	public void main(String[] a) {}
+	public void c() {
+		main(new String[2]);
+	}
+}
+class String {}

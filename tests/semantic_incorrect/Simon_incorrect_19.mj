@@ -1,7 +1,7 @@
 class a {
 	public static void main(String[] a) {}
 	public void error() {
-		bool b = true == 1 == 2;
+		boolean b = true == 1 == 2;
 		/* type mismatch (left associativity!) */
 	}
 }

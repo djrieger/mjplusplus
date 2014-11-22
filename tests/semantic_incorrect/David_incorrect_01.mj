@@ -1,0 +1,7 @@
+class a {
+	public int i;
+	public void i;
+	public static void main(String[] a) {}
+}
+
+class a {} /* double class a */

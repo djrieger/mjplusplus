@@ -4,6 +4,7 @@
 #include <memory>
 #include "../globals.hpp"
 
+#include "../util/ErrorReporter.hpp"
 #include "../lexer/lexer.hpp"
 #include "../ast/Program.hpp"
 #include "../ast/ClassMember.hpp"
@@ -37,7 +38,7 @@ class Parser
 		 * @param	lexer	instance of a lexer providing the tokens
 		 * @param   print_messages   sets whether error messages will be printed, default: true
 		 */
-		Parser(lexer::Lexer& lexer, bool print_messages = true); // TODO: determine parameters
+		Parser(lexer::Lexer& lexer, shptr<ErrorReporter> errorReporter); // TODO: determine parameters
 
 		/**
 		 * Generic function to start the parser
@@ -49,6 +50,7 @@ class Parser
 		std::shared_ptr<ast::Program> getRoot();
 
 	private:
+		shptr<ErrorReporter> errorReporter;
 		/**
 		 * Whether we are in error mode (true between invalid token and next occurrence of expected token)
 		 */
