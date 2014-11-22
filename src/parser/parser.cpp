@@ -4,7 +4,7 @@
 #include "../globals.hpp"
 #include "parser.hpp"
 
-Parser::Parser(lexer::Lexer& lexer, bool print_messages) : lexer(lexer), print_messages(print_messages), current {lexer::Token::Token_type::TOKEN_ERROR, "", {0, 0}}
+Parser::Parser(lexer::Lexer& lexer, shptr<ErrorReporter> errorReporter) : lexer(lexer), errorReporter(errorReporter), current {lexer::Token::Token_type::TOKEN_ERROR, "", {0, 0}}
 {
 }
 
@@ -59,19 +59,19 @@ bool Parser::start()
 	}
 	catch (char const* msg)
 	{
+		std::cout << "called0";
 		printError(msg);
 	}
 	catch (lexer::Token::Token_type tokenType)
 	{
+		std::cout << "called1";
 		printError("expected " + lexer.describe(tokenType));
 	}
 	catch (std::string string_val)
 	{
+		std::cout << "called2";
 		printError("expected \"" + string_val + '"');
 	}
-
-	if (!r || errors_found)
-		std::cerr << "Error during compilation." << std::endl;
 
 	return r && !errors_found;
 }
@@ -91,25 +91,24 @@ void __attribute__ ((noinline)) Parser::nextToken()
 
 void Parser::printError(std::string const& error_msg)
 {
-	if (print_messages)   // only print error messages if they are wanted
-	{
-		std::cerr << "\033[1;31mParser error\033[0m at line " << current.position.first << ", column " << current.position.second <<
-		          ", parsing \"" << *current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
-		          error_msg << std::endl;
+	/*std::cerr << "\033[1;31mParser error\033[0m at line " << current.position.first << ", column " << current.position.second <<
+	          ", parsing \"" << *current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
+	          error_msg << std::endl;
+	*/
+	// read current line
+	std::string line = lexer.getLine();
+	std::replace(line.begin(), line.end(), '\t', ' ');
 
-		// read current line
-		std::string line = lexer.getLine();
-		std::replace(line.begin(), line.end(), '\t', ' ');
+	// markerLine stores a position indicator like so: "     ^"
+	std::string markerline(current.position.second - 1, ' ');
+	markerline += '^';
 
-		// markerLine stores a position indicator like so: "     ^"
-		std::string markerline(current.position.second - 1, ' ');
-		markerline += '^';
+	// output input line where error occurred and markerline
+	// line already ends with \n so no additional std::endl needs to be added
+	//std::cerr << line << std::endl;
+	//std::cerr << markerline << std::endl;
 
-		// output input line where error occurred and markerline
-		// line already ends with \n so no additional std::endl needs to be added
-		std::cerr << line << std::endl;
-		std::cerr << markerline << std::endl;
-	}
+	errorReporter->printError(ErrorReporter::ErrorType::PARSER, error_msg + "\n" + line + "\n" + markerline, current.position);
 }
 
 void Parser::expect(lexer::Token::Token_type const& tokenType)

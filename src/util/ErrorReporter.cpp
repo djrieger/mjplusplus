@@ -26,4 +26,7 @@ void ErrorReporter::printErrors() const
 
 		std::cerr << "at line " << error.first.first << ", column " << error.first.second << ": " << error.second.second << std::endl;;
 	}
+
+	if (errors.size() > 0)
+		std::cerr << "Error during compilation" << std::endl;
 }
