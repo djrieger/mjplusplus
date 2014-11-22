@@ -38,6 +38,7 @@ namespace ast
 			std::string const& getClassName() const;
 			shptr<ast::Ident> const& getClassNameIdent() const;
 			std::string getName() const;
+			int getDimension() const;
 
 		private:
 			Primitive_type primitive_type;
