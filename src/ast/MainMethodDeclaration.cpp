@@ -15,6 +15,30 @@ void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent
 	MethodDeclaration::toString(out, indent, true);
 }
 
+
+
+void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+{
+	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+
+	if (return_type_and_name->getName() != "main")
+		sa.printError("Main method has name \033[1m" + return_type_and_name->getName() + "\033[0m instead of 'main'.", return_type_and_name->getIdent());
+
+	// check if a method with the same name already exists
+	if (symbolTable->definedInCurrentScope(symbol))
+		sa.printError("Method with name \033[1m" + return_type_and_name->getName() + "\033[0m already declared.", return_type_and_name->getIdent());
+
+	auto returnType = return_type_and_name->getType();//type is void
+
+	symbolTable->enterScope();
+	collectParameters(sa, symbolTable);
+	symbolTable->leaveScope();
+
+	// insert this field into symbol table of this class
+	auto definition = std::make_shared<Definition>(symbol, returnType);
+	symbolTable->insert(symbol, definition);
+}
+
 void ast::MainMethodDeclaration::collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const
 {
 	//we know we only have one parameter, which is of a pseudo-type String[]
