@@ -1,4 +1,6 @@
 class a {
 	public static void main(String[] a) {}
-	public int main() {}/* two mains: overloading special case */
+	public int main() {
+		return 0;	
+	}/* two mains: overloading special case */
 }

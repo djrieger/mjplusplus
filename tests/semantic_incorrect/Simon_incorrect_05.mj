@@ -1,5 +1,9 @@
 class a {
 	public static void main(String[] a) {}
-	public int a() {}
-	public boolean a(int x) {}/* overloading is forbidden */
+	public int a() {
+		return 0;	
+	}
+	public boolean a(int x) {/* overloading is forbidden */
+		return true;	
+	}
 }

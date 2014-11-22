@@ -14,3 +14,12 @@ void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent
 	// Prints this method including the "static" modifier
 	MethodDeclaration::toString(out, indent, true);
 }
+
+void ast::MainMethodDeclaration::collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const
+{
+	//we know we only have one parameter, which is of a pseudo-type String[]
+	auto parameter = (*parameters)[0];
+	auto paramSymbol = Symbol::makeSymbol("p" + parameter->getName(), shptr<Scope>());
+	auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
+	symbolTable->insert(paramSymbol, paramDefinition);
+}
