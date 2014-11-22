@@ -23,9 +23,9 @@ class SemanticAnalysis
 			shptr<ast::ClassDeclaration> classNode;
 			shptr<SymbolTable> symbolTable;
 		};
-
-	private:
 		ErrorReporter reporter;
+	private:
+
 		bool valid;
 		shptr<ast::Program> root;
 		shptr<SymbolTable> symboltable;

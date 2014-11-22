@@ -14,6 +14,7 @@ class ErrorReporter
 			SEMANTIC
 		};
 		void printError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position);
+		void printErrors() const;
 	private:
 		std::multimap<std::pair<unsigned int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>> errors;
 };

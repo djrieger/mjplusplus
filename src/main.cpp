@@ -115,6 +115,7 @@ int main(int argc, const char** argv)
 			{
 				SemanticAnalysis sa(parser.getRoot());
 				bool valid = sa.start();
+				sa.reporter.printErrors();
 				return !valid;
 			}
 
