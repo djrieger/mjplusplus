@@ -23,16 +23,15 @@ class SemanticAnalysis
 			shptr<ast::ClassDeclaration> classNode;
 			shptr<SymbolTable> symbolTable;
 		};
-		ErrorReporter reporter;
 	private:
-
+		shptr<ErrorReporter> errorReporter;
 		bool valid;
 		shptr<ast::Program> root;
 		shptr<SymbolTable> symboltable;
 		std::unordered_map<std::string, ClassTableItem> classTable;
 
 	public:
-		SemanticAnalysis(shptr<ast::Program> program);
+		SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorReporter> errorReporter);
 		void printError(std::string s);
 		void printError(std::string s, shptr<ast::PositionAwareNode> node);
 
