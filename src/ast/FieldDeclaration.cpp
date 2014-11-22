@@ -51,5 +51,9 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 			symbolTable->insert(symbol, definition);
 		}
 
+	} else {//we have a primitive type
+		// insert this field into symbol table of this class
+		auto definition = std::make_shared<Definition>(symbol, type);
+		symbolTable->insert(symbol, definition);
 	}
 }
