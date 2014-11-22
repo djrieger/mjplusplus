@@ -28,6 +28,10 @@ class ErrorReporter
 		 * Print all errors stored in the errors multimap to std::cerr. This should be called after parsing and semantic analysis are complete.
 		 */
 		void printErrors() const;
+		/*
+		 * Initialize ErrorReporter for source file with name file_name
+		 */
+		ErrorReporter(std::string const& file_name);
 	private:
 		/*
 		 * Errors reported by Parser or SemanticAnalysis
@@ -35,6 +39,10 @@ class ErrorReporter
 		 * value: (ErrorReporter::ErrorType, std::string)
 		 */
 		std::multimap<std::pair<unsigned int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>> errors;
+		/*
+		 * name of input file
+		 */
+		std::string const& file_name;
 };
 
 #endif

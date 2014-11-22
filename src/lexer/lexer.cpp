@@ -232,29 +232,6 @@ namespace lexer
 		return foo;
 	}
 
-	std::string Lexer::getLine()
-	{
-
-		off_t initial_offset = lseek(fd, 0, SEEK_CUR);
-
-		lseek(fd, line_start, SEEK_SET);
-
-		FILE* f = fdopen(fd, "r");
-
-		char* line = NULL;
-		size_t alloc = 0;
-		ssize_t len = getline(&line, &alloc, f);
-		line[len - 1] = '\0';
-
-		std::string s(line);
-
-		free(line);
-
-		lseek(fd, initial_offset, SEEK_SET);
-
-		return s;
-	}
-
 	Token::Token_type Lexer::lex_keyword_or_ident(const char* s)
 	{
 

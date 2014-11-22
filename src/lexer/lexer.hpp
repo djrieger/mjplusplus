@@ -150,11 +150,6 @@ namespace lexer
 			 */
 			bool good() const;
 			/**
-			 * Returns the line the lexer is in
-			 * @return current line
-			 */
-			std::string getLine();
-			/**
 			 *  Returns a description string for the given token
 			 *  @param token to print the description of
 			 *  @returns description for t

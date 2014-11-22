@@ -1,4 +1,10 @@
+#include <fstream>
 #include "ErrorReporter.hpp"
+
+ErrorReporter::ErrorReporter(std::string const& file_name): file_name(file_name)
+{
+
+}
 
 void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position)
 {
@@ -7,6 +13,11 @@ void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const
 
 void ErrorReporter::printErrors() const
 {
+	std::ifstream is(file_name);
+	unsigned int lineNumber = 1;
+	std::string lineOfCode;
+	getline(is, lineOfCode);
+
 	for (auto& error : errors)
 	{
 		switch (error.second.first)
@@ -24,7 +35,19 @@ void ErrorReporter::printErrors() const
 				break;
 		}
 
-		std::cerr << "at line " << error.first.first << ", column " << error.first.second << ": " << error.second.second << std::endl;;
+		while (lineNumber != error.first.first)
+		{
+			getline(is, lineOfCode);
+			lineNumber++;
+		}
+
+		std::string markerline(error.first.second - 1, ' ');
+		markerline += '^';
+
+		std::cerr << "at line " << error.first.first << ", column " << error.first.second << ": " << error.second.second << std::endl;
+		// output input line where error occurred and markerline
+		std::cerr << lineOfCode << std::endl;
+		std::cerr << markerline << std::endl;
 	}
 
 	if (errors.size() > 0)

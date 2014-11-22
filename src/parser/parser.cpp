@@ -83,23 +83,16 @@ void __attribute__ ((noinline)) Parser::nextToken()
 	current = lexer.get_next_token();
 
 	if (current.token_type == lexer::Token::Token_type::TOKEN_ERROR)
+	{
+		errorReporter->recordError(ErrorReporter::ErrorType::LEXER, "", current.position);
 		throw "Error from lexer";
+	}
 }
 
 void Parser::printError(std::string const& error_msg)
 {
-	// read current line
-	std::string line = lexer.getLine();
-	std::replace(line.begin(), line.end(), '\t', ' ');
-
-	// markerLine stores a position indicator like so: "     ^"
-	std::string markerline(current.position.second - 1, ' ');
-	markerline += '^';
-
-	// output input line where error occurred and markerline
-	// line already ends with \n so no additional std::endl needs to be added
 	errorReporter->recordError(ErrorReporter::ErrorType::PARSER,
-	                           "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": ") + "\n" + line + "\n" + markerline,
+	                           "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": "),
 	                           current.position);
 }
 

@@ -85,7 +85,7 @@ int main(int argc, const char** argv)
 		try
 		{
 			lexer::Lexer lexer(file_name.c_str(), stateomat);
-			auto errorReporter = std::make_shared<ErrorReporter>();
+			auto errorReporter = std::make_shared<ErrorReporter>(file_name);
 
 
 			if (options[LEXTEST])
