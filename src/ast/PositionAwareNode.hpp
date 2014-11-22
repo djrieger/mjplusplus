@@ -10,6 +10,9 @@ namespace lexer
 
 namespace ast
 {
+	/*
+	 * AST node which has a (line, column) position from the original token it belongs to
+	 */
 	class PositionAwareNode
 	{
 		protected:
@@ -17,6 +20,9 @@ namespace ast
 		public:
 			void setPosition(lexer::Token const& token);
 			std::pair<unsigned int, unsigned int> getPosition() const;
+			/*
+			 * Stores the position of this token
+			 */
 			PositionAwareNode(lexer::Token const& token);
 	};
 }

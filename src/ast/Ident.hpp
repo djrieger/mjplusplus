@@ -8,15 +8,15 @@
 
 namespace ast
 {
-	//class PositionAwareNode;
-
 	class Ident : public Node, public PositionAwareNode
 	{
 		private:
 			std::string const& string_value;
 
 		public:
-			//Ident(std::string const& string_value);
+			/*
+			 * Store this token's string value and its position
+			 */
 			Ident(lexer::Token const& token);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			std::string const& getName() const;
