@@ -1,6 +1,6 @@
 #include "ErrorReporter.hpp"
 
-void ErrorReporter::printError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position)
+void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position)
 {
 	errors.insert(std::pair<std::pair<unsigned int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(position, std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
 }

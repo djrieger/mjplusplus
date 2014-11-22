@@ -98,9 +98,9 @@ void Parser::printError(std::string const& error_msg)
 
 	// output input line where error occurred and markerline
 	// line already ends with \n so no additional std::endl needs to be added
-	errorReporter->printError(ErrorReporter::ErrorType::PARSER,
-	                          "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": ") + "\n" + line + "\n" + markerline,
-	                          current.position);
+	errorReporter->recordError(ErrorReporter::ErrorType::PARSER,
+	                           "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": ") + "\n" + line + "\n" + markerline,
+	                           current.position);
 }
 
 void Parser::expect(lexer::Token::Token_type const& tokenType)

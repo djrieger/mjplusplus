@@ -9,13 +9,13 @@ SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorRepor
 void SemanticAnalysis::printError(std::string s)
 {
 	valid = false;
-	errorReporter->printError(ErrorReporter::ErrorType::SEMANTIC, s, std::pair<unsigned int, unsigned int>(1, 1));
+	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, s, std::pair<unsigned int, unsigned int>(1, 1));
 }
 
 void SemanticAnalysis::printError(std::string s, shptr<ast::PositionAwareNode> node)
 {
 	valid = false;
-	errorReporter->printError(ErrorReporter::ErrorType::SEMANTIC, s, node->getPosition());
+	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, s, node->getPosition());
 }
 
 bool SemanticAnalysis::start()

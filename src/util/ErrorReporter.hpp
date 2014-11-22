@@ -16,7 +16,14 @@ class ErrorReporter
 			PARSER,
 			SEMANTIC
 		};
-		void printError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position);
+		/*
+		 * Record an error in the errors multimap
+		 *
+		 * @type Error type
+		 * @error_msg Error message to be printed
+		 * @position line and column where the error occurred
+		 */
+		void recordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position);
 		/**
 		 * Print all errors stored in the errors multimap to std::cerr. This should be called after parsing and semantic analysis are complete.
 		 */
