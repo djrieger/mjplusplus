@@ -1,7 +1,12 @@
 #include "../globals.hpp"
 #include "Ident.hpp"
-
+/*
 ast::Ident::Ident(std::string const& string_value) : string_value(string_value)
+{
+
+}
+*/
+ast::Ident::Ident(lexer::Token const& token) : string_value(*token.string_value), PositionAwareNode(token)
 {
 
 }

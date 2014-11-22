@@ -36,6 +36,7 @@ namespace ast
 			void setDimension(int dimension);
 			Primitive_type getPrimitiveType() const;
 			std::string const& getClassName() const;
+			shptr<ast::Ident> const& getClassNameIdent() const;
 			std::string getName() const;
 
 		private:

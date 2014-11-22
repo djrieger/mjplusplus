@@ -26,6 +26,7 @@ namespace ast
 			void collectDefinitions(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			std::string getName() const;
+			shptr<Ident> getIdent() const;
 	};
 }
 

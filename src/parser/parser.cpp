@@ -186,7 +186,7 @@ shptr<ast::Program> Parser::parseProgram()
 	{
 		nextToken();
 		// now current.string_value contains the name of the class:
-		auto className = std::make_shared<ast::Ident>(*current.string_value);
+		auto className = std::make_shared<ast::Ident>(current);
 		expect(lexer::Token::Token_type::TOKEN_IDENT);
 		expect(lexer::Token::Token_type::OPERATOR_LBRACE);
 		classes->push_back(std::make_shared<ast::ClassDeclaration>(className, parseClassMembers()));
@@ -225,18 +225,18 @@ shptr<ast::MainMethodDeclaration> Parser::parseMainMethod()
 	// build "void METHODNAME"
 	std::shared_ptr<ast::Type> voidType( new ast::Type(ast::Type::Primitive_type::VOID));
 	expect(lexer::Token::Token_type::KEYWORD_VOID);
-	auto mainMethodName = std::make_shared<ast::Ident>(*current.string_value);
+	auto mainMethodName = std::make_shared<ast::Ident>(current);
 	auto typeIdent = std::make_shared<ast::TypeIdent>(voidType, mainMethodName);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 
 	// build "String[] PARAMETERNAME"
-	auto stringType = std::make_shared<ast::Ident>(*current.string_value);
+	auto stringType = std::make_shared<ast::Ident>(current);
 	auto type = std::make_shared<ast::Type>(stringType, 1);
 	expect(lexer::Token::Token_type::TOKEN_IDENT, "String");
 	expect(lexer::Token::Token_type::OPERATOR_LBRACKET);
 	expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
-	auto parameterName = std::make_shared<ast::Ident>(*current.string_value);
+	auto parameterName = std::make_shared<ast::Ident>(current);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 	auto parameters = std::make_shared<vec<shptr<ast::TypeIdent>>>();
 	parameters->push_back(std::make_shared<ast::TypeIdent>(type, parameterName));
@@ -251,7 +251,7 @@ shptr<ast::TypeIdent> Parser::parseTypeIdent()
 	auto type = parseType();
 
 	// retrieve variable name:
-	auto variable_name = std::make_shared<ast::Ident>(*current.string_value);
+	auto variable_name = std::make_shared<ast::Ident>(current);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 
 	return std::make_shared<ast::TypeIdent>(type, variable_name);
@@ -293,7 +293,7 @@ shptr<ast::Type> Parser::parseBasicType()
 
 		case lexer::Token::Token_type::TOKEN_IDENT:
 		{
-			auto class_name = std::make_shared<ast::Ident>(*current.string_value);
+			auto class_name = std::make_shared<ast::Ident>(current);
 			nextToken();
 			return std::make_shared<ast::Type>(class_name);
 			break;
@@ -712,7 +712,7 @@ shptr<ast::Expression> Parser::parsePrimaryExpression()
 
 		case lexer::Token::Token_type::TOKEN_IDENT:
 		{
-			auto ident = std::make_shared<ast::Ident>(*current.string_value);
+			auto ident = std::make_shared<ast::Ident>(current);
 			nextToken();
 
 			if (current.token_type == lexer::Token::Token_type::OPERATOR_LPAREN)
@@ -767,7 +767,7 @@ shptr<ast::Expression> Parser::parseNewObjectOrNewArrayExpression()
 // NewObjectExpression -> IDENT ( ) .
 shptr<ast::Expression> Parser::parseNewObjectExpression()
 {
-	auto ident = std::make_shared<ast::Ident>(*current.string_value);
+	auto ident = std::make_shared<ast::Ident>(current);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
@@ -842,7 +842,7 @@ shptr<ast::Arguments> Parser::parseArguments()
 // MethodInvocation -> ( Arguments ) .
 std::shared_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 {
-	auto id = std::make_shared<ast::Ident>(*current.string_value);
+	auto id = std::make_shared<ast::Ident>(current);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
 
 	if (current.token_type == lexer::Token::Token_type::OPERATOR_LPAREN)
