@@ -26,13 +26,13 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 
 	// check if a field with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
-		sa.printError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.");
+		sa.printError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.", type_and_name->getIdent());
 
 	auto type = type_and_name->getType();
 	auto primitiveType = type->getPrimitiveType();
 
 	if (primitiveType == Type::Primitive_type::VOID)
-		sa.printError("Field " + type_and_name->getName() + " cannot have type void.");
+		sa.printError("Field " + type_and_name->getName() + " cannot have type void.", type_and_name->getIdent());
 	else
 	{
 		if (primitiveType == Type::Primitive_type::NONE)
@@ -42,7 +42,7 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 
 			// not in class table:
 			if (iter == sa.getClassTable().end())
-				sa.printError("Type " + type->getClassName() + " undeclared.");
+				sa.printError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
 		}
 	}
 

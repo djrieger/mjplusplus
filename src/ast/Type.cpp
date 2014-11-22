@@ -79,8 +79,9 @@ shptr<ast::Type> ast::Type::de_array()
 
 	if (primitive_type == ast::Type::Primitive_type::NONE)
 	{
-		auto ident = std::make_shared<ast::Ident>(class_name->getName());
-		return std::make_shared<ast::Type>(ident, dimension - 1);
+		// TODO: Does this work?
+		//auto ident = std::make_shared<ast::Ident>(class_name->getName());
+		return std::make_shared<ast::Type>(class_name, dimension - 1);
 	}
 	else
 		return std::make_shared<ast::Type>(primitive_type, dimension - 1);
@@ -94,6 +95,11 @@ ast::Type::Primitive_type ast::Type::getPrimitiveType() const
 std::string const& ast::Type::getClassName() const
 {
 	return class_name->getName();
+}
+
+shptr<ast::Ident> const& ast::Type::getClassNameIdent() const
+{
+	return class_name;
 }
 
 std::string ast::Type::getName() const

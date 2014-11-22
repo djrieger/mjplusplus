@@ -6,6 +6,8 @@
 #include "../util/symbol_table/symbol_table.hpp"
 #include "../ast/Program.hpp"
 #include "../ast/Type.hpp"
+#include "../ast/PositionAwareNode.hpp"
+#include "../util/ErrorReporter.hpp"
 
 namespace ast
 {
@@ -23,6 +25,7 @@ class SemanticAnalysis
 		};
 
 	private:
+		ErrorReporter reporter;
 		bool valid;
 		shptr<ast::Program> root;
 		shptr<SymbolTable> symboltable;
@@ -31,6 +34,7 @@ class SemanticAnalysis
 	public:
 		SemanticAnalysis(shptr<ast::Program> program);
 		void printError(std::string s);
+		void printError(std::string s, shptr<ast::PositionAwareNode> node);
 
 		bool start();
 		bool insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node);

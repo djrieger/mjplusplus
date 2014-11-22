@@ -18,6 +18,11 @@ std::string ast::TypeIdent::getName() const
 	return identifier->getName();
 }
 
+shptr<ast::Ident> const& ast::TypeIdent::getIdent() const
+{
+	return identifier;
+}
+
 shptr<ast::Type> const& ast::TypeIdent::getType() const
 {
 	return this->type;

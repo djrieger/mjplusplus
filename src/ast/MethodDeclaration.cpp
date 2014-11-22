@@ -40,14 +40,14 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
-		sa.printError("Method with name \033[1m" + return_type_and_name->getName() + "\033[0m already declared.");
+		sa.printError("Method with name \033[1m" + return_type_and_name->getName() + "\033[0m already declared.", return_type_and_name->getIdent());
 
 	auto returnType = return_type_and_name->getType();
 	auto primitiveType = returnType->getPrimitiveType();
 
 	// We have a reference type. Find corresponding class in class table:
 	if (primitiveType == Type::Primitive_type::NONE && sa.getClassTable().find(returnType->getClassName()) == sa.getClassTable().end())
-		sa.printError("Type \033[1m" + returnType->getClassName() + "\033[0m used as return type undeclared.");
+		sa.printError("Type \033[1m" + returnType->getClassName() + "\033[0m used as return type undeclared.", returnType->getClassNameIdent());
 
 	symbolTable->enterScope();
 	collectParameters(sa, symbolTable);
@@ -65,16 +65,16 @@ void ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<Symbo
 		auto paramSymbol = Symbol::makeSymbol("p" + parameter->getName(), shptr<Scope>());
 
 		if (symbolTable->definedInCurrentScope(paramSymbol))
-			sa.printError("Parameter with name \033[1m" + parameter->getName() + "\033[0m already declared in this function.");
+			sa.printError("Parameter with name \033[1m" + parameter->getName() + "\033[0m already declared in this function.", parameter->getIdent());
 
 		Type::Primitive_type primitiveType = parameter->getType()->getPrimitiveType();
 
 		// check parameters for type void
 		if (primitiveType == Type::Primitive_type::VOID)
-			sa.printError("Parameter \033[1m" + parameter->getName() + "\033[0m cannot have type void.");
+			sa.printError("Parameter \033[1m" + parameter->getName() + "\033[0m cannot have type void.", parameter->getIdent());
 		// check if referenced paramater type exists:
 		else if (primitiveType == Type::Primitive_type::NONE && sa.getClassTable().find(parameter->getType()->getClassName()) == sa.getClassTable().end())
-			sa.printError("Type \033[1m" + parameter->getType()->getClassName() + "\033[0m of parameter \033[1m" + parameter->getName() + "\033[0m undeclared.");
+			sa.printError("Type \033[1m" + parameter->getType()->getClassName() + "\033[0m of parameter \033[1m" + parameter->getName() + "\033[0m undeclared.", parameter->getType()->getClassNameIdent());
 
 		auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
 		symbolTable->insert(paramSymbol, paramDefinition);
@@ -93,7 +93,7 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 	if (!block)
 	{
 		if (*return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
-			sa.printError("Method " + return_type_and_name->getName() + " returns non-void but body is empty");
+			sa.printError("Method " + return_type_and_name->getName() + " returns non-void but body is empty", return_type_and_name->getIdent());
 	}
 	else
 		block->analyze(sa, st);

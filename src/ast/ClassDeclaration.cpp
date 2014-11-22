@@ -58,4 +58,9 @@ namespace ast
 
 		symbolTable->leaveScope();
 	}
+
+	shptr<Ident> ClassDeclaration::getIdent() const
+	{
+		return this->class_name;
+	}
 }

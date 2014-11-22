@@ -1,12 +1,20 @@
 #include "SemanticAnalysis.hpp"
 #include "../ast/Program.hpp"
+#include "../util/ErrorReporter.hpp"
 
 SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program): valid(true), root(program), symboltable(), classTable() {}
 
 void SemanticAnalysis::printError(std::string s)
 {
 	valid = false;
-	std::cout << "\033[1;31mSemantic error:\033[0m " << s << std::endl;
+	std::cerr << "\033[1;31mSemantic error:\033[0m " << s << std::endl;
+
+}
+
+void SemanticAnalysis::printError(std::string s, shptr<ast::PositionAwareNode> node)
+{
+	valid = false;
+	reporter.printError(ErrorReporter::ErrorType::SEMANTIC, s, node->getPosition());
 }
 
 bool SemanticAnalysis::start()

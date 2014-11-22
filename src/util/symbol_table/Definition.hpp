@@ -1,10 +1,16 @@
 #ifndef DEFINITION_HPP
 #define DEFINITION_HPP
 
-#include "../../ast/Type.hpp"
+//#include "../../ast/Type.hpp"
+#include "../../ast/Node.hpp"
 //#include "Symbol.hpp"
 
 class Symbol;
+
+namespace ast
+{
+	class Type;
+}
 
 class Definition
 {
