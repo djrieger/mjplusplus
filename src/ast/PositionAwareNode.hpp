@@ -18,7 +18,6 @@ namespace ast
 		protected:
 			std::pair<unsigned int, unsigned int> position;
 		public:
-			void setPosition(lexer::Token const& token);
 			std::pair<unsigned int, unsigned int> getPosition() const;
 			/*
 			 * Stores the position of this token
