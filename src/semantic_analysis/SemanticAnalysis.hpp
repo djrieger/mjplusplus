@@ -25,6 +25,9 @@ class SemanticAnalysis
 		};
 	private:
 		shptr<ErrorReporter> errorReporter;
+		/*
+		 * whether semantic errors have been detected, true initially
+		 */
 		bool valid;
 		shptr<ast::Program> root;
 		shptr<SymbolTable> symboltable;
