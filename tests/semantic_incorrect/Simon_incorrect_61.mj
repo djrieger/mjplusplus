@@ -1,0 +1,5 @@
+class a {
+	public static void main(String[] a) {}
+	public void x(b y) {/* b does not exist */
+	}
+}

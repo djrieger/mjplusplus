@@ -1,5 +1,5 @@
 class a {
 	public static void main(String[] a) {}
 	public int a() {}
-	public boolean b() {}
+	public boolean a(int x) {}/* overloading is forbidden */
 }
