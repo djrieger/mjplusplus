@@ -49,7 +49,7 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 	if (primitiveType == Type::Primitive_type::NONE && sa.getClassTable().find(returnType->getClassName()) == sa.getClassTable().end())
 		sa.printError("Type \033[1m" + returnType->getClassName() + "\033[0m used as return type undeclared.", returnType->getClassNameIdent());
 
-	if (primitiveType == Type::Primitive_type::VOID && returnType->getDimension() > 0)
+	if (primitiveType == Type::Primitive_type::VOID&&  returnType->getDimension() > 0)
 		sa.printError("Cannot have an array with void as base type.");
 
 	symbolTable->enterScope();
