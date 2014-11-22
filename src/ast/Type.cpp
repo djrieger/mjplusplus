@@ -51,6 +51,11 @@ void ast::Type::setDimension(int dimension)
 	this->dimension = dimension;
 }
 
+int ast::Type::getDimension() const
+{
+	return dimension;
+}
+
 bool ast::Type::operator==(Type const& other)
 {
 	return !(*this != other);
