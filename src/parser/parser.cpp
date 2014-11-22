@@ -59,17 +59,14 @@ bool Parser::start()
 	}
 	catch (char const* msg)
 	{
-		std::cout << "called0";
 		printError(msg);
 	}
 	catch (lexer::Token::Token_type tokenType)
 	{
-		std::cout << "called1";
 		printError("expected " + lexer.describe(tokenType));
 	}
 	catch (std::string string_val)
 	{
-		std::cout << "called2";
 		printError("expected \"" + string_val + '"');
 	}
 
@@ -91,10 +88,6 @@ void __attribute__ ((noinline)) Parser::nextToken()
 
 void Parser::printError(std::string const& error_msg)
 {
-	/*std::cerr << "\033[1;31mParser error\033[0m at line " << current.position.first << ", column " << current.position.second <<
-	          ", parsing \"" << *current.string_value << '"' << (error_msg.empty() ? "" : ": ") <<
-	          error_msg << std::endl;
-	*/
 	// read current line
 	std::string line = lexer.getLine();
 	std::replace(line.begin(), line.end(), '\t', ' ');
@@ -105,10 +98,9 @@ void Parser::printError(std::string const& error_msg)
 
 	// output input line where error occurred and markerline
 	// line already ends with \n so no additional std::endl needs to be added
-	//std::cerr << line << std::endl;
-	//std::cerr << markerline << std::endl;
-
-	errorReporter->printError(ErrorReporter::ErrorType::PARSER, error_msg + "\n" + line + "\n" + markerline, current.position);
+	errorReporter->printError(ErrorReporter::ErrorType::PARSER,
+		 "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": ") + "\n" + line + "\n" + markerline,
+		 current.position);
 }
 
 void Parser::expect(lexer::Token::Token_type const& tokenType)
