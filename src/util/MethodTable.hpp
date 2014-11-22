@@ -6,7 +6,8 @@
 #include "../ast/MethodDeclaration.hpp"
 #include "../ast/Type.hpp"
 
-class MethodTable {
+class MethodTable
+{
 	public:
 		struct MethodTableItem
 		{
@@ -20,7 +21,7 @@ class MethodTable {
 
 	public:
 		bool insertMethod(const std::string& methodName, shptr<ast::MethodDeclaration>& node,
-						  shptr<ast::Type>&  returnType, shptr<vec<shptr<ast::Type>>>& parameterTypes);
+		                  shptr<ast::Type>&  returnType, shptr<vec<shptr<ast::Type>>>& parameterTypes);
 		std::unordered_map<std::string, MethodTableItem> const& getMethodTable() const;
 };
 #endif
