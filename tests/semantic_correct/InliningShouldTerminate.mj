@@ -1,0 +1,13 @@
+class A {
+  public static void main(String[] args) {
+    foo();
+  }
+
+  public void foo() {
+    bar();
+  }
+
+  public void bar() {
+    foo();
+  }
+}

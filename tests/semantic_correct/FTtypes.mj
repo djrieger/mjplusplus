@@ -1,0 +1,27 @@
+class Typed {
+	public int integer;
+	public void foo(int x) {
+		bar();
+	}
+	
+	public void bar() {
+		this.integer = 0;
+	}
+}
+
+class Two {
+	public Typed x;
+	
+	public void foo() {
+		x = new Typed();
+		x.integer = 42;
+		x.foo(21);		
+		{
+			int x = 0;
+			{
+				bool x = true;
+			}
+		}
+		x.bar();
+	}
+}

@@ -1,0 +1,23 @@
+class A {
+	public void foo() {
+		System.out.println(42);
+	}
+}
+
+class B {
+	public int foo(int bar) {
+		if (bar < 0) {
+			return 0;
+		}
+		
+		if (bar > 42) {
+			if (bar < 0) {
+				/* unreachable */
+				A a = null;
+				a.foo(); /* a is null */
+			}
+		
+			return 42;
+		}
+	}
+}
