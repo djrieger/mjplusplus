@@ -1,4 +1,5 @@
 class NestedNaming {
+	public static void main(String[] a) {}
 	public int foo;
 	
 	public void foo(int foo) {
