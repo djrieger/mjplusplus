@@ -77,6 +77,11 @@ bool ast::Type::isRefType()
 	       primitive_type == ast::Type::Primitive_type::NONE;
 }
 
+bool ast::Type::isClassType()
+{
+	return dimension == 0 && primitive_type == ast::Type::Primitive_type::NONE;
+}
+
 shptr<ast::Type> ast::Type::de_array()
 {
 	if (dimension == 0)
