@@ -206,7 +206,15 @@ namespace ast
 
 			auto class_table = sa.getClassTable();
 			auto this_symbol = Symbol::makeSymbol("this");
-			auto class_type = this_symbol->getCurrentDefinition()->getType();
+			auto definition = this_symbol->getCurrentDefinition();
+
+			if (!definition)
+			{
+				sa.printError("Symbol not defined!");
+				return shptr<ast::Type>();
+			}
+
+			auto class_type = definition->getType();
 			auto class_item  = class_table[class_type->getClassName()];
 
 			auto method_table = class_item.methodTable->getMethodTable();
