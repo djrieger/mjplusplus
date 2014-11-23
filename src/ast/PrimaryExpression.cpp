@@ -241,7 +241,7 @@ namespace ast
 						auto invType = (*invIt)->get_type(sa, symbolTable);
 
 						//TODO: check if invType is non-empty pointer
-						if (*decType != *invType)
+						if (!invType || *decType != *invType)
 						{
 							validArguments = false;
 							break;

@@ -1,6 +1,6 @@
 class A {
   public static void main(String[] args) {
-    System.out.println(fib(10));
+    System.out.println(new A().fib(10));
   }
 
   public int fib(int n) {

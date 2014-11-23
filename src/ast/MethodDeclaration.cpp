@@ -68,7 +68,7 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 	auto md_node = std::static_pointer_cast<const MethodDeclaration>(foo);
 	//	const std::shared_ptr<MethodDeclaration> md_node = this; //auto md_node = std::make_shared<MethodDeclaration>(this);
 	//md_node.reset(this);
-	ct[class_name].methodTable->insertMethod(this->getName(), md_node, returnType, param_types);
+	ct[class_name].methodTable->insertMethod(return_type_and_name->getName(), md_node, returnType, param_types);
 }
 
 shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
@@ -107,6 +107,7 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
 	st->insert(s, d);
+	collectParameters(sa, symbolTable);
 
 	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
 

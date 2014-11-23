@@ -61,6 +61,7 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
 	st->insert(s, d);
+	//collectParameters(sa, symbolTable);
 
 	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
 

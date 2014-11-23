@@ -36,7 +36,7 @@ shptr<Symbol> Symbol::makeSymbol(std::string const& name, shptr<Scope> scope)
 	auto& symbol = lexer::Token::getSymbol(name);
 
 	if (!symbol)
-		symbol = shptr<Symbol>(new Symbol(name, scope));
+		symbol = shptr<Symbol>(new Symbol(lexer::Token::getTableReference(name), scope));
 
 	return symbol;
 }

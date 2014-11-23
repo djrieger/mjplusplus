@@ -47,7 +47,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	}
 
 	auto d = std::make_shared<Definition>(s, type_ident->getType());
-	s->setCurrentDefinition(d);
+	//s->setCurrentDefinition(d);
 	symbolTable->insert(s, d);
 
 	if (init_expr)
