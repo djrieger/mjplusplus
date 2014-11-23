@@ -71,7 +71,7 @@ void ast::Program::addPseudoClasses()
 	p->push_back(std::make_shared<MethodDeclaration>(pr, pa, shptr<ast::Statement>()));
 
 	// class #out
-	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("#out"), {0, 0}};
+	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), {0, 0}};
 	auto oi = std::make_shared<Ident>(oit);
 	auto o = std::make_shared<ClassDeclaration>(oi, p);
 	classes->push_back(o);
@@ -84,7 +84,7 @@ void ast::Program::addPseudoClasses()
 	f->push_back(std::make_shared<FieldDeclaration>(std::make_shared<TypeIdent>(ft, fn)));
 
 	// class #System
-	lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("#System"), {0, 0}};
+	lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), {0, 0}};
 	auto si = std::make_shared<Ident>(sit);
 	auto s = std::make_shared<ClassDeclaration>(si, f);
 	classes->push_back(s);
