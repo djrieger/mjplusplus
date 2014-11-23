@@ -70,6 +70,7 @@ namespace ast
 			sa.printError("If condition is not boolean");
 
 		bool returns = true;
+
 		if (thenStatement)
 			returns = thenStatement->analyze(sa, symbolTable) && returns;
 		else

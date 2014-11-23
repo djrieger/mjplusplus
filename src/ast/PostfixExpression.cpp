@@ -31,5 +31,18 @@ void ast::PostfixExpression::toString(std::ostream& out, unsigned int indent, bo
 shptr<ast::Type> ast::PostfixExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	//TODO: implement this like in Unary- and PrimaryExpression
-	return shptr<ast::Type>();
+	auto callingType = child->get_type(sa, symbolTable);
+
+	if (callingType)
+	{
+		for (auto& it : *postfix_op)
+		{
+			callingType = it->get_type(sa, symbolTable, callingType);
+
+			if (!callingType)
+				break;
+		}
+	}
+
+	return callingType;
 }

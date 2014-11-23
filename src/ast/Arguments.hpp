@@ -16,6 +16,7 @@ namespace ast
 			Arguments();
 			Arguments(shptr<vec<shptr<ast::Expression>>> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
+			virtual shptr<vec<shptr<Expression>>> getArgumentTypes() const;
 	};
 }
 #endif // ARGUMENTS_HPP
