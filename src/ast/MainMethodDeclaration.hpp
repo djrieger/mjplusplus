@@ -14,6 +14,7 @@ namespace ast
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual void collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const;
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 	};
 }
 
