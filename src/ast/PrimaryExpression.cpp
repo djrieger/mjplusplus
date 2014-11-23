@@ -21,6 +21,11 @@ namespace ast
 			out << (value ? "true" : "false");
 		}
 
+		bool Bool::isLValue() const
+		{
+			return false;
+		}
+
 		Ident::Ident(shptr<ast::Ident> identifier) : identifier(identifier)
 		{
 		}
@@ -50,6 +55,11 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		bool Ident::isLValue() const
+		{
+			return true;
 		}
 
 
@@ -89,6 +99,11 @@ namespace ast
 			return shptr<Type>();
 		}
 
+		bool Object::isLValue() const
+		{
+			return false;
+		}
+
 		Integer::Integer(std::string const& string_value)
 			: string_value(string_value)
 		{
@@ -103,6 +118,11 @@ namespace ast
 		void Integer::toString(std::ostream& out, unsigned int, bool) const
 		{
 			out << string_value;
+		}
+
+		bool Integer::isLValue() const
+		{
+			return false;
 		}
 
 		NewArrayExpression::NewArrayExpression(shptr<Type> type, shptr<Expression> expr) :
@@ -132,6 +152,11 @@ namespace ast
 			out << ')';
 		}
 
+		bool NewArrayExpression::isLValue() const
+		{
+			return false;
+		}
+
 		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : identifier(identifier)
 		{
 
@@ -152,6 +177,11 @@ namespace ast
 				return type;
 			else
 				return shptr<Type>();
+		}
+
+		bool NewObjectExpression::isLValue() const
+		{
+			return false;
 		}
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
@@ -190,6 +220,11 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		bool MethodInvocation::isLValue() const
+		{
+			return false;
 		}
 	} // namespace pe
 } // namespace ast

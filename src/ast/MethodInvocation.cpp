@@ -73,3 +73,8 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 
 	return shptr<ast::Type>();
 }
+
+bool ast::MethodInvocation::lValueHelp() const
+{
+	return false;
+}

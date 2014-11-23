@@ -19,6 +19,7 @@ namespace ast
 				void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 				BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild);
+				virtual bool isLValue() const;
 			public:
 				static shptr<BinaryExpression> createBinaryExpr(shptr<Expression> leftChild, shptr<Expression> rightChild, lexer::Token::Token_type operator_type);
 		};
