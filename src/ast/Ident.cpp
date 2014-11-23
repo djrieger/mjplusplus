@@ -23,7 +23,7 @@ std::string const& ast::Ident::getName() const
 
 bool ast::Ident::operator==(ast::Ident const& other)
 {
-	return &string_value == &other.string_value;
+	return string_value == other.string_value;
 }
 
 bool ast::Ident::operator!=(ast::Ident const& other)
