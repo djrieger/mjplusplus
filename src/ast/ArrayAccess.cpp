@@ -14,4 +14,9 @@ namespace ast
 		access_offset->toString(out, indent, true);
 		out << ']';
 	}
+
+	bool ArrayAccess::isValidType(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	{
+		return access_offset->get_type(sa, symbolTable)->getPrimitiveType() == Type::Primitive_type::INT;
+	}
 }
