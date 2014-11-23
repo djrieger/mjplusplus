@@ -19,54 +19,61 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 	if (callingType->isClassType())
 	{
 		auto class_table = sa.getClassTable();
-		auto class_item = class_table[callingType->getClassName()];
-		auto method_table = class_item.methodTable->getMethodTable();
-		auto method_it = method_table.find(method_name->getName());
+		auto class_it = class_table.find(callingType->getClassName());
 
-		if (method_it != method_table.end())
+		if (class_it != class_table.end())
 		{
-			auto method_item = method_it->second;
-			shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;
-			shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentTypes();
+			auto& class_item = class_it->second;
+			auto method_table = class_item.methodTable->getMethodTable();
+			auto method_it = method_table.find(method_name->getName());
 
-			int decSize = declarationTypes->size();
-			int invSize = invokedExpressions->size();
-
-			if (decSize == invSize)
+			if (method_it != method_table.end())
 			{
-				bool validArguments = true;
-				auto decIt = declarationTypes->begin();
-				auto invIt = invokedExpressions->begin();
+				auto method_item = method_it->second;
+				shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;
+				shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentTypes();
 
-				for (int i = 0; i < invSize; i++)
+				int decSize = declarationTypes->size();
+				int invSize = invokedExpressions->size();
+
+				if (decSize == invSize)
 				{
-					auto decType = *decIt;
-					auto invType = (*invIt)->get_type(sa, symbolTable);
+					bool validArguments = true;
+					auto decIt = declarationTypes->begin();
+					auto invIt = invokedExpressions->begin();
 
-					//TODO: check if invType is non-empty pointer
-					if (*decType != *invType)
+					for (int i = 0; i < invSize; i++)
 					{
-						validArguments = false;
-						break;
+						auto decType = *decIt;
+						auto invType = (*invIt)->get_type(sa, symbolTable);
+
+						//TODO: check if invType is non-empty pointer
+						if (!invType || *decType != *invType)
+						{
+							validArguments = false;
+							break;
+						}
+
+						decIt++;
+						invIt++;
 					}
 
-					decIt++;
-					invIt++;
+					if (validArguments)
+						return method_item.returnType;
+					else
+						sa.printError("The arguments do not match the parameter types.", method_name);
 				}
-
-				if (validArguments)
-					return method_item.returnType;
 				else
-					sa.printError("The arguments do not match the parameter types.", method_name);
+					sa.printError("Wrong number of arguments.", method_name);
 			}
 			else
-				sa.printError("Wrong number of arguments.", method_name);
+			{
+				sa.printError(callingType->getName() + " has no method with the name " + method_name->getName(),
+				              method_name);
+			}
 		}
 		else
-		{
-			sa.printError(callingType->getName() + " has no method with the name " + method_name->getName(),
-			              method_name);
-		}
+			sa.printError("No such class: " + callingType->getClassName(), method_name);
 	}
 	else
 		sa.printError("Cannot invoke a method on a primitive or array type.", method_name);

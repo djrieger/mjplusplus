@@ -59,7 +59,7 @@ namespace ast
 	void ClassDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
 		auto t = std::make_shared<Type>(class_name);
-		auto s = Symbol::makeSymbol("this", std::make_shared<Scope>(*symbolTable->getCurrentScope()));
+		auto s = Symbol::makeSymbol("this", symbolTable->getCurrentScope());
 		auto d = std::make_shared<Definition>(s, t);
 		symbolTable->enterScope();
 		symbolTable->insert(s, d);
