@@ -4,6 +4,7 @@
 
 #include "ClassDeclaration.hpp"
 #include "MethodDeclaration.hpp"
+#include "MainMethodDeclaration.hpp"
 #include "Type.hpp"
 #include "../util/symbol_table/Symbol.hpp"
 
@@ -39,10 +40,20 @@ namespace ast
 		return class_name->getName();
 	}
 
-	void ClassDeclaration::collectDefinitions(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	bool ClassDeclaration::collectDefinitions(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
+		bool containsMainMethod = false;
+
 		for (auto& classMemberNode : *members)
+		{
+			if (dynamic_cast<MainMethodDeclaration*>(classMemberNode.get()))
+				containsMainMethod = true;
+
 			classMemberNode->collectDefinition(sa, symbolTable, class_name->getName());
+
+		}
+
+		return containsMainMethod;
 	}
 
 	void ClassDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
