@@ -119,7 +119,7 @@ namespace ast
 
 			if (leftType && rightType)
 			{
-				if (leftType == rightType)
+				if (*leftType == *rightType)
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
 				{
@@ -319,7 +319,7 @@ namespace ast
 
 			if (leftType && rightType)
 			{
-				if (leftType == rightType)
+				if (*leftType == *rightType)
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
 				{
@@ -368,7 +368,7 @@ namespace ast
 					}
 					else
 					{
-						if (leftType == rightType)
+						if (*leftType == *rightType)
 							return leftType;
 						else
 							sa.printError("");
