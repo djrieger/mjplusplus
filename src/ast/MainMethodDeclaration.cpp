@@ -47,3 +47,25 @@ void ast::MainMethodDeclaration::collectParameters(SemanticAnalysis&, shptr<Symb
 	auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
 	symbolTable->insert(paramSymbol, paramDefinition);
 }
+
+void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+{
+	auto st = std::make_shared<SymbolTable>(*symbolTable);
+
+	st->leaveScope(); /* remove this from table */
+	st->enterScope();
+	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
+	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
+	st->insert(s, d);
+
+	if (!block)
+	{
+		if (*return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
+			sa.printError("Method " + return_type_and_name->getName() + " returns non-void but body is empty", return_type_and_name->getIdent());
+	}
+	else if (!block->analyze(sa, st) && *return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
+		sa.printError("Method " + return_type_and_name->getName() + " returns non-void but not all paths return", return_type_and_name->getIdent());
+
+	st->leaveScope();
+	st->enterScope(); /* fix scope */
+}
