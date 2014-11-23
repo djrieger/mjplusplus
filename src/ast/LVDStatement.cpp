@@ -56,7 +56,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 
 		if (init_type)
 		{
-			if (type_ident->getType() != init_type)
+			if (*type_ident->getType() != *init_type)
 				sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName());
 		}
 	}
