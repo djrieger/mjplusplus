@@ -25,7 +25,7 @@ void ast::ReturnStatement::toString(std::ostream& out, unsigned int indent, bool
 	out << ";\n";
 }
 
-void ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	auto ret_type = Symbol::makeSymbol("return", symbolTable->getCurrentScope())->getCurrentDefinition()->getType();
 	auto expr_type = std::make_shared<ast::Type>(ast::Type::Primitive_type::VOID);
@@ -44,4 +44,6 @@ void ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 	}
 	else if (*ret_type != *expr_type)
 		sa.printError("Method returns " + ret_type->getName() + ", but return statement misses expression");
+
+	return true;
 }

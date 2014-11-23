@@ -1,5 +1,5 @@
 #!/bin/bash
-# david david          
+
 PROHIBITEDEMAILHASHES="f2151a35773b112c3cdec537203dac46 e9ff8469316bf427550ef651afbb8c3f 2747686ce14f2f4629913ac26ef3de82 ba697d57c56ae5ef5738f6387397dd4c b5fe2acf0b672a6329716b824cae2f88 7f3f96c777e686bdc0bb960ae7969802"
 GITUSEREMAIL=$(git config user.email)
 
@@ -25,7 +25,7 @@ else
   echo "Hook-astyling files..."
   # Only perform commit if astyle completes successful
   for i in ${CHANGEDFILES} ; do
-    [ -e $i ] && astyle --options=config/astyle.rc $i || echo $i deleted && continue
+    [ -e $i ] && astyle --options=config/astyle.rc $i || { echo $i deleted && continue ; }
     git add $i
   done
 fi

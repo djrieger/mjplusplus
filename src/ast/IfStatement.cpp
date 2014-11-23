@@ -60,17 +60,26 @@ namespace ast
 		return Type::TYPE_IF;
 	}
 
-	void IfStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	bool IfStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
+		// TODO: if we can determine the condition at compile time, one statement doesn't matter for definite return analysis
+		// still perform sementic analysis though
 		auto cond = condition->get_type(sa, symbolTable);
 
 		if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN))
 			sa.printError("If condition is not boolean");
 
+		bool returns = true;
 		if (thenStatement)
-			thenStatement->analyze(sa, symbolTable);
+			returns = thenStatement->analyze(sa, symbolTable) && returns;
+		else
+			returns = false;
 
 		if (elseStatement)
-			elseStatement->analyze(sa, symbolTable);
+			returns = elseStatement->analyze(sa, symbolTable) && returns;
+		else
+			returns = false;
+
+		return returns;
 	}
 }
