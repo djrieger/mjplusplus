@@ -7,7 +7,7 @@ class A {
 class B {
 	public B System;
 	public B out;
-	public void println(bool b) {
+	public void println(boolean b) {
 	}
 	public void foo() {
 		System.out.println(true);
