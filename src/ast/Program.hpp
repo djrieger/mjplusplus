@@ -21,6 +21,7 @@ namespace ast
 			Program(shptr<vec<shptr<ClassDeclaration>>> classes);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual void collectDefinitions(SemanticAnalysis& sa) const;
+			void addPseudoClasses();
 	};
 
 }

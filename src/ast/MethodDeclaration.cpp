@@ -108,6 +108,11 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
 	st->insert(s, d);
 
+	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
+	auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("#System").classNode->getIdent());
+	auto system_d = std::make_shared<Definition>(system_s, system_t);
+	st->insert(system_s, system_d);
+
 	if (!block)
 	{
 		if (*return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
