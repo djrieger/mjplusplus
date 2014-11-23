@@ -19,7 +19,7 @@ class Expressions {
         int x = a + (a * b);  x = b - c * d;
 
         /* RelationalExpression */
-        boolean b1 = a + b = c + d * d;
+        boolean b1 = a + b == c + d * d;
         boolean b2 = a + b <= c + d * d;
         boolean b3 = a + b % d > c + d * d;
         boolean b4 = a + b >= c + d * d;
