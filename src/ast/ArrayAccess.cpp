@@ -21,7 +21,7 @@ namespace ast
 
 		if (offsetType)
 		{
-			if (offsetType->getPrimitiveType() == Type::Primitive_type::INT&&  offsetType->getDimension() == 0)
+			if (offsetType->getPrimitiveType() == Type::Primitive_type::INT&&   offsetType->getDimension() == 0)
 			{
 				if (callingType->getDimension() > 0)
 					return callingType->de_array();
