@@ -92,7 +92,7 @@ namespace ast
 				}
 			}
 			else if (object_type == Object_Type::NULL_OBJECT)
-				return std::make_shared<Type>(Type::Primitive_type::NULL_OBJECT);
+				return std::make_shared<Type>(Type::Primitive_type::NULL_TYPE);
 
 			return shptr<Type>();
 		}
