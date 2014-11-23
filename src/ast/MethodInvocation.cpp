@@ -22,11 +22,11 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 		auto class_table = sa.getClassTable();
 		auto class_item = class_table[callingType->getClassName()];
 		auto method_table = class_item.methodTable->getMethodTable();
-		auto method_item = method_table.find(method_name->getName());
+		auto method_it = method_table.find(method_name->getName());
 
-		if (method_item != method_table.end())
+		if (method_it != method_table.end())
 		{
-
+			auto method_item = method_it->second;
 			shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;
 			shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentTypes();
 

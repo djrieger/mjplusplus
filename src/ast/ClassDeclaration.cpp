@@ -42,7 +42,7 @@ namespace ast
 	void ClassDeclaration::collectDefinitions(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
 		for (auto& classMemberNode : *members)
-			classMemberNode->collectDefinition(sa, symbolTable);
+			classMemberNode->collectDefinition(sa, symbolTable, class_name->getName());
 	}
 
 	void ClassDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const

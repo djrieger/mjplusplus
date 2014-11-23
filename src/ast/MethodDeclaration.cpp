@@ -34,7 +34,7 @@ std::string ast::MethodDeclaration::getName() const
 	return "M" + return_type_and_name->getName();
 }
 
-void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
 
@@ -53,16 +53,28 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 		sa.printError("Cannot have an array with void as base type.");
 
 	symbolTable->enterScope();
-	collectParameters(sa, symbolTable);
+	auto param_types = collectParameters(sa, symbolTable);
 	symbolTable->leaveScope();
 
-	// insert this field into symbol table of this class
+	// insert this method into symbol table of this class
 	auto definition = std::make_shared<Definition>(symbol, returnType);
 	symbolTable->insert(symbol, definition);
+
+	// insert this method into the method table in the class table
+	auto ct = sa.getClassTable();
+	//shptr<MethodDeclaration> md_node;
+	//md_node.reset(this->enable_shared_from_this());
+	auto const foo = shared_from_this();
+	auto md_node = std::static_pointer_cast<const MethodDeclaration>(foo);
+	//	const std::shared_ptr<MethodDeclaration> md_node = this; //auto md_node = std::make_shared<MethodDeclaration>(this);
+	//md_node.reset(this);
+	ct[class_name].methodTable->insertMethod(this->getName(), md_node, returnType, param_types);
 }
 
-void ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
+	auto param_types = std::make_shared<vec<shptr<ast::Type>>>();
+
 	for (auto& parameter : *parameters)
 	{
 		auto paramSymbol = Symbol::makeSymbol("p" + parameter->getName(), shptr<Scope>());
@@ -71,6 +83,7 @@ void ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<Symbo
 			sa.printError("Parameter with name \033[1m" + parameter->getName() + "\033[0m already declared in this function.", parameter->getIdent());
 
 		Type::Primitive_type primitiveType = parameter->getType()->getPrimitiveType();
+		param_types->push_back(parameter->getType());
 
 		// check parameters for type void
 		if (primitiveType == Type::Primitive_type::VOID)
@@ -82,6 +95,8 @@ void ast::MethodDeclaration::collectParameters(SemanticAnalysis& sa, shptr<Symbo
 		auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
 		symbolTable->insert(paramSymbol, paramDefinition);
 	}
+
+	return param_types;
 }
 
 void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
