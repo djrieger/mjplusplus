@@ -43,6 +43,7 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 					auto decType = *decIt;
 					auto invType = (*invIt)->get_type(sa, symbolTable);
 
+					//TODO: check if invType is non-empty pointer
 					if (*decType != *invType)
 					{
 						validArguments = false;
@@ -72,4 +73,9 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 
 
 	return shptr<ast::Type>();
+}
+
+bool ast::MethodInvocation::lValueHelp() const
+{
+	return false;
 }

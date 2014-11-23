@@ -65,6 +65,12 @@ namespace ast
 				out << ')';
 		}
 
+
+		bool UnaryExpression::isLValue() const
+		{
+			return false;
+		}
+
 		Not::Not(shptr<Expression> child, int size)
 			: UnaryExpression::UnaryExpression(child, size)
 		{
@@ -75,21 +81,15 @@ namespace ast
 		{
 			shptr<Type> child_type = child->get_type(sa, symbolTable);
 
-			if (!child_type)
+			if (child_type)
 			{
-				/*TODO: 2 possibilities:
-				   1. pass the nullptr child_type OR
-				   2. pass Type::BOOLEAN
-				*/
-				return child_type;
-			} //TODO: is there a better way than to create a new shared pointer for every boolean or int?
-			else if (*child_type == Type(Type::BOOLEAN))
-				return child_type;
-			else
-			{
-				sa.printError("TODO: getName() should be boolean.");
-				return shptr<Type>();
+				if (child_type->isBool())
+					return child_type;
+				else
+					sa.printError(child_type->getName() + " is not boolean.");
 			}
+
+			return shptr<Type>();
 		}
 
 		void Not::toString(std::ostream& out, unsigned int indent, bool special) const
@@ -107,15 +107,15 @@ namespace ast
 		{
 			shptr<Type> child_type = child->get_type(sa, symbolTable);
 
-			if (!child_type)
-				return child_type;
-			else if (*child_type == Type(Type::INT))
-				return child_type;
-			else
+			if (child_type)
 			{
-				sa.printError("TODO: getName() should be int.");
-				return shptr<Type>();
+				if (child_type->isInteger())
+					return child_type;
+				else
+					sa.printError(child_type->getName() + " is not an integer.");
 			}
+
+			return shptr<Type>();
 		}
 
 		void Neg::toString(std::ostream& out, unsigned int indent, bool special) const

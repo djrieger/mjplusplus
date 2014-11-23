@@ -95,6 +95,12 @@ namespace ast
 			return binaryExpr;
 		}
 
+
+		bool BinaryExpression::isLValue() const
+		{
+			return false;
+		}
+
 		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -108,7 +114,27 @@ namespace ast
 
 		shptr<Type> NotEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType == rightType)
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+				{
+					if (leftType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE
+					        && rightType->isRefType(true))
+						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+
+					if (rightType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE
+					        && leftType->isRefType(true))
+						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+
+					sa.printError("Incompatible types for not-equal comparison.");
+				}
+			}
+
 			return shptr<Type>();
 		}
 
@@ -126,7 +152,17 @@ namespace ast
 
 		shptr<Type> Mult::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::INT);
+				else
+					sa.printError("At least one mult variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -143,7 +179,17 @@ namespace ast
 
 		shptr<Type> Plus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::INT);
+				else
+					sa.printError("At least one addition variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -160,7 +206,17 @@ namespace ast
 
 		shptr<Type> Minus::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::INT);
+				else
+					sa.printError("At least one subtraction variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -177,7 +233,17 @@ namespace ast
 
 		shptr<Type> Slash::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::INT);
+				else
+					sa.printError("At least one division variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -194,7 +260,17 @@ namespace ast
 
 		shptr<Type> LessThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+					sa.printError("At least one variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -211,7 +287,17 @@ namespace ast
 
 		shptr<Type> LessThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+					sa.printError("At least one variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -228,7 +314,27 @@ namespace ast
 
 		shptr<Type> EqEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType == rightType)
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+				{
+					if (leftType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE
+					        && rightType->isRefType(true))
+						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+
+					if (rightType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE
+					        && leftType->isRefType(true))
+						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+
+					sa.printError("Incompatible types for equal comparison.");
+				}
+			}
+
 			return shptr<Type>();
 		}
 
@@ -245,7 +351,33 @@ namespace ast
 
 		shptr<Type> Eq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+
+				if (leftChild->isLValue())
+				{
+					if (rightType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE)
+					{
+						if (leftType->isRefType())
+							return leftType;
+						else
+							sa.printError("");
+					}
+					else
+					{
+						if (leftType == rightType)
+							return leftType;
+						else
+							sa.printError("");
+					}
+				}
+				else
+					sa.printError("");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -262,7 +394,17 @@ namespace ast
 
 		shptr<Type> GreaterThanEq::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+					sa.printError("At least one variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -279,7 +421,17 @@ namespace ast
 
 		shptr<Type> GreaterThan::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+					sa.printError("At least one variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -296,7 +448,17 @@ namespace ast
 
 		shptr<Type> Mod::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isInteger() && rightType->isInteger())
+					return std::make_shared<Type>(Type::Primitive_type::INT);
+				else
+					sa.printError("At least one variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -313,7 +475,17 @@ namespace ast
 
 		shptr<Type> AndAnd::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isBool() && rightType->isBool())
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+					sa.printError("At least one variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -330,7 +502,17 @@ namespace ast
 
 		shptr<Type> OrOr::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			auto leftType = leftChild->get_type(sa, symbolTable);
+			auto rightType = rightChild->get_type(sa, symbolTable);
+
+			if (leftType && rightType)
+			{
+				if (leftType->isBool() && rightType->isBool())
+					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
+				else
+					sa.printError("At least one variable is a non-integer.");
+			}
+
 			return shptr<Type>();
 		}
 
@@ -345,9 +527,9 @@ namespace ast
 			BinaryExpression::toString(out, indent, "NO_VALID_OPERATOR", special);
 		}
 
-		shptr<Type> Invalid::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<Type> Invalid::get_type(SemanticAnalysis&, shptr<SymbolTable>) const
 		{
-			//TODO: implement this like in Unary- and PrimaryExpression
+			//Our Parser should never actually allow us to create an Invalid BinaryExpression...
 			return shptr<Type>();
 		}
 
