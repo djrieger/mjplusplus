@@ -33,6 +33,11 @@ void ast::Type::toString(std::ostream& out, unsigned int indent, shptr<Expressio
 		case Type::Primitive_type::NONE:
 			class_name->toString(out, indent, false);
 			break;
+
+		case Type::Primitive_type::NULL_TYPE:
+			//This is done in PrimaryExpression toString
+			//out << "null";
+			break;
 	}
 
 	for (int i = 0; i < dimension; ++i)
