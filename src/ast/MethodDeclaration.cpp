@@ -31,7 +31,7 @@ void ast::MethodDeclaration::toString(std::ostream& out, unsigned int indent, bo
 
 std::string ast::MethodDeclaration::getName() const
 {
-	return "M" + return_type_and_name->getName();
+	return "#" + return_type_and_name->getName();
 }
 
 void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
@@ -77,7 +77,7 @@ shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticA
 
 	for (auto& parameter : *parameters)
 	{
-		auto paramSymbol = Symbol::makeSymbol("p" + parameter->getName(), shptr<Scope>());
+		auto paramSymbol = Symbol::makeSymbol(parameter->getName(), shptr<Scope>());
 
 		if (symbolTable->definedInCurrentScope(paramSymbol))
 			sa.printError("Parameter with name \033[1m" + parameter->getName() + "\033[0m already declared in this function.", parameter->getIdent());
@@ -109,9 +109,13 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 	st->insert(s, d);
 
 	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
-	auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("#System").classNode->getIdent());
-	auto system_d = std::make_shared<Definition>(system_s, system_t);
-	st->insert(system_s, system_d);
+
+	if (!symbolTable->definedInCurrentScope(system_s))
+	{
+		auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("#System").classNode->getIdent());
+		auto system_d = std::make_shared<Definition>(system_s, system_t);
+		st->insert(system_s, system_d);
+	}
 
 	if (!block)
 	{

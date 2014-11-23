@@ -17,7 +17,7 @@ void ast::FieldDeclaration::toString(std::ostream& out, unsigned int indent, boo
 
 std::string ast::FieldDeclaration::getName() const
 {
-	return "f" + type_and_name->getName();
+	return type_and_name->getName();
 }
 
 void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const

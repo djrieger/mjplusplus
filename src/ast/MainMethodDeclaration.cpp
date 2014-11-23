@@ -44,7 +44,7 @@ shptr<vec<shptr<ast::Type>>> ast::MainMethodDeclaration::collectParameters(Seman
 {
 	//we know we only have one parameter, which is of a pseudo-type String[]
 	auto parameter = (*parameters)[0];
-	auto paramSymbol = Symbol::makeSymbol("p" + parameter->getName(), shptr<Scope>());
+	auto paramSymbol = Symbol::makeSymbol(parameter->getName(), shptr<Scope>());
 	auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
 	symbolTable->insert(paramSymbol, paramDefinition);
 	auto params_type = std::make_shared<vec<shptr<ast::Type>>>();
@@ -61,6 +61,15 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
 	st->insert(s, d);
+
+	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
+
+	if (!symbolTable->definedInCurrentScope(system_s))
+	{
+		auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("#System").classNode->getIdent());
+		auto system_d = std::make_shared<Definition>(system_s, system_t);
+		st->insert(system_s, system_d);
+	}
 
 	if (!block)
 	{
