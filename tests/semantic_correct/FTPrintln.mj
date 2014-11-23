@@ -1,0 +1,15 @@
+class A {
+	public void foo() {
+		System.out.println(42);
+	}
+}
+
+class B {
+	public B System;
+	public B out;
+	public void println(boolean b) {
+	}
+	public void foo() {
+		System.out.println(true);
+	}
+}

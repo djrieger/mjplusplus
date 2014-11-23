@@ -1,0 +1,11 @@
+class a {
+	public static void main(String[] a) {}
+	public int deepIf() {
+		if (true) {
+			if (true) {
+				if (true) return 1;
+				else {{return 2;}}
+			} else return 2;
+		} else return 3;
+	}
+}

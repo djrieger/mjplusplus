@@ -1,0 +1,8 @@
+class a {
+	public int b;
+	public static void main(String[] a) {}
+	public void x() {
+		(new b()).b = 2; /* field b does not exists */
+	}
+}
+class b {}

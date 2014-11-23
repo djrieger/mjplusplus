@@ -1,0 +1,12 @@
+class A {
+  public B forward_class;
+  public int foo() {
+    return B.bar();
+  }
+}
+
+class B {
+  public int bar() {
+    return 3;
+  }
+}

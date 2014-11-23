@@ -1,0 +1,9 @@
+/* This should parse, but shouldn't survive semantic analysis */
+class A {
+  public static void main(String[] args) {
+    null.foo();
+    null[1];
+  }
+
+  public void foo() {}
+}
