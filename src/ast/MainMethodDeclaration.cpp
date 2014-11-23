@@ -17,7 +17,7 @@ void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent
 
 
 
-void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
+void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const&) const
 {
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
 

@@ -45,7 +45,10 @@ void ErrorReporter::printErrors() const
 			std::cerr << ": " << error.second.second << std::endl;
 		else
 		{
-			while (lineNumber != error.first.first)
+			//at this point: error.first.first >= 0
+			unsigned int currentLine = (unsigned int) error.first.first;
+
+			while (lineNumber != currentLine)
 			{
 				getline(is, lineOfCode);
 				lineNumber++;
