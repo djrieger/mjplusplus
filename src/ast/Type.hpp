@@ -31,6 +31,7 @@ namespace ast
 			bool operator==(Type const& other);
 			bool operator!=(Type const& other);
 			bool isRefType();
+			bool isClassType();
 			shptr<Type> de_array();
 
 			void setDimension(int dimension);
