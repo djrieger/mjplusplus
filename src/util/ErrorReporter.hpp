@@ -24,6 +24,13 @@ class ErrorReporter
 		 * @position line and column where the error occurred
 		 */
 		void recordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position);
+		/*
+		 * Record an error without a position in the errors multimap
+		 *
+		 * @type Error type
+		 * @error_msg Error message to be printed
+		 */
+		void recordError(ErrorReporter::ErrorType type, std::string const& error_msg);
 		/**
 		 * Print all errors stored in the errors multimap to std::cerr. This should be called after parsing and semantic analysis are complete.
 		 */
@@ -37,8 +44,10 @@ class ErrorReporter
 		 * Errors reported by Parser or SemanticAnalysis
 		 * key: (line, column)
 		 * value: (ErrorReporter::ErrorType, std::string)
+		 *
+		 * key is -1 if an error has no position
 		 */
-		std::multimap<std::pair<unsigned int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>> errors;
+		std::multimap<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>> errors;
 		/*
 		 * name of input file
 		 */
