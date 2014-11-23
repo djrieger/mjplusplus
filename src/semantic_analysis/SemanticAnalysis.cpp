@@ -1,5 +1,6 @@
 #include "SemanticAnalysis.hpp"
 #include "../ast/Program.hpp"
+
 #include "../util/ErrorReporter.hpp"
 
 SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorReporter> errorReporter): errorReporter(errorReporter), valid(true), root(program), symboltable(), classTable() {}
@@ -20,6 +21,10 @@ void SemanticAnalysis::printError(std::string s, shptr<ast::PositionAwareNode> n
 
 bool SemanticAnalysis::start()
 {
+	// add pseudo-classes for System.out.println(int)
+	root->addPseudoClasses();
+
+	// start actual checking
 	root->collectDefinitions(*this);
 	return valid;
 }
