@@ -33,7 +33,8 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 
 	if (symbolTable->definedInCurrentScope(s))
 	{
-		sa.printError("Symbol " + s->getName() + " already defined");
+		// formerly, there was s->getName(), however this segfaulted
+		sa.printError("Symbol " + type_ident->getName() + " already defined");
 		return false;
 	}
 
