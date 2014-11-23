@@ -34,4 +34,9 @@ namespace ast
 
 		return shptr<Type>();
 	}
+
+	bool ArrayAccess::lValueHelp() const
+	{
+		return true;
+	}
 }
