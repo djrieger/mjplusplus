@@ -1,4 +1,5 @@
 #include <fstream>
+#include <algorithm>
 #include "ErrorReporter.hpp"
 
 ErrorReporter::ErrorReporter(std::string const& file_name): file_name(file_name)
@@ -62,8 +63,10 @@ void ErrorReporter::printErrors() const
 
 			std::cerr << " at line " << error.first.first << ", column " << error.first.second << ": " << error.second.second << std::endl;
 			// output input line where error occurred and markerline
-			std::cerr << lineOfCode << std::endl;
-			std::cerr << markerline << std::endl;
+			auto minPos = std::max(((int)error.first.second) - 50, 0);
+			auto length = std::min(100, (int)lineOfCode.length());
+			std::cerr << lineOfCode.substr(minPos, length) << std::endl;
+			std::cerr << markerline.substr(minPos, length) << std::endl;
 		}
 	}
 
