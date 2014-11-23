@@ -38,8 +38,11 @@ bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 		{
 			expr_type = expression->get_type(sa, symbolTable);
 
-			if (*ret_type != *expr_type)
-				sa.printError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type->getName());
+			if (expr_type)
+			{
+				if (*ret_type != *expr_type)
+					sa.printError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type->getName());
+			}
 		}
 	}
 	else if (*ret_type != *expr_type)
