@@ -68,7 +68,7 @@ bool ast::Type::operator!=(Type const& other)
 		return true;
 
 	return (this->primitive_type == ast::Type::Primitive_type::NONE) &&
-	       (this->class_name != other.class_name);
+	       (*this->class_name != *other.class_name);
 }
 
 bool ast::Type::isRefType(bool checkNullType)
