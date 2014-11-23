@@ -45,8 +45,6 @@ int Parser::operator_precs(lexer::Token::Token_type t)
 	}
 }
 
-/* Max' proposal: use return type to indicate if token stream is not a part of the language induced by the grammar
-*/
 bool Parser::start()
 {
 	bool r = false;
@@ -63,7 +61,9 @@ bool Parser::start()
 	}
 	catch (lexer::Token::Token_type tokenType)
 	{
-		printError("expected " + lexer.describe(tokenType));
+		if (tokenType != lexer::Token::Token_type::TOKEN_ERROR)
+			/* no need to produce two messages for lexer errors */
+			printError("expected " + lexer.describe(tokenType));
 	}
 	catch (std::string string_val)
 	{
@@ -73,7 +73,7 @@ bool Parser::start()
 	return r && !errors_found;
 }
 
-std::shared_ptr<ast::Program> Parser::getRoot()
+shptr<ast::Program> Parser::getRoot()
 {
 	return astRoot;
 }
@@ -85,14 +85,14 @@ void __attribute__ ((noinline)) Parser::nextToken()
 	if (current.token_type == lexer::Token::Token_type::TOKEN_ERROR)
 	{
 		errorReporter->recordError(ErrorReporter::ErrorType::LEXER, "", current.position);
-		throw "Error from lexer";
+		throw current.token_type;
 	}
 }
 
 void Parser::printError(std::string const& error_msg)
 {
 	errorReporter->recordError(ErrorReporter::ErrorType::PARSER,
-	                           "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": "),
+	                           "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": " + error_msg),
 	                           current.position);
 }
 

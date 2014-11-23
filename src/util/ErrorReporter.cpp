@@ -27,11 +27,11 @@ void ErrorReporter::printErrors() const
 				break;
 
 			case ErrorReporter::ErrorType::PARSER:
-				std::cerr << "\033[1;Parser error\033[0m ";
+				std::cerr << "\033[1;31mParser error\033[0m ";
 				break;
 
 			case ErrorReporter::ErrorType::LEXER:
-				std::cerr << "\033[1;Lexer error\033[0m ";
+				std::cerr << "\033[1;31mLexer error\033[0m ";
 				break;
 		}
 
@@ -40,6 +40,9 @@ void ErrorReporter::printErrors() const
 			getline(is, lineOfCode);
 			lineNumber++;
 		}
+
+		for (auto pos = lineOfCode.find('\t'); pos < lineOfCode.length(); pos = lineOfCode.find('\t', pos + 1))
+			lineOfCode[pos] = ' ';
 
 		std::string markerline(error.first.second - 1, ' ');
 		markerline += '^';
