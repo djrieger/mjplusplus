@@ -47,10 +47,14 @@ class Parser
 		/**
 		 * Reference to parsed Program
 		 */
-		std::shared_ptr<ast::Program> getRoot();
+		shptr<ast::Program> getRoot();
 
 	private:
+		lexer::Lexer& lexer;
 		shptr<ErrorReporter> errorReporter;
+		shptr<ast::Program> astRoot;
+		lexer::Token current;
+
 		/**
 		 * Whether we are in error mode (true between invalid token and next occurrence of expected token)
 		 */
@@ -60,22 +64,14 @@ class Parser
 		 */
 		bool errors_found = false;
 
-		std::shared_ptr<ast::Program> astRoot;
-
-		lexer::Lexer& lexer;
 		/**
 		 * Whether parser prints error messages or suppresses them
 		 */
 		bool print_messages;
-		lexer::Token current;
-		/*
-		 * Precedences of all operators, associativity is stored implicitly
-		 */
-		int operator_precs(lexer::Token::Token_type t);
+
 
 		/**
 		 * Get next token from lexer.
-		 * Returns false if token is of type TOKEN_ERROR, else true.
 		 */
 		void nextToken();
 		/**
@@ -93,6 +89,11 @@ class Parser
 		 * Prints an error message, prepending current token position
 		 */
 		void printError(std::string const& error_msg);
+
+		/*
+		 * Precedences of all operators, associativity is stored implicitly
+		 */
+		int operator_precs(lexer::Token::Token_type t);
 
 		shptr<ast::Program> parseProgram();
 		shptr<vec<shptr<ast::ClassMember>>> parseClassMembers();

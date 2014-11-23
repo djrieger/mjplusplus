@@ -6,7 +6,7 @@ ast::Ident::Ident(std::string const& string_value) : string_value(string_value)
 
 }
 */
-ast::Ident::Ident(lexer::Token const& token) : string_value(*token.string_value), PositionAwareNode(token)
+ast::Ident::Ident(lexer::Token const& token) : PositionAwareNode(token), string_value(*token.string_value)
 {
 
 }
