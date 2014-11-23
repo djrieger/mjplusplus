@@ -31,6 +31,7 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	auto returnType = return_type_and_name->getType();//type is void
 
 	symbolTable->enterScope();
+	// foo is not necessary as the main method is not inserted into the method table
 	auto foo = collectParameters(sa, symbolTable);
 	symbolTable->leaveScope();
 
