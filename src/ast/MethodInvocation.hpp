@@ -19,6 +19,7 @@ namespace ast
 		public:
 			MethodInvocation(shptr<Ident> method_name, shptr<Arguments> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
+			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) const;
 	};
 }
 
