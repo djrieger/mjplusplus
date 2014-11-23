@@ -30,7 +30,7 @@ void ast::WhileStatement::toString(std::ostream& out, unsigned int indent, bool 
 		out << "{ }\n";
 }
 
-void ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+bool ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	auto cond = condition->get_type(sa, symbolTable);
 
@@ -39,4 +39,7 @@ void ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbo
 
 	if (statement)
 		statement->analyze(sa, symbolTable);
+
+	//TODO: we need to return true iff condition is "constant true"
+	return false;
 }

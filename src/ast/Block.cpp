@@ -29,13 +29,34 @@ namespace ast
 		return Type::TYPE_BLOCK;
 	}
 
-	void Block::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	bool Block::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
 		symbolTable->enterScope();
 
+		bool returns = false;
+
+		//optimization: analyze all code for semantic correctness, then remove unreachable code
+		auto it = block_statements->begin();
+		auto cut_from = block_statements->end();
+
+		for (; it != block_statements->end(); it++)
+		{
+			bool stmt_returns = (*it)->analyze(sa, symbolTable);
+
+			if (stmt_returns && !returns)
+			{
+				cut_from = it + 1;
+				returns = true;
+			}
+		}
+
+		block_statements->erase(cut_from, block_statements->end());
+		/* unoptimized version
 		for (auto& stmt : *block_statements)
-			stmt->analyze(sa, symbolTable);
+			returns = stmt->analyze(sa, symbolTable) || returns;
+		*/
 
 		symbolTable->leaveScope();
+		return returns;
 	}
 }

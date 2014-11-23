@@ -18,7 +18,12 @@ namespace ast
 			};
 
 			virtual Type getType() const;
-			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const = 0;
+
+			/**
+			 * @brief analyze a statement for semantic correctness, and recursivly analyze its children
+			 * @return true iff all paths of this statement contsin a return statement
+			 */
+			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const = 0;
 	};
 }
 

@@ -26,7 +26,7 @@ void ast::LVDStatement::toString(std::ostream& out, unsigned int indent, bool) c
 	out << ";\n";
 }
 
-void ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	//Test if symbol is in table
 	auto s = Symbol::makeSymbol(type_ident->getName(), shptr<Scope>());
@@ -34,7 +34,7 @@ void ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	if (symbolTable->definedInCurrentScope(s))
 	{
 		sa.printError("Symbol " + s->getName() + " already defined");
-		return;
+		return false;
 	}
 
 	auto type = type_ident->getType();
@@ -42,7 +42,7 @@ void ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	if (!sa.isTypeDefined(type))
 	{
 		sa.printError("Type " + type->getName() + " is not defined");
-		return;
+		return false;
 	}
 
 	auto d = std::make_shared<Definition>(s, type_ident->getType());
@@ -53,4 +53,6 @@ void ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 
 	if (type_ident->getType() != init_type)
 		sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName());
+
+	return false;
 }

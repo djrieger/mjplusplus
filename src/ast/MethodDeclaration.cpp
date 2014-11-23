@@ -98,8 +98,8 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 		if (*return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
 			sa.printError("Method " + return_type_and_name->getName() + " returns non-void but body is empty", return_type_and_name->getIdent());
 	}
-	else
-		block->analyze(sa, st);
+	else if (!block->analyze(sa, st) && *return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
+		sa.printError("Method " + return_type_and_name->getName() + " returns non-void but not all paths return", return_type_and_name->getIdent());
 
 	st->leaveScope();
 }
