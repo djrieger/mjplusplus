@@ -104,8 +104,7 @@ void Parser::expect(lexer::Token::Token_type const& tokenType)
 
 		if (!error_mode)
 		{
-			if (print_messages)
-				printError("expected " + lexer.describe(tokenType));
+			printError("expected " + lexer.describe(tokenType));
 
 			error_mode = true;
 		}
@@ -136,8 +135,7 @@ void Parser::expect(lexer::Token::Token_type const& tokenType, std::string const
 
 		if (!error_mode)
 		{
-			if (print_messages)
-				printError("expected \"" + string_val + '"');
+			printError("expected \"" + string_val + '"');
 
 			error_mode = true;
 		}

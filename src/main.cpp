@@ -110,7 +110,7 @@ int main(int argc, const char** argv)
 			Parser parser(lexer, errorReporter);
 			bool valid = parser.start();
 
-			if (options[CHECK] && valid)
+			if (options[CHECK] && parser.getRoot())
 			{
 				SemanticAnalysis sa(parser.getRoot(), errorReporter);
 
