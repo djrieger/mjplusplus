@@ -82,9 +82,7 @@ namespace ast
 				}
 			}
 			else if (object_type == Object_Type::NULL_OBJECT)
-			{
-				//TODO: define a special type-value that has some special rules for the java "null"-object
-			}
+				return std::make_shared<Type>(Type::Primitive_type::NULL_OBJECT);
 
 			return shptr<Type>();
 		}
@@ -116,12 +114,18 @@ namespace ast
 		{
 			shptr<Type> child_type = expr->get_type(sa, symbolTable);
 
-			if (!child_type)
-				return child_type;
-			else if (*child_type == Type(Type::INT) && sa.isTypeDefined(type))
-				return type;
-			else
-				return shptr<Type>();
+			if (child_type)
+			{
+				if (child_type->isInteger())
+				{
+					if (sa.isTypeDefined(type))
+						return type;
+				}
+				else
+					sa.printError("Array size needs to be an integer type.");
+			}
+
+			return shptr<Type>();
 		}
 
 
@@ -167,29 +171,63 @@ namespace ast
 			arguments->toString(out, indent);
 		}
 
-		shptr<Type> MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
+		shptr<Type> MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 		{
-			shptr<Symbol> methodSymbol = Symbol::makeSymbol(identifier->getName());
 
-			if (methodSymbol)
+			auto class_table = sa.getClassTable();
+			auto this_symbol = Symbol::makeSymbol("this");
+			auto class_type = this_symbol->getCurrentDefinition()->getType();
+			auto class_item  = class_table[class_type->getClassName()];
+
+			auto method_table = class_item.methodTable->getMethodTable();
+			auto method_it = method_table.find(identifier->getName());
+
+			if (method_it != method_table.end())
 			{
-				shptr<Definition> method_def = methodSymbol->getCurrentDefinition();
+				auto method_item = method_it->second;
+				shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;
+				shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentTypes();
 
-				if (method_def)
+				int decSize = declarationTypes->size();
+				int invSize = invokedExpressions->size();
+
+				if (decSize == invSize)
 				{
-					shptr<Type> method_type = method_def->getType();
+					bool validArguments = true;
+					auto decIt = declarationTypes->begin();
+					auto invIt = invokedExpressions->begin();
 
-					if (sa.isTypeDefined(method_type))
+					for (int i = 0; i < invSize; i++)
 					{
-						//Now I know the type of the method-invocation...now I need to check the parameters.
-						//TODO: somehow get the declaration node of definition.
+						auto decType = *decIt;
+						auto invType = (*invIt)->get_type(sa, symbolTable);
 
-						return method_type;
+						//TODO: check if invType is non-empty pointer
+						if (*decType != *invType)
+						{
+							validArguments = false;
+							break;
+						}
+
+						decIt++;
+						invIt++;
 					}
+
+					if (validArguments)
+						return method_item.returnType;
+					else
+						sa.printError("The arguments do not match the parameter types.", identifier);
 				}
+				else
+					sa.printError("Wrong number of arguments.", identifier);
+			}
+			else
+			{
+				sa.printError(class_type->getName() + " has no method with the name " + identifier->getName(),
+				              identifier);
 			}
 
-			return shptr<Type>();
+			return shptr<ast::Type>();
 		}
 	} // namespace pe
 } // namespace ast
