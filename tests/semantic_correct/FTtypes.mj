@@ -1,5 +1,4 @@
 class Typed {
-	public static void main(String[] a) {}
 	public int integer;
 	public void foo(int x) {
 		bar();
@@ -8,6 +7,8 @@ class Typed {
 	public void bar() {
 		this.integer = 0;
 	}
+
+  public static void main(String[] args) {}
 }
 
 class Two {
@@ -20,7 +21,7 @@ class Two {
 		{
 			int x = 0;
 			{
-				boolean z = true;
+				boolean x = true;
 			}
 		}
 		x.bar();
