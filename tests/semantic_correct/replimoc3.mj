@@ -29,7 +29,7 @@ class Loops {
             a = a + 3;
         }
 
-        while ( (a = read(c)) != 0 )
+        while ( (a = read()) != 0 )
         {
             d = a - a;
         }
