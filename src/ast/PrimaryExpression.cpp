@@ -140,6 +140,9 @@ namespace ast
 				{
 					if (sa.isTypeDefined(type))
 						return type;
+					else
+						sa.printError("Type " + type->getName() + " not defined!");
+
 				}
 				else
 					sa.printError("Array size needs to be an integer type.");
@@ -180,7 +183,10 @@ namespace ast
 			if (sa.isTypeDefined(type))
 				return type;
 			else
+			{
+				sa.printError("Type " + type->getName() + " not defined!");
 				return shptr<Type>();
+			}
 		}
 
 		bool NewObjectExpression::isLValue() const
