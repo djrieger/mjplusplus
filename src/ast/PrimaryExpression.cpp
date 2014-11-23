@@ -51,7 +51,7 @@ namespace ast
 						return ident_type;
 				}
 				else
-					sa.printError("No current definition for " + identifier->getName());
+					sa.printError("No current definition for " + identifier->getName(), identifier);
 			}
 
 			return shptr<Type>();
