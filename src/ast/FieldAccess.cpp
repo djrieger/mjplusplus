@@ -38,4 +38,9 @@ namespace ast
 
 		return shptr<ast::Type>();
 	}
+
+	bool FieldAccess::lValueHelp() const
+	{
+		return true;
+	}
 }

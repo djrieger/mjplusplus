@@ -38,6 +38,7 @@ namespace ast
 				 * @return expr, either the child or an UnaryExpression
 				 */
 				static shptr<Expression> createUnaryExpr(shptr<Expression> child, shptr<vec<lexer::Token::Token_type>> operator_types);
+				virtual bool isLValue() const;
 
 		};
 
