@@ -17,7 +17,7 @@ void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent
 
 
 
-void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
 
@@ -31,7 +31,7 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	auto returnType = return_type_and_name->getType();//type is void
 
 	symbolTable->enterScope();
-	collectParameters(sa, symbolTable);
+	auto foo = collectParameters(sa, symbolTable);
 	symbolTable->leaveScope();
 
 	// insert this field into symbol table of this class
@@ -39,11 +39,14 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	symbolTable->insert(symbol, definition);
 }
 
-void ast::MainMethodDeclaration::collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const
+shptr<vec<shptr<ast::Type>>> ast::MainMethodDeclaration::collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const
 {
 	//we know we only have one parameter, which is of a pseudo-type String[]
 	auto parameter = (*parameters)[0];
 	auto paramSymbol = Symbol::makeSymbol("p" + parameter->getName(), shptr<Scope>());
 	auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
 	symbolTable->insert(paramSymbol, paramDefinition);
+	auto params_type = std::make_shared<vec<shptr<ast::Type>>>();
+	params_type->push_back(parameter->getType());
+	return params_type;
 }
