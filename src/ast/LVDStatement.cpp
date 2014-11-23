@@ -29,7 +29,7 @@ void ast::LVDStatement::toString(std::ostream& out, unsigned int indent, bool) c
 bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	//Test if symbol is in table
-	auto s = Symbol::makeSymbol(type_ident->getName(), shptr<Scope>());
+	auto s = Symbol::makeSymbol(type_ident->getName());
 
 	if (symbolTable->definedInCurrentScope(s))
 	{
@@ -49,12 +49,15 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	s->setCurrentDefinition(d);
 	symbolTable->insert(s, d);
 
-	auto init_type = init_expr->get_type(sa, symbolTable);
-
-	if (init_type)
+	if (init_expr)
 	{
-		if (type_ident->getType() != init_type)
-			sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName());
+		auto init_type = init_expr->get_type(sa, symbolTable);
+
+		if (init_type)
+		{
+			if (type_ident->getType() != init_type)
+				sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName());
+		}
 	}
 
 	return false;
