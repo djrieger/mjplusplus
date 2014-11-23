@@ -38,8 +38,10 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 
 	if (mainMethodCount != 1)
 		sa.printError(std::to_string(mainMethodCount) + " main methods defined.");
+}
 
+void ast::Program::analyze(SemanticAnalysis& sa) const
+{
 	for (auto& item : sa.getClassTable())
 		item.second.classNode->analyze(sa, item.second.symbolTable);
-
 }

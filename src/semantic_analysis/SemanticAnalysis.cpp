@@ -21,6 +21,7 @@ void SemanticAnalysis::printError(std::string s, shptr<ast::PositionAwareNode> n
 bool SemanticAnalysis::start()
 {
 	root->collectDefinitions(*this);
+	root->analyize(*this);
 	return valid;
 }
 
