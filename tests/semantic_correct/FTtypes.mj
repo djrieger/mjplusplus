@@ -1,4 +1,5 @@
 class Typed {
+	public static void main(String[] a) {}
 	public int integer;
 	public void foo(int x) {
 		bar();
@@ -19,7 +20,7 @@ class Two {
 		{
 			int x = 0;
 			{
-				bool x = true;
+				boolean z = true;
 			}
 		}
 		x.bar();

@@ -16,8 +16,7 @@ namespace ast
 
 	shptr<Type> FieldAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) const
 	{
-		if (callingType->getPrimitiveType() == Type::Primitive_type::NONE
-		        && callingType->getDimension() == 0)
+		if (callingType->isClassType())
 		{
 			auto class_table = sa.getClassTable();
 			auto class_item = class_table[callingType->getClassName()];
@@ -38,5 +37,10 @@ namespace ast
 			sa.printError("Cannot invoke a field on a primitive or array type.", field_name);
 
 		return shptr<ast::Type>();
+	}
+
+	bool FieldAccess::lValueHelp() const
+	{
+		return true;
 	}
 }

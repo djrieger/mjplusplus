@@ -35,12 +35,20 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 			sa.printError("Class with name \033[1m" + classDeclNode->getName() + "\033[0m already defined.", classDeclNode->getIdent());
 	}
 
-	for (auto& item : sa.getClassTable())
-		item.second.classNode->collectDefinitions(sa, item.second.symbolTable);
+	int mainMethodCount = 0;
 
+	for (auto& item : sa.getClassTable())
+		if (item.second.classNode->collectDefinitions(sa, item.second.symbolTable))
+			mainMethodCount++;
+
+	if (mainMethodCount != 1)
+		sa.printError(std::to_string(mainMethodCount) + " main methods defined.");
+}
+
+void ast::Program::analyze(SemanticAnalysis& sa) const
+{
 	for (auto& item : sa.getClassTable())
 		item.second.classNode->analyze(sa, item.second.symbolTable);
-
 }
 
 void ast::Program::addPseudoClasses()

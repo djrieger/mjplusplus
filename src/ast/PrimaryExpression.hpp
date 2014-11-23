@@ -26,6 +26,7 @@ namespace ast
 				Bool(bool value);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool isLValue() const;
 		};
 
 		class Ident : public PrimaryExpression
@@ -34,6 +35,7 @@ namespace ast
 				Ident(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int ident, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool isLValue() const;
 			protected:
 				shptr<ast::Ident> identifier;
 		};
@@ -50,6 +52,7 @@ namespace ast
 				Object(Object_Type object_type);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool isLValue() const;
 			private:
 				Object_Type object_type;
 		};
@@ -62,6 +65,7 @@ namespace ast
 				Integer(std::string const& string_value);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool isLValue() const;
 		};
 
 		class NewArrayExpression : public PrimaryExpression
@@ -70,6 +74,7 @@ namespace ast
 				NewArrayExpression(shptr<Type> type, shptr<Expression> expr);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool isLValue() const;
 			private:
 				shptr<Type> type;
 				shptr<Expression> expr;
@@ -81,6 +86,7 @@ namespace ast
 				NewObjectExpression(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool isLValue() const;
 			private:
 				shptr<ast::Ident> identifier;
 		};
@@ -91,6 +97,7 @@ namespace ast
 				MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool isLValue() const;
 			private:
 				shptr<Arguments> arguments;
 		};

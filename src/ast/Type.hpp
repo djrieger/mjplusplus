@@ -18,7 +18,8 @@ namespace ast
 				NONE,
 				INT,
 				BOOLEAN,
-				VOID
+				VOID,
+				NULL_TYPE
 			};
 
 			Type(Type::Primitive_type primitive_type);
@@ -30,7 +31,10 @@ namespace ast
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			bool operator==(Type const& other);
 			bool operator!=(Type const& other);
-			bool isRefType();
+			bool isRefType(bool checkNullType = false);
+			bool isClassType();
+			bool isInteger();
+			bool isBool();
 			shptr<Type> de_array();
 
 			void setDimension(int dimension);
