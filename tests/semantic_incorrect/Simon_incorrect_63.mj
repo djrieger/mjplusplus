@@ -1,0 +1,6 @@
+class a {
+	public static void main(String[] a) {}
+	public void x() {
+		this = null;/* cannot assign to final variable this */
+	}
+}

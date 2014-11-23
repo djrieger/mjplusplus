@@ -36,7 +36,6 @@ class Parser
 		 * Constructor to the parser, needs at least a lexer.
 		 * Since it's going to be handimplemented, the grammar is implicitly defined in parse*() functions below
 		 * @param	lexer	instance of a lexer providing the tokens
-		 * @param   print_messages   sets whether error messages will be printed, default: true
 		 */
 		Parser(lexer::Lexer& lexer, shptr<ErrorReporter> errorReporter); // TODO: determine parameters
 
@@ -63,11 +62,6 @@ class Parser
 		 * False at start. Set to true when at least one parser error has been detected.
 		 */
 		bool errors_found = false;
-
-		/**
-		 * Whether parser prints error messages or suppresses them
-		 */
-		bool print_messages;
 
 
 		/**

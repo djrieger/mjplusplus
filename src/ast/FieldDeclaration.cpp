@@ -20,7 +20,7 @@ std::string ast::FieldDeclaration::getName() const
 	return "f" + type_and_name->getName();
 }
 
-void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
 

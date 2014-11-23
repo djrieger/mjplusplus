@@ -26,7 +26,7 @@ bool SemanticAnalysis::start()
 
 bool SemanticAnalysis::insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node)
 {
-	return classTable.insert({className, {node, std::make_shared<SymbolTable>()}}).second;
+	return classTable.insert({className, {node, std::make_shared<SymbolTable>(), std::make_shared<MethodTable>()}}).second;
 }
 
 shptr<SymbolTable> SemanticAnalysis::getSymbolTable() const

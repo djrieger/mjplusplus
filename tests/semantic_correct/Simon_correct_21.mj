@@ -4,12 +4,8 @@ class a {
 		if (true) {
 			if (true) {
 				if (true) return 1;
+				else {{return 2;}}
 			} else return 2;
 		} else return 3;
-		boolean b = true;
-		while (true || b) {
-			return 4;
-		}
-		/* no return on then-then-else-(not while loop)-path */
 	}
 }

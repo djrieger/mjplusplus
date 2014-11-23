@@ -8,6 +8,7 @@
 #include "../ast/Type.hpp"
 #include "../ast/PositionAwareNode.hpp"
 #include "../util/ErrorReporter.hpp"
+#include "../util/MethodTable.hpp"
 
 namespace ast
 {
@@ -22,6 +23,7 @@ class SemanticAnalysis
 		{
 			shptr<ast::ClassDeclaration> classNode;
 			shptr<SymbolTable> symbolTable;
+			shptr<MethodTable> methodTable;
 		};
 	private:
 		shptr<ErrorReporter> errorReporter;

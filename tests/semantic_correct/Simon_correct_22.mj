@@ -1,0 +1,9 @@
+class a {
+	public static void main(String[] a) {}
+	public int deepIf() {
+		boolean b = true;
+		while (true || (true == true)) {
+			return 4;
+		}
+	}
+}
