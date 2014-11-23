@@ -3,15 +3,21 @@
 
 #include <unordered_map>
 #include "../globals.hpp"
-#include "../ast/MethodDeclaration.hpp"
+//#include "../ast/MethodDeclaration.hpp"
 #include "../ast/Type.hpp"
+
+namespace ast
+{
+	class MethodDeclaration;
+}
+
 
 class MethodTable
 {
 	public:
 		struct MethodTableItem
 		{
-			shptr<ast::MethodDeclaration> methodNode;
+			shptr<const ast::MethodDeclaration> methodNode;
 			shptr<ast::Type>  returnType;
 			shptr<vec<shptr<ast::Type>>> parameterTypes;
 		};
@@ -20,7 +26,7 @@ class MethodTable
 		std::unordered_map<std::string, MethodTableItem> methodTable;
 
 	public:
-		bool insertMethod(const std::string& methodName, shptr<ast::MethodDeclaration>& node,
+		bool insertMethod(const std::string& methodName, shptr<const ast::MethodDeclaration>& node,
 		                  shptr<ast::Type>&  returnType, shptr<vec<shptr<ast::Type>>>& parameterTypes);
 		std::unordered_map<std::string, MethodTableItem> const& getMethodTable() const;
 };
