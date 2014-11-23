@@ -6,7 +6,11 @@ class Loops {
 
     public static void main ( String[] args)
     {
-        int a; int b; int c; int d;
+        (new Loops()).read();
+    }
+
+    public int read() {
+        int a; int b; int c; int d; int x =3; int y = 3;
 
         a = -125;
 
@@ -27,7 +31,7 @@ class Loops {
 
         while ( (a = read(c)) != 0 )
         {
-            d = a - abs(a);
+            d = a - a;
         }
 
         if ((d > 0) || (c < 0) || x < y)
@@ -35,13 +39,13 @@ class Loops {
             return 1;
         }
 
-        if (true) {} else if (false) {} else {} if (true_or_false()) {{}};
+        if (true) {} else if (false) {} else {} if (true) {{}};
 
         /* if - chain */
-        if (true) if (true) if (false) if (true) if ((null)) if (true) ;
+        if (true) if (true) if (false) if (true) if (false) if (true) ;
 
         /* while - chain */
-        while(1) while(1) while(1) while(1) { while(1) while(1) while(1) while(1); }
+        while(true) while(true) while(true) while(true) { while(true) while(true) while(true) while(true); }
 
         /* random blocks and empty statements*/
         /* the author is boooooooooored */
@@ -54,7 +58,6 @@ class Loops {
             }
         }
 
-        ;(     oO    );
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

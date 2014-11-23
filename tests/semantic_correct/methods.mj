@@ -52,6 +52,8 @@ class Test {
         while(true) {
             return 1;
         }
+        /* control flow may reach end of non-void function if compiler isn't smart enough */
+        return 1;
     }
 
     /* return objects */
@@ -77,9 +79,12 @@ class Test {
     public void f7(boolean[] x) {}
 
     public static void main(String[] args) {
+        (new Test()).test();
+    }
+
+    public void test() {
 
         /* test correct parameters */
-
         int x; boolean b; Test test;
         int[] xx; boolean[] bb; Test[] tt;
 

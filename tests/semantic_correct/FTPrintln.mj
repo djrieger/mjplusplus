@@ -1,8 +1,8 @@
 class A {
-	public static void main(String[] a) {}
 	public void foo() {
 		System.out.println(42);
 	}
+  public static void main(String[] args) { }
 }
 
 class B {

@@ -1,8 +1,10 @@
 class A {
   public B forward_class;
   public int foo() {
-    return B.bar();
+    return forward_class.bar();
   }
+
+  public static void main(String[] args) { }
 }
 
 class B {

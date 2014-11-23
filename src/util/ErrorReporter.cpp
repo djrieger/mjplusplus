@@ -65,8 +65,10 @@ void ErrorReporter::printErrors() const
 			// output input line where error occurred and markerline
 			auto minPos = std::max(((int)error.first.second) - 50, 0);
 			auto length = std::min(100, (int)lineOfCode.length());
-			std::cerr << lineOfCode.substr(minPos, length) << std::endl;
-			std::cerr << markerline.substr(minPos, length) << std::endl;
+			auto leading_dots = (minPos > 0) ? "... " : "";
+			auto trailing_dots = (length == 100) ? " ..." : "";
+			std::cerr << leading_dots << lineOfCode.substr(minPos, length) << trailing_dots << std::endl;
+			std::cerr << leading_dots << markerline.substr(minPos, length) << trailing_dots << std::endl;
 		}
 	}
 
