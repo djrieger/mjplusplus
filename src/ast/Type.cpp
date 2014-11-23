@@ -71,15 +71,30 @@ bool ast::Type::operator!=(Type const& other)
 	       (this->class_name != other.class_name);
 }
 
-bool ast::Type::isRefType()
+bool ast::Type::isRefType(bool checkNullType)
 {
-	return dimension > 0 ||
-	       primitive_type == ast::Type::Primitive_type::NONE;
+	bool isRef = dimension > 0 ||
+	             primitive_type == ast::Type::Primitive_type::NONE;
+
+	if (!isRef && checkNullType)
+		return primitive_type == ast::Type::Primitive_type::NULL_TYPE;
+
+	return isRef;
 }
 
 bool ast::Type::isClassType()
 {
 	return dimension == 0 && primitive_type == ast::Type::Primitive_type::NONE;
+}
+
+bool ast::Type::isInteger()
+{
+	return dimension == 0 && primitive_type == ast::Type::Primitive_type::INT;
+}
+
+bool ast::Type::isBool()
+{
+	return dimension == 0 && primitive_type == ast::Type::Primitive_type::BOOLEAN;
 }
 
 shptr<ast::Type> ast::Type::de_array()
