@@ -19,6 +19,7 @@ namespace ast
 			* that is invalid and an empty pointer is returned.
 			*/
 			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const = 0;
+			virtual bool isLValue() const = 0;
 	};
 }
 

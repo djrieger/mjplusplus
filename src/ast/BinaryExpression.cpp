@@ -95,6 +95,12 @@ namespace ast
 			return binaryExpr;
 		}
 
+
+		bool BinaryExpression::isLValue() const
+		{
+			return false;
+		}
+
 		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{

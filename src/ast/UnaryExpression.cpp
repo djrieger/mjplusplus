@@ -65,6 +65,12 @@ namespace ast
 				out << ')';
 		}
 
+
+		bool UnaryExpression::isLValue() const
+		{
+			return false;
+		}
+
 		Not::Not(shptr<Expression> child, int size)
 			: UnaryExpression::UnaryExpression(child, size)
 		{

@@ -46,3 +46,8 @@ shptr<ast::Type> ast::PostfixExpression::get_type(SemanticAnalysis& sa, shptr<Sy
 
 	return callingType;
 }
+
+bool ast::PostfixExpression::isLValue() const
+{
+	return postfix_op->size() > 0 && postfix_op->back()->lValueHelp();
+}
