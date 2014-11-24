@@ -2,16 +2,14 @@
 
 TEST_PASSED=true
 
-function runTest {
+runTest() {
 	succeeded=0
 	failed=0
 	segfaults=0
 
 	for i in $1/* ; do
-		#echo $i
-		../mj++ $2 $i &> /dev/null 
+		../mj++ $2 $i > /dev/null 2> /dev/null
 		ret=$?
-		#echo $ret
 		if [ $ret -eq 0 ] ; then
 			succeeded=$((succeeded + 1))
 		elif [ $ret -eq 1 ] ; then
@@ -21,18 +19,20 @@ function runTest {
 		fi
 	done
 
-	if [ $TEST_PASSED = true ]; then
-		if [[ $1 =~ "incorrect" ]] && [[ succeeded -eq 0 ]]; then
-			TEST_PASSED=true
-		elif [[ failed -eq 0 ]]; then
-			TEST_PASSED=true
-		fi
+	if [ $segfaults -gt 0 ]; then
+		TEST_PASSED=false
+	elif [ -z "${1##*_incorrect}" -a $succeeded -gt 0 ]; then
+		echo failed
+		TEST_PASSED=false
+	elif [ -z "${1##*_correct}" -a $failed -gt 0 ]; then
+		echo failed
+		TEST_PASSED=false
 	fi
 
-	echo "$1:" $((succeeded + failed+segfaults)) "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults."
+	echo "$1:" $((succeeded + failed + segfaults)) "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults."
 }
 
-function testPrettyPrinter {
+testPrettyPrinter() {
 	../mj++ --print-ast ast_printer/HelloWord.mj > temp
 	diff temp ast_printer/HelloWord-output.mj > /dev/null
 	if [ $? -eq 0 ] ; then
