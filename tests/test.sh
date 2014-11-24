@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [ \! -x ../mj++ ] ; then
+	echo "Where is your compiler?"
+	exit
+fi
+
+
 TEST_PASSED=true
 
 runTest() {
