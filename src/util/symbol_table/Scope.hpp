@@ -6,12 +6,13 @@
 class Scope
 {
 	private:
-		shptr<Scope> const parent;
+		shptr<Scope> parent;
 		unsigned int oldSize;
 	public:
-		Scope(shptr<Scope> const parent, unsigned int oldSize);
+		Scope(shptr<Scope> parent, unsigned int oldSize);
 
 		unsigned int getOldSize() const;
+		shptr<Scope> getParent();
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "../util/ErrorReporter.hpp"
 
-SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorReporter> errorReporter): errorReporter(errorReporter), valid(true), root(program), symboltable(), classTable() {}
+SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorReporter> errorReporter): errorReporter(errorReporter), valid(true), root(program), /*symboltable(),*/ classTable() {}
 
 // TODO:
 // Remove this method as soon as possible
@@ -32,13 +32,13 @@ bool SemanticAnalysis::start()
 
 bool SemanticAnalysis::insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node)
 {
-	return classTable.insert({className, {node, std::make_shared<SymbolTable>(), std::make_shared<MethodTable>()}}).second;
+	return classTable.insert({className, {node, std::make_shared<SymbolTable>(), std::make_shared<FieldTable>(), std::make_shared<MethodTable>()}}).second;
 }
-
+/*
 shptr<SymbolTable> SemanticAnalysis::getSymbolTable() const
 {
 	return this->symboltable;
-}
+}*/
 
 std::unordered_map<std::string, SemanticAnalysis::ClassTableItem> const& SemanticAnalysis::getClassTable() const
 {
