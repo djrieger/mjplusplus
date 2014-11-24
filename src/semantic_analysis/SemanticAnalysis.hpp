@@ -8,6 +8,7 @@
 #include "../ast/Type.hpp"
 #include "../ast/PositionAwareNode.hpp"
 #include "../util/ErrorReporter.hpp"
+#include "../util/FieldTable.hpp"
 #include "../util/MethodTable.hpp"
 
 namespace ast
@@ -23,6 +24,7 @@ class SemanticAnalysis
 		{
 			shptr<ast::ClassDeclaration> classNode;
 			shptr<SymbolTable> symbolTable;
+			shptr<FieldTable> fieldTable;
 			shptr<MethodTable> methodTable;
 		};
 	private:
@@ -32,7 +34,7 @@ class SemanticAnalysis
 		 */
 		bool valid;
 		shptr<ast::Program> root;
-		shptr<SymbolTable> symboltable;
+		//shptr<SymbolTable> symboltable;
 		std::unordered_map<std::string, ClassTableItem> classTable;
 
 	public:
@@ -42,7 +44,7 @@ class SemanticAnalysis
 
 		bool start();
 		bool insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node);
-		shptr<SymbolTable> getSymbolTable() const;
+		//shptr<SymbolTable> getSymbolTable() const;
 		std::unordered_map<std::string, ClassTableItem> const& getClassTable() const;
 		bool isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptable = false);
 };

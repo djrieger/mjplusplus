@@ -27,7 +27,7 @@ namespace ast
 			 * @return whether this class contains a main method
 			 */
 			bool collectDefinitions(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-			void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			void analyze(SemanticAnalysis& sa) const;
 			std::string getName() const;
 			shptr<Ident> getIdent() const;
 	};

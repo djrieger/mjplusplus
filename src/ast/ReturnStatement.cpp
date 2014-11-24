@@ -40,7 +40,8 @@ bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 
 			if (expr_type)
 			{
-				if (*ret_type != *expr_type)
+				if (!(*ret_type == *expr_type ||
+				        (ret_type->isRefType() && expr_type->getPrimitiveType() == ast::Type::Primitive_type::NULL_TYPE)))
 					sa.printError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type->getName());
 			}
 		}

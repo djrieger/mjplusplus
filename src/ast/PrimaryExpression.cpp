@@ -48,13 +48,96 @@ namespace ast
 					shptr<Type> ident_type = ident_def->getType();
 
 					if (sa.isTypeDefined(ident_type))
-						return ident_type;
+					{
+						if (ident_type->getName() != "$System")
+							return ident_type;
+					}
 				}
-				else
-					sa.printError("No current definition for " + identifier->getName(), identifier);
+
+				//else
+				//sa.printError("No current definition for " + identifier->getName(), identifier);
 			}
 
-			return shptr<Type>();
+			auto class_table = sa.getClassTable();
+			auto this_symbol = Symbol::makeSymbol("this");
+			auto definition = this_symbol->getCurrentDefinition();
+
+			if (!definition)
+			{
+				if (ident_symbol)
+				{
+					shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
+
+					if (ident_def)
+					{
+						shptr<Type> ident_type = ident_def->getType();
+
+						if (sa.isTypeDefined(ident_type))
+							return ident_type;
+					}
+
+					//else
+					//sa.printError("No current definition for " + identifier->getName(), identifier);
+				}
+
+				sa.printError("Symbol not defined!");
+				return shptr<ast::Type>();
+			}
+
+			auto class_type = definition->getType();
+			auto class_item  = class_table[class_type->getClassName()];
+
+			auto field_table = class_item.fieldTable->getFieldTable();
+			auto field_it = field_table.find(identifier->getName());
+
+			if (field_it != field_table.end())
+			{
+				auto field_item = field_it->second;
+				return field_item.type;
+			}
+			else
+			{
+				if (ident_symbol)
+				{
+					shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
+
+					if (ident_def)
+					{
+						shptr<Type> ident_type = ident_def->getType();
+
+						if (sa.isTypeDefined(ident_type))
+							return ident_type;
+					}
+
+					//else
+					//sa.printError("No current definition for " + identifier->getName(), identifier);
+				}
+
+				sa.printError(class_type->getName() + " has no field with the name " + identifier->getName(),
+				              identifier);
+			}
+
+			return shptr<ast::Type>();
+
+
+			//			shptr<Symbol> ident_symbol = Symbol::makeSymbol(identifier->getName());
+
+			//			if (ident_symbol)
+			//			{
+			//				shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
+
+			//				if (ident_def)
+			//				{
+			//					shptr<Type> ident_type = ident_def->getType();
+
+			//					if (sa.isTypeDefined(ident_type))
+			//						return ident_type;
+			//				}
+			//				else
+			//					sa.printError("No current definition for " + identifier->getName(), identifier);
+			//			}
+
+			//			return shptr<Type>();
 		}
 
 		bool Ident::isLValue() const
@@ -247,7 +330,8 @@ namespace ast
 						auto invType = (*invIt)->get_type(sa, symbolTable);
 
 						//TODO: check if invType is non-empty pointer
-						if (!invType || *decType != *invType)
+						if (!invType || !(*decType == *invType ||
+						                  (decType->isRefType() && invType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE)))
 						{
 							validArguments = false;
 							break;
