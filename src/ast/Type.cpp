@@ -35,8 +35,8 @@ void ast::Type::toString(std::ostream& out, unsigned int indent, shptr<Expressio
 			break;
 
 		case Type::Primitive_type::NULL_TYPE:
-			//This is done in PrimaryExpression toString
-			//out << "null";
+			//Only used for type analysis
+			out << "null";
 			break;
 	}
 
