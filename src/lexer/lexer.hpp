@@ -6,6 +6,8 @@
 #include "token.hpp"
 #include "stateomat.hpp"
 
+#include "../util/ErrorReporter.hpp"
+
 namespace lexer
 {
 	class Lexer
@@ -15,6 +17,7 @@ namespace lexer
 			std::pair<unsigned int, unsigned int> position;
 			/** stateomat holds the transition informations */
 			Stateomat stateomat;
+			shptr<ErrorReporter> errorReporter;
 			/**
 			 *  saves tokens that are put back by unget
 			 *  @see unget
@@ -129,7 +132,7 @@ namespace lexer
 			 *  @param file_name file that will be lexed
 			 *  @param stateomat stateomat that helds the transitions
 			 */
-			Lexer(const char* file_name, Stateomat const& stateomat);
+			Lexer(const char* file_name, Stateomat const& stateomat, shptr<ErrorReporter> errorReporter);
 			/**
 			 *  Lexes the next token and returns it.
 			 *  @return the next token
