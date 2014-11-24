@@ -33,14 +33,28 @@ class SemanticAnalysis
 		 * whether semantic errors have been detected, true initially
 		 */
 		bool valid;
+		/*
+		 * root AST node
+		 */
 		shptr<ast::Program> root;
-		//shptr<SymbolTable> symboltable;
+		/*
+		 * contains parsed classes
+		 */
 		std::unordered_map<std::string, ClassTableItem> classTable;
 
 	public:
 		SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorReporter> errorReporter);
-		void printError(std::string s);
-		void printError(std::string s, shptr<ast::PositionAwareNode> node);
+		/*
+		 * Report an error without a source position using errorReporter
+		 * @param message error message
+		 */
+		void reportError(std::string message);
+		/*
+		 * Report an error using errorReporter
+		 * @param message error message
+		 * @param node a PositionAwareNode used to extract the position for this error
+		 */
+		void reportError(std::string message, shptr<ast::PositionAwareNode> node);
 
 		bool start();
 		bool insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node);
