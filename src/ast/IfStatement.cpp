@@ -67,7 +67,7 @@ namespace ast
 		auto cond = condition->get_type(sa, symbolTable);
 
 		if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN)) //TODO: isBool()
-			sa.reportError("If condition is not boolean");
+			sa.reportError("If condition is not boolean", condition);
 
 		bool returns = true;
 
