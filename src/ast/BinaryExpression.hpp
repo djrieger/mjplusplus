@@ -20,6 +20,7 @@ namespace ast
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 				BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual bool isLValue() const;
+				virtual bool standalone() const;
 			public:
 				static shptr<BinaryExpression> createBinaryExpr(shptr<Expression> leftChild, shptr<Expression> rightChild, lexer::Token::Token_type operator_type);
 		};
@@ -112,6 +113,7 @@ namespace ast
 				Eq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool standalone() const;
 		};
 
 		class GreaterThanEq : public BinaryExpression

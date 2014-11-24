@@ -5,6 +5,11 @@ namespace ast
 {
 	namespace pe
 	{
+		bool PrimaryExpression::standalone() const
+		{
+			return false;
+		}
+
 		Bool::Bool(bool value) : value(value)
 		{
 			;
@@ -277,6 +282,11 @@ namespace ast
 			return false;
 		}
 
+		bool NewObjectExpression::standalone() const
+		{
+			return true;
+		}
+
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
 			Ident(identifier),
 			arguments(arguments)
@@ -361,6 +371,11 @@ namespace ast
 		bool MethodInvocation::isLValue() const
 		{
 			return false;
+		}
+
+		bool MethodInvocation::standalone() const
+		{
+			return true;
 		}
 	} // namespace pe
 } // namespace ast
