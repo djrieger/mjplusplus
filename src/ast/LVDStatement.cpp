@@ -59,11 +59,13 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 			if (init_type->getPrimitiveType() == ast::Type::Primitive_type::NULL_TYPE)
 			{
 				if (!type_ident->getType()->isRefType())
-					sa.printError("Cannot assign null to non-reference type " + type_ident->getType()->getName());
+					sa.printError("Cannot assign null to non-reference type " + type_ident->getType()->getName(), type_ident->getIdent());
 			}
 			else if (*type_ident->getType() != *init_type)
-				sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName());
+				sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName(), type_ident->getIdent());
 		}
+		else
+			sa.printError("Invalid Type in assingment.", type_ident->getIdent());
 	}
 
 	return false;
