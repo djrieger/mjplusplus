@@ -3,12 +3,13 @@
 
 #include "Node.hpp"
 #include "Type.hpp"
+#include "PositionAwareNode.hpp"
 #include "../util/symbol_table/symbol_table.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
 
 namespace ast
 {
-	class Expression : public Node
+	class Expression : public Node, virtual public PositionAwareNode
 	{
 		public:
 			/**

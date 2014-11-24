@@ -668,27 +668,27 @@ shptr<ast::Expression> Parser::parsePrimaryExpression()
 	switch (current.token_type)
 	{
 		case lexer::Token::Token_type::KEYWORD_FALSE:
-			pe = std::make_shared<ast::pe::Bool>(false);
+			pe = std::make_shared<ast::pe::Bool>(false, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_TRUE:
-			pe = std::make_shared<ast::pe::Bool>(true);
+			pe = std::make_shared<ast::pe::Bool>(true, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_NULL:
-			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::NULL_OBJECT);
+			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::NULL_OBJECT, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_THIS:
-			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::THIS_OBJECT);
+			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::THIS_OBJECT, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::TOKEN_INT_LIT:
-			pe = std::make_shared<ast::pe::Integer>(*current.string_value);
+			pe = std::make_shared<ast::pe::Integer>(*current.string_value, current.position);
 			nextToken();
 			break;
 

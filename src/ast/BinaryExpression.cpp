@@ -7,7 +7,7 @@ namespace ast
 	{
 
 		BinaryExpression::BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: leftChild(leftChild), rightChild(rightChild)
+			: leftChild(leftChild), rightChild(rightChild), PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -114,7 +114,8 @@ namespace ast
 		}
 
 		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -163,7 +164,8 @@ namespace ast
 
 
 		Mult::Mult(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -190,7 +192,8 @@ namespace ast
 		}
 
 		Plus::Plus(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -217,7 +220,8 @@ namespace ast
 		}
 
 		Minus::Minus(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -244,7 +248,8 @@ namespace ast
 		}
 
 		Slash::Slash(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -271,7 +276,8 @@ namespace ast
 		}
 
 		LessThanEq::LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -298,7 +304,8 @@ namespace ast
 		}
 
 		LessThan::LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -325,7 +332,8 @@ namespace ast
 		}
 
 		EqEq::EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -373,7 +381,8 @@ namespace ast
 		}
 
 		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -422,7 +431,8 @@ namespace ast
 		}
 
 		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -449,7 +459,8 @@ namespace ast
 		}
 
 		GreaterThan::GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -476,7 +487,8 @@ namespace ast
 		}
 
 		Mod::Mod(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -503,7 +515,8 @@ namespace ast
 		}
 
 		AndAnd::AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -541,7 +554,8 @@ namespace ast
 		}
 
 		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -578,7 +592,8 @@ namespace ast
 		}
 
 		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}

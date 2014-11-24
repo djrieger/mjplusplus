@@ -23,6 +23,7 @@ namespace ast
 			 * Stores the position of this token
 			 */
 			PositionAwareNode(lexer::Token const& token);
+			PositionAwareNode(std::pair<unsigned int, unsigned int> position);
 	};
 }
 
