@@ -1,3 +1,6 @@
+#include <string>
+#include <limits>
+
 #include "../globals.hpp"
 #include "PrimaryExpression.hpp"
 
@@ -208,9 +211,28 @@ namespace ast
 
 		}
 
-		shptr<Type>Integer::get_type(SemanticAnalysis&, shptr<SymbolTable>) const
+		shptr<Type>Integer::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
 		{
-			return std::make_shared<Type>(Type::INT);
+			unsigned long long value;
+
+			try
+			{
+				value = std::stoull(string_value);
+			}
+			catch (std::out_of_range)
+			{
+				value = std::numeric_limits<unsigned long long>::max();
+			}
+
+			if (value > 2147483648ULL)
+			{
+				sa.reportError("Integer literal too large");
+				return std::make_shared<Type>(Type::INT);
+			}
+			else if (value == 2147483648ULL)
+				return std::make_shared<Type>(Type::INT_NEG_ONLY);
+			else
+				return std::make_shared<Type>(Type::INT);
 		}
 
 		void Integer::toString(std::ostream& out, unsigned int, bool) const

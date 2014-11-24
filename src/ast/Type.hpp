@@ -19,6 +19,7 @@ namespace ast
 				INT,
 				BOOLEAN,
 				VOID,
+				INT_NEG_ONLY,
 				NULL_TYPE
 			};
 
