@@ -21,7 +21,7 @@ class Two {
 		{
 			int x = 0;
 			{
-				boolean x = true;
+				boolean x = true; /* This is not allowed in Java OR MiniJava. */
 			}
 		}
 		x.bar();

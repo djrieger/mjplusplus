@@ -10,10 +10,10 @@ class Main
 
 class MultiScope {
 	
-    public void correctMultiScope() {
+    public void wrongMultiScope() {
         int x;
         {
-            int x;
+            int x; /* This is not allowed in Java OR MiniJava. */
             {
                 x = 1;
                 boolean x;
