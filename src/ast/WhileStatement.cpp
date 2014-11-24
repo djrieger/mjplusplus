@@ -35,7 +35,7 @@ bool ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbo
 	auto cond = condition->get_type(sa, symbolTable);
 
 	if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN)) //TODO: isBool();
-		sa.printError("While condition is not boolean");
+		sa.reportError("While condition is not boolean");
 
 	bool definiteReturn = false;
 

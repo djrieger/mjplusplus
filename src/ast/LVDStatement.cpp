@@ -35,7 +35,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	        (s->getCurrentDefinition() && s->getCurrentDefinition()->getType()->getName() != "$System"))
 	{
 		// formerly, there was s->getName(), however this segfaulted
-		sa.printError("Symbol " + type_ident->getName() + " already defined");
+		sa.reportError("Symbol " + type_ident->getName() + " already defined");
 		return false;
 	}
 
@@ -43,7 +43,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 
 	if (!sa.isTypeDefined(type))
 	{
-		sa.printError("Type " + type->getName() + " is not defined");
+		sa.reportError("Type " + type->getName() + " is not defined");
 		return false;
 	}
 
@@ -59,13 +59,13 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 			if (init_type->getPrimitiveType() == ast::Type::Primitive_type::NULL_TYPE)
 			{
 				if (!type_ident->getType()->isRefType())
-					sa.printError("Cannot assign null to non-reference type " + type_ident->getType()->getName(), type_ident->getIdent());
+					sa.reportError("Cannot assign null to non-reference type " + type_ident->getType()->getName(), type_ident->getIdent());
 			}
 			else if (*type_ident->getType() != *init_type)
-				sa.printError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName(), type_ident->getIdent());
+				sa.reportError("Mismatched Types: " + type_ident->getType()->getName() + " and " + init_type->getName(), type_ident->getIdent());
 		}
 		else
-			sa.printError("Invalid Type in assingment.", type_ident->getIdent());
+			sa.reportError("Invalid Type in assingment.", type_ident->getIdent());
 	}
 
 	return false;

@@ -57,17 +57,17 @@ bool Parser::start()
 	}
 	catch (char const* msg)
 	{
-		printError(msg);
+		reportError(msg);
 	}
 	catch (lexer::Token::Token_type tokenType)
 	{
 		if (tokenType != lexer::Token::Token_type::TOKEN_ERROR)
 			/* no need to produce two messages for lexer errors */
-			printError("expected " + lexer.describe(tokenType));
+			reportError("expected " + lexer.describe(tokenType));
 	}
 	catch (std::string string_val)
 	{
-		printError("expected \"" + string_val + '"');
+		reportError("expected \"" + string_val + '"');
 	}
 
 	return r && !errors_found;
@@ -89,7 +89,7 @@ void __attribute__ ((noinline)) Parser::nextToken()
 	}
 }
 
-void Parser::printError(std::string const& error_msg)
+void Parser::reportError(std::string const& error_msg)
 {
 	errorReporter->recordError(ErrorReporter::ErrorType::PARSER,
 	                           "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": " + error_msg),
@@ -104,7 +104,7 @@ void Parser::expect(lexer::Token::Token_type const& tokenType)
 
 		if (!error_mode)
 		{
-			printError("expected " + lexer.describe(tokenType));
+			reportError("expected " + lexer.describe(tokenType));
 
 			error_mode = true;
 		}
@@ -135,7 +135,7 @@ void Parser::expect(lexer::Token::Token_type const& tokenType, std::string const
 
 		if (!error_mode)
 		{
-			printError("expected \"" + string_val + '"');
+			reportError("expected \"" + string_val + '"');
 
 			error_mode = true;
 		}

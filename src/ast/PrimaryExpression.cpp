@@ -72,7 +72,7 @@ namespace ast
 				}
 
 				//else
-				//sa.printError("No current definition for " + identifier->getName(), identifier);
+				//sa.reportError("No current definition for " + identifier->getName(), identifier);
 			}
 
 			auto class_table = sa.getClassTable();
@@ -94,10 +94,10 @@ namespace ast
 					}
 
 					//else
-					//sa.printError("No current definition for " + identifier->getName(), identifier);
+					//sa.reportError("No current definition for " + identifier->getName(), identifier);
 				}
 
-				sa.printError("Symbol not defined!");
+				sa.reportError("Symbol not defined!");
 				return shptr<ast::Type>();
 			}
 
@@ -127,11 +127,11 @@ namespace ast
 					}
 
 					//else
-					//sa.printError("No current definition for " + identifier->getName(), identifier);
+					//sa.reportError("No current definition for " + identifier->getName(), identifier);
 				}
 
-				sa.printError(class_type->getName() + " has no field with the name " + identifier->getName(),
-				              identifier);
+				sa.reportError(class_type->getName() + " has no field with the name " + identifier->getName(),
+				               identifier);
 			}
 
 			return shptr<ast::Type>();
@@ -151,7 +151,7 @@ namespace ast
 			//						return ident_type;
 			//				}
 			//				else
-			//					sa.printError("No current definition for " + identifier->getName(), identifier);
+			//					sa.reportError("No current definition for " + identifier->getName(), identifier);
 			//			}
 
 			//			return shptr<Type>();
@@ -241,11 +241,11 @@ namespace ast
 					if (sa.isTypeDefined(type))
 						return type;
 					else
-						sa.printError("Type " + type->getName() + " not defined!");
+						sa.reportError("Type " + type->getName() + " not defined!");
 
 				}
 				else
-					sa.printError("Array size needs to be an integer type.");
+					sa.reportError("Array size needs to be an integer type.");
 			}
 
 			return shptr<Type>();
@@ -284,7 +284,7 @@ namespace ast
 				return type;
 			else
 			{
-				sa.printError("Type " + type->getName() + " not defined!");
+				sa.reportError("Type " + type->getName() + " not defined!");
 				return shptr<Type>();
 			}
 		}
@@ -321,7 +321,7 @@ namespace ast
 
 			if (!definition)
 			{
-				sa.printError("Symbol not defined!");
+				sa.reportError("Symbol not defined!");
 				return shptr<ast::Type>();
 			}
 
@@ -366,15 +366,15 @@ namespace ast
 					if (validArguments)
 						return method_item.returnType;
 					else
-						sa.printError("The arguments do not match the parameter types.", identifier);
+						sa.reportError("The arguments do not match the parameter types.", identifier);
 				}
 				else
-					sa.printError("Wrong number of arguments.", identifier);
+					sa.reportError("Wrong number of arguments.", identifier);
 			}
 			else
 			{
-				sa.printError(class_type->getName() + " has no method with the name " + identifier->getName(),
-				              identifier);
+				sa.reportError(class_type->getName() + " has no method with the name " + identifier->getName(),
+				               identifier);
 			}
 
 			return shptr<ast::Type>();
