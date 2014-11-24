@@ -5,6 +5,11 @@ if [ \! -x ../mj++ ] ; then
 	exit
 fi
 
+SKIP_BIG_TESTS=false
+if [ "$1" == "--skip-big-tests" ]; then
+	echo "Ignoring files named big.mj..."
+	SKIP_BIG_TESTS=true
+fi
 
 TEST_PASSED=true
 
@@ -14,6 +19,12 @@ runTest() {
 	segfaults=0
 
 	for i in $1/* ; do
+		# skip big tests if option is given:
+		if [ $SKIP_BIG_TESTS = true -a -z "${i##*big.mj}" ]; then
+			continue
+		fi
+
+		# run test
 		../mj++ $2 $i > /dev/null 2> /dev/null
 		ret=$?
 		if [ $ret -eq 0 ] ; then
