@@ -37,19 +37,35 @@ runTest() {
 	echo "$1:" $((succeeded + failed + segfaults)) "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults."
 }
 
-testPrettyPrinter() {
-	../mj++ --print-ast ast_printer/HelloWord.mj > temp
-	diff temp ast_printer/HelloWord-output.mj > /dev/null
-	if [ $? -eq 0 ] ; then
-		echo "prettyprinter test succeeded"
-	else
-		echo "prettyprinter test failed"
+runTestDiff() {
+	succeeded=0
+	failed=0
+	segfaults=0
+
+	for i in $1/*.mj ; do
+		../mj++ $2 $i | diff $i.output - > /dev/null
+		ret=$?
+		if [ $ret -eq 0 ] ; then
+			succeeded=$((succeeded + 1))
+		elif [ $ret -eq 1 ] ; then
+			failed=$((failed + 1))
+			echo "\033[1;31mTest $i failed\033[0m"
+		else
+			segfaults=$((segfaults + 1))
+			echo "\033[1;31mTest $i segfaulted\033[0m"
+		fi
+	done
+
+	if [ $segfaults -gt 0 ]; then
+		TEST_PASSED=false
+	elif [ $failed -gt 0 ]; then
 		TEST_PASSED=false
 	fi
-	rm temp
+
+	echo "$1:" $((succeeded + failed + segfaults)) "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults."
 }
 
-testPrettyPrinter
+runTestDiff ast_printer "--print-ast" #&
 runTest parser_correct " " #&
 runTest parser_incorrect " " #&
 runTest semantic_correct "--check" #&
