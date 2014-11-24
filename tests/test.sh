@@ -22,10 +22,8 @@ runTest() {
 	if [ $segfaults -gt 0 ]; then
 		TEST_PASSED=false
 	elif [ -z "${1##*_incorrect}" -a $succeeded -gt 0 ]; then
-		echo failed
 		TEST_PASSED=false
 	elif [ -z "${1##*_correct}" -a $failed -gt 0 ]; then
-		echo failed
 		TEST_PASSED=false
 	fi
 
