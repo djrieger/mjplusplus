@@ -22,12 +22,14 @@
     [
         {
             "name": "make clean",
-            "cmd": ["make", "clean"]
+            "cmd": ["make", "clean"],
+            "working_dir": "$project_path"
         },
         {
             "name": "make",
             "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
-            "cmd": ["make"]
+            "cmd": ["make", "-j8"],
+            "working_dir": "$project_path"
         },
         {
             "name": "lextest",
