@@ -97,7 +97,7 @@ namespace ast
 				if (child_type->isBool())
 					return child_type;
 				else
-					sa.printError(child_type->getName() + " is not boolean.");
+					sa.reportError(child_type->getName() + " is not boolean.");
 			}
 
 			return shptr<Type>();
@@ -133,7 +133,7 @@ namespace ast
 				if (child_type->isInteger())
 					return child_type;
 				else
-					sa.printError(child_type->getName() + " is not an integer.");
+					sa.reportError(child_type->getName() + " is not an integer.");
 			}
 
 			return shptr<Type>();

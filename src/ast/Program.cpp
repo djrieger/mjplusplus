@@ -32,7 +32,7 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 	for (auto& classDeclNode : *classes)
 	{
 		if (!sa.insertClass(classDeclNode->getName(), classDeclNode))
-			sa.printError("Class with name \033[1m" + classDeclNode->getName() + "\033[0m already defined.", classDeclNode->getIdent());
+			sa.reportError("Class with name \033[1m" + classDeclNode->getName() + "\033[0m already defined.", classDeclNode->getIdent());
 	}
 
 	int mainMethodCount = 0;
@@ -42,7 +42,7 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 			mainMethodCount++;
 
 	if (mainMethodCount != 1)
-		sa.printError(std::to_string(mainMethodCount) + " main methods defined.");
+		sa.reportError(std::to_string(mainMethodCount) + " main methods defined.");
 }
 
 void ast::Program::analyze(SemanticAnalysis& sa) const

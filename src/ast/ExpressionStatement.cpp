@@ -18,7 +18,7 @@ bool ast::ExpressionStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> 
 	expression->get_type(sa, symbolTable);
 
 	if (!expression->standalone())
-		sa.printError("Not a statement");
+		sa.reportError("Not a statement");
 
 	return false;
 }

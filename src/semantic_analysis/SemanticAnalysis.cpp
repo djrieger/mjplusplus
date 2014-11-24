@@ -7,16 +7,16 @@ SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorRepor
 
 // TODO:
 // Remove this method as soon as possible
-void SemanticAnalysis::printError(std::string s)
+void SemanticAnalysis::reportError(std::string message)
 {
 	valid = false;
-	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, s);
+	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, message);
 }
 
-void SemanticAnalysis::printError(std::string s, shptr<ast::PositionAwareNode> node)
+void SemanticAnalysis::reportError(std::string message, shptr<ast::PositionAwareNode> node)
 {
 	valid = false;
-	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, s, node->getPosition());
+	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, message, node->getPosition());
 }
 
 bool SemanticAnalysis::start()
@@ -59,7 +59,7 @@ bool SemanticAnalysis::isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptabl
 		// not in class table:
 		if (iter == getClassTable().end())
 		{
-			printError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
+			reportError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
 			return false;
 		}
 

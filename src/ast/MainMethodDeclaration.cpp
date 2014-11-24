@@ -22,11 +22,11 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
 
 	if (return_type_and_name->getName() != "main")
-		sa.printError("Main method has name \033[1m" + return_type_and_name->getName() + "\033[0m instead of 'main'.", return_type_and_name->getIdent());
+		sa.reportError("Main method has name \033[1m" + return_type_and_name->getName() + "\033[0m instead of 'main'.", return_type_and_name->getIdent());
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
-		sa.printError("Method with name \033[1m" + return_type_and_name->getName() + "\033[0m already declared.", return_type_and_name->getIdent());
+		sa.reportError("Method with name \033[1m" + return_type_and_name->getName() + "\033[0m already declared.", return_type_and_name->getIdent());
 
 	auto returnType = return_type_and_name->getType();//type is void
 
@@ -100,10 +100,10 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	if (!block)
 	{
 		if (*return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
-			sa.printError("Method " + return_type_and_name->getName() + " returns non-void but body is empty", return_type_and_name->getIdent());
+			sa.reportError("Method " + return_type_and_name->getName() + " returns non-void but body is empty", return_type_and_name->getIdent());
 	}
 	else if (!block->analyze(sa, st) && *return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
-		sa.printError("Method " + return_type_and_name->getName() + " returns non-void but not all paths return", return_type_and_name->getIdent());
+		sa.reportError("Method " + return_type_and_name->getName() + " returns non-void but not all paths return", return_type_and_name->getIdent());
 
 	st->leaveScope();
 	//std::cout << "done" << std::endl;
