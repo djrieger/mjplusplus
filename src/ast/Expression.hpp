@@ -20,6 +20,7 @@ namespace ast
 			*/
 			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const = 0;
 			virtual bool isLValue() const = 0;
+			virtual bool standalone() const = 0;
 	};
 }
 

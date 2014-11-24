@@ -101,6 +101,12 @@ namespace ast
 			return false;
 		}
 
+
+		bool BinaryExpression::standalone() const
+		{
+			return false;
+		}
+
 		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -379,6 +385,12 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+
+		bool Eq::standalone() const
+		{
+			return true;
 		}
 
 		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)

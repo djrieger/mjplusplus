@@ -50,3 +50,10 @@ bool ast::PostfixExpression::isLValue() const
 {
 	return postfix_op->size() > 0 && postfix_op->back()->lValueHelp();
 }
+
+
+bool ast::PostfixExpression::standalone() const
+{
+	//we have a method invocation iff we don't have an l-value at the end
+	return postfix_op->size() > 0 && !postfix_op->back()->lValueHelp();
+}
