@@ -7,7 +7,7 @@ ErrorReporter::ErrorReporter(std::string const& file_name): file_name(file_name)
 
 }
 
-void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position)
+void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg, source_position_t position)
 {
 	errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(position, std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
 }

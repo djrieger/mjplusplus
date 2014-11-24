@@ -16,7 +16,7 @@ void SemanticAnalysis::reportError(std::string message, shptr<ast::PositionAware
 	reportError(message, node->getPosition());
 }
 
-void SemanticAnalysis::reportError(std::string message, std::pair<unsigned int, unsigned int> position)
+void SemanticAnalysis::reportError(std::string message, source_position_t position)
 {
 	valid = false;
 	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, message, position);

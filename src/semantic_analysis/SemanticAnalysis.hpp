@@ -55,7 +55,7 @@ class SemanticAnalysis
 		 * @param node a PositionAwareNode used to extract the position for this error
 		 */
 		void reportError(std::string message, shptr<ast::PositionAwareNode> node);
-		void reportError(std::string message, std::pair<unsigned int, unsigned int> position);
+		void reportError(std::string message, source_position_t position);
 
 		bool start();
 		bool insertClass(const std::string& className, shptr<ast::ClassDeclaration>& node);
