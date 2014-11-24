@@ -364,18 +364,18 @@ namespace ast
 						if (leftType->isRefType())
 							return leftType;
 						else
-							sa.printError("");
+							sa.printError("Cannot assign null to non-reference type " + leftType->getName());
 					}
 					else
 					{
 						if (*leftType == *rightType)
 							return leftType;
 						else
-							sa.printError("");
+							sa.printError("Mismatched Types: " + leftType->getName() + " and " + rightType->getName());
 					}
 				}
 				else
-					sa.printError("");
+					sa.printError("Cannot assign to an expression that is not an l-value");
 			}
 
 			return shptr<Type>();
