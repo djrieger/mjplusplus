@@ -7,8 +7,14 @@ Compile by running `make` (debug version) or `make release` (release version) in
 
 Run the compiler like this:
 
-`./mj++ [--lextest|--print-ast] FILE`
+`./mj++ [--dumplexgraph|--lextest|--print-ast|--check] FILE`
+
+`--dumlexgraph`: Dump the automaton that is used by the lexer to a file. (Format: GML)
 
 `--lextest`: Run a test on the compiler's lexer on the given `FILE`
 
 `--print-ast`: Pretty print the parsed file.
+
+`--check`: Run the semantic analysis on the given `FILE`.
+
+If the compiler is started without an option, the given `FILE` will be parsed and the return signal indicates, if it is correct.
