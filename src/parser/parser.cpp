@@ -83,10 +83,7 @@ void __attribute__ ((noinline)) Parser::nextToken()
 	current = lexer.get_next_token();
 
 	if (current.token_type == lexer::Token::Token_type::TOKEN_ERROR)
-	{
-		errorReporter->recordError(ErrorReporter::ErrorType::LEXER, "", current.position);
 		throw current.token_type;
-	}
 }
 
 void Parser::reportError(std::string const& error_msg)

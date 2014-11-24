@@ -166,8 +166,8 @@ namespace lexer
 		{83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, 83, },
 	};
 
-	Lexer::Lexer(const char* file_name, Stateomat const& stateomat)
-		: position {1, 1}, stateomat(stateomat), line_start(0)
+	Lexer::Lexer(const char* file_name, Stateomat const& stateomat, shptr<ErrorReporter> errorReporter)
+		: position {1, 1}, stateomat(stateomat), errorReporter(errorReporter), line_start(0)
 	{
 
 		fd = open(file_name, O_RDONLY);
@@ -319,6 +319,20 @@ namespace lexer
 				else
 				{
 					//token is invalid
+					switch (state)
+					{
+						case 0:
+							errorReporter->recordError(ErrorReporter::ErrorType::LEXER, "Invalid Symbol", position);
+							break;
+
+						case 1:
+						case 2:
+							errorReporter->recordError(ErrorReporter::ErrorType::LEXER, "End of file within comment", position);
+
+						default:
+							break;
+					}
+
 					return Token(Token::Token_type::TOKEN_ERROR, value, position);
 				}
 			}
