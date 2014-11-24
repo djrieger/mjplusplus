@@ -131,7 +131,7 @@ namespace ast
 
 			if (leftType && rightType)
 			{
-				if (*leftType == *rightType)
+				if (*leftType == *rightType && leftType->getPrimitiveType() != Type::Primitive_type::INT_NEG_ONLY)
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
 				{
@@ -342,7 +342,7 @@ namespace ast
 
 			if (leftType && rightType)
 			{
-				if (*leftType == *rightType)
+				if (*leftType == *rightType && leftType->getPrimitiveType() != Type::Primitive_type::INT_NEG_ONLY)
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
 				{
