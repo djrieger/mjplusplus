@@ -6,7 +6,7 @@ namespace ast
 	namespace ue
 	{
 		UnaryExpression::UnaryExpression(shptr<Expression> child, int size)
-			: child(child), size(size), PositionAwareNode(child->getPosition())
+			: PositionAwareNode(child->getPosition()), child(child), size(size)
 		{
 
 		}
@@ -83,7 +83,7 @@ namespace ast
 		}
 
 		Not::Not(shptr<Expression> child, int size)
-			: UnaryExpression::UnaryExpression(child, size), PositionAwareNode(child->getPosition())
+			: PositionAwareNode(child->getPosition()), UnaryExpression::UnaryExpression(child, size)
 		{
 			;
 		}
@@ -119,7 +119,7 @@ namespace ast
 		}
 
 		Neg::Neg(shptr<Expression> child, int size)
-			: UnaryExpression::UnaryExpression(child, size), PositionAwareNode(child->getPosition())
+			: PositionAwareNode(child->getPosition()), UnaryExpression::UnaryExpression(child, size)
 		{
 			;
 		}

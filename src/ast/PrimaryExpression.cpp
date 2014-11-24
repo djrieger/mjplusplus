@@ -19,7 +19,7 @@ namespace ast
 			return {false, false};
 		}
 
-		Bool::Bool(bool value, std::pair<unsigned int, unsigned int> position) : value(value), PositionAwareNode(position)
+		Bool::Bool(bool value, std::pair<unsigned int, unsigned int> position) : PositionAwareNode(position), value(value)
 		{
 			;
 		}
@@ -46,7 +46,7 @@ namespace ast
 			return {true, value};
 		}
 
-		Ident::Ident(shptr<ast::Ident> identifier) : identifier(identifier), PositionAwareNode(identifier->getPosition())
+		Ident::Ident(shptr<ast::Ident> identifier) : PositionAwareNode(position), identifier(identifier)
 		{
 		}
 
@@ -166,7 +166,7 @@ namespace ast
 		}
 
 
-		Object::Object(Object_Type object_type, std::pair<unsigned int, unsigned int> position) : object_type(object_type), PositionAwareNode(position)
+		Object::Object(Object_Type object_type, std::pair<unsigned int, unsigned int> position) : PositionAwareNode(position), object_type(object_type)
 		{
 		}
 
@@ -206,7 +206,7 @@ namespace ast
 		}
 
 		Integer::Integer(std::string const& string_value, std::pair<unsigned int, unsigned int> position)
-			: string_value(string_value), PositionAwareNode(position)
+			: PositionAwareNode(position), string_value(string_value)
 		{
 
 		}
@@ -246,9 +246,9 @@ namespace ast
 		}
 
 		NewArrayExpression::NewArrayExpression(shptr<Type> type, shptr<Expression> expr) :
+			PositionAwareNode(position),
 			type(type),
-			expr(expr),
-			PositionAwareNode(expr->getPosition())
+			expr(expr)
 		{
 
 		}
@@ -287,7 +287,7 @@ namespace ast
 			return false;
 		}
 
-		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : identifier(identifier), PositionAwareNode(identifier->getPosition())
+		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : PositionAwareNode(identifier->getPosition()), identifier(identifier)
 		{
 
 		}
@@ -323,9 +323,9 @@ namespace ast
 		}
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
+			PositionAwareNode(identifier->getPosition()),
 			Ident(identifier),
-			arguments(arguments),
-			PositionAwareNode(identifier->getPosition())
+			arguments(arguments)
 		{
 
 		}

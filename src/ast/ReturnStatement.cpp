@@ -2,7 +2,7 @@
 #include "ReturnStatement.hpp"
 
 ast::ReturnStatement::ReturnStatement(shptr<Expression> expression):
-	expression(expression), PositionAwareNode(expression->getPosition())
+	PositionAwareNode(expression->getPosition()), expression(expression)
 {
 
 }
