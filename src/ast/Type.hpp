@@ -27,7 +27,7 @@ namespace ast
 			Type(Type::Primitive_type primitive_type, int dimension);
 			Type(shptr<Ident> class_name, int dimension);
 
-			virtual void toString(std::ostream& out, unsigned int indent, shptr<Expression>& expression, bool = false) const;
+			virtual void toString(std::ostream& out, unsigned int indent, shptr<Expression> const& expression, bool = false) const;
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			bool operator==(Type const& other);
 			bool operator!=(Type const& other);

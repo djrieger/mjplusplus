@@ -118,7 +118,7 @@ int main(int argc, const char** argv)
 					valid = false;
 			}
 
-			if (options[PRINT_AST])
+			if (options[PRINT_AST] && parser.getRoot())
 				parser.getRoot()->toString(std::cout, 0);
 
 			errorReporter->printErrors();
