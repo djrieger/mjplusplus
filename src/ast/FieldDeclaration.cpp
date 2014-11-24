@@ -39,8 +39,8 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 		sa.printError("Cannot have a field with void as base type.");
 
 	// insert this field into symbol table of this class
-	//	auto definition = std::make_shared<Definition>(symbol, type);
-	//	symbolTable->insert(symbol, definition);
+	auto definition = std::make_shared<Definition>(symbol, type);
+	symbolTable->insert(symbol, definition);
 
 	// insert this field into the method table in the class table
 	auto ct = sa.getClassTable();

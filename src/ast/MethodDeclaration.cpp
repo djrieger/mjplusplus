@@ -56,9 +56,9 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 	auto param_types = collectParameters(sa, symbolTable);
 	symbolTable->leaveScope();
 
-	//	// insert this method into symbol table of this class
-	//	auto definition = std::make_shared<Definition>(symbol, returnType);
-	//	symbolTable->insert(symbol, definition);
+	// insert this method into symbol table of this class
+	auto definition = std::make_shared<Definition>(symbol, returnType);
+	symbolTable->insert(symbol, definition);
 
 	// insert this method into the method table in the class table
 	auto ct = sa.getClassTable();

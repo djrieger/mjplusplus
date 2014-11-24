@@ -31,7 +31,8 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	//Test if symbol is in table
 	auto s = Symbol::makeSymbol(type_ident->getName());
 
-	if (symbolTable->definedInCurrentScope(s))
+	if (symbolTable->definedInCurrentScope(s) ||
+	        (s->getCurrentDefinition() && s->getCurrentDefinition()->getType()->getName() != "$System"))
 	{
 		// formerly, there was s->getName(), however this segfaulted
 		sa.printError("Symbol " + type_ident->getName() + " already defined");
@@ -47,7 +48,6 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	}
 
 	auto d = std::make_shared<Definition>(s, type_ident->getType());
-	//s->setCurrentDefinition(d);
 	symbolTable->insert(s, d);
 
 	if (init_expr)

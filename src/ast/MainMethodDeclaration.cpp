@@ -17,7 +17,7 @@ void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent
 
 
 
-void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const&) const
+void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
 
@@ -28,16 +28,31 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	if (symbolTable->definedInCurrentScope(symbol))
 		sa.printError("Method with name \033[1m" + return_type_and_name->getName() + "\033[0m already declared.", return_type_and_name->getIdent());
 
-	//	auto returnType = return_type_and_name->getType();//type is void
+	auto returnType = return_type_and_name->getType();//type is void
 
 	//	symbolTable->enterScope();
 	//	// foo is not necessary as the main method is not inserted into the method table
 	//	auto foo = collectParameters(sa, symbolTable);
 	//	symbolTable->leaveScope();
 
-	//	// insert this field into symbol table of this class
-	//	auto definition = std::make_shared<Definition>(symbol, returnType);
-	//	symbolTable->insert(symbol, definition);
+	// insert this field into symbol table of this class
+	auto definition = std::make_shared<Definition>(symbol, returnType);
+	symbolTable->insert(symbol, definition);
+
+	// insert this method into the method table in the class table
+	auto ct = sa.getClassTable();
+	//shptr<MethodDeclaration> md_node;
+	//md_node.reset(this->enable_shared_from_this());
+	auto const foo = shared_from_this();
+	auto md_node = std::static_pointer_cast<const MethodDeclaration>(foo);
+	//	const std::shared_ptr<MethodDeclaration> md_node = this; //auto md_node = std::make_shared<MethodDeclaration>(this);
+	//md_node.reset(this);
+	auto param_types = std::make_shared<vec<shptr<ast::Type>>>();
+
+	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Dummy"), {0, 0}};
+	auto p = std::make_shared<Ident>(dit);
+	param_types->push_back(std::make_shared<ast::Type>(p));
+	ct[class_name].methodTable->insertMethod(return_type_and_name->getName(), md_node, returnType, param_types);
 }
 
 shptr<vec<shptr<ast::Type>>> ast::MainMethodDeclaration::collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const
@@ -65,6 +80,13 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
 	st->insert(s, d);
 	//collectParameters(sa, symbolTable);
+	auto parameter = (*parameters)[0];
+	auto paramSymbol = Symbol::makeSymbol(parameter->getName(), shptr<Scope>());
+	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Dummy"), {0, 0}};
+	auto p = std::make_shared<Ident>(dit);
+	auto param_type = std::make_shared<ast::Type>(p);
+	auto paramDefinition = std::make_shared<Definition>(paramSymbol, param_type);
+	symbolTable->insert(paramSymbol, paramDefinition);
 
 	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
 
