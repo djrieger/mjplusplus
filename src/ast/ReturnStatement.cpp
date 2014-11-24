@@ -2,12 +2,12 @@
 #include "ReturnStatement.hpp"
 
 ast::ReturnStatement::ReturnStatement(shptr<Expression> expression):
-	expression(expression)
+	expression(expression), PositionAwareNode(expression->getPosition())
 {
 
 }
 
-ast::ReturnStatement::ReturnStatement()
+ast::ReturnStatement::ReturnStatement(std::pair<unsigned int, unsigned int> position): PositionAwareNode(position)
 {
 
 }
@@ -47,7 +47,7 @@ bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 		}
 	}
 	else if (*ret_type != *expr_type)
-		sa.reportError("Method returns " + ret_type->getName() + ", but return statement misses expression" /*, this*/);
+		sa.reportError("Method returns " + ret_type->getName() + ", but return statement misses expression", this->getPosition());
 
 	return true;
 }

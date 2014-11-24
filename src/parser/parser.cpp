@@ -375,9 +375,12 @@ shptr<ast::Statement> Parser::parseStatement()
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_RETURN:
+		{
+			auto returnKeywordPosition = current.position;
 			nextToken();
-			return parseReturnStatement();
+			return parseReturnStatement(returnKeywordPosition);
 			break;
+		}
 
 		// IDENT, (, -, !, null, false, true, INTEGER_LITERAL, this, new
 		case lexer::Token::Token_type::TOKEN_IDENT:
@@ -556,7 +559,7 @@ shptr<ast::WhileStatement> Parser::parseWhileStatement()
 // ReturnStatement -> OptionalExpression ; .
 // OptionalExpression -> Expression
 //  	| .
-shptr<ast::ReturnStatement> Parser::parseReturnStatement()
+shptr<ast::ReturnStatement> Parser::parseReturnStatement(std::pair<unsigned int, unsigned int> returnKeywordPosition)
 {
 	if (current.token_type != lexer::Token::Token_type::OPERATOR_SEMICOLON)
 	{
@@ -566,7 +569,7 @@ shptr<ast::ReturnStatement> Parser::parseReturnStatement()
 	}
 
 	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
-	return std::make_shared<ast::ReturnStatement>();
+	return std::make_shared<ast::ReturnStatement>(returnKeywordPosition);
 }
 
 /*

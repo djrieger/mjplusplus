@@ -110,7 +110,7 @@ class Parser
 		shptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
 		shptr<ast::IfStatement> parseIfStatement();
 		shptr<ast::WhileStatement> parseWhileStatement();
-		shptr<ast::ReturnStatement> parseReturnStatement();
+		shptr<ast::ReturnStatement> parseReturnStatement(std::pair<unsigned int, unsigned int> position);
 
 		shptr<ast::Expression> parseExpression();
 		shptr<ast::Expression> precedenceClimb(int minPrec);
