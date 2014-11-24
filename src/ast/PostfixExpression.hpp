@@ -19,6 +19,7 @@ namespace ast
 			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual bool isLValue() const;
 			virtual bool standalone() const;
+			virtual std::pair<bool, bool> constBool() const;
 	};
 }
 #endif // POSTFIXEXPRESSION_HPP

@@ -40,6 +40,7 @@ namespace ast
 				static shptr<Expression> createUnaryExpr(shptr<Expression> child, shptr<vec<lexer::Token::Token_type>> operator_types);
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
+				virtual std::pair<bool, bool> constBool() const;
 
 		};
 
@@ -49,6 +50,7 @@ namespace ast
 				Not(shptr<Expression> child, int size);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual std::pair<bool, bool> constBool() const;
 		};
 
 		class Neg : public UnaryExpression

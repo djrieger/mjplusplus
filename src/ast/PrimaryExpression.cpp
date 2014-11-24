@@ -10,6 +10,12 @@ namespace ast
 			return false;
 		}
 
+
+		std::pair<bool, bool> PrimaryExpression::constBool() const
+		{
+			return {false, false};
+		}
+
 		Bool::Bool(bool value) : value(value)
 		{
 			;
@@ -29,6 +35,12 @@ namespace ast
 		bool Bool::isLValue() const
 		{
 			return false;
+		}
+
+
+		std::pair<bool, bool> Bool::constBool() const
+		{
+			return {true, value};
 		}
 
 		Ident::Ident(shptr<ast::Ident> identifier) : identifier(identifier)

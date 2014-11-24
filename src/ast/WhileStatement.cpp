@@ -34,12 +34,14 @@ bool ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbo
 {
 	auto cond = condition->get_type(sa, symbolTable);
 
-	if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN)) //TOOD: isBool();
+	if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN)) //TODO: isBool();
 		sa.printError("While condition is not boolean");
 
-	if (statement)
-		statement->analyze(sa, symbolTable);
+	bool definiteReturn = false;
 
-	//TODO: we need to return true iff condition is "constant true"
-	return false;
+	if (statement)
+		definiteReturn = statement->analyze(sa, symbolTable);
+
+	auto condPair = condition->constBool();
+	return condPair.first && condPair.second && definiteReturn;
 }
