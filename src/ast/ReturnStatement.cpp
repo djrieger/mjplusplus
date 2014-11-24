@@ -7,7 +7,7 @@ ast::ReturnStatement::ReturnStatement(shptr<Expression> expression):
 
 }
 
-ast::ReturnStatement::ReturnStatement(std::pair<unsigned int, unsigned int> position): PositionAwareNode(position)
+ast::ReturnStatement::ReturnStatement(source_position_t position): PositionAwareNode(position)
 {
 
 }

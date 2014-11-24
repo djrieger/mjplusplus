@@ -19,7 +19,7 @@ namespace ast
 			return {false, false};
 		}
 
-		Bool::Bool(bool value, std::pair<unsigned int, unsigned int> position) : PositionAwareNode(position), value(value)
+		Bool::Bool(bool value, source_position_t position) : PositionAwareNode(position), value(value)
 		{
 			;
 		}
@@ -166,7 +166,7 @@ namespace ast
 		}
 
 
-		Object::Object(Object_Type object_type, std::pair<unsigned int, unsigned int> position) : PositionAwareNode(position), object_type(object_type)
+		Object::Object(Object_Type object_type, source_position_t position) : PositionAwareNode(position), object_type(object_type)
 		{
 		}
 
@@ -205,7 +205,7 @@ namespace ast
 			return false;
 		}
 
-		Integer::Integer(std::string const& string_value, std::pair<unsigned int, unsigned int> position)
+		Integer::Integer(std::string const& string_value, source_position_t position)
 			: PositionAwareNode(position), string_value(string_value)
 		{
 
