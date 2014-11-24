@@ -12,10 +12,17 @@ runTest() {
 		ret=$?
 		if [ $ret -eq 0 ] ; then
 			succeeded=$((succeeded + 1))
+			if [ -z "${1##*_incorrect}" ]; then
+				echo "\033[1;31mTest $i failed\033[0m"
+			fi
 		elif [ $ret -eq 1 ] ; then
 			failed=$((failed + 1))
+			if [ -z "${1##*_correct}" ]; then
+				echo "\033[1;31mTest $i failed\033[0m"
+			fi
 		else
 			segfaults=$((segfaults + 1))
+			echo "\033[1;31mTest $i segfaulted\033[0m"
 		fi
 	done
 
@@ -43,10 +50,11 @@ testPrettyPrinter() {
 }
 
 testPrettyPrinter
-runTest parser_correct " "
-runTest parser_incorrect " "
-runTest semantic_correct "--check"
-runTest semantic_incorrect "--check"
+runTest parser_correct " " #&
+runTest parser_incorrect " " #&
+runTest semantic_correct "--check" #&
+runTest semantic_incorrect "--check" #&
+#wait
 
 if [ $TEST_PASSED = true ]; then
 	echo "\n\033[1;32mALL TESTS PASSED\033[0m"
