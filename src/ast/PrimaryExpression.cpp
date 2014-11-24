@@ -255,7 +255,7 @@ namespace ast
 		void NewArrayExpression::toString(std::ostream& out, unsigned int indent, bool) const
 		{
 			out << "(new ";
-			type->toString(out, indent, &expr);
+			type->toString(out, indent, expr);
 			out << ')';
 		}
 

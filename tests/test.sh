@@ -6,7 +6,7 @@ segfaults=0
 
 for i in $1/* ; do
 	echo $i
-	../mj++ --check $i #> /dev/null
+	../mj++ --print-ast $i #> /dev/null
 	ret=$?
 	echo $ret
 	if [ $ret -eq 0 ] ; then

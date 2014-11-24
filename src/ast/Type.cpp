@@ -14,7 +14,7 @@ void ast::Type::toString(std::ostream& out, unsigned int indent, bool special) c
 	toString(out, indent, dummy, special);
 }
 
-void ast::Type::toString(std::ostream& out, unsigned int indent, shptr<Expression>& expression, bool) const
+void ast::Type::toString(std::ostream& out, unsigned int indent, shptr<Expression> const& expression, bool) const
 {
 	switch (primitive_type)
 	{
@@ -44,7 +44,7 @@ void ast::Type::toString(std::ostream& out, unsigned int indent, shptr<Expressio
 	{
 		out << "[";
 
-		if (i == 1 && expression)
+		if (i == 0 && expression)
 			expression->toString(out, indent, false);
 
 		out << "]";
