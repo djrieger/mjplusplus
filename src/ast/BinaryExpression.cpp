@@ -144,7 +144,7 @@ namespace ast
 					        && leftType->isRefType(true))
 						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 
-					sa.reportError("Incompatible types for not-equal comparison.");
+					sa.reportError("Incompatible types for not-equal comparison.", leftChild);
 				}
 			}
 
@@ -185,7 +185,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one mult variable is a non-integer.");
+					sa.reportError("At least one mult variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -213,7 +213,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one addition variable is a non-integer.");
+					sa.reportError("At least one addition variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -241,7 +241,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one subtraction variable is a non-integer.");
+					sa.reportError("At least one subtraction variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -269,7 +269,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one division variable is a non-integer.");
+					sa.reportError("At least one division variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -297,7 +297,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -325,7 +325,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -362,7 +362,7 @@ namespace ast
 					        && leftType->isRefType(true))
 						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 
-					sa.reportError("Incompatible types for equal comparison.");
+					sa.reportError("Incompatible types for equal comparison.", leftChild);
 				}
 			}
 
@@ -407,18 +407,18 @@ namespace ast
 						if (leftType->isRefType())
 							return leftType;
 						else
-							sa.reportError("Cannot assign null to non-reference type " + leftType->getName());
+							sa.reportError("Cannot assign null to non-reference type " + leftType->getName(), leftChild);
 					}
 					else
 					{
 						if (*leftType == *rightType)
 							return leftType;
 						else
-							sa.reportError("Mismatched Types: " + leftType->getName() + " and " + rightType->getName());
+							sa.reportError("Mismatched Types: " + leftType->getName() + " and " + rightType->getName(), leftChild);
 					}
 				}
 				else
-					sa.reportError("Cannot assign to an expression that is not an l-value");
+					sa.reportError("Cannot assign to an expression that is not an l-value", leftChild);
 			}
 
 			return shptr<Type>();
@@ -452,7 +452,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -480,7 +480,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -508,7 +508,7 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -536,7 +536,7 @@ namespace ast
 				if (leftType->isBool() && rightType->isBool())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -575,7 +575,7 @@ namespace ast
 				if (leftType->isBool() && rightType->isBool())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();

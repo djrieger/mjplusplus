@@ -100,7 +100,7 @@ namespace ast
 					//sa.reportError("No current definition for " + identifier->getName(), identifier);
 				}
 
-				sa.reportError("Symbol not defined!");
+				sa.reportError("Symbol not defined!", identifier);
 				return shptr<ast::Type>();
 			}
 
@@ -226,7 +226,7 @@ namespace ast
 
 			if (value > 2147483648ULL)
 			{
-				sa.reportError("Integer literal too large");
+				sa.reportError("Integer literal too large", this->getPosition());
 				return std::make_shared<Type>(Type::INT);
 			}
 			else if (value == 2147483648ULL)
@@ -264,11 +264,11 @@ namespace ast
 					if (sa.isTypeDefined(type))
 						return type;
 					else
-						sa.reportError("Type " + type->getName() + " not defined!");
+						sa.reportError("Type " + type->getName() + " not defined!", expr);
 
 				}
 				else
-					sa.reportError("Array size needs to be an integer type.");
+					sa.reportError("Array size needs to be an integer type.", expr);
 			}
 
 			return shptr<Type>();
@@ -307,7 +307,7 @@ namespace ast
 				return type;
 			else
 			{
-				sa.reportError("Type " + type->getName() + " not defined!");
+				sa.reportError("Type " + type->getName() + " not defined!", identifier);
 				return shptr<Type>();
 			}
 		}
@@ -345,7 +345,7 @@ namespace ast
 
 			if (!definition)
 			{
-				sa.reportError("Symbol not defined!");
+				sa.reportError("Symbol not defined!", this->identifier);
 				return shptr<ast::Type>();
 			}
 

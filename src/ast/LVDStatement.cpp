@@ -35,7 +35,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 	        (s->getCurrentDefinition() && s->getCurrentDefinition()->getType()->getName() != "$System"))
 	{
 		// formerly, there was s->getName(), however this segfaulted
-		sa.reportError("Symbol " + type_ident->getName() + " already defined");
+		sa.reportError("Symbol " + type_ident->getName() + " already defined", type_ident->getIdent());
 		return false;
 	}
 
@@ -43,7 +43,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 
 	if (!sa.isTypeDefined(type))
 	{
-		sa.reportError("Type " + type->getName() + " is not defined");
+		sa.reportError("Type " + type->getName() + " is not defined", type_ident->getIdent());
 		return false;
 	}
 
