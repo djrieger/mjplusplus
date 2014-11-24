@@ -11,6 +11,12 @@ namespace ast
 
 		}
 
+
+		std::pair<bool, bool> UnaryExpression::constBool() const
+		{
+			return {false, false};
+		}
+
 		shptr<Expression> UnaryExpression::createUnaryExpr(shptr<Expression> child, shptr<vec<lexer::Token::Token_type>> operator_types)
 		{
 			if (!operator_types->empty())
@@ -100,6 +106,16 @@ namespace ast
 		void Not::toString(std::ostream& out, unsigned int indent, bool special) const
 		{
 			UnaryExpression::toString(out, indent, "!", special);
+		}
+
+		std::pair<bool, bool> Not::constBool() const
+		{
+			auto childExpr = child->constBool();
+
+			if (childExpr.first)
+				return {true, size % 2 == 0 ? childExpr.second : !childExpr.second };
+
+			return {false, false};
 		}
 
 		Neg::Neg(shptr<Expression> child, int size)

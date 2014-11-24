@@ -107,6 +107,12 @@ namespace ast
 			return false;
 		}
 
+
+		std::pair<bool, bool> BinaryExpression::constBool() const
+		{
+			return {false, false};
+		}
+
 		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -142,6 +148,17 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+
+		std::pair<bool, bool> NotEq::constBool() const
+		{
+			auto left = leftChild->constBool();
+			auto right = rightChild->constBool();
+
+			if (left.first && right.first) return {true, left.second != right.second};
+
+			return {false, false};
 		}
 
 
@@ -344,6 +361,17 @@ namespace ast
 			return shptr<Type>();
 		}
 
+
+		std::pair<bool, bool> EqEq::constBool() const
+		{
+			auto left = leftChild->constBool();
+			auto right = rightChild->constBool();
+
+			if (left.first && right.first) return {true, left.second == right.second};
+
+			return {false, false};
+		}
+
 		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -501,6 +529,17 @@ namespace ast
 			return shptr<Type>();
 		}
 
+
+		std::pair<bool, bool> AndAnd::constBool() const
+		{
+			auto left = leftChild->constBool();
+			auto right = rightChild->constBool();
+
+			if (left.first && right.first) return {true, left.second&&  right.second};
+
+			return {false, false};
+		}
+
 		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -526,6 +565,16 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		std::pair<bool, bool> OrOr::constBool() const
+		{
+			auto left = leftChild->constBool();
+			auto right = rightChild->constBool();
+
+			if (left.first && right.first) return {true, left.second || right.second};
+
+			return {false, false};
 		}
 
 		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)

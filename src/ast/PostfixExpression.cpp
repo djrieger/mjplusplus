@@ -57,3 +57,9 @@ bool ast::PostfixExpression::standalone() const
 	//we have a method invocation iff we don't have an l-value at the end
 	return postfix_op->size() > 0 && !postfix_op->back()->lValueHelp();
 }
+
+
+std::pair<bool, bool> ast::PostfixExpression::constBool() const
+{
+	return {false, false};
+}

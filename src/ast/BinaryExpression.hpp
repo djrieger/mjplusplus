@@ -19,10 +19,11 @@ namespace ast
 				void toString(std::ostream& out, unsigned int indent, std::string op, bool special = false) const;
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 				BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild);
-				virtual bool isLValue() const;
-				virtual bool standalone() const;
 			public:
 				static shptr<BinaryExpression> createBinaryExpr(shptr<Expression> leftChild, shptr<Expression> rightChild, lexer::Token::Token_type operator_type);
+				virtual bool isLValue() const;
+				virtual bool standalone() const;
+				virtual std::pair<bool, bool> constBool() const;
 		};
 
 		class NotEq : public BinaryExpression
@@ -33,6 +34,7 @@ namespace ast
 				NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual std::pair<bool, bool> constBool() const;
 		};
 
 		class Mult : public BinaryExpression
@@ -103,6 +105,7 @@ namespace ast
 				EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual std::pair<bool, bool> constBool() const;
 		};
 
 		class Eq : public BinaryExpression
@@ -154,6 +157,7 @@ namespace ast
 				AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual std::pair<bool, bool> constBool() const;
 		};
 
 		class OrOr : public BinaryExpression
@@ -164,6 +168,7 @@ namespace ast
 				OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual std::pair<bool, bool> constBool() const;
 		};
 
 		class Invalid : public BinaryExpression
