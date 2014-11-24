@@ -9,7 +9,7 @@ function runTest {
 
 	for i in $1/* ; do
 		#echo $i
-		../mj++ $2 $i &> /dev/null
+		../mj++ $2 $i &> /dev/null 
 		ret=$?
 		#echo $ret
 		if [ $ret -eq 0 ] ; then

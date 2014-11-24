@@ -132,6 +132,8 @@ namespace ast
 			{
 				if (child_type->isInteger())
 					return child_type;
+				else if (child_type->getDimension() == 0 && *child_type == Type::Primitive_type::INT_NEG_ONLY)
+					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
 					sa.reportError(child_type->getName() + " is not an integer.");
 			}

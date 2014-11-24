@@ -19,6 +19,7 @@ void ast::Type::toString(std::ostream& out, unsigned int indent, shptr<Expressio
 	switch (primitive_type)
 	{
 		case Type::Primitive_type::INT:
+		case Type::Primitive_type::INT_NEG_ONLY:
 			out << "int";
 			break;
 
