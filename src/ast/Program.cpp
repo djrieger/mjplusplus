@@ -48,7 +48,7 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 void ast::Program::analyze(SemanticAnalysis& sa) const
 {
 	for (auto& item : sa.getClassTable())
-		item.second.classNode->analyze(sa, item.second.symbolTable);
+		item.second.classNode->analyze(sa);
 }
 
 void ast::Program::addPseudoClasses()

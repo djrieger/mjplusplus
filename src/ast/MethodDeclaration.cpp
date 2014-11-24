@@ -56,9 +56,9 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 	auto param_types = collectParameters(sa, symbolTable);
 	symbolTable->leaveScope();
 
-	// insert this method into symbol table of this class
-	auto definition = std::make_shared<Definition>(symbol, returnType);
-	symbolTable->insert(symbol, definition);
+	//	// insert this method into symbol table of this class
+	//	auto definition = std::make_shared<Definition>(symbol, returnType);
+	//	symbolTable->insert(symbol, definition);
 
 	// insert this method into the method table in the class table
 	auto ct = sa.getClassTable();
@@ -101,17 +101,17 @@ shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticA
 
 void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	auto st = std::make_shared<SymbolTable>(*symbolTable);
-
+	auto st = symbolTable;
+	//std::cout << "copying " << return_type_and_name->getName() << std::endl;
 	st->enterScope();
 	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
 	st->insert(s, d);
-	collectParameters(sa, symbolTable);
+	collectParameters(sa, st);
 
 	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
 
-	if (!symbolTable->definedInCurrentScope(system_s))
+	if (!st->definedInCurrentScope(system_s))
 	{
 		auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("$System").classNode->getIdent());
 		auto system_d = std::make_shared<Definition>(system_s, system_t);
@@ -127,4 +127,5 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 		sa.printError("Method " + return_type_and_name->getName() + " returns non-void but not all paths return", return_type_and_name->getIdent());
 
 	st->leaveScope();
+	//std::cout << "done" << std::endl;
 }

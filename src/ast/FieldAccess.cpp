@@ -19,24 +19,55 @@ namespace ast
 		if (callingType->isClassType())
 		{
 			auto class_table = sa.getClassTable();
-			auto class_item = class_table[callingType->getClassName()];
+			auto class_it = class_table.find(callingType->getClassName());
 
-			auto fieldSymbol = Symbol::makeSymbol(field_name->getName());
-
-			auto field_def = class_item.symbolTable->lookup(fieldSymbol);
-
-			if (field_def)
-				return field_def->getType();
-			else
+			if (class_it != class_table.end())
 			{
-				sa.printError(callingType->getName() + " has no field with the name " + field_name->getName(),
-				              field_name);
+				auto& class_item = class_it->second;
+				auto field_table = class_item.fieldTable->getFieldTable();
+				auto field_it = field_table.find(field_name->getName());
+
+				if (field_it != field_table.end())
+				{
+					auto field_item = field_it->second;
+					return field_item.type;
+				}
+				else
+				{
+					sa.printError(callingType->getName() + " has no field with the name " + field_name->getName(),
+					              field_name);
+				}
 			}
+			else
+				sa.printError("No such class: " + callingType->getClassName(), field_name);
 		}
 		else
-			sa.printError("Cannot invoke a field on a primitive or array type.", field_name);
+			sa.printError("Cannot access a field on a primitive or array type.", field_name);
 
 		return shptr<ast::Type>();
+
+
+		//		if (callingType->isClassType())
+		//		{
+		//			auto class_table = sa.getClassTable();
+		//			auto class_item = class_table[callingType->getClassName()];
+
+		//			auto fieldSymbol = Symbol::makeSymbol(field_name->getName());
+
+		//			auto field_def = class_item.symbolTable->lookup(fieldSymbol);
+
+		//			if (field_def)
+		//				return field_def->getType();
+		//			else
+		//			{
+		//				sa.printError(callingType->getName() + " has no field with the name " + field_name->getName(),
+		//				              field_name);
+		//			}
+		//		}
+		//		else
+		//			sa.printError("Cannot invoke a field on a primitive or array type.", field_name);
+
+		//		return shptr<ast::Type>();
 	}
 
 	bool FieldAccess::lValueHelp() const

@@ -56,8 +56,9 @@ namespace ast
 		return containsMainMethod;
 	}
 
-	void ClassDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	void ClassDeclaration::analyze(SemanticAnalysis& sa) const
 	{
+		auto symbolTable = std::make_shared<SymbolTable>();
 		auto t = std::make_shared<Type>(class_name);
 		auto s = Symbol::makeSymbol("this", symbolTable->getCurrentScope());
 		auto d = std::make_shared<Definition>(s, t);
