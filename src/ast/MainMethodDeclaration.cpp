@@ -28,16 +28,16 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	if (symbolTable->definedInCurrentScope(symbol))
 		sa.printError("Method with name \033[1m" + return_type_and_name->getName() + "\033[0m already declared.", return_type_and_name->getIdent());
 
-	auto returnType = return_type_and_name->getType();//type is void
+	//	auto returnType = return_type_and_name->getType();//type is void
 
-	symbolTable->enterScope();
-	// foo is not necessary as the main method is not inserted into the method table
-	auto foo = collectParameters(sa, symbolTable);
-	symbolTable->leaveScope();
+	//	symbolTable->enterScope();
+	//	// foo is not necessary as the main method is not inserted into the method table
+	//	auto foo = collectParameters(sa, symbolTable);
+	//	symbolTable->leaveScope();
 
-	// insert this field into symbol table of this class
-	auto definition = std::make_shared<Definition>(symbol, returnType);
-	symbolTable->insert(symbol, definition);
+	//	// insert this field into symbol table of this class
+	//	auto definition = std::make_shared<Definition>(symbol, returnType);
+	//	symbolTable->insert(symbol, definition);
 }
 
 shptr<vec<shptr<ast::Type>>> ast::MainMethodDeclaration::collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const
@@ -54,10 +54,13 @@ shptr<vec<shptr<ast::Type>>> ast::MainMethodDeclaration::collectParameters(Seman
 
 void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	auto st = std::make_shared<SymbolTable>(*symbolTable);
-
-	st->leaveScope(); /* remove this from table */
+	auto st = symbolTable;
+	//std::cout << "copying " << return_type_and_name->getName() << std::endl;
 	st->enterScope();
+	auto ts = Symbol::makeSymbol("this");
+	auto td = shptr<Definition>();
+	st->insert(ts, td);
+
 	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
 	st->insert(s, d);
@@ -81,5 +84,5 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 		sa.printError("Method " + return_type_and_name->getName() + " returns non-void but not all paths return", return_type_and_name->getIdent());
 
 	st->leaveScope();
-	st->enterScope(); /* fix scope */
+	//std::cout << "done" << std::endl;
 }

@@ -48,7 +48,8 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 						auto invType = (*invIt)->get_type(sa, symbolTable);
 
 						//TODO: check if invType is non-empty pointer
-						if (!invType || *decType != *invType)
+						if (!invType || !(*decType == *invType ||
+						                  (decType->isRefType() && invType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE)))
 						{
 							validArguments = false;
 							break;
