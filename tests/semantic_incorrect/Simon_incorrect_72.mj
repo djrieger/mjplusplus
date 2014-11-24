@@ -1,0 +1,7 @@
+class a {
+	public static void main(String[] a) {}
+	public void y() {
+		int x;
+		x = 2147483648;/* int literal too big */
+	}
+}

@@ -1,0 +1,8 @@
+class a {
+	public static void main(String[] a) {}
+	public void y(int q) {
+		int a = - 2147483648;
+		a = - - ((2147483648));
+		a = 2147483647;
+	}
+}
