@@ -75,3 +75,21 @@ void ErrorReporter::printErrors() const
 	if (errors.size() > 0)
 		std::cerr << "Error during compilation" << std::endl;
 }
+
+std::unordered_map<std::string, std::string> ErrorReporter::escapeCodes =
+{
+	{"RED_BOLD", "\033[1;31m"},
+	{"CLEAR_FORMAT", "\033[0m"},
+	{"IDENT", "\033[1;34m"},
+	{"TYPE", "\033[1;33m"}
+};
+
+std::string ErrorReporter::formatType(std::string const& typeName)
+{
+	return escapeCodes["TYPE"] + typeName + escapeCodes["CLEAR_FORMAT"];
+}
+
+std::string ErrorReporter::formatIdent(std::string const& identName)
+{
+	return escapeCodes["IDENT"] + identName + escapeCodes["CLEAR_FORMAT"];
+}

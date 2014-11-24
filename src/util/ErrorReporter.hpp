@@ -39,6 +39,9 @@ class ErrorReporter
 		 * Initialize ErrorReporter for source file with name file_name
 		 */
 		ErrorReporter(std::string const& file_name);
+
+		static std::string formatType(std::string const& typeName);
+		static std::string formatIdent(std::string const& typeName);
 	private:
 		/*
 		 * Errors reported by Parser or SemanticAnalysis
@@ -52,6 +55,9 @@ class ErrorReporter
 		 * name of input file
 		 */
 		std::string const& file_name;
+
+		static  std::unordered_map<std::string, std::string> escapeCodes;
+
 };
 
 #endif
