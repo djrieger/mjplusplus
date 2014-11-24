@@ -34,15 +34,15 @@ namespace ast
 				}
 				else
 				{
-					sa.printError(callingType->getName() + " has no field with the name " + field_name->getName(),
-					              field_name);
+					sa.reportError(callingType->getName() + " has no field with the name " + field_name->getName(),
+					               field_name);
 				}
 			}
 			else
-				sa.printError("No such class: " + callingType->getClassName(), field_name);
+				sa.reportError("No such class: " + callingType->getClassName(), field_name);
 		}
 		else
-			sa.printError("Cannot access a field on a primitive or array type.", field_name);
+			sa.reportError("Cannot access a field on a primitive or array type.", field_name);
 
 		return shptr<ast::Type>();
 
@@ -60,12 +60,12 @@ namespace ast
 		//				return field_def->getType();
 		//			else
 		//			{
-		//				sa.printError(callingType->getName() + " has no field with the name " + field_name->getName(),
+		//				sa.reportError(callingType->getName() + " has no field with the name " + field_name->getName(),
 		//				              field_name);
 		//			}
 		//		}
 		//		else
-		//			sa.printError("Cannot invoke a field on a primitive or array type.", field_name);
+		//			sa.reportError("Cannot invoke a field on a primitive or array type.", field_name);
 
 		//		return shptr<ast::Type>();
 	}

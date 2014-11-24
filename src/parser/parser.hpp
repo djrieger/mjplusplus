@@ -82,7 +82,7 @@ class Parser
 		/**
 		 * Prints an error message, prepending current token position
 		 */
-		void printError(std::string const& error_msg);
+		void reportError(std::string const& error_msg);
 
 		/*
 		 * Precedences of all operators, associativity is stored implicitly

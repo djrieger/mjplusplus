@@ -26,17 +26,17 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
-		sa.printError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.", type_and_name->getIdent());
+		sa.reportError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.", type_and_name->getIdent());
 
 	auto type = type_and_name->getType();
 	auto primitiveType = type->getPrimitiveType();
 
 	// We have a reference type. Find corresponding class in class table:
 	if (primitiveType == Type::Primitive_type::NONE && sa.getClassTable().find(type->getClassName()) == sa.getClassTable().end())
-		sa.printError("Type \033[1m" + type->getClassName() + "\033[0m used as field type undeclared.", type->getClassNameIdent());
+		sa.reportError("Type \033[1m" + type->getClassName() + "\033[0m used as field type undeclared.", type->getClassNameIdent());
 
 	if (primitiveType == Type::Primitive_type::VOID)
-		sa.printError("Cannot have a field with void as base type.");
+		sa.reportError("Cannot have a field with void as base type.");
 
 	// insert this field into symbol table of this class
 	auto definition = std::make_shared<Definition>(symbol, type);
@@ -57,13 +57,13 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 
 	//	// check if a field with the same name already exists
 	//	if (symbolTable->definedInCurrentScope(symbol))
-	//		sa.printError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.", type_and_name->getIdent());
+	//		sa.reportError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.", type_and_name->getIdent());
 
 	//	auto type = type_and_name->getType();
 	//	auto primitiveType = type->getPrimitiveType();
 
 	//	if (primitiveType == Type::Primitive_type::VOID)
-	//		sa.printError("Field " + type_and_name->getName() + " cannot have type void.", type_and_name->getIdent());
+	//		sa.reportError("Field " + type_and_name->getName() + " cannot have type void.", type_and_name->getIdent());
 	//	else
 	//	{
 	//		if (primitiveType == Type::Primitive_type::NONE)
@@ -73,7 +73,7 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 
 	//			// not in class table:
 	//			if (iter == sa.getClassTable().end())
-	//				sa.printError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
+	//				sa.reportError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
 	//		}
 	//	}
 
