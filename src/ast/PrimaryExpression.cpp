@@ -19,7 +19,7 @@ namespace ast
 			return {false, false};
 		}
 
-		Bool::Bool(bool value) : value(value)
+		Bool::Bool(bool value, source_position_t position) : value(value), PositionAwareNode(position)
 		{
 			;
 		}
@@ -46,7 +46,7 @@ namespace ast
 			return {true, value};
 		}
 
-		Ident::Ident(shptr<ast::Ident> identifier) : identifier(identifier)
+		Ident::Ident(shptr<ast::Ident> identifier) : identifier(identifier), PositionAwareNode(identifier->getPosition())
 		{
 		}
 
@@ -100,7 +100,7 @@ namespace ast
 					//sa.reportError("No current definition for " + identifier->getName(), identifier);
 				}
 
-				sa.reportError("Symbol not defined!");
+				sa.reportError("Symbol not defined!", identifier);
 				return shptr<ast::Type>();
 			}
 
@@ -165,8 +165,7 @@ namespace ast
 			return true;
 		}
 
-
-		Object::Object(Object_Type object_type) : object_type(object_type)
+		Object::Object(Object_Type object_type, source_position_t position) : object_type(object_type), PositionAwareNode(position)
 		{
 		}
 
@@ -205,8 +204,9 @@ namespace ast
 			return false;
 		}
 
-		Integer::Integer(std::string const& string_value)
-			: string_value(string_value)
+
+		Integer::Integer(std::string const& string_value, source_position_t position)
+			: string_value(string_value), PositionAwareNode(position)
 		{
 
 		}
@@ -226,7 +226,7 @@ namespace ast
 
 			if (value > 2147483648ULL)
 			{
-				sa.reportError("Integer literal too large");
+				sa.reportError("Integer literal too large", this->getPosition());
 				return std::make_shared<Type>(Type::INT);
 			}
 			else if (value == 2147483648ULL)
@@ -247,7 +247,8 @@ namespace ast
 
 		NewArrayExpression::NewArrayExpression(shptr<Type> type, shptr<Expression> expr) :
 			type(type),
-			expr(expr)
+			expr(expr),
+			PositionAwareNode(expr->getPosition())
 		{
 
 		}
@@ -263,11 +264,11 @@ namespace ast
 					if (sa.isTypeDefined(type))
 						return type;
 					else
-						sa.reportError("Type " + type->getName() + " not defined!");
+						sa.reportError("Type " + type->getName() + " not defined!", expr);
 
 				}
 				else
-					sa.reportError("Array size needs to be an integer type.");
+					sa.reportError("Array size needs to be an integer type.", expr);
 			}
 
 			return shptr<Type>();
@@ -286,7 +287,7 @@ namespace ast
 			return false;
 		}
 
-		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : identifier(identifier)
+		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : identifier(identifier), PositionAwareNode(identifier->getPosition())
 		{
 
 		}
@@ -306,7 +307,7 @@ namespace ast
 				return type;
 			else
 			{
-				sa.reportError("Type " + type->getName() + " not defined!");
+				sa.reportError("Type " + type->getName() + " not defined!", identifier);
 				return shptr<Type>();
 			}
 		}
@@ -323,7 +324,8 @@ namespace ast
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
 			Ident(identifier),
-			arguments(arguments)
+			arguments(arguments),
+			PositionAwareNode(identifier->getPosition())
 		{
 
 		}
@@ -343,7 +345,7 @@ namespace ast
 
 			if (!definition)
 			{
-				sa.reportError("Symbol not defined!");
+				sa.reportError("Symbol not defined!", this->identifier);
 				return shptr<ast::Type>();
 			}
 

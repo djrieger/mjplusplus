@@ -4,7 +4,11 @@ ast::PositionAwareNode::PositionAwareNode(lexer::Token const& token): position(t
 {
 }
 
-std::pair<unsigned int, unsigned int> ast::PositionAwareNode::getPosition() const
+ast::PositionAwareNode::PositionAwareNode(source_position_t position): position(position)
+{
+}
+
+source_position_t ast::PositionAwareNode::getPosition() const
 {
 	return position;
 }

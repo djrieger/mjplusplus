@@ -6,7 +6,7 @@ namespace ast
 	namespace ue
 	{
 		UnaryExpression::UnaryExpression(shptr<Expression> child, int size)
-			: child(child), size(size)
+			: child(child), size(size), PositionAwareNode(child->getPosition())
 		{
 
 		}
@@ -83,7 +83,7 @@ namespace ast
 		}
 
 		Not::Not(shptr<Expression> child, int size)
-			: UnaryExpression::UnaryExpression(child, size)
+			: UnaryExpression::UnaryExpression(child, size), PositionAwareNode(child->getPosition())
 		{
 			;
 		}
@@ -97,7 +97,7 @@ namespace ast
 				if (child_type->isBool())
 					return child_type;
 				else
-					sa.reportError(child_type->getName() + " is not boolean.");
+					sa.reportError(child_type->getName() + " is not boolean.", child);
 			}
 
 			return shptr<Type>();
@@ -119,7 +119,7 @@ namespace ast
 		}
 
 		Neg::Neg(shptr<Expression> child, int size)
-			: UnaryExpression::UnaryExpression(child, size)
+			: UnaryExpression::UnaryExpression(child, size), PositionAwareNode(child->getPosition())
 		{
 			;
 		}
@@ -135,7 +135,7 @@ namespace ast
 				else if (child_type->getDimension() == 0 && *child_type == Type::Primitive_type::INT_NEG_ONLY)
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError(child_type->getName() + " is not an integer.");
+					sa.reportError(child_type->getName() + " is not an integer.", child);
 			}
 
 			return shptr<Type>();

@@ -372,9 +372,12 @@ shptr<ast::Statement> Parser::parseStatement()
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_RETURN:
+		{
+			auto returnKeywordPosition = current.position;
 			nextToken();
-			return parseReturnStatement();
+			return parseReturnStatement(returnKeywordPosition);
 			break;
+		}
 
 		// IDENT, (, -, !, null, false, true, INTEGER_LITERAL, this, new
 		case lexer::Token::Token_type::TOKEN_IDENT:
@@ -553,7 +556,7 @@ shptr<ast::WhileStatement> Parser::parseWhileStatement()
 // ReturnStatement -> OptionalExpression ; .
 // OptionalExpression -> Expression
 //  	| .
-shptr<ast::ReturnStatement> Parser::parseReturnStatement()
+shptr<ast::ReturnStatement> Parser::parseReturnStatement(source_position_t returnKeywordPosition)
 {
 	if (current.token_type != lexer::Token::Token_type::OPERATOR_SEMICOLON)
 	{
@@ -563,7 +566,7 @@ shptr<ast::ReturnStatement> Parser::parseReturnStatement()
 	}
 
 	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
-	return std::make_shared<ast::ReturnStatement>();
+	return std::make_shared<ast::ReturnStatement>(returnKeywordPosition);
 }
 
 /*
@@ -665,27 +668,27 @@ shptr<ast::Expression> Parser::parsePrimaryExpression()
 	switch (current.token_type)
 	{
 		case lexer::Token::Token_type::KEYWORD_FALSE:
-			pe = std::make_shared<ast::pe::Bool>(false);
+			pe = std::make_shared<ast::pe::Bool>(false, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_TRUE:
-			pe = std::make_shared<ast::pe::Bool>(true);
+			pe = std::make_shared<ast::pe::Bool>(true, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_NULL:
-			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::NULL_OBJECT);
+			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::NULL_OBJECT, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::KEYWORD_THIS:
-			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::THIS_OBJECT);
+			pe = std::make_shared<ast::pe::Object>(ast::pe::Object::Object_Type::THIS_OBJECT, current.position);
 			nextToken();
 			break;
 
 		case lexer::Token::Token_type::TOKEN_INT_LIT:
-			pe = std::make_shared<ast::pe::Integer>(*current.string_value);
+			pe = std::make_shared<ast::pe::Integer>(*current.string_value, current.position);
 			nextToken();
 			break;
 

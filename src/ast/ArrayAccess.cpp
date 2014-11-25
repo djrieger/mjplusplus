@@ -26,10 +26,10 @@ namespace ast
 				if (callingType->getDimension() > 0)
 					return callingType->de_array();
 				else
-					sa.reportError("Trying to perform an array access on non-array type.");
+					sa.reportError("Trying to perform an array access on non-array type.", access_offset);
 			}
 			else
-				sa.reportError("Trying to perform an array access with a non-int expression.");
+				sa.reportError("Trying to perform an array access with a non-int expression.", access_offset);
 		}
 
 		return shptr<Type>();
