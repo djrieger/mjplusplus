@@ -14,7 +14,7 @@
 
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK};
+	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS};
 	static const option::Descriptor usage[] =
 	{
 		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
@@ -23,6 +23,7 @@ int main(int argc, const char** argv)
 		{LEXTEST, 0, "", "lextest", option::Arg::None, "  --lextest\tOnly run the lexer on the input FILE."},
 		{PRINT_AST, 0, "", "print-ast", option::Arg::None, "  --print-ast\tPretty prints the content of the abstract syntax tree after a file has been parsed."},
 		{CHECK, 0, "", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
+		{SUPPRESS_ERRORS, 0, "", "suppress-errors", option::Arg::None, "--suppress-errors\tprevents any errors from being printed"},
 		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
 		{0, 0, 0, 0, 0, 0}
 	};
@@ -57,13 +58,14 @@ int main(int argc, const char** argv)
 		num_options += options[begin] ? 1 : 0;
 
 	// require exactly one of the options
-	if (num_options <= 1)
+	if (num_options <= 2)
 	{
-		if (argc - num_options != 1)
+		/*
+		if (argc - num_options != 2)
 		{
 			std::cout << "Missing file." << std::endl;
 			return EXIT_FAILURE;
-		}
+		}*/
 
 		std::string file_name = argv[argc - 1];
 		lexer::Stateomat stateomat;
@@ -84,7 +86,7 @@ int main(int argc, const char** argv)
 
 		try
 		{
-			auto errorReporter = std::make_shared<ErrorReporter>(file_name);
+			auto errorReporter = std::make_shared<ErrorReporter>(file_name, !options[SUPPRESS_ERRORS]);
 			lexer::Lexer lexer(file_name.c_str(), stateomat, errorReporter);
 
 
