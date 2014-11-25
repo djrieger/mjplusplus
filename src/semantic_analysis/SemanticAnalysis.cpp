@@ -5,6 +5,9 @@
 
 SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorReporter> errorReporter): errorReporter(errorReporter), valid(true), root(program), /*symboltable(),*/ classTable() {}
 
+// TODO:
+// Remove this method as soon as possible
+
 void SemanticAnalysis::reportError(std::string message)
 {
 	valid = false;
@@ -37,6 +40,11 @@ bool SemanticAnalysis::insertClass(const std::string& className, shptr<ast::Clas
 {
 	return classTable.insert({className, {node, std::make_shared<SymbolTable>(), std::make_shared<FieldTable>(), std::make_shared<MethodTable>()}}).second;
 }
+/*
+shptr<SymbolTable> SemanticAnalysis::getSymbolTable() const
+{
+	return this->symboltable;
+}*/
 
 std::unordered_map<std::string, SemanticAnalysis::ClassTableItem> const& SemanticAnalysis::getClassTable() const
 {
