@@ -49,7 +49,7 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	//md_node.reset(this);
 	auto param_types = std::make_shared<vec<shptr<ast::Type>>>();
 
-	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Dummy"), {0, 0}};
+	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("void"), { -1, 0}};
 	auto p = std::make_shared<Ident>(dit);
 	param_types->push_back(std::make_shared<ast::Type>(p));
 	ct[class_name].methodTable->insertMethod(return_type_and_name->getName(), md_node, returnType, param_types);
@@ -82,7 +82,7 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	//collectParameters(sa, symbolTable);
 	auto parameter = (*parameters)[0];
 	auto paramSymbol = Symbol::makeSymbol(parameter->getName(), shptr<Scope>());
-	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Dummy"), {0, 0}};
+	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("void"), { -1, 0}};
 	auto p = std::make_shared<Ident>(dit);
 	auto param_type = std::make_shared<ast::Type>(p);
 	auto paramDefinition = std::make_shared<Definition>(paramSymbol, param_type);
