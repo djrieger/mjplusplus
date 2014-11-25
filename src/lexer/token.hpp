@@ -70,13 +70,13 @@ namespace lexer
 			/** this token's string value */
 			std::string const* string_value;
 			/** position of current token in source file (line, column) */
-			std::pair<unsigned int, unsigned int> position;
+			source_position_t position;
 
 			/** construct Token and insert string_value into stringTable */
-			Token(Token_type const& token_type, std::string const& string_value, std::pair<unsigned int, unsigned int> const& position);
+			Token(Token_type const& token_type, std::string const& string_value, source_position_t const& position);
 
 			/** constructor to skip lookup of string_value in stringTable. string_value MUST BE in stringTable already */
-			Token(Token_type const& token_type, std::string const* string_value, std::pair<unsigned int, unsigned int> const& position);
+			Token(Token_type const& token_type, std::string const* string_value, source_position_t const& position);
 
 			/** prints a string representation of this token */
 			void print() const;

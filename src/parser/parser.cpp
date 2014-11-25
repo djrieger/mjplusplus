@@ -559,7 +559,7 @@ shptr<ast::WhileStatement> Parser::parseWhileStatement()
 // ReturnStatement -> OptionalExpression ; .
 // OptionalExpression -> Expression
 //  	| .
-shptr<ast::ReturnStatement> Parser::parseReturnStatement(std::pair<unsigned int, unsigned int> returnKeywordPosition)
+shptr<ast::ReturnStatement> Parser::parseReturnStatement(source_position_t returnKeywordPosition)
 {
 	if (current.token_type != lexer::Token::Token_type::OPERATOR_SEMICOLON)
 	{

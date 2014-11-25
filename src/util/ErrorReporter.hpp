@@ -23,7 +23,7 @@ class ErrorReporter
 		 * @error_msg Error message to be printed
 		 * @position line and column where the error occurred
 		 */
-		void recordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<unsigned int, unsigned int> position);
+		void recordError(ErrorReporter::ErrorType type, std::string const& error_msg, source_position_t position);
 		/*
 		 * Record an error without a position in the errors multimap
 		 *

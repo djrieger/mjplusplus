@@ -24,7 +24,7 @@ namespace ast
 			private:
 				bool value;
 			public:
-				Bool(bool value, std::pair<unsigned int, unsigned int> position);
+				Bool(bool value, source_position_t position);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
@@ -51,7 +51,7 @@ namespace ast
 					THIS_OBJECT
 				};
 
-				Object(Object_Type object_type, std::pair<unsigned int, unsigned int> position);
+				Object(Object_Type object_type, source_position_t position);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
@@ -64,7 +64,7 @@ namespace ast
 			private:
 				std::string const& string_value;
 			public:
-				Integer(std::string const& string_value, std::pair<unsigned int, unsigned int> position);
+				Integer(std::string const& string_value, source_position_t position);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;

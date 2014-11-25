@@ -12,7 +12,7 @@ namespace lexer
 	{
 		protected:
 			/** current lexer position in file (line, column) */
-			std::pair<unsigned int, unsigned int> position;
+			source_position_t position;
 			/** stateomat holds the transition informations */
 			Stateomat stateomat;
 			/**
