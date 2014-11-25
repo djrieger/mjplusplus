@@ -7,7 +7,7 @@ fi
 
 FAST=false
 FASTOPTION=""
-if [ "$1" == "--fast" ]; then
+if [ "$1" = "--fast" ] ; then
 	echo "Ignoring files named big.mj and suppressing error printing..."
 	FAST=true
 	FASTOPTION="--fast"

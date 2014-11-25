@@ -9,9 +9,10 @@
 
 namespace ast
 {
-	class Expression : public Node, virtual public PositionAwareNode
+	class Expression : public Node, public PositionAwareNode
 	{
 		public:
+			Expression(source_position_t position);
 			/**
 			* Idea:
 			* When getting the type of an Expression, the Expression checks if it's own

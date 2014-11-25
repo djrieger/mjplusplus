@@ -4,7 +4,7 @@ ast::PositionAwareNode::PositionAwareNode(lexer::Token const& token): position(t
 {
 }
 
-ast::PositionAwareNode::PositionAwareNode(source_position_t position): position(position)
+ast::PositionAwareNode::PositionAwareNode(source_position_t const& position): position(position)
 {
 }
 

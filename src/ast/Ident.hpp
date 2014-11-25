@@ -8,7 +8,7 @@
 
 namespace ast
 {
-	class Ident : public Node, virtual public PositionAwareNode
+	class Ident : public Node, public PositionAwareNode
 	{
 		private:
 			std::string const& string_value;

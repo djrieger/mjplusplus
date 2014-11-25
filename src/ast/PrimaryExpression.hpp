@@ -15,6 +15,8 @@ namespace ast
 	{
 		class PrimaryExpression : public Expression
 		{
+			public:
+				PrimaryExpression(source_position_t position);
 				virtual bool standalone() const;
 				virtual std::pair<bool, bool> constBool() const;
 		};
