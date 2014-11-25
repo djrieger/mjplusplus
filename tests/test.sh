@@ -5,10 +5,12 @@ if [ \! -x ../mj++ ] ; then
 	exit
 fi
 
-SKIP_BIG_TESTS=false
-if [ "$1" == "--skip-big-tests" ]; then
-	echo "Ignoring files named big.mj..."
-	SKIP_BIG_TESTS=true
+FAST=false
+FASTOPTION=""
+if [ "$1" == "--fast" ]; then
+	echo "Ignoring files named big.mj and suppressing error printing..."
+	FAST=true
+	FASTOPTION="--fast"
 fi
 
 TEST_PASSED=true
@@ -20,12 +22,12 @@ runTest() {
 
 	for i in $1/* ; do
 		# skip big tests if option is given:
-		if [ $SKIP_BIG_TESTS = true -a -z "${i##*big.mj}" ]; then
+		if [ $FAST = true -a -z "${i##*big.mj}" ]; then
 			continue
 		fi
 
 		# run test
-		../mj++ $2 $i > /dev/null 2> /dev/null
+		../mj++ $2 $FASTOPTION $i > /dev/null 2> /dev/null
 		ret=$?
 		if [ $ret -eq 0 ] ; then
 			succeeded=$((succeeded + 1))

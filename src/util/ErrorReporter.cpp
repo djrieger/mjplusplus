@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "ErrorReporter.hpp"
 
-ErrorReporter::ErrorReporter(std::string const& file_name): file_name(file_name)
+ErrorReporter::ErrorReporter(std::string const& file_name, bool recordErrors): file_name(file_name), recordErrors(recordErrors)
 {
 
 }
@@ -12,17 +12,22 @@ void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const
 	if (position.first == 0)
 		throw "Invalid line number 0 for error " + error_msg;
 
-	errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(position, std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
+	if (recordErrors)
+		errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(position, std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
 }
 
 void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg)
 {
-	errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(std::pair<int, unsigned int>(-1, 1), std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
+	if (recordErrors)
+		errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(std::pair<int, unsigned int>(-1, 1), std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
 }
 
 
 void ErrorReporter::printErrors() const
 {
+	if (!recordErrors)
+		return;
+
 	std::ifstream is(file_name);
 	unsigned int lineNumber = 1;
 	std::string lineOfCode;

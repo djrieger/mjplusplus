@@ -38,7 +38,7 @@ class ErrorReporter
 		/*
 		 * Initialize ErrorReporter for source file with name file_name
 		 */
-		ErrorReporter(std::string const& file_name);
+		ErrorReporter(std::string const& file_name, bool recordErrors);
 
 		static std::string formatType(std::string const& typeName);
 		static std::string formatIdent(std::string const& typeName);
@@ -55,9 +55,12 @@ class ErrorReporter
 		 * name of input file
 		 */
 		std::string const& file_name;
+		/*
+		 * Whether to record errors
+		 */
+		bool recordErrors;
 
-		static  std::unordered_map<std::string, std::string> escapeCodes;
-
+		static std::unordered_map<std::string, std::string> escapeCodes;
 };
 
 #endif
