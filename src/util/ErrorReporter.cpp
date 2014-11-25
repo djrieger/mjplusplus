@@ -9,6 +9,9 @@ ErrorReporter::ErrorReporter(std::string const& file_name): file_name(file_name)
 
 void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg, source_position_t position)
 {
+	if (position.first == 0)
+		throw "Invalid line number 0 for error " + error_msg;
+
 	errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(position, std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
 }
 
@@ -49,7 +52,7 @@ void ErrorReporter::printErrors() const
 			//at this point: error.first.first >= 0
 			unsigned int currentLine = (unsigned int) error.first.first;
 
-			while (lineNumber != currentLine)
+			while (lineNumber < currentLine)
 			{
 				getline(is, lineOfCode);
 				lineNumber++;
