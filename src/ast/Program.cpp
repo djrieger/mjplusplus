@@ -58,12 +58,12 @@ void ast::Program::addPseudoClasses()
 
 	// void println
 	auto prt = std::make_shared<Type>(ast::Type::Primitive_type::VOID);
-	lexer::Token prit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("println"), {0, 0}};
+	lexer::Token prit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("println"), { -1, 0}};
 	auto pri = std::make_shared<Ident>(prit);
 	auto pr = std::make_shared<TypeIdent>(prt, pri);
 	// int i
 	auto pat = std::make_shared<Type>(ast::Type::Primitive_type::INT);
-	lexer::Token pait {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("i"), {0, 0}};
+	lexer::Token pait {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("i"), { -1, 0}};
 	auto pai = std::make_shared<Ident>(pait);
 	auto pa = std::make_shared<std::vector<shptr<TypeIdent>>>();
 	pa->push_back(std::make_shared<TypeIdent>(pat, pai));
@@ -72,27 +72,21 @@ void ast::Program::addPseudoClasses()
 	p->push_back(std::make_shared<MethodDeclaration>(pr, pa, shptr<ast::Statement>()));
 
 	// class $out
-	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), {0, 0}};
+	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), { -1, 0}};
 	auto oi = std::make_shared<Ident>(oit);
 	auto o = std::make_shared<ClassDeclaration>(oi, p);
 	classes->push_back(o);
 
 	// #out out
 	auto ft = std::make_shared<Type>(oi);
-	lexer::Token fnt {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("out"), {0, 0}};
+	lexer::Token fnt {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("out"), { -1, 0}};
 	auto fn = std::make_shared<Ident>(fnt);
 	auto f = std::make_shared<std::vector<shptr<ClassMember>>>();
 	f->push_back(std::make_shared<FieldDeclaration>(std::make_shared<TypeIdent>(ft, fn)));
 
 	// class $System
-	lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), {0, 0}};
+	lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
 	auto si = std::make_shared<Ident>(sit);
 	auto s = std::make_shared<ClassDeclaration>(si, f);
 	classes->push_back(s);
-
-	// class $Dummy
-	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Dummy"), {0, 0}};
-	auto di = std::make_shared<Ident>(dit);
-	auto d = std::make_shared<ClassDeclaration>(di, std::make_shared<std::vector<shptr<ClassMember>>>());
-	classes->push_back(d);
 }

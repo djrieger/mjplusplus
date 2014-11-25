@@ -71,12 +71,10 @@ void ErrorReporter::printErrors() const
 
 			std::cerr << " at line " << error.first.first << ", column " << error.first.second << ": " << error.second.second << std::endl;
 			// output input line where error occurred and markerline
-			auto minPos = std::max(((int)error.first.second) - 50, 0);
-			auto length = std::min(100, (int)lineOfCode.length());
-			auto leading_dots = (minPos > 0) ? "... " : "";
-			auto trailing_dots = (length == 100) ? " ..." : "";
-			std::cerr << leading_dots << lineOfCode.substr(minPos, length) << trailing_dots << std::endl;
-			std::cerr << leading_dots << markerline.substr(minPos, length) << trailing_dots << std::endl;
+			auto minPos = lineOfCode.length() >= 100U && error.first.second > 50U ? error.first.second - 50U : 0U;
+			auto length = std::min<size_t>(100U, lineOfCode.length());
+			std::cerr << (minPos ? "... " : "") << lineOfCode.substr(minPos, length) << (length == 100U ? " ..." : "") << std::endl;
+			std::cerr << (minPos ? "    " : "") << markerline.substr(minPos, length) << std::endl;
 		}
 	}
 

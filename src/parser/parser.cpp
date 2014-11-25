@@ -4,7 +4,7 @@
 #include "../globals.hpp"
 #include "parser.hpp"
 
-Parser::Parser(lexer::Lexer& lexer, shptr<ErrorReporter> errorReporter) : lexer(lexer), errorReporter(errorReporter), current {lexer::Token::Token_type::TOKEN_ERROR, "", {0, 0}}
+Parser::Parser(lexer::Lexer& lexer, shptr<ErrorReporter> errorReporter) : lexer(lexer), errorReporter(errorReporter), current {lexer::Token::Token_type::TOKEN_ERROR, "", { -1, 0}}
 {
 }
 

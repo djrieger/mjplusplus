@@ -47,7 +47,8 @@ int main(int argc, const char** argv)
 
 	if (argc == 0)
 	{
-		std::cerr << "No file specified for compilation. Use -h or --help for help." << std::endl;
+		std::cerr << "No file specified for compilation" << std::endl << std::endl;
+		option::printUsage(std::cout, usage);
 		return EXIT_FAILURE;
 	}
 
@@ -134,7 +135,6 @@ int main(int argc, const char** argv)
 		catch (std::string msg)
 		{
 			std::cout << msg << std::endl;
-			option::printUsage(std::cout, usage);
 			return EXIT_FAILURE;
 		}
 
