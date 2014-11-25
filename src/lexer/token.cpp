@@ -6,13 +6,13 @@ namespace lexer
 {
 	std::unordered_map<std::string, shptr<Symbol>> Token::stringTable;
 
-	Token::Token(Token_type const& token_type, std::string const& string_value, std::pair<unsigned int, unsigned int> const& position)
+	Token::Token(Token_type const& token_type, std::string const& string_value, source_position_t const& position)
 		: token_type(token_type), string_value(&getTableReference(string_value)), position(position)
 	{
 		;
 	}
 
-	Token::Token(Token_type const& token_type, std::string const* string_value, std::pair<unsigned int, unsigned int> const& position)
+	Token::Token(Token_type const& token_type, std::string const* string_value, source_position_t const& position)
 		: token_type(token_type), string_value(string_value), position(position)
 	{
 		;

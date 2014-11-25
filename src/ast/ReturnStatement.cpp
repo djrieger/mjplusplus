@@ -2,12 +2,12 @@
 #include "ReturnStatement.hpp"
 
 ast::ReturnStatement::ReturnStatement(shptr<Expression> expression):
-	expression(expression)
+	expression(expression), PositionAwareNode(expression->getPosition())
 {
 
 }
 
-ast::ReturnStatement::ReturnStatement()
+ast::ReturnStatement::ReturnStatement(source_position_t position): PositionAwareNode(position)
 {
 
 }
@@ -33,7 +33,7 @@ bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 	if (expression)
 	{
 		if (*ret_type == *expr_type)
-			sa.reportError("Method returns void, but return statement has expression.");
+			sa.reportError("Method returns void, but return statement has expression.", this->expression);
 		else
 		{
 			expr_type = expression->get_type(sa, symbolTable);
@@ -42,12 +42,12 @@ bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 			{
 				if (!(*ret_type == *expr_type ||
 				        (ret_type->isRefType() && expr_type->getPrimitiveType() == ast::Type::Primitive_type::NULL_TYPE)))
-					sa.reportError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type->getName());
+					sa.reportError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type->getName(), this->expression);
 			}
 		}
 	}
 	else if (*ret_type != *expr_type)
-		sa.reportError("Method returns " + ret_type->getName() + ", but return statement misses expression");
+		sa.reportError("Method returns " + ret_type->getName() + ", but return statement misses expression", this->getPosition());
 
 	return true;
 }

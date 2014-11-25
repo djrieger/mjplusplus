@@ -36,7 +36,7 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 		sa.reportError("Type \033[1m" + type->getClassName() + "\033[0m used as field type undeclared.", type->getClassNameIdent());
 
 	if (primitiveType == Type::Primitive_type::VOID)
-		sa.reportError("Cannot have a field with void as base type.");
+		sa.reportError("Cannot have a field with void as base type.", type_and_name->getIdent());
 
 	// insert this field into symbol table of this class
 	auto definition = std::make_shared<Definition>(symbol, type);

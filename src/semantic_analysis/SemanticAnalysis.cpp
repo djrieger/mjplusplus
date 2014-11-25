@@ -7,6 +7,7 @@ SemanticAnalysis::SemanticAnalysis(shptr<ast::Program> program, shptr<ErrorRepor
 
 // TODO:
 // Remove this method as soon as possible
+
 void SemanticAnalysis::reportError(std::string message)
 {
 	valid = false;
@@ -15,8 +16,13 @@ void SemanticAnalysis::reportError(std::string message)
 
 void SemanticAnalysis::reportError(std::string message, shptr<ast::PositionAwareNode> node)
 {
+	reportError(message, node->getPosition());
+}
+
+void SemanticAnalysis::reportError(std::string message, source_position_t position)
+{
 	valid = false;
-	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, message, node->getPosition());
+	errorReporter->recordError(ErrorReporter::ErrorType::SEMANTIC, message, position);
 }
 
 bool SemanticAnalysis::start()

@@ -7,7 +7,7 @@ namespace ast
 	{
 
 		BinaryExpression::BinaryExpression(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: leftChild(leftChild), rightChild(rightChild)
+			: leftChild(leftChild), rightChild(rightChild), PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -114,7 +114,8 @@ namespace ast
 		}
 
 		NotEq::NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -143,7 +144,7 @@ namespace ast
 					        && leftType->isRefType(true))
 						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 
-					sa.reportError("Incompatible types for not-equal comparison.");
+					sa.reportError("Incompatible types for not-equal comparison.", leftChild);
 				}
 			}
 
@@ -163,7 +164,8 @@ namespace ast
 
 
 		Mult::Mult(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -183,14 +185,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one mult variable is a non-integer.");
+					sa.reportError("At least one mult variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		Plus::Plus(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -210,14 +213,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one addition variable is a non-integer.");
+					sa.reportError("At least one addition variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		Minus::Minus(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -237,14 +241,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one subtraction variable is a non-integer.");
+					sa.reportError("At least one subtraction variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		Slash::Slash(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -264,14 +269,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one division variable is a non-integer.");
+					sa.reportError("At least one division variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		LessThanEq::LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -291,14 +297,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		LessThan::LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -318,14 +325,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		EqEq::EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -354,7 +362,7 @@ namespace ast
 					        && leftType->isRefType(true))
 						return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 
-					sa.reportError("Incompatible types for equal comparison.");
+					sa.reportError("Incompatible types for equal comparison.", leftChild);
 				}
 			}
 
@@ -373,7 +381,8 @@ namespace ast
 		}
 
 		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -398,18 +407,18 @@ namespace ast
 						if (leftType->isRefType())
 							return leftType;
 						else
-							sa.reportError("Cannot assign null to non-reference type " + leftType->getName());
+							sa.reportError("Cannot assign null to non-reference type " + leftType->getName(), leftChild);
 					}
 					else
 					{
 						if (*leftType == *rightType)
 							return leftType;
 						else
-							sa.reportError("Mismatched Types: " + leftType->getName() + " and " + rightType->getName());
+							sa.reportError("Mismatched Types: " + leftType->getName() + " and " + rightType->getName(), leftChild);
 					}
 				}
 				else
-					sa.reportError("Cannot assign to an expression that is not an l-value");
+					sa.reportError("Cannot assign to an expression that is not an l-value", leftChild);
 			}
 
 			return shptr<Type>();
@@ -422,7 +431,8 @@ namespace ast
 		}
 
 		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -442,14 +452,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		GreaterThan::GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -469,14 +480,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		Mod::Mod(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -496,14 +508,15 @@ namespace ast
 				if (leftType->isInteger() && rightType->isInteger())
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
 		}
 
 		AndAnd::AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -523,7 +536,7 @@ namespace ast
 				if (leftType->isBool() && rightType->isBool())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -541,7 +554,8 @@ namespace ast
 		}
 
 		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}
@@ -561,7 +575,7 @@ namespace ast
 				if (leftType->isBool() && rightType->isBool())
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
-					sa.reportError("At least one variable is a non-integer.");
+					sa.reportError("At least one variable is a non-integer.", leftChild);
 			}
 
 			return shptr<Type>();
@@ -578,7 +592,8 @@ namespace ast
 		}
 
 		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)
-			: BinaryExpression::BinaryExpression(leftChild, rightChild)
+			: BinaryExpression::BinaryExpression(leftChild, rightChild),
+			  PositionAwareNode(leftChild->getPosition())
 		{
 			;
 		}

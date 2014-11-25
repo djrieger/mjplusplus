@@ -110,7 +110,7 @@ class Parser
 		shptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
 		shptr<ast::IfStatement> parseIfStatement();
 		shptr<ast::WhileStatement> parseWhileStatement();
-		shptr<ast::ReturnStatement> parseReturnStatement();
+		shptr<ast::ReturnStatement> parseReturnStatement(source_position_t position);
 
 		shptr<ast::Expression> parseExpression();
 		shptr<ast::Expression> precedenceClimb(int minPrec);
