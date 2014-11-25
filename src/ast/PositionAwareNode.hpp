@@ -16,14 +16,14 @@ namespace ast
 	class PositionAwareNode
 	{
 		protected:
-			std::pair<unsigned int, unsigned int> position;
+			source_position_t position;
 		public:
-			std::pair<unsigned int, unsigned int> getPosition() const;
+			source_position_t getPosition() const;
 			/*
 			 * Stores the position of this token
 			 */
 			PositionAwareNode(lexer::Token const& token);
-			PositionAwareNode(std::pair<unsigned int, unsigned int> position);
+			PositionAwareNode(source_position_t position);
 	};
 }
 

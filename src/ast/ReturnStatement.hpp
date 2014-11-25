@@ -14,7 +14,7 @@ namespace ast
 			shptr<Expression> expression;
 
 		public:
-			ReturnStatement(std::pair<unsigned int, unsigned int> position);
+			ReturnStatement(source_position_t position);
 			ReturnStatement(shptr<Expression> expression);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
