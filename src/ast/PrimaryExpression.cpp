@@ -8,18 +8,22 @@ namespace ast
 {
 	namespace pe
 	{
+		PrimaryExpression::PrimaryExpression(source_position_t position) : Expression(position)
+		{
+			;
+		}
+
 		bool PrimaryExpression::standalone() const
 		{
 			return false;
 		}
-
 
 		std::pair<bool, bool> PrimaryExpression::constBool() const
 		{
 			return {false, false};
 		}
 
-		Bool::Bool(bool value, source_position_t position) : value(value), PositionAwareNode(position)
+		Bool::Bool(bool value, source_position_t position) : PrimaryExpression(position), value(value)
 		{
 			;
 		}
@@ -46,7 +50,7 @@ namespace ast
 			return {true, value};
 		}
 
-		Ident::Ident(shptr<ast::Ident> identifier) : identifier(identifier), PositionAwareNode(identifier->getPosition())
+		Ident::Ident(shptr<ast::Ident> identifier) : PrimaryExpression(identifier->getPosition()), identifier(identifier)
 		{
 		}
 
@@ -165,7 +169,7 @@ namespace ast
 			return true;
 		}
 
-		Object::Object(Object_Type object_type, source_position_t position) : object_type(object_type), PositionAwareNode(position)
+		Object::Object(Object_Type object_type, source_position_t position) : PrimaryExpression(position), object_type(object_type)
 		{
 		}
 
@@ -206,7 +210,7 @@ namespace ast
 
 
 		Integer::Integer(std::string const& string_value, source_position_t position)
-			: string_value(string_value), PositionAwareNode(position)
+			: PrimaryExpression(position), string_value(string_value)
 		{
 
 		}
@@ -246,9 +250,9 @@ namespace ast
 		}
 
 		NewArrayExpression::NewArrayExpression(shptr<Type> type, shptr<Expression> expr) :
+			PrimaryExpression(expr->getPosition()),
 			type(type),
-			expr(expr),
-			PositionAwareNode(expr->getPosition())
+			expr(expr)
 		{
 
 		}
@@ -287,7 +291,7 @@ namespace ast
 			return false;
 		}
 
-		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : identifier(identifier), PositionAwareNode(identifier->getPosition())
+		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : PrimaryExpression(identifier->getPosition()), identifier(identifier)
 		{
 
 		}
@@ -324,8 +328,7 @@ namespace ast
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
 			Ident(identifier),
-			arguments(arguments),
-			PositionAwareNode(identifier->getPosition())
+			arguments(arguments)
 		{
 
 		}

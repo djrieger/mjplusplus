@@ -8,7 +8,7 @@
 
 namespace ast
 {
-	class ReturnStatement : public Statement, virtual public PositionAwareNode
+	class ReturnStatement : public Statement, public PositionAwareNode
 	{
 		private:
 			shptr<Expression> expression;

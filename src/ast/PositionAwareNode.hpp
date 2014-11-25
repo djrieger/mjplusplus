@@ -23,7 +23,7 @@ namespace ast
 			 * Stores the position of this token
 			 */
 			PositionAwareNode(lexer::Token const& token);
-			PositionAwareNode(source_position_t position);
+			PositionAwareNode(source_position_t const& position);
 	};
 }
 
