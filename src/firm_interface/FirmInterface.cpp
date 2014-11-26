@@ -3,6 +3,7 @@
 #include <cstring>
 #include "../ast/LVDStatement.hpp"
 #include "../ast/Block.hpp"
+#include "../visitors/MemberVisitor.hpp"
 
 FirmInterface::FirmInterface()
 {
@@ -46,14 +47,14 @@ ir_graph* FirmInterface::generateMethod(
 ir_graph *FirmInterface::generateClass(ir_type* owner, shptr<ast::ClassDeclaration const> classDeclaration)
 {
 	ir_type* classType = new_type_class(new_id_from_str(classDeclaration->getName().c_str()));
-/*
-	for (auto &member: *classType->getMembers())
+	MemberVisitor visitor(*this);
+	for (auto &member: *classDeclaration->getMembers())
 	{
-		//member.accept(visitor);
+		member->accept(visitor);
 		// TODO: Do something with result
 		//visitor.getResult();
 	}
-	*/
+	
 }
 
 void FirmInterface::foo()
