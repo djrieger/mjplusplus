@@ -1,2 +1,2 @@
 all:
-	g++ -std=c++14 main.cpp -o firmtest
+	g++ -std=c++14 main.cpp -lfirm -o firmtest
