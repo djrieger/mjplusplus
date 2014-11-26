@@ -44,41 +44,9 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 
 	// insert this field into the method table in the class table
 	auto ct = sa.getClassTable();
-	//shptr<FieldDeclaration> fd_node;
-	//fd_node.reset(this->enable_shared_from_this());
 	auto const foo = shared_from_this();
 	auto fd_node = std::static_pointer_cast<const FieldDeclaration>(foo);
-	//	const std::shared_ptr<FieldDeclaration> fd_node = this; //auto fd_node = std::make_shared<FieldDeclaration>(this);
-	//fd_node.reset(this);
 	ct[class_name].fieldTable->insertField(type_and_name->getName(), fd_node, type);
-
-
-	//	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
-
-	//	// check if a field with the same name already exists
-	//	if (symbolTable->definedInCurrentScope(symbol))
-	//		sa.reportError("Field with name \033[1m" + type_and_name->getName() + "\033[0m already declared.", type_and_name->getIdent());
-
-	//	auto type = type_and_name->getType();
-	//	auto primitiveType = type->getPrimitiveType();
-
-	//	if (primitiveType == Type::Primitive_type::VOID)
-	//		sa.reportError("Field " + type_and_name->getName() + " cannot have type void.", type_and_name->getIdent());
-	//	else
-	//	{
-	//		if (primitiveType == Type::Primitive_type::NONE)
-	//		{
-	//			// We have a reference type. Find corresponding class in class table:
-	//			auto iter = sa.getClassTable().find(type->getClassName());
-
-	//			// not in class table:
-	//			if (iter == sa.getClassTable().end())
-	//				sa.reportError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
-	//		}
-	//	}
-
-	//	auto definition = std::make_shared<Definition>(symbol, type);
-	//	symbolTable->insert(symbol, definition);
 }
 
 void ast::FieldDeclaration::analyze(SemanticAnalysis&, shptr<SymbolTable>) const

@@ -27,7 +27,7 @@ runTest() {
 		fi
 
 		# run test
-		../mj++ $2 $FASTOPTION $i > /dev/null 2> /dev/null
+		LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ $2 $FASTOPTION $i > /dev/null 2> /dev/null
 		ret=$?
 		if [ $ret -eq 0 ] ; then
 			succeeded=$((succeeded + 1))
@@ -62,7 +62,7 @@ runTestDiff() {
 	segfaults=0
 
 	for i in $1/*.mj ; do
-		../mj++ $2 $i | diff $i.output - > /dev/null
+		LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ $2 $i | diff $i.output - > /dev/null
 		ret=$?
 		if [ $ret -eq 0 ] ; then
 			succeeded=$((succeeded + 1))
