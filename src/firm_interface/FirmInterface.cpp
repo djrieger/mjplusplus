@@ -1,6 +1,6 @@
 #include "FirmInterface.hpp"
 
-FirmInterface::FirmInterface() 
+FirmInterface::FirmInterface()
 {
 	ir_init();
 	printf("Initialized libFirm Version: %d.%d\n",

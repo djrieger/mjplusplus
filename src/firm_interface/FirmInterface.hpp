@@ -5,7 +5,7 @@
 #include <libfirm/irdump.h>
 #include <libfirm/irverify.h>
 
-class FirmInterface 
+class FirmInterface
 {
 	public:
 		FirmInterface();
