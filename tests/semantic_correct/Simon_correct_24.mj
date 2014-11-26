@@ -1,0 +1,9 @@
+class a {
+	public static void main(String[] args) {}
+}
+
+class b {
+	public void x() {
+		System.out.println(1);
+	}
+}
