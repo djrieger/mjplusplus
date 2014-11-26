@@ -25,6 +25,7 @@ ir_graph* FirmInterface::generateMethod(
 	ir_type* methodType = new_type_method(paramsCount, hasReturnType);
 
 	int i = 0;
+
 	for (auto& param : *methodDeclaration->getParameters())
 	{
 		std::cout << "i=" << i << std::endl;
