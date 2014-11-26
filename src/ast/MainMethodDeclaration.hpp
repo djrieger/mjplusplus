@@ -15,6 +15,7 @@ namespace ast
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const;
 			virtual shptr<vec<shptr<ast::Type>>> collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const;
 			void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 

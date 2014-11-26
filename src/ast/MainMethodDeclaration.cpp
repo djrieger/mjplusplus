@@ -108,3 +108,9 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	st->leaveScope();
 	//std::cout << "done" << std::endl;
 }
+
+
+void ast::MainMethodDeclaration::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

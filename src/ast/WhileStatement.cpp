@@ -50,3 +50,8 @@ unsigned int ast::WhileStatement::countVariableDeclarations() const
 {
 	return statement ? statement->countVariableDeclarations() : 0;
 }
+
+void ast::WhileStatement::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

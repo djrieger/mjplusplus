@@ -30,3 +30,8 @@ shptr<vec<shptr<ast::Expression>>> ast::Arguments::getArgumentTypes() const
 {
 	return arguments;
 }
+
+void ast::Arguments::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

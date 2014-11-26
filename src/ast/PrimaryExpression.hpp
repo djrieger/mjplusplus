@@ -31,6 +31,7 @@ namespace ast
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual std::pair<bool, bool> constBool() const;
+				virtual void accept(ASTVisitor& visitor) const;
 		};
 
 		class Ident : public PrimaryExpression
@@ -40,6 +41,7 @@ namespace ast
 				virtual void toString(std::ostream& out, unsigned int ident, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
+				virtual void accept(ASTVisitor& visitor) const;
 			protected:
 				shptr<ast::Ident> identifier;
 		};
@@ -57,6 +59,7 @@ namespace ast
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
+				virtual void accept(ASTVisitor& visitor) const;
 			private:
 				Object_Type object_type;
 		};
@@ -70,6 +73,7 @@ namespace ast
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
+				virtual void accept(ASTVisitor& visitor) const;
 		};
 
 		class NewArrayExpression : public PrimaryExpression
@@ -79,6 +83,7 @@ namespace ast
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
+				virtual void accept(ASTVisitor& visitor) const;
 			private:
 				shptr<Type> type;
 				shptr<Expression> expr;
@@ -92,6 +97,7 @@ namespace ast
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
+				virtual void accept(ASTVisitor& visitor) const;
 			private:
 				shptr<ast::Ident> identifier;
 		};
@@ -104,6 +110,7 @@ namespace ast
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
+				virtual void accept(ASTVisitor& visitor) const;
 			private:
 				shptr<Arguments> arguments;
 		};

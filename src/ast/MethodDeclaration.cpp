@@ -145,3 +145,8 @@ unsigned int ast::MethodDeclaration::countVariableDeclarations() const
 {
 	return block ? block->countVariableDeclarations() : 0;
 }
+
+void ast::MethodDeclaration::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

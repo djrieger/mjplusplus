@@ -161,6 +161,11 @@ namespace ast
 			return {false, false};
 		}
 
+		void NotEq::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 
 		Mult::Mult(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
@@ -187,6 +192,11 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		void Mult::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 		Plus::Plus(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -216,6 +226,11 @@ namespace ast
 			return shptr<Type>();
 		}
 
+		void Plus::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		Minus::Minus(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -241,6 +256,11 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		void Minus::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 		Slash::Slash(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -270,6 +290,11 @@ namespace ast
 			return shptr<Type>();
 		}
 
+		void Slash::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		LessThanEq::LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -297,6 +322,11 @@ namespace ast
 			return shptr<Type>();
 		}
 
+		void LessThanEq::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		LessThan::LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -322,6 +352,11 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		void LessThan::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 		EqEq::EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -370,6 +405,11 @@ namespace ast
 			if (left.first && right.first) return {true, left.second == right.second};
 
 			return {false, false};
+		}
+
+		void EqEq::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -421,6 +461,11 @@ namespace ast
 			return true;
 		}
 
+		void Eq::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -446,6 +491,11 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		void GreaterThanEq::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 		GreaterThan::GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -475,6 +525,11 @@ namespace ast
 			return shptr<Type>();
 		}
 
+		void GreaterThan::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		Mod::Mod(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -500,6 +555,11 @@ namespace ast
 			}
 
 			return shptr<Type>();
+		}
+
+		void Mod::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 		AndAnd::AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -540,6 +600,11 @@ namespace ast
 			return {false, false};
 		}
 
+		void AndAnd::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -577,6 +642,11 @@ namespace ast
 			return {false, false};
 		}
 
+		void OrOr::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)
 			: BinaryExpression::BinaryExpression(leftChild, rightChild)
 		{
@@ -592,6 +662,11 @@ namespace ast
 		{
 			//Our Parser should never actually allow us to create an Invalid BinaryExpression...
 			return shptr<Type>();
+		}
+
+		void Invalid::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 	}

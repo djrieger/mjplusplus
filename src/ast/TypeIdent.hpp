@@ -16,6 +16,7 @@ namespace ast
 			virtual std::string getName() const;
 			shptr<Type> const& getType() const;
 			shptr<Ident> const& getIdent() const;
+			virtual void accept(ASTVisitor& visitor) const;
 		private:
 			shptr<Type> type;
 			shptr<Ident> identifier;

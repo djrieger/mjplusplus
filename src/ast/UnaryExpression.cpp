@@ -118,6 +118,11 @@ namespace ast
 			return {false, false};
 		}
 
+		void Not::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
+		}
+
 		Neg::Neg(shptr<Expression> child, int size)
 			: UnaryExpression::UnaryExpression(child, size)
 		{
@@ -158,6 +163,11 @@ namespace ast
 
 			if (!special)
 				out << ')';
+		}
+
+		void Neg::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(shared_from_this());
 		}
 
 	}

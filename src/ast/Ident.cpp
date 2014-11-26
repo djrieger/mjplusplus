@@ -30,3 +30,8 @@ bool ast::Ident::operator!=(ast::Ident const& other)
 {
 	return !(*this == other);
 }
+
+void ast::Ident::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

@@ -20,6 +20,7 @@ namespace ast
 			shptr<vec<shptr<Statement>>> getStatements() const;
 
 			virtual unsigned int countVariableDeclarations() const;
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 

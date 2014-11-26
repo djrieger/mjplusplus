@@ -75,4 +75,9 @@ namespace ast
 	{
 		return this->class_name;
 	}
+
+	void ClassDeclaration::accept(ASTVisitor& visitor) const
+	{
+		visitor.visit(shared_from_this());
+	}
 }

@@ -74,4 +74,9 @@ namespace ast
 	{
 		return true;
 	}
+
+	void FieldAccess::accept(ASTVisitor& visitor) const
+	{
+		visitor.visit(shared_from_this());
+	}
 }

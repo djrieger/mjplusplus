@@ -27,3 +27,8 @@ shptr<ast::Type> const& ast::TypeIdent::getType() const
 {
 	return this->type;
 }
+
+void ast::TypeIdent::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

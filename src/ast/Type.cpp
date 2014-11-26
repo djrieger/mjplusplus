@@ -144,3 +144,8 @@ std::string ast::Type::getName() const
 	toString(descr, 0);
 	return descr.str();
 }
+
+void ast::Type::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

@@ -51,3 +51,8 @@ bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 
 	return true;
 }
+
+void ast::ReturnStatement::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

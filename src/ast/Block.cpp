@@ -69,9 +69,15 @@ namespace ast
 	{
 		// TODO optimize with reduce, fold, lambda or whatever
 		unsigned int variableDeclarations = 0;
-		for (auto &blockStatement: *block_statements) {
+
+		for (auto& blockStatement : *block_statements)
 			variableDeclarations += blockStatement->countVariableDeclarations();
-		}
+
 		return variableDeclarations;
+	}
+
+	void ast::Block::accept(ASTVisitor& visitor) const
+	{
+		visitor.visit(shared_from_this());
 	}
 }

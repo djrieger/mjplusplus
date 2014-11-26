@@ -21,6 +21,7 @@ namespace ast
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 
 			virtual unsigned int countVariableDeclarations() const;
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 
