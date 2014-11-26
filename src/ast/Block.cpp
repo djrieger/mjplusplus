@@ -64,4 +64,14 @@ namespace ast
 	{
 		return block_statements;
 	}
+
+	unsigned int ast::Block::countVariableDeclarations() const
+	{
+		// TODO optimize with reduce, fold, lambda or whatever
+		unsigned int variableDeclarations = 0;
+		for (auto &blockStatement: *block_statements) {
+			variableDeclarations += blockStatement->countVariableDeclarations();
+		}
+		return variableDeclarations;
+	}
 }

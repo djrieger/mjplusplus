@@ -7,4 +7,9 @@ namespace ast
 	{
 		return Type::TYPE_SINGLE;
 	}
+
+	unsigned int Statement::countVariableDeclarations() const
+	{
+		return 0;
+	}
 }

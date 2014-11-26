@@ -18,6 +18,8 @@ namespace ast
 			virtual Statement::Type getType() const;
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			shptr<vec<shptr<Statement>>> getStatements() const;
+
+			virtual unsigned int countVariableDeclarations() const;
 	};
 }
 

@@ -10,8 +10,14 @@ class Test {
 
         /* booleans/true/false */
 
-        if (b1) { } ; if (true) { } ; if (false) { } ; if (bb[1]) { };
-        while (b1) { } ; while (true) { } ; while (false) { } ; while (bb[1]) { } ;
+        if (b1) {
+
+            int adsjlaksjdklasd;
+
+         } ; if (true) { } ; if (false) { } ; if (bb[1]) { };
+        while (b1) { 
+            boolean asd;
+        } ; while (true) { } ; while (false) { } ; while (bb[1]) { } ;
 
         /* expressions: unary !, relations, equality, logical or/and */
 
@@ -26,7 +32,7 @@ class Test {
 
         if (b1 && b2) { } ; if (b1 || b2) { } ; if (b1 && false) { } ; if (bb[1] || true) { };
         while (b1 && b2) { } ; while (b1 || b2) { } ; while (b1 && false) { } ; while (bb[1] || true) { };
-
+        int asdlkasdjlkasdlakjsdklasd;
         /* assignment expression */
 
         if ((b1 = true)) {};
@@ -37,4 +43,7 @@ class Test {
 
     }
 
+    public void alskdjaslkd() {
+        int a;
+    }
 }

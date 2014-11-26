@@ -83,4 +83,10 @@ namespace ast
 
 		return returns;
 	}
+
+	unsigned int IfStatement::countVariableDeclarations() const
+	{
+		return (thenStatement ? thenStatement->countVariableDeclarations() : 0)
+		+ (elseStatement ? elseStatement->countVariableDeclarations() : 0);
+	}
 }

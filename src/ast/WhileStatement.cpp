@@ -45,3 +45,8 @@ bool ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbo
 	auto condPair = condition->constBool();
 	return condPair.first && condPair.second && definiteReturn;
 }
+
+unsigned int ast::WhileStatement::countVariableDeclarations() const
+{
+	return statement ? statement->countVariableDeclarations() : 0;
+}

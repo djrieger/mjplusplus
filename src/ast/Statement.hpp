@@ -24,6 +24,8 @@ namespace ast
 			 * @return true iff all paths of this statement contsin a return statement
 			 */
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const = 0;
+
+			virtual unsigned int countVariableDeclarations() const;
 	};
 }
 

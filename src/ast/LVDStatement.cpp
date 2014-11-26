@@ -70,3 +70,8 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 
 	return false;
 }
+
+unsigned int ast::LVDStatement::countVariableDeclarations() const
+{
+	return 1;
+}
