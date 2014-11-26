@@ -61,7 +61,9 @@ namespace ast
 
 		shptr<Type> Ident::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
 		{
-			shptr<Symbol> ident_symbol = Symbol::makeSymbol(identifier->getName());
+			// lookup in (local) symbol table
+			auto system_type = std::shared_ptr<Type>();
+			auto ident_symbol = Symbol::makeSymbol(identifier->getName());
 
 			if (ident_symbol)
 			{
@@ -75,19 +77,22 @@ namespace ast
 					{
 						if (ident_type->getName() != "$System")
 							return ident_type;
+						else
+							system_type = ident_type;
 					}
 				}
 
-				//else
-				//sa.reportError("No current definition for " + identifier->getName(), identifier);
+				// else do lookup in field table
 			}
 
+			// lookup in field table
 			auto class_table = sa.getClassTable();
 			auto this_symbol = Symbol::makeSymbol("this");
 			auto definition = this_symbol->getCurrentDefinition();
 
 			if (!definition)
 			{
+				// in a static function aka main
 				if (ident_symbol)
 				{
 					shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
@@ -99,69 +104,38 @@ namespace ast
 						if (sa.isTypeDefined(ident_type))
 							return ident_type;
 					}
-
-					//else
-					//sa.reportError("No current definition for " + identifier->getName(), identifier);
 				}
 
-				sa.reportError("Symbol not defined!", identifier);
-				return shptr<ast::Type>();
-			}
-
-			auto class_type = definition->getType();
-			auto class_item  = class_table[class_type->getClassName()];
-
-			auto field_table = class_item.fieldTable->getFieldTable();
-			auto field_it = field_table.find(identifier->getName());
-
-			if (field_it != field_table.end())
-			{
-				auto field_item = field_it->second;
-				return field_item.type;
+				if (system_type)
+					return system_type;
+				else
+					sa.reportError("Symbol not defined!", identifier);
 			}
 			else
 			{
-				if (ident_symbol)
+				// in a non-static function
+				auto class_type = definition->getType();
+				auto class_item  = class_table[class_type->getClassName()];
+
+				auto field_table = class_item.fieldTable->getFieldTable();
+				auto field_it = field_table.find(identifier->getName());
+
+				if (field_it != field_table.end())
 				{
-					shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
-
-					if (ident_def)
-					{
-						shptr<Type> ident_type = ident_def->getType();
-
-						if (sa.isTypeDefined(ident_type))
-							return ident_type;
-					}
-
-					//else
-					//sa.reportError("No current definition for " + identifier->getName(), identifier);
+					auto field_item = field_it->second;
+					return field_item.type;
 				}
-
-				sa.reportError("$type{" + class_type->getName() + "} has no field named $ident{" + identifier->getName() + "}",
-				               identifier);
+				else
+				{
+					if (system_type)
+						return system_type;
+					else
+						sa.reportError("$type{" + class_type->getName() + "} has no field named $ident{" + identifier->getName() + "}",
+						               identifier);
+				}
 			}
 
 			return shptr<ast::Type>();
-
-
-			//			shptr<Symbol> ident_symbol = Symbol::makeSymbol(identifier->getName());
-
-			//			if (ident_symbol)
-			//			{
-			//				shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
-
-			//				if (ident_def)
-			//				{
-			//					shptr<Type> ident_type = ident_def->getType();
-
-			//					if (sa.isTypeDefined(ident_type))
-			//						return ident_type;
-			//				}
-			//				else
-			//					sa.reportError("No current definition for " + identifier->getName(), identifier);
-			//			}
-
-			//			return shptr<Type>();
 		}
 
 		bool Ident::isLValue() const
