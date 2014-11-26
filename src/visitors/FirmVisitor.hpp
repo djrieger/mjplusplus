@@ -15,4 +15,4 @@ class FirmVisitor : public ASTVisitor
 		void setOwner(ir_type* owner);
 };
 
-#endif FIRM_VISITOR_HPP
+#endif //FIRM_VISITOR_HPP

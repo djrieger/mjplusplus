@@ -80,4 +80,9 @@ namespace ast
 	{
 		visitor.visit(shared_from_this());
 	}
+
+	shptr<vec<shptr<ClassMember>>> ClassDeclaration::getMembers() const
+	{
+		return members;
+	}
 }

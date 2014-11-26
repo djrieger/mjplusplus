@@ -10,9 +10,10 @@ class MemberVisitor : public FirmVisitor
 	protected:
 		ir_graph* function_graph;
 	public:
+		MemberVisitor(FirmInterface& firmInterface);
 		virtual void visit(shptr<const ast::Node> node);
 		virtual void visit(shptr<const ast::MethodDeclaration> node);
-		virtual void visit(shptr<const ast::FieldDeclaration> node);
+		virtual void visit(shptr<const ast::FieldDeclaration> fieldDeclaration);
 		ir_graph* getGraph() const;
 };
 
