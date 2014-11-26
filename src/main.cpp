@@ -120,7 +120,7 @@ int main(int argc, const char** argv)
 			{
 				SemanticAnalysis sa(parser.getRoot(), errorReporter);
 
-				if (!sa.start())
+				if (!sa.start()) 
 					valid = false;
 			}
 
@@ -132,7 +132,7 @@ int main(int argc, const char** argv)
 			if (!valid)
 				return EXIT_FAILURE;
 			else {
-				if (options[FIRM]) {
+				if (options[FIRM] && options[CHECK]) {
 					FirmInterface firmInterface;
 				}
 				return EXIT_SUCCESS;
