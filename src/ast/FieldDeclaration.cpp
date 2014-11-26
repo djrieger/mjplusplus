@@ -53,3 +53,8 @@ void ast::FieldDeclaration::analyze(SemanticAnalysis&, shptr<SymbolTable>) const
 {
 	/* does nothing */
 }
+
+shptr<ast::Type> ast::FieldDeclaration::getType() const
+{
+	return this->type_and_name->getType();
+}

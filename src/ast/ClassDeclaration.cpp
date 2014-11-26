@@ -75,4 +75,9 @@ namespace ast
 	{
 		return this->class_name;
 	}
+
+	shptr<vec<shptr<ClassMember>>> ClassDeclaration::getMembers() const
+	{
+		return members;
+	}
 }

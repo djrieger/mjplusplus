@@ -19,6 +19,7 @@ namespace ast
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const;
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual std::string getName() const;
+			virtual shptr<ast::Type> getType() const;
 	};
 }
 #endif // FIELDDECLARATION_HPP
