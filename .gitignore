@@ -1,5 +1,6 @@
 *.o
 mj++
+firm_example/firmtest
 
 # profile data
 gmon.out
