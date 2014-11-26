@@ -17,11 +17,9 @@ class FirmInterface
 		FirmInterface();
 		~FirmInterface();
 		void foo();
-		ir_entity* generateVoidMethod(ir_type* owner, shptr<ast::MethodDeclaration> methodDeclaration);
-
+		ir_graph* generateMethod(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration);
+		ir_graph *generateClass(ir_type* owner, shptr<ast::ClassDeclaration const> classDeclaration);
 		ir_type* int_type;
-
-		unsigned int countVariableDeclarations(shptr<ast::Block> functionBody);
 };
 
 #endif
