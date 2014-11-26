@@ -1,0 +1,18 @@
+class list {
+	public int x;
+	public list next;
+	public static void main(String[] a) {
+		new list().q();
+	}
+	
+	public void q() {
+		list w = next().next().next();
+		System.out.println(w.x);
+	}
+	
+	public list next() {
+		next = new list();
+		next.x = x+1;
+		return next;
+	}
+}

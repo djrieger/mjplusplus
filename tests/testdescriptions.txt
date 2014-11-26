@@ -21,3 +21,30 @@ Simon_020: reference type object, chained field access
 Simon_021: method with expression in return
 Simon_022: parameter set
 Simon_023: multiple parameters
+Simon_024: multiple function calls in expression
+Simon_025: function call in return
+Simon_026: reference type as parameter
+Simon_027: reference type as return type
+Simon_028: multiple non-pure function calls in one expression
+Simon_029: assignment of reference value in expression
+Simon_030: array generation, initialization and simple array access
+Simon_031: array access with expressions
+Simon_032: arrays as parameter
+Simon_033: arrays as return value
+Simon_034: array read and set of different indices
+Simon_035: array read and set of same index
+Simon_036: array access in array index
+Simon_037: multidimensional arrays
+Simon_038: multidimensional arrays with same reference for multiple subarray
+Simon_039: nested function calls
+Simon_040: nested function calls of non-pure functions
+Simon_041: method chaining of pure functions
+Simon_042: method chaining of non-pure functions
+Simon_043: fields from different classes
+Simon_044: method calls from different classes
+Simon_045: this as parameter
+Simon_046: single linked list
+Simon_047: arrays as fields
+Simon_048: chaining of method and fields
+Simon_049: field shadowed by local variable
+Simon_050: different System.out.println() methods
