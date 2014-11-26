@@ -62,12 +62,8 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 
 	// insert this method into the method table in the class table
 	auto ct = sa.getClassTable();
-	//shptr<MethodDeclaration> md_node;
-	//md_node.reset(this->enable_shared_from_this());
 	auto const foo = shared_from_this();
 	auto md_node = std::static_pointer_cast<const MethodDeclaration>(foo);
-	//	const std::shared_ptr<MethodDeclaration> md_node = this; //auto md_node = std::make_shared<MethodDeclaration>(this);
-	//md_node.reset(this);
 	ct[class_name].methodTable->insertMethod(return_type_and_name->getName(), md_node, returnType, param_types);
 }
 
