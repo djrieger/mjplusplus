@@ -3,8 +3,8 @@ DEBUGFLAGS := -ggdb -O1
 RELEASEFLAGS := -O3
 PROFILEFLAGS := -pg -ggdb -O3
 COMMON := -std=c++1y -pedantic -W -Wall -Wextra
-CPPFLAGS := -I/usr/local/include
-LDFLAGS := -lfirm -L/usr/local/lib
+CPPFLAGS :=  -Ilibfirm/include -Ilibfirm/build/gen/include/libfirm
+LDFLAGS :=  -Llibfirm/build/debug -lfirm
 
 ASTYLE := astyle
 ASTYLEFLAGS := --options=config/astyle.rc
