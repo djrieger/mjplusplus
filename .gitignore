@@ -14,3 +14,4 @@ doc/doxygen
 # run test case artifacts
 *.S
 *.out
+*.vcg
