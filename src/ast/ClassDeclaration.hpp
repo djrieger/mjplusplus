@@ -31,6 +31,7 @@ namespace ast
 			std::string getName() const;
 			shptr<Ident> getIdent() const;
 			virtual void accept(ASTVisitor& visitor) const;
+			shptr<vec<shptr<ClassMember>>> getMembers() const;
 	};
 }
 
