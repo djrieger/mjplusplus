@@ -87,3 +87,8 @@ bool ast::MethodInvocation::lValueHelp() const
 {
 	return false;
 }
+
+void ast::MethodInvocation::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

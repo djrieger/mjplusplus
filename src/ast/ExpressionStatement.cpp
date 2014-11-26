@@ -22,3 +22,8 @@ bool ast::ExpressionStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> 
 
 	return false;
 }
+
+void ast::ExpressionStatement::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

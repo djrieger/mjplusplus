@@ -63,3 +63,9 @@ std::pair<bool, bool> ast::PostfixExpression::constBool() const
 {
 	return {false, false};
 }
+
+
+void ast::PostfixExpression::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

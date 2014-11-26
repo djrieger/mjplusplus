@@ -23,6 +23,7 @@ namespace ast
 			virtual void collectDefinitions(SemanticAnalysis& sa) const;
 			virtual void analyze(SemanticAnalysis& sa) const;
 			void addPseudoClasses();
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 

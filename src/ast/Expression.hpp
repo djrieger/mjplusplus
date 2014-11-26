@@ -29,6 +29,8 @@ namespace ast
 			 * bool expression, and in this case, the second bool is the result.
 			 */
 			virtual std::pair<bool, bool> constBool() const = 0;
+
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 

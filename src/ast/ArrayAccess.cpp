@@ -39,4 +39,11 @@ namespace ast
 	{
 		return true;
 	}
+
+	void ArrayAccess::accept(ASTVisitor& visitor) const
+	{
+		visitor.visit(shared_from_this());
+	}
 }
+
+

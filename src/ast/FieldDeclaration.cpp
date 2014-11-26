@@ -53,3 +53,9 @@ void ast::FieldDeclaration::analyze(SemanticAnalysis&, shptr<SymbolTable>) const
 {
 	/* does nothing */
 }
+
+
+void ast::FieldDeclaration::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

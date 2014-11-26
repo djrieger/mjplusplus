@@ -90,3 +90,9 @@ void ast::Program::addPseudoClasses()
 	auto s = std::make_shared<ClassDeclaration>(si, f);
 	classes->push_back(s);
 }
+
+
+void ast::Program::accept(ASTVisitor& visitor) const
+{
+	visitor.visit(shared_from_this());
+}

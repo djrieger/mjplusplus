@@ -20,6 +20,7 @@ namespace ast
 			virtual bool isLValue() const;
 			virtual bool standalone() const;
 			virtual std::pair<bool, bool> constBool() const;
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 #endif // POSTFIXEXPRESSION_HPP

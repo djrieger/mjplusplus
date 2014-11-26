@@ -45,6 +45,7 @@ namespace ast
 			shptr<ast::Ident> const& getClassNameIdent() const;
 			std::string getName() const;
 			int getDimension() const;
+			virtual void accept(ASTVisitor& visitor) const;
 
 		private:
 			Primitive_type primitive_type;

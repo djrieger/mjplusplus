@@ -22,6 +22,7 @@ namespace ast
 			std::string const& getName() const;
 			bool operator==(Ident const& other);
 			bool operator!=(Ident const& other);
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 #endif // IDENT_HPP
