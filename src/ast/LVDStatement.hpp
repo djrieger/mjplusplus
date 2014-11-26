@@ -19,6 +19,8 @@ namespace ast
 			LVDStatement(shptr<TypeIdent> type_ident, shptr<Expression> init_expr);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+
+			virtual unsigned int countVariableDeclarations() const;
 	};
 }
 
