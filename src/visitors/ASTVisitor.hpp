@@ -3,7 +3,7 @@
 
 #include "../globals.hpp"
 
-namespace ast 
+namespace ast
 {
 	class Node;
 }

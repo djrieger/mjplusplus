@@ -22,7 +22,7 @@ namespace ast
 			 */
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
 			// TODO: Make pure virtual
-			virtual void accept(ASTVisitor &visitor) const;
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 
