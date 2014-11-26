@@ -2,26 +2,41 @@
 #include <algorithm>
 #include "ErrorReporter.hpp"
 
-ErrorReporter::ErrorReporter(std::string const& file_name, bool recordErrors): file_name(file_name), recordErrors(recordErrors)
+ErrorReporter::ErrorReporter(std::string const& file_name, bool recordErrors)
+	: typeRegex("\\$type\\{(.*?)\\}"), identRegex("\\$ident\\{(.*?)\\}"), file_name(file_name), recordErrors(recordErrors)
 {
 
 }
 
+std::unordered_map<std::string, std::string> ErrorReporter::escapeCodes =
+{
+	{"RED_BOLD", "\033[1;31m"},
+	{"BOLD", "\033[1m"},
+	{"CLEAR_FORMAT", "\033[0m"}
+};
+
 void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg, source_position_t position)
+{
+	formatAndRecordError(type, error_msg, position);
+}
+
+void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg)
+{
+	formatAndRecordError(type, error_msg, std::pair<int, unsigned int>(-1, 1));
+}
+
+void ErrorReporter::formatAndRecordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<int, unsigned int> position)
 {
 	if (position.first == 0)
 		throw "Invalid line number 0 for error " + error_msg;
 
 	if (recordErrors)
-		errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(position, std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
+	{
+		std::string formattedErrorMsg = std::regex_replace(error_msg, typeRegex, escapeCodes["BOLD"] + "$1" + escapeCodes["CLEAR_FORMAT"]);
+		formattedErrorMsg = std::regex_replace(formattedErrorMsg, identRegex, "'$1'");
+		errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(position, std::pair<ErrorReporter::ErrorType, std::string>(type, formattedErrorMsg)));
+	}
 }
-
-void ErrorReporter::recordError(ErrorReporter::ErrorType type, std::string const& error_msg)
-{
-	if (recordErrors)
-		errors.insert(std::pair<std::pair<int, unsigned int>, std::pair<ErrorReporter::ErrorType, std::string>>(std::pair<int, unsigned int>(-1, 1), std::pair<ErrorReporter::ErrorType, std::string>(type, error_msg)));
-}
-
 
 void ErrorReporter::printErrors() const
 {
@@ -35,20 +50,24 @@ void ErrorReporter::printErrors() const
 
 	for (auto& error : errors)
 	{
+		std::cerr << escapeCodes["RED_BOLD"];
+
 		switch (error.second.first)
 		{
 			case ErrorReporter::ErrorType::SEMANTIC:
-				std::cerr << "\033[1;31mSemantic error\033[0m";
+				std::cerr << "Semantic error";
 				break;
 
 			case ErrorReporter::ErrorType::PARSER:
-				std::cerr << "\033[1;31mParser error\033[0m";
+				std::cerr << "Parser error";
 				break;
 
 			case ErrorReporter::ErrorType::LEXER:
-				std::cerr << "\033[1;31mLexer error\033[0m";
+				std::cerr << "Lexer error";
 				break;
 		}
+
+		std::cerr << escapeCodes["CLEAR_FORMAT"];
 
 		if (error.first.first == -1)
 			std::cerr << ": " << error.second.second << std::endl;
@@ -80,22 +99,4 @@ void ErrorReporter::printErrors() const
 
 	if (errors.size() > 0)
 		std::cerr << "Error during compilation" << std::endl;
-}
-
-std::unordered_map<std::string, std::string> ErrorReporter::escapeCodes =
-{
-	{"RED_BOLD", "\033[1;31m"},
-	{"CLEAR_FORMAT", "\033[0m"},
-	{"IDENT", "\033[1;34m"},
-	{"TYPE", "\033[1;33m"}
-};
-
-std::string ErrorReporter::formatType(std::string const& typeName)
-{
-	return escapeCodes["TYPE"] + typeName + escapeCodes["CLEAR_FORMAT"];
-}
-
-std::string ErrorReporter::formatIdent(std::string const& identName)
-{
-	return escapeCodes["IDENT"] + identName + escapeCodes["CLEAR_FORMAT"];
 }

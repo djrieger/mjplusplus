@@ -2,6 +2,7 @@
 #define ERROR_REPORTER_HPP
 
 #include <map>
+#include <regex>
 #include "../lexer/token.hpp"
 
 /**
@@ -39,10 +40,24 @@ class ErrorReporter
 		 * Initialize ErrorReporter for source file with name file_name
 		 */
 		ErrorReporter(std::string const& file_name, bool recordErrors);
-
-		static std::string formatType(std::string const& typeName);
-		static std::string formatIdent(std::string const& typeName);
 	private:
+		/*
+		 * Regex to match $type{...} strings in error messages
+		 */
+		std::regex typeRegex;
+		/*
+		 * Regex to match $ident{...} strings in error messages
+		 */
+		std::regex identRegex;
+		/*
+		 * Format error_msg (colors/bold face for $type{...} and $ident{...} strings)
+		 */
+		void formatAndRecordError(ErrorReporter::ErrorType type, std::string const& error_msg, std::pair<int, unsigned int> position);
+		/*
+		 * ANSI Escape codes used for formatting messages with colors, bold fonts etc.
+		 * See https://en.wikipedia.org/wiki/ANSI_escape_code
+		 */
+		static std::unordered_map<std::string, std::string> escapeCodes;
 		/*
 		 * Errors reported by Parser or SemanticAnalysis
 		 * key: (line, column)
@@ -59,8 +74,6 @@ class ErrorReporter
 		 * Whether to record errors
 		 */
 		bool recordErrors;
-
-		static std::unordered_map<std::string, std::string> escapeCodes;
 };
 
 #endif

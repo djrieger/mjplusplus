@@ -398,14 +398,14 @@ namespace ast
 						if (leftType->isRefType())
 							return leftType;
 						else
-							sa.reportError("Cannot assign null to non-reference type " + leftType->getName(), leftChild);
+							sa.reportError("Cannot assign null to non-reference type $type{" + leftType->getName() + "}", leftChild);
 					}
 					else
 					{
 						if (*leftType == *rightType)
 							return leftType;
 						else
-							sa.reportError("Mismatched Types: " + leftType->getName() + " and " + rightType->getName(), leftChild);
+							sa.reportError("Mismatched Types: $type{" + leftType->getName() + "} and $type{" + rightType->getName() + "}", leftChild);
 					}
 				}
 				else

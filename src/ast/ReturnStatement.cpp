@@ -42,12 +42,12 @@ bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symb
 			{
 				if (!(*ret_type == *expr_type ||
 				        (ret_type->isRefType() && expr_type->getPrimitiveType() == ast::Type::Primitive_type::NULL_TYPE)))
-					sa.reportError("Mismatched types in return: " + ret_type->getName() + " and " + expr_type->getName(), this->expression);
+					sa.reportError("Mismatched types in return: $type{" + ret_type->getName() + "} and {" + expr_type->getName() + "}", this->expression);
 			}
 		}
 	}
 	else if (*ret_type != *expr_type)
-		sa.reportError("Method returns " + ret_type->getName() + ", but return statement misses expression", this->getPosition());
+		sa.reportError("Method returns $type{" + ret_type->getName() + "} but return statement has no expression", this->getPosition());
 
 	return true;
 }

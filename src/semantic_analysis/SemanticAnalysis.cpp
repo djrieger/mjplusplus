@@ -65,7 +65,7 @@ bool SemanticAnalysis::isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptabl
 		// not in class table:
 		if (iter == getClassTable().end())
 		{
-			reportError("Type " + type->getClassName() + " undeclared.", type->getClassNameIdent());
+			reportError("Type $type{" + type->getClassName() + "} undeclared.", type->getClassNameIdent());
 			return false;
 		}
 

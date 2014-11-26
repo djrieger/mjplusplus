@@ -97,7 +97,7 @@ namespace ast
 				if (child_type->isBool())
 					return child_type;
 				else
-					sa.reportError(child_type->getName() + " is not boolean.", this->getPosition());
+					sa.reportError("$type{" + child_type->getName() + "} is not boolean.", this->getPosition());
 			}
 
 			return shptr<Type>();
@@ -135,7 +135,7 @@ namespace ast
 				else if (child_type->getDimension() == 0 && *child_type == Type::Primitive_type::INT_NEG_ONLY)
 					return std::make_shared<Type>(Type::Primitive_type::INT);
 				else
-					sa.reportError(child_type->getName() + " is not an integer.", this->getPosition());
+					sa.reportError("$type{" + child_type->getName() + "} is not an integer.", this->getPosition());
 			}
 
 			return shptr<Type>();
