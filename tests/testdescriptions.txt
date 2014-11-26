@@ -4,3 +4,6 @@ Simon_003: multiple printlns in main
 Simon_004: arithmetic expressions
 Simon_005: new object creation, method call (same class)
 Simon_006: local variable, method call (same class) with return value
+Simon_007: function call with parameter
+Simon_008: local variable set and read
+Simon_009: local variable set (expression contains updated variable)
