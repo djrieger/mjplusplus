@@ -16,7 +16,7 @@
 
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS, FIRM};
+	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS, FIRM, OUT};
 	static const option::Descriptor usage[] =
 	{
 		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
@@ -25,8 +25,9 @@ int main(int argc, const char** argv)
 		{LEXTEST, 0, "", "lextest", option::Arg::None, "  --lextest\tOnly run the lexer on the input FILE."},
 		{PRINT_AST, 0, "", "print-ast", option::Arg::None, "  --print-ast\tPretty prints the content of the abstract syntax tree after a file has been parsed."},
 		{CHECK, 0, "", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
-		{SUPPRESS_ERRORS, 0, "", "suppress-errors", option::Arg::None, "--suppress-errors\tprevents any errors from being printed"},
-		{FIRM, 0, "", "firm", option::Arg::None, "--firm\tInitialize libFirm"},
+		{SUPPRESS_ERRORS, 0, "", "suppress-errors", option::Arg::None, "  --suppress-errors\tprevents any errors from being printed"},
+		{FIRM, 0, "", "firm", option::Arg::None, "  --firm\tInitialize libFirm"},
+		{OUT, 0, "", "out", option::Arg::None, "  --out FILE\tWrite binary to FILE"},
 		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
 		{0, 0, 0, 0, 0, 0}
 	};
@@ -41,6 +42,9 @@ int main(int argc, const char** argv)
 	if (parse.error())
 		// optionally print error message
 		return EXIT_FAILURE;
+
+	if (options[OUT])
+		std::cout << "Would write to \"" << options[OUT].arg << '"' << std::endl;
 
 	if (options[HELP])
 	{
@@ -120,7 +124,7 @@ int main(int argc, const char** argv)
 			{
 				SemanticAnalysis sa(parser.getRoot(), errorReporter);
 
-				if (!sa.start()) 
+				if (!sa.start())
 					valid = false;
 			}
 
@@ -131,10 +135,11 @@ int main(int argc, const char** argv)
 
 			if (!valid)
 				return EXIT_FAILURE;
-			else {
-				if (options[FIRM] && options[CHECK]) {
+			else
+			{
+				if (options[FIRM] && options[CHECK])
 					FirmInterface firmInterface;
-				}
+
 				return EXIT_SUCCESS;
 			}
 		}
