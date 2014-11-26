@@ -1,2 +1,6 @@
 Simon_001: empty file, no println
 Simon_002: single println in main
+Simon_003: multiple printlns in main
+Simon_004: arithmetic expressions
+Simon_005: new object creation, method call (same class)
+Simon_006: local variable, method call (same class) with return value
