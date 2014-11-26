@@ -137,7 +137,7 @@ namespace ast
 					//sa.reportError("No current definition for " + identifier->getName(), identifier);
 				}
 
-				sa.reportError(class_type->getName() + " has no field with the name " + identifier->getName(),
+				sa.reportError("$type{" + class_type->getName() + "} has no field named $ident{" + identifier->getName() + "}",
 				               identifier);
 			}
 
@@ -268,7 +268,7 @@ namespace ast
 					if (sa.isTypeDefined(type))
 						return type;
 					else
-						sa.reportError("Type " + type->getName() + " not defined!", expr);
+						sa.reportError("Type $type{" + type->getName() + "} not defined!", expr);
 
 				}
 				else
@@ -311,7 +311,7 @@ namespace ast
 				return type;
 			else
 			{
-				sa.reportError("Type " + type->getName() + " not defined!", identifier);
+				sa.reportError("Type $type{" + type->getName() + "} not defined!", identifier);
 				return shptr<Type>();
 			}
 		}
@@ -393,14 +393,14 @@ namespace ast
 					if (validArguments)
 						return method_item.returnType;
 					else
-						sa.reportError("The arguments do not match the parameter types.", identifier);
+						sa.reportError("Arguments do not match parameter types.", identifier);
 				}
 				else
 					sa.reportError("Wrong number of arguments.", identifier);
 			}
 			else
 			{
-				sa.reportError(class_type->getName() + " has no method with the name " + identifier->getName(),
+				sa.reportError("$type{" + class_type->getName() + "} has no method named $ident{" + identifier->getName() + "}",
 				               identifier);
 			}
 

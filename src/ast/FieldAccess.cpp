@@ -34,12 +34,12 @@ namespace ast
 				}
 				else
 				{
-					sa.reportError(callingType->getName() + " has no field with the name " + field_name->getName(),
+					sa.reportError("$type{" + callingType->getName() + "} has no field with the name $ident{" + field_name->getName() + "}",
 					               field_name);
 				}
 			}
 			else
-				sa.reportError("No such class: " + callingType->getClassName(), field_name);
+				sa.reportError("No such class: $type{" + callingType->getClassName() + "}", field_name);
 		}
 		else
 			sa.reportError("Cannot access a field on a primitive or array type.", field_name);

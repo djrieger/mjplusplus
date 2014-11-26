@@ -62,19 +62,19 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 					if (validArguments)
 						return method_item.returnType;
 					else
-						sa.reportError("The arguments do not match the parameter types.", method_name);
+						sa.reportError("Arguments do not match parameter types.", method_name);
 				}
 				else
 					sa.reportError("Wrong number of arguments.", method_name);
 			}
 			else
 			{
-				sa.reportError(callingType->getName() + " has no method with the name " + method_name->getName(),
+				sa.reportError("$type{" + callingType->getName() + "} has no method named $ident{" + method_name->getName() + "}",
 				               method_name);
 			}
 		}
 		else
-			sa.reportError("No such class: " + callingType->getClassName(), method_name);
+			sa.reportError("No such class: $type{" + callingType->getClassName() + "}", method_name);
 	}
 	else
 		sa.reportError("Cannot invoke a method on a primitive or array type.", method_name);

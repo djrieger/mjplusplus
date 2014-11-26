@@ -33,7 +33,7 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 	for (auto& classDeclNode : *classes)
 	{
 		if (!sa.insertClass(classDeclNode->getName(), classDeclNode))
-			sa.reportError("Class with name " + ErrorReporter::formatIdent(classDeclNode->getName()) + " already defined.", classDeclNode->getIdent());
+			sa.reportError("Class with name $ident{" + classDeclNode->getName() + "} already defined.", classDeclNode->getIdent());
 	}
 
 	int mainMethodCount = 0;
