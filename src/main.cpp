@@ -138,8 +138,10 @@ int main(int argc, const char** argv)
 			else
 			{
 				if (options[FIRM] && options[CHECK])
+				{
 					FirmInterface firmInterface;
-
+					firmInterface.foo();
+				}
 				return EXIT_SUCCESS;
 			}
 		}
