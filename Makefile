@@ -19,15 +19,15 @@ HEADER_FILES := $(sort $(wildcard src/*.hpp)) $(sort $(wildcard src/**/*.hpp)) $
 all: $(TARGET)
 
 debug $(TARGET): $(SOURCE_FILES:.cpp=.o)
-	$(CPP) $(COMMON) $(LDFLAGS) $(DEBUGFLAGS) $^ -o $(TARGET)
+	$(CPP) $(COMMON) $(DEBUGFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # analyse with gprof [options] ./mj++ gmon.out
 profile: $(SOURCE_FILES)
-	$(CPP) $(COMMON) $(CPPFLAGS) $(LDFLAGS) $(PROFILEFLAGS) $^ -o $(TARGET)
+	$(CPP) $(COMMON) $(CPPFLAGS) $(PROFILEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # no .o files in release build
 release: $(SOURCE_FILES)
-	$(CPP) $(COMMON) $(CPPFLAGS) $(LDFLAGS) $(RELEASEFLAGS) $^ -o $(TARGET)
+	$(CPP) $(COMMON) $(CPPFLAGS) $(RELEASEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 clean:
 	rm -f $(TARGET) $(SOURCE_FILES:.cpp=.o) gmon.out *~
