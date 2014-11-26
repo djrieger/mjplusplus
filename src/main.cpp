@@ -27,7 +27,7 @@ int main(int argc, const char** argv)
 		{CHECK, 0, "", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
 		{SUPPRESS_ERRORS, 0, "", "suppress-errors", option::Arg::None, "  --suppress-errors\tprevents any errors from being printed"},
 		{FIRM, 0, "", "firm", option::Arg::None, "  --firm\tInitialize libFirm"},
-		{OUT, 0, "", "out", option::Arg::None, "  --out FILE\tWrite binary to FILE"},
+		{OUT, 0, "-o", "out", option::Arg::Required, "  --out FILE\tWrite binary to FILE"},
 		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
 		{0, 0, 0, 0, 0, 0}
 	};
@@ -43,8 +43,12 @@ int main(int argc, const char** argv)
 		// optionally print error message
 		return EXIT_FAILURE;
 
-	if (options[OUT])
-		std::cout << "Would write to \"" << options[OUT].arg << '"' << std::endl;
+	if (parse.nonOptionsCount() == 0)
+	{
+		std::cout << "Missing files, see usage:" << std::endl;
+		option::printUsage(std::cout, usage);
+		return EXIT_FAILURE;
+	}
 
 	if (options[HELP])
 	{

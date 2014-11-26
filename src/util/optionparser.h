@@ -883,6 +883,13 @@ private:
  */
 struct Arg
 {
+  static void printError(const char* msg1, const option::Option& opt, const char* msg2)
+  {
+    fprintf(stderr, "ERROR: %s", msg1);
+    fwrite(opt.name, opt.namelen, 1, stderr);
+    fprintf(stderr, "%s", msg2);
+  }
+
   //! @brief For options that don't take an argument: Returns ARG_NONE.
   static ArgStatus None(const Option&, bool)
   {
@@ -896,6 +903,14 @@ struct Arg
       return ARG_OK;
     else
       return ARG_IGNORE;
+  }
+
+  static ArgStatus Required(const Option& option, bool msg)
+  {
+    if (option.arg != 0)
+      return option::ARG_OK;
+    if (msg) printError("Option '", option, "' requires an argument\n");
+      return option::ARG_ILLEGAL;
   }
 };
 
