@@ -105,7 +105,7 @@ class Parser
 		shptr<ast::Arguments> parseArguments();
 
 		shptr<ast::Statement> parseStatement();
-		shptr<ast::Statement> parseBlock();
+		shptr<ast::Block> parseBlock();
 		shptr<ast::Statement> parseBlockStatement();
 		shptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
 		shptr<ast::IfStatement> parseIfStatement();

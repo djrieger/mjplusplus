@@ -17,6 +17,7 @@ namespace ast
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual Statement::Type getType() const;
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			shptr<vec<shptr<Statement>>> getStatements() const;
 	};
 }
 

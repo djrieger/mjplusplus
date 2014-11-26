@@ -69,7 +69,7 @@ void ast::Program::addPseudoClasses()
 	pa->push_back(std::make_shared<TypeIdent>(pat, pai));
 	// void println(int i)
 	auto p = std::make_shared<std::vector<shptr<ClassMember>>>();
-	p->push_back(std::make_shared<MethodDeclaration>(pr, pa, shptr<ast::Statement>()));
+	p->push_back(std::make_shared<MethodDeclaration>(pr, pa, shptr<ast::Block>()));
 
 	// class $out
 	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), { -1, 0}};

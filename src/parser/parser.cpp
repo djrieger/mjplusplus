@@ -404,7 +404,7 @@ shptr<ast::Statement> Parser::parseStatement()
 
 // Block -> { BlockStatements } .
 // BlockStatements -> BlockStatement BlockStatements | .
-shptr<ast::Statement> Parser::parseBlock()
+shptr<ast::Block> Parser::parseBlock()
 {
 	expect(lexer::Token::Token_type::OPERATOR_LBRACE);
 
@@ -426,8 +426,8 @@ shptr<ast::Statement> Parser::parseBlock()
 		return std::make_shared<ast::Block>(statements);
 	else
 	{
-		shptr<ast::Statement> stmt;
-		return stmt;
+		shptr<ast::Block> block;
+		return block;
 	}
 }
 

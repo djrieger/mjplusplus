@@ -1,6 +1,8 @@
 #include "FirmInterface.hpp"
 #include "../lexer/token.hpp"
 #include <cstring>
+#include "../ast/LVDStatement.hpp"
+#include "../ast/Block.hpp"
 
 FirmInterface::FirmInterface()
 {
@@ -11,7 +13,7 @@ FirmInterface::FirmInterface()
 }
 
 /*
-
+ Currently supports only int types
 */
 ir_entity* FirmInterface::generateVoidMethod(
     ir_type* owner,
@@ -58,7 +60,7 @@ void FirmInterface::foo()
 	auto parameterName = std::make_shared<ast::Ident>(paramToken);
 	parameters->push_back(std::make_shared<ast::TypeIdent>(typeInt, parameterName));
 
-	auto block = std::shared_ptr<ast::Statement>();
+	auto block = std::shared_ptr<ast::Block>();
 	ir_entity* ent = generateVoidMethod(owner, std::make_shared<ast::MethodDeclaration>(typeIdent, parameters, block));
 
 	ir_graph* irg = new_ir_graph(ent, localVarsCount);

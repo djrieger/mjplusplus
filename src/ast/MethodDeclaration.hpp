@@ -6,6 +6,8 @@
 #include <vector>
 #include "TypeIdent.hpp"
 #include "Statement.hpp"
+#include "Block.hpp"
+#include "LVDStatement.hpp"
 
 namespace ast
 {
@@ -14,10 +16,10 @@ namespace ast
 		protected:
 			shptr<TypeIdent> return_type_and_name;
 			shptr<vec<shptr<TypeIdent>>> parameters;
-			shptr<Statement> block;
+			shptr<Block> block;
 
 		public:
-			MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Statement> block);
+			MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Block> block);
 
 			/*
 			 * Prints this method including an optional "static" modifier (depending on isStatic)

@@ -3,7 +3,7 @@
 #include "TypeIdent.hpp"
 
 
-ast::MainMethodDeclaration::MainMethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent> > > parameters, shptr<Statement> block)
+ast::MainMethodDeclaration::MainMethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent> > > parameters, shptr<Block> block)
 	: MethodDeclaration(return_type_and_name, parameters, block)
 {
 	;
