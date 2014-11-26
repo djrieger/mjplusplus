@@ -139,3 +139,13 @@ shptr<ast::Type> ast::MethodDeclaration::getReturnType() const
 {
 	return return_type_and_name->getType();
 }
+
+shptr<ast::Block> ast::MethodDeclaration::getBlock() const
+{
+	return block;
+}
+
+unsigned int ast::MethodDeclaration::countVariableDeclarations() const
+{
+	return block ? block->countVariableDeclarations() : 0;
+}

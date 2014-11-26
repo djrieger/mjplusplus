@@ -15,9 +15,9 @@ FirmInterface::FirmInterface()
 /*
  Currently supports only int types
 */
-ir_entity* FirmInterface::generateVoidMethod(
+ir_graph* FirmInterface::generateMethod(
     ir_type* owner,
-    shptr<ast::MethodDeclaration> methodDeclaration)
+    shptr<ast::MethodDeclaration const> methodDeclaration)
 {
 	unsigned int paramsCount = methodDeclaration->getParameters()->size();
 	std::cout << "paramsCount = " << paramsCount << std::endl;
@@ -39,7 +39,20 @@ ir_entity* FirmInterface::generateVoidMethod(
 	}
 
 	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->getName().c_str()), methodType);
-	return ent;
+	return new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
+}
+
+ir_graph *FirmInterface::generateClass(ir_type* owner, shptr<ast::ClassDeclaration const> classDeclaration)
+{
+	ir_type* classType = new_type_class(new_id_from_str(classDeclaration->getName().c_str()));
+/*
+	for (auto &member: *classType->getMembers())
+	{
+		//member.accept(visitor);
+		// TODO: Do something with result
+		//visitor.getResult();
+	}
+	*/
 }
 
 void FirmInterface::foo()
@@ -61,9 +74,8 @@ void FirmInterface::foo()
 	parameters->push_back(std::make_shared<ast::TypeIdent>(typeInt, parameterName));
 
 	auto block = std::shared_ptr<ast::Block>();
-	ir_entity* ent = generateVoidMethod(owner, std::make_shared<ast::MethodDeclaration>(typeIdent, parameters, block));
+	ir_graph* irg = generateMethod(owner, std::make_shared<ast::MethodDeclaration>(typeIdent, parameters, block));
 
-	ir_graph* irg = new_ir_graph(ent, localVarsCount);
 	set_current_ir_graph(irg);
 
 	ir_node* currentMemState = get_store();

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include "../visitors/ASTVisitor.hpp"
 
 namespace ast
 {
@@ -20,6 +21,8 @@ namespace ast
 			 * in addition Block doesn't print newline after trailing } if ~indent is passed instead of indent
 			 */
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const = 0;
+			// TODO: Make pure virtual
+			virtual void accept(ASTVisitor &visitor) const;
 	};
 }
 
