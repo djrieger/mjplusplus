@@ -1,7 +1,7 @@
 class a {
 	public static void main(String[] args) {
-		int i = three();
-		new a().print(i);
+		int i = new a().three();
+		System.out.println(i);
 	}
 	
 	public int three() {
