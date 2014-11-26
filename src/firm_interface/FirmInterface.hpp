@@ -8,6 +8,8 @@
 
 #include "../ast/MethodDeclaration.hpp"
 #include "../ast/TypeIdent.hpp"
+#include "../ast/Statement.hpp"
+#include "../ast/Block.hpp"
 
 class FirmInterface
 {
@@ -18,6 +20,8 @@ class FirmInterface
 		ir_entity* generateVoidMethod(ir_type* owner, shptr<ast::MethodDeclaration> methodDeclaration);
 
 		ir_type* int_type;
+
+		unsigned int countVariableDeclarations(shptr<ast::Block> functionBody);
 };
 
 #endif

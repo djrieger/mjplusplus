@@ -59,4 +59,9 @@ namespace ast
 		symbolTable->leaveScope();
 		return returns;
 	}
+
+	shptr<vec<shptr<Statement>>> ast::Block::getStatements() const
+	{
+		return block_statements;
+	}
 }

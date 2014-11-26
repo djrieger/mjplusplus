@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "MethodDeclaration.hpp"
 
-ast::MethodDeclaration::MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Statement> block)
+ast::MethodDeclaration::MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Block> block)
 	: return_type_and_name(return_type_and_name), parameters(parameters), block(block)
 {
 }
@@ -99,8 +99,32 @@ shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticA
 	return param_types;
 }
 
+unsigned int countVariableDeclarations(shptr<ast::Block> functionBody) {
+	if (!functionBody)
+		return 0;
+
+	unsigned int variableDeclarations = 0;
+
+	for (auto &statement: *functionBody->getStatements()) 
+	{
+		auto blockStatement = std::dynamic_pointer_cast<ast::Block>(statement);
+		auto lvdStatement = std::dynamic_pointer_cast<ast::LVDStatement>(statement);
+		if (blockStatement) 
+		{
+			variableDeclarations += countVariableDeclarations(blockStatement);
+		} else if (lvdStatement) {
+			variableDeclarations++;
+		}
+	}
+	return variableDeclarations;
+}
+
 void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
+	
+	std::cout << return_type_and_name->getName() << " has " << countVariableDeclarations(std::static_pointer_cast<ast::Block>(block)) << " variable declarations" << std::endl;
+
+
 	auto st = symbolTable;
 	//std::cout << "copying " << return_type_and_name->getName() << std::endl;
 	st->enterScope();
