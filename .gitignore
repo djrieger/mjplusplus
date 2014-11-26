@@ -10,3 +10,7 @@ gmon.out
 *.pro
 *.pro.user
 doc/doxygen
+
+# run test case artifacts
+*.S
+*.out
