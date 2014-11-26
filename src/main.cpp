@@ -11,10 +11,12 @@
 #include "util/optionparser.h"
 #include "util/ErrorReporter.hpp"
 
+#include "firm_interface/FirmInterface.hpp"
+
 
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS};
+	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS, FIRM};
 	static const option::Descriptor usage[] =
 	{
 		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
@@ -24,6 +26,7 @@ int main(int argc, const char** argv)
 		{PRINT_AST, 0, "", "print-ast", option::Arg::None, "  --print-ast\tPretty prints the content of the abstract syntax tree after a file has been parsed."},
 		{CHECK, 0, "", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
 		{SUPPRESS_ERRORS, 0, "", "suppress-errors", option::Arg::None, "--suppress-errors\tprevents any errors from being printed"},
+		{FIRM, 0, "", "firm", option::Arg::None, "--firm\tInitialize libFirm"},
 		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
 		{0, 0, 0, 0, 0, 0}
 	};
@@ -128,9 +131,12 @@ int main(int argc, const char** argv)
 
 			if (!valid)
 				return EXIT_FAILURE;
-			else
+			else {
+				if (options[FIRM]) {
+					FirmInterface firmInterface;
+				}
 				return EXIT_SUCCESS;
-
+			}
 		}
 		catch (std::string msg)
 		{

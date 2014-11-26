@@ -2,7 +2,7 @@ CPP := g++
 DEBUGFLAGS := -ggdb -O1
 RELEASEFLAGS := -O3
 PROFILEFLAGS := -pg -ggdb -O3
-CPPFLAGS := -std=c++1y -pedantic -W -Wall -Wextra
+CPPFLAGS := -std=c++1y -pedantic -W -Wall -Wextra -lfirm -I/usr/local/include -L/usr/local/lib
 
 ASTYLE := astyle
 ASTYLEFLAGS := --options=config/astyle.rc
