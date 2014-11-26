@@ -4,7 +4,7 @@ succeeded=0
 failed=0
 segfaults=0
 
-for i in $1/* ; do
+for i in $1/*.mj ; do
 	echo $i
 	../mj++ --check $i #> /dev/null
 	ret=$?

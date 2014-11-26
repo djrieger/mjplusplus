@@ -7,3 +7,17 @@ Simon_006: local variable, method call (same class) with return value
 Simon_007: function call with parameter
 Simon_008: local variable set and read
 Simon_009: local variable set (expression contains updated variable)
+Simon_010: local variable set (more variables)
+Simon_011: single assignment expression within expression
+Simon_012: multiple assignment expressions within expression
+Simon_013: single assignment expressions within expression with variable reuse
+Simon_014: assignment chaining
+Simon_015: new object creation, zero-initialized field access
+Simon_016: field set
+Simon_017: field read and set in same expression
+Simon_018: different objects with different fields
+Simon_019: objects with the same reference
+Simon_020: reference type object, chained field access
+Simon_021: method with expression in return
+Simon_022: parameter set
+Simon_023: multiple parameters
