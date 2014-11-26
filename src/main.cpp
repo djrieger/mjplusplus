@@ -142,6 +142,7 @@ int main(int argc, const char** argv)
 					FirmInterface firmInterface;
 					firmInterface.foo();
 				}
+
 				return EXIT_SUCCESS;
 			}
 		}

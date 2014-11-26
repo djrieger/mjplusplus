@@ -129,3 +129,13 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 	st->leaveScope();
 	//std::cout << "done" << std::endl;
 }
+
+shptr<vec<shptr<ast::TypeIdent>>> ast::MethodDeclaration::getParameters() const
+{
+	return parameters;
+}
+
+shptr<ast::Type> ast::MethodDeclaration::getReturnType() const
+{
+	return return_type_and_name->getType();
+}
