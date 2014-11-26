@@ -21,7 +21,6 @@ ir_graph* FirmInterface::generateMethod(
     shptr<ast::MethodDeclaration const> methodDeclaration)
 {
 	unsigned int paramsCount = methodDeclaration->getParameters()->size();
-	std::cout << "paramsCount = " << paramsCount << std::endl;
 	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
 	ir_type* methodType = new_type_method(paramsCount, hasReturnType);
 
@@ -29,14 +28,12 @@ ir_graph* FirmInterface::generateMethod(
 
 	for (auto& param : *methodDeclaration->getParameters())
 	{
-		std::cout << "i=" << i << std::endl;
 		set_method_param_type(methodType, i, int_type); // TODO: Implement ref and bool types
 		i++;
 	}
 
 	if (hasReturnType)
 	{
-		std::cout << "has return type" << std::endl;
 		set_method_res_type(methodType, 0, int_type); // TODO: Implement ref and bool types
 	}
 
