@@ -36,6 +36,7 @@ namespace ast
 			bool isClassType();
 			bool isInteger();
 			bool isBool();
+			bool isVoid();
 			shptr<Type> de_array();
 
 			void setDimension(int dimension);

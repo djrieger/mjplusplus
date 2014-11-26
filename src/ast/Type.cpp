@@ -103,6 +103,11 @@ bool ast::Type::isBool()
 	return dimension == 0 && primitive_type == ast::Type::Primitive_type::BOOLEAN;
 }
 
+bool ast::Type::isVoid()
+{
+	return dimension == 0 && primitive_type == ast::Type::Primitive_type::VOID;
+}
+
 shptr<ast::Type> ast::Type::de_array()
 {
 	if (dimension == 0)

@@ -24,6 +24,8 @@ namespace ast
 			 */
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual std::string getName() const;
+			shptr<vec<shptr<TypeIdent>>> getParameters() const;
+			shptr<Type> getReturnType() const;
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const;
 			virtual shptr<vec<shptr<ast::Type>>> collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
