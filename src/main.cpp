@@ -159,7 +159,7 @@ int main(int argc, const char** argv)
 	}
 	else
 	{
-		std::cout << "You can only specify up to 1 option. See --help for usage." << std::endl;
+		std::cout << "You can only specify up to 2 options. See --help for usage." << std::endl;
 		return EXIT_FAILURE;
 	}
 }
