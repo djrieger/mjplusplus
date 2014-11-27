@@ -20,6 +20,7 @@ class FirmInterface
 			static FirmInterface instance;
 			return instance;
 		}
+		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation> expr);
 		ir_node* createNodeForIntegerConstant(int);
 		ir_node* createNodeForBoolConstant(bool);
 	private:

@@ -12,6 +12,45 @@ FirmInterface::FirmInterface()
 	printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
 }
 
+
+ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation> expr)
+{
+
+	// TODO: find the corresponding entity for this method
+	ir_entity* ent = NULL;
+
+	shptr<ast::Arguments> arguments = expr->getArguments();
+	int argc = arguments->argc;
+
+	ir_node** in = calloc(argc, sizeof(ir_node*));
+	int in_counter = 0;
+
+	ExpressionVisitor exprVisitor;
+
+	for (shptr<ast::Expression> argumentExpr : * (arguments->getArgumentExpressions()))
+	{
+		argumentExpr->accept(exprVisitor);
+		in[in_counter++] = exprVisitor.getResultNode();
+	}
+
+	// create the call
+	ir_node* store = get_store();
+	ir_node* callee = new_Address(ent);
+	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(ent));
+
+	// update the current store
+	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
+	set_store(new_store);
+
+	// get the result
+	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
+	ir_node* result = new_Proj(tuple, getIntegerMode(), 0);
+
+	free(in);
+
+	return result;
+}
+
 ir_node* FirmInterface::createNodeForIntegerConstant(int x)
 {
 	return new_Const_long(getIntegerMode(), x);
