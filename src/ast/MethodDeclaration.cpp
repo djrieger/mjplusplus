@@ -104,7 +104,7 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 	symbolTable->insert(s, d);
 	collectParameters(sa, symbolTable);
 
-	auto system_s = Symbol::makeSymbol("System", symbolTable->getCurrentScope());
+	auto system_s = Symbol::makeSymbol("System");
 
 	if (!symbolTable->definedInCurrentScope(system_s))
 	{
