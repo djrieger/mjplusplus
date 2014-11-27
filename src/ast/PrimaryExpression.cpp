@@ -228,7 +228,7 @@ namespace ast
 				return std::make_shared<Type>(Type::INT);
 		}
 
-		std::string const& Integer::getStringValue()
+		std::string const& Integer::getStringValue() const
 		{
 			return string_value;
 		}
