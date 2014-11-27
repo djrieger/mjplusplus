@@ -16,13 +16,10 @@ class FirmInterface
 	private:
 		FirmInterface();
 		~FirmInterface();	
-		shptr<FirmInterface> instance;
+		static shptr<FirmInterface> instance;
 	public:
 		static shptr<FirmInterface> getInstance();
 		void foo();
-		ir_graph* generateMethod(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration);
-		ir_graph* generateClass(ir_type* owner, shptr<ast::ClassDeclaration const> classDeclaration);
-		ir_type* int_type;
 };
 
 #endif

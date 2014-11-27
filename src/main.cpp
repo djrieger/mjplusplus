@@ -143,8 +143,10 @@ int main(int argc, const char** argv)
 			{
 				if (options[FIRM] && options[CHECK])
 				{
-					FirmInterface firmInterface;
-					firmInterface.foo();
+					// TODO
+					// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
+					
+					// firmInterface.foo();
 				}
 
 				return EXIT_SUCCESS;

@@ -2,6 +2,7 @@
 #define EXPRESSION_VISITOR_HPP
 
 #include "FirmVisitor.hpp"
+#include "../ast/BinaryExpression.hpp"
 
 class ExpressionVisitor : public FirmVisitor
 {
