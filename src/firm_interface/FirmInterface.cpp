@@ -14,7 +14,13 @@ FirmInterface::FirmInterface()
 
 ir_node* FirmInterface::createNodeForIntegerConstant(int x)
 {
-	return new_Const_long(mode_Is, x);
+	return new_Const_long(getIntegerMode(), x);
+}
+
+ir_node* FirmInterface::createNodeForBoolConstant(bool x)
+{
+	//TODO: let this create a real boolean node
+	return new_Const_long(getIntegerMode(), (x ? 1 : 0));
 }
 
 void FirmInterface::foo()
