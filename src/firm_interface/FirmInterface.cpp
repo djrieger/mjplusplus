@@ -5,12 +5,19 @@
 #include "../ast/Block.hpp"
 #include "../visitors/MemberVisitor.hpp"
 
+FirmInterface &FirmInterface::getInstance()
+{
+	if (!instance)
+		instance = std::make_shared<FirmInterface>(new FirmInterface());
+	return instance;
+}
+
 FirmInterface::FirmInterface()
 {
 	ir_init();
 	printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
 
-	int_type = new_type_primitive(mode_Is);
+
 }
 
 /*
@@ -101,4 +108,5 @@ FirmInterface::~FirmInterface()
 {
 	// TODO: free graph, ir_type nodes etc.
 	ir_finish();
+	std::cout << "Destroyed FirmInterface instance" << std::endl;
 }
