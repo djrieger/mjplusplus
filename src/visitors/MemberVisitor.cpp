@@ -43,15 +43,16 @@ ir_entity* MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclarat
 
 	if (fieldASTType->isInteger())
 		field_ir_type = new_type_primitive(mode_Is);
-	else if (fieldASTType->isArray())
-	{
-		if (fieldASTType->getPrimitiveType()->isInteger())
-			field_ir_type = new_type_array(new_type_primitive(mode_Is));
-		else
-		{
 
-		}
-	}
+	/*	else if (fieldASTType->isArray())
+		{
+			if (fieldASTType->getPrimitiveType()->isInteger())
+				field_ir_type = new_type_array(new_type_primitive(mode_Is));
+			else
+			{
+
+			}
+		}*/
 
 	new_entity(owner, new_id_from_str(fieldDeclaration->getName().c_str()), field_ir_type);
 }

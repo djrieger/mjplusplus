@@ -68,3 +68,29 @@ FirmInterface::~FirmInterface()
 	ir_finish();
 	std::cout << "Destroyed FirmInterface instance" << std::endl;
 }
+
+ir_mode* FirmInterface::getIntegerMode()
+{
+	return mode_Is;
+}
+
+ir_mode* FirmInterface::getBooleanMode()
+{
+	return mode_Bu; /* TODO*/
+}
+
+ir_mode* FirmInterface::getReferenceMode()
+{
+	return mode_P;
+}
+
+//probably to do: getMode(type) -> mode
+
+
+// overload for all
+ir_node* FirmInterface::createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right)
+{
+	// first paramater is dbg_info, last parameter is mode
+	// probably use new_r_Add(block, ...);
+	return new_d_Add(NULL, left, right, getIntegerMode());
+}

@@ -3,6 +3,9 @@
 
 #include "FirmVisitor.hpp"
 #include "../ast/BinaryExpression.hpp"
+#include "../ast/PrimaryExpression.hpp"
+#include "../ast/UnaryExpression.hpp"
+#include "../ast/PostfixExpression.hpp"
 
 class ExpressionVisitor : public FirmVisitor
 {
