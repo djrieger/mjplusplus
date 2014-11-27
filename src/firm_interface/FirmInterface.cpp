@@ -89,6 +89,21 @@ ir_mode* FirmInterface::getReferenceMode()
 }
 
 //probably to do: getMode(type) -> mode
+ir_mode* FirmInterface::getMode(shptr<ast::Type> ast_type)
+{
+	if (ast_type->isInteger())
+		return getIntegerMode();
+	else if (ast_type->isBool())
+		return getBooleanMode();
+	else
+		return getReferenceMode();
+
+}
+
+ir_type* FirmInterface::getType(shptr<ast::Type> ast_type)
+{
+	return new_type_primitive(getMode(ast_type));
+}
 
 
 // overload for all

@@ -33,7 +33,10 @@ class FirmInterface
 		ir_mode* getIntegerMode();
 		ir_mode* getBooleanMode();
 		ir_mode* getReferenceMode();
+		ir_mode* getMode(shptr<ast::Type> ast_type);
+		ir_type* getType(shptr<ast::Type> ast_type);
 		ir_node* createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right);
+
 };
 
 #endif
