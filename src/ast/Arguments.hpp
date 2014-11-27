@@ -11,12 +11,12 @@ namespace ast
 	class Arguments : public Node
 	{
 		private:
-			shptr<vec<shptr<ast::Expression>>> arguments;
+			shptr<vec<shptr<Expression>>> arguments;
 		public:
 			Arguments();
 			Arguments(shptr<vec<shptr<ast::Expression>>> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-			virtual shptr<vec<shptr<Expression>>> getArgumentTypes() const;
+			virtual shptr<vec<shptr<Expression>>> getArgumentExpressions() const;
 			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
