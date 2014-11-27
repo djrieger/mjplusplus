@@ -26,7 +26,7 @@ void ast::Arguments::toString(std::ostream& out, unsigned int indent, bool) cons
 	out << ")";
 }
 
-shptr<vec<shptr<ast::Expression>>> ast::Arguments::getArgumentTypes() const
+shptr<vec<shptr<ast::Expression>>> ast::Arguments::getArgumentExpressions() const
 {
 	return arguments;
 }
