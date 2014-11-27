@@ -22,13 +22,15 @@ ir_graph* MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclara
 
 	for (auto& param : *methodDeclaration->getParameters())
 	{
-		set_method_param_type(methodType, i, new_type_primitive(mode_Is)); // TODO: Implement ref and bool types
+		auto type = FirmInterface::getInstance().getType(param->getType());
+		set_method_param_type(methodType, i, type);
 		i++;
 	}
 
 	if (hasReturnType)
 	{
-		set_method_res_type(methodType, 0, new_type_primitive(mode_Is)); // TODO: Implement ref and bool types
+		auto type = FirmInterface::getInstance().getType(methodDeclaration->getReturnType());
+		set_method_res_type(methodType, 0, type);
 	}
 
 	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->getName().c_str()), methodType);
