@@ -108,6 +108,11 @@ bool ast::Type::isVoid()
 	return dimension == 0 && primitive_type == ast::Type::Primitive_type::VOID;
 }
 
+bool ast::Type::isArray()
+{
+	return dimension > 0;
+}
+
 shptr<ast::Type> ast::Type::de_array()
 {
 	if (dimension == 0)

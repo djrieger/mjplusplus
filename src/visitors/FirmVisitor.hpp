@@ -9,10 +9,10 @@ class FirmVisitor : public ASTVisitor
 {
 	protected:
 		ir_type* owner;
-		FirmInterface& firmInterface;
 	public:
-		FirmVisitor(FirmInterface& firmInterface);
-		void setOwner(ir_type* owner);
+		FirmVisitor();
+		virtual void setOwner(ir_type* owner);
+		virtual ir_type* getOwner() const;
 };
 
 #endif //FIRM_VISITOR_HPP
