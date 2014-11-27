@@ -44,6 +44,11 @@ namespace ast
 			return false;
 		}
 
+		bool Bool::getValue() const
+		{
+			return value;
+		}
+
 
 		std::pair<bool, bool> Bool::constBool() const
 		{

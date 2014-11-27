@@ -14,7 +14,8 @@ void ExpressionVisitor::visit(shptr<ast::be::Plus const> plusExpr)
 // primary expressions
 void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 {
-	;
+	bool value = boolExpr->getValue();
+	this->resultNode = FirmInterface::getInstance().createNodeForBoolConstant(value);
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 {

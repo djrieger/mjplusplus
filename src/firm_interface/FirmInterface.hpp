@@ -21,6 +21,7 @@ class FirmInterface
 			return instance;
 		}
 		ir_node* createNodeForIntegerConstant(int);
+		ir_node* createNodeForBoolConstant(bool);
 	private:
 		FirmInterface();
 		FirmInterface(FirmInterface const&) = delete;
