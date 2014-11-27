@@ -7,7 +7,7 @@
 
 namespace ast
 {
-	class MainMethodDeclaration : public MethodDeclaration
+	class  MainMethodDeclaration : public MethodDeclaration
 	{
 		public:
 			MainMethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Block> block);
