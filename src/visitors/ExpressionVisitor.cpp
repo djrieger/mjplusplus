@@ -2,8 +2,11 @@
 
 void visit(shptr<ast::be::Plus const> plusExpr)
 {
-	// TODO
-	//ir_node *left = plusExpr->getLeftChild()->toValue();
-	//ir_node *right = plusExpr->getRightChild()->toValue();
-	//return FirmInterface::getInstance->createOperation(plusExpr, left, right);
+	plusExpr->getLeftChild()->accept(this);
+	ir_node* left = this->resultNode;
+
+	plusExpr->getRightChild()->accept(this);
+	ir_node* right = this->resultNode;
+
+	this->resultNode = FirmInterface::getInstance->createOperation(plusExpr, left, right);
 }

@@ -15,7 +15,7 @@ class FirmInterface
 {
 	private:
 		FirmInterface();
-		~FirmInterface();	
+		~FirmInterface();
 		static shptr<FirmInterface> instance;
 	public:
 		static shptr<FirmInterface> getInstance();
