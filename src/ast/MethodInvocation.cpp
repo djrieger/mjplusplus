@@ -31,7 +31,7 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 			{
 				auto method_item = method_it->second;
 				shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;
-				shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentTypes();
+				shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentExpressions();
 
 				int decSize = declarationTypes->size();
 				int invSize = invokedExpressions->size();
