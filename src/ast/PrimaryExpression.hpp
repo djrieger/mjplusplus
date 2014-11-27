@@ -73,6 +73,7 @@ namespace ast
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
+				virtual std::string const& getStringValue();
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
