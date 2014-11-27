@@ -11,6 +11,7 @@
 #include "../ast/Statement.hpp"
 #include "../ast/Block.hpp"
 #include "../ast/BinaryExpression.hpp"
+#include "../ast/PrimaryExpression.hpp"
 
 class FirmInterface
 {
@@ -20,7 +21,7 @@ class FirmInterface
 			static FirmInterface instance;
 			return instance;
 		}
-		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation> expr);
+		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
 		ir_node* createNodeForIntegerConstant(int);
 		ir_node* createNodeForBoolConstant(bool);
 	private:

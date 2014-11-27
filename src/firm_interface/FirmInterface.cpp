@@ -4,6 +4,7 @@
 #include "../ast/LVDStatement.hpp"
 #include "../ast/Block.hpp"
 #include "../visitors/MemberVisitor.hpp"
+#include "../visitors/ExpressionVisitor.hpp"
 
 
 FirmInterface::FirmInterface()
@@ -13,20 +14,21 @@ FirmInterface::FirmInterface()
 }
 
 
-ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation> expr)
+ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
 {
 
 	// TODO: find the corresponding entity for this method
 	ir_entity* ent = NULL;
 
 	shptr<ast::Arguments> arguments = expr->getArguments();
-	int argc = arguments->argc;
+	int argc = arguments->getArgumentsSize();
 
-	ir_node** in = calloc(argc, sizeof(ir_node*));
+	ir_node** in = (ir_node**) calloc(argc, sizeof(ir_node*));
 	int in_counter = 0;
 
 	ExpressionVisitor exprVisitor;
 
+	//TODO: We also need to add "this" to the parameters.
 	for (shptr<ast::Expression> argumentExpr : * (arguments->getArgumentExpressions()))
 	{
 		argumentExpr->accept(exprVisitor);

@@ -17,6 +17,7 @@ namespace ast
 			Arguments(shptr<vec<shptr<ast::Expression>>> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual shptr<vec<shptr<Expression>>> getArgumentExpressions() const;
+			virtual int getArgumentsSize() const;
 			virtual void accept(ASTVisitor& visitor) const;
 	};
 }

@@ -113,7 +113,7 @@ namespace ast
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
-				virtual sptr<Arguments> getArguments() const;
+				virtual shptr<Arguments> getArguments() const;
 			private:
 				shptr<Arguments> arguments;
 		};
