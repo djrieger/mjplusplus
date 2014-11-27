@@ -58,3 +58,13 @@ Simon_057: chain of field accesses and array accesses
 Simon_058: chain of method invocation and array accesses
 Simon_059: chain of all postfix operations
 Simon_060: threedimensional arrays with pointers to same subarrays
+Simon_061: nesting of multiple parameters
+Simon_062: multiple parameters with assignments
+Simon_063: multiple parameters with field assignments (not used in function)
+Simon_064: nesting of multiple parameters with non-pure functions
+Simon_065: array access with assignment in index
+Simon_066: array assignment with assignment in index
+Simon_067: multiple shadowings
+Simon_068: modulo operator with negative numbers
+Simon_069: parameter with field access of field used in function
+Simon_070: array assignment of array used in function
