@@ -48,3 +48,13 @@ Simon_047: arrays as fields
 Simon_048: chaining of method and fields
 Simon_049: field shadowed by local variable
 Simon_050: different System.out.println() methods
+Simon_051: field contains this pointer
+Simon_052: variable use in own initializer (with assignment)
+Simon_053: integer overflow handling
+Simon_054: println ( MIN_INT )
+Simon_055: handling of minus MIN_INT
+Simon_056: arrays of objects
+Simon_057: chain of field accesses and array accesses
+Simon_058: chain of method invocation and array accesses
+Simon_059: chain of all postfix operations
+Simon_060: threedimensional arrays with pointers to same subarrays
