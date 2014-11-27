@@ -19,6 +19,11 @@ FirmInterface::FirmInterface()
 	printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
 }
 
+ir_node* FirmInterface::createNodeForIntegerConstant(int x)
+{
+	return new_Const_long(mode_Is, x);
+}
+
 void FirmInterface::foo()
 {
 	const unsigned int paramsCount = 0;

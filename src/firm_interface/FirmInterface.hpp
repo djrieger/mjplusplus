@@ -20,6 +20,7 @@ class FirmInterface
 	public:
 		static shptr<FirmInterface> getInstance();
 		void foo();
+		ir_node* createNodeForIntegerConstant(int);
 };
 
 #endif
