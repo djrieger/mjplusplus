@@ -13,14 +13,19 @@
 
 class FirmInterface
 {
+	public:
+		static FirmInterface& getInstance()
+		{
+			static FirmInterface instance;
+			return instance;
+		}
+		ir_node* createNodeForIntegerConstant(int);
+		void foo();
 	private:
 		FirmInterface();
 		~FirmInterface();
-		static shptr<FirmInterface> instance;
-	public:
-		static shptr<FirmInterface> getInstance();
-		void foo();
-		ir_node* createNodeForIntegerConstant(int);
+		FirmInterface(FirmInterface const&);
+		void operator=(FirmInterface const&);
 };
 
 #endif

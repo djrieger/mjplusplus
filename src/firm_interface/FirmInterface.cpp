@@ -5,13 +5,6 @@
 #include "../ast/Block.hpp"
 #include "../visitors/MemberVisitor.hpp"
 
-shptr<FirmInterface> FirmInterface::getInstance()
-{
-	if (!instance)
-		instance = std::make_shared<FirmInterface>(new FirmInterface());
-
-	return instance;
-}
 
 FirmInterface::FirmInterface()
 {
