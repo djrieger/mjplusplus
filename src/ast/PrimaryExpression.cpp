@@ -228,6 +228,11 @@ namespace ast
 				return std::make_shared<Type>(Type::INT);
 		}
 
+		std::string const& Integer::getStringValue()
+		{
+			return string_value;
+		}
+
 		void Integer::toString(std::ostream& out, unsigned int, bool) const
 		{
 			out << string_value;
