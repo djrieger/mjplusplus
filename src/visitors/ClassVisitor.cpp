@@ -1,4 +1,5 @@
 #include "ClassVisitor.hpp"
+#include "MemberVisitor.hpp"
 
 ClassVisitor::ClassVisitor() {}
 

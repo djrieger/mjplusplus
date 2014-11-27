@@ -10,16 +10,21 @@
 #include "../ast/TypeIdent.hpp"
 #include "../ast/Statement.hpp"
 #include "../ast/Block.hpp"
+#include "../ast/BinaryExpression.hpp"
 
 class FirmInterface
 {
 	private:
 		FirmInterface();
-		~FirmInterface();
 		static shptr<FirmInterface> instance;
 	public:
+		~FirmInterface();
 		static shptr<FirmInterface> getInstance();
 		void foo();
+		ir_mode* getIntegerMode();
+		ir_mode* getBooleanMode();
+		ir_mode* getReferenceMode();
+		ir_node* createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right);
 };
 
 #endif

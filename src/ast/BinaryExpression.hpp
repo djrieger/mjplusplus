@@ -24,6 +24,8 @@ namespace ast
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
 				virtual std::pair<bool, bool> constBool() const;
+				shptr<Expression> getLeftChild() const;
+				shptr<Expression> getRightChild() const;
 		};
 
 		class NotEq : public BinaryExpression

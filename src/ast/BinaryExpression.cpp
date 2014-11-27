@@ -25,6 +25,15 @@ namespace ast
 				out << ')';
 		}
 
+		shptr<Expression> BinaryExpression::getLeftChild() const
+		{
+			return this->leftChild;
+		}
+		shptr<Expression> BinaryExpression::getRightChild() const
+		{
+			return this->rightChild;
+		}
+
 		shptr<BinaryExpression> BinaryExpression::createBinaryExpr(shptr<Expression> leftChild, shptr<Expression> rightChild, lexer::Token::Token_type operator_type)
 		{
 			shptr<BinaryExpression> binaryExpr;
