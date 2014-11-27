@@ -5,7 +5,7 @@
 #include "../ast/Block.hpp"
 #include "../visitors/MemberVisitor.hpp"
 
-FirmInterface &FirmInterface::getInstance()
+shptr<FirmInterface> FirmInterface::getInstance()
 {
 	if (!instance)
 		instance = std::make_shared<FirmInterface>(new FirmInterface());
@@ -16,49 +16,6 @@ FirmInterface::FirmInterface()
 {
 	ir_init();
 	printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
-
-
-}
-
-/*
- Currently supports only int types
-*/
-ir_graph* FirmInterface::generateMethod(
-    ir_type* owner,
-    shptr<ast::MethodDeclaration const> methodDeclaration)
-{
-	unsigned int paramsCount = methodDeclaration->getParameters()->size();
-	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
-	ir_type* methodType = new_type_method(paramsCount, hasReturnType);
-
-	int i = 0;
-
-	for (auto& param : *methodDeclaration->getParameters())
-	{
-		set_method_param_type(methodType, i, int_type); // TODO: Implement ref and bool types
-		i++;
-	}
-
-	if (hasReturnType)
-	{
-		set_method_res_type(methodType, 0, int_type); // TODO: Implement ref and bool types
-	}
-
-	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->getName().c_str()), methodType);
-	return new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
-}
-
-ir_graph* FirmInterface::generateClass(ir_type* owner, shptr<ast::ClassDeclaration const> classDeclaration)
-{
-	ir_type* classType = new_type_class(new_id_from_str(classDeclaration->getName().c_str()));
-	MemberVisitor visitor(*this);
-
-	for (auto& member : *classDeclaration->getMembers())
-	{
-		member->accept(visitor);
-		// TODO: Do something with result
-		//visitor.getResult();
-	}
 }
 
 void FirmInterface::foo()
@@ -80,7 +37,7 @@ void FirmInterface::foo()
 	parameters->push_back(std::make_shared<ast::TypeIdent>(typeInt, parameterName));
 
 	auto block = std::shared_ptr<ast::Block>();
-	ir_graph* irg = generateMethod(owner, std::make_shared<ast::MethodDeclaration>(typeIdent, parameters, block));
+	ir_graph* irg; //= generateMethod(owner, std::make_shared<ast::MethodDeclaration>(typeIdent, parameters, block));
 
 	set_current_ir_graph(irg);
 
