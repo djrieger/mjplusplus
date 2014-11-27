@@ -97,21 +97,20 @@ shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticA
 
 void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	auto st = symbolTable;
 	//std::cout << "copying " << return_type_and_name->getName() << std::endl;
-	st->enterScope();
-	auto s = Symbol::makeSymbol("return", st->getCurrentScope());
+	symbolTable->enterScope();
+	auto s = Symbol::makeSymbol("return", symbolTable->getCurrentScope());
 	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
-	st->insert(s, d);
-	collectParameters(sa, st);
+	symbolTable->insert(s, d);
+	collectParameters(sa, symbolTable);
 
-	auto system_s = Symbol::makeSymbol("System", st->getCurrentScope());
+	auto system_s = Symbol::makeSymbol("System", symbolTable->getCurrentScope());
 
-	if (!st->definedInCurrentScope(system_s))
+	if (!symbolTable->definedInCurrentScope(system_s))
 	{
 		auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("$System").classNode->getIdent());
 		auto system_d = std::make_shared<Definition>(system_s, system_t);
-		st->insert(system_s, system_d);
+		symbolTable->insert(system_s, system_d);
 	}
 
 	if (!block)
@@ -119,10 +118,10 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 		if (*return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
 			sa.reportError("Method $ident{" + return_type_and_name->getName() + "} returns non-void but body is empty", return_type_and_name->getIdent());
 	}
-	else if (!block->analyze(sa, st) && *return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
+	else if (!block->analyze(sa, symbolTable) && *return_type_and_name->getType() != Type(Type::Primitive_type::VOID))
 		sa.reportError("Method $ident{" + return_type_and_name->getName() + "} returns non-void but not all paths return", return_type_and_name->getIdent());
 
-	st->leaveScope();
+	symbolTable->leaveScope();
 	//std::cout << "done" << std::endl;
 }
 
