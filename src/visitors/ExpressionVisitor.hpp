@@ -48,7 +48,7 @@ class ExpressionVisitor : public FirmVisitor
 		virtual void visit(shptr<ast::be::Slash const> slashExpr);
 
 		// postfix expression
-		virtual void visit(shptr<ast::PostfixExpression> postfixExpr);
+		virtual void visit(shptr<ast::PostfixExpression const> postfixExpr);
 };
 
 #endif

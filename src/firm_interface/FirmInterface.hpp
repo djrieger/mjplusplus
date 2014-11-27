@@ -14,12 +14,20 @@
 
 class FirmInterface
 {
+	public:
+		static FirmInterface& getInstance()
+		{
+			static FirmInterface instance;
+			return instance;
+		}
+		ir_node* createNodeForIntegerConstant(int);
 	private:
 		FirmInterface();
+		FirmInterface(FirmInterface const&) = delete;
+		void operator=(FirmInterface const&) = delete;
 		static shptr<FirmInterface> instance;
 	public:
 		~FirmInterface();
-		static shptr<FirmInterface> getInstance();
 		void foo();
 		ir_mode* getIntegerMode();
 		ir_mode* getBooleanMode();
