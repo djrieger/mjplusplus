@@ -9,6 +9,7 @@ shptr<FirmInterface> FirmInterface::getInstance()
 {
 	if (!instance)
 		instance = std::make_shared<FirmInterface>(new FirmInterface());
+
 	return instance;
 }
 
