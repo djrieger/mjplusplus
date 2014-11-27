@@ -3,7 +3,7 @@ class a {
 	public static void main(String[] args) {
 		a q = new a();
 		q.x = 4;
-		q.d();
+		q = q.d();
 		System.out.println(q.x);
 	}
 	
