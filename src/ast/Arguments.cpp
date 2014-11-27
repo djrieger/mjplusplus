@@ -35,3 +35,11 @@ void ast::Arguments::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(shared_from_this());
 }
+
+int ast::Arguments::getArgumentsSize() const
+{
+	if (arguments)
+		return arguments->size();
+
+	return 0;
+}
