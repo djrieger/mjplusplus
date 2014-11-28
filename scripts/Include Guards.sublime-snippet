@@ -1,0 +1,17 @@
+<snippet>
+	<content><![CDATA[
+#ifndef ${TM_FILENAME/(([A-Z])([A-Z][a-z]))|(([a-z])([A-Z]))|([a-z])|(\.)/\U(?1:$2_$3)(?4:$5_$6)$7(?8:_)\E/g}
+#define ${TM_FILENAME/(([A-Z])([A-Z][a-z]))|(([a-z])([A-Z]))|([a-z])|(\.)/\U(?1:$2_$3)(?4:$5_$6)$7(?8:_)\E/g}
+
+class ${1:${TM_FILENAME/(.+)\..+|.*/$1/:name}} {
+	$0
+};
+
+#endif
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>guard</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+	<scope>source.c</scope>
+</snippet>
