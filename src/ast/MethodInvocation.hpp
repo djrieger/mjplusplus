@@ -7,15 +7,14 @@
 #include "Ident.hpp"
 #include "Expression.hpp"
 #include "Arguments.hpp"
+#include "MethodInvocationBase.hpp"
 
 namespace ast
 {
-	class MethodInvocation : public PostfixOp
+	class MethodInvocation : public PostfixOp, public MethodInvocationBase
 	{
 		private:
 			shptr<Ident> method_name;
-			shptr<Arguments> arguments;
-			shptr<const MethodDeclaration> callTarget;
 		public:
 			MethodInvocation(shptr<Ident> method_name, shptr<Arguments> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;

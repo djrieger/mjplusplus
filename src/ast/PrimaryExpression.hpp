@@ -6,6 +6,7 @@
 #include "Arguments.hpp"
 #include "Ident.hpp"
 #include "Type.hpp"
+#include "MethodInvocationBase.hpp"
 #include <vector>
 
 namespace ast
@@ -104,7 +105,7 @@ namespace ast
 				shptr<ast::Ident> identifier;
 		};
 
-		class MethodInvocation : public Ident
+		class MethodInvocation : public Ident, public MethodInvocationBase
 		{
 			public:
 				MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments);
@@ -114,8 +115,6 @@ namespace ast
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
 				virtual shptr<Arguments> getArguments() const;
-			private:
-				shptr<Arguments> arguments;
 		};
 	} // namespace pe
 

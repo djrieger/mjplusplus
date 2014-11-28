@@ -342,7 +342,7 @@ namespace ast
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
 			Ident(identifier),
-			arguments(arguments)
+			MethodInvocationBase(arguments)
 		{
 
 		}
@@ -373,45 +373,7 @@ namespace ast
 			auto method_it = method_table.find(identifier->getName());
 
 			if (method_it != method_table.end())
-			{
-				auto method_item = method_it->second;
-				shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;
-				shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentExpressions();
-
-				int decSize = declarationTypes->size();
-				int invSize = invokedExpressions->size();
-
-				if (decSize == invSize)
-				{
-					bool validArguments = true;
-					auto decIt = declarationTypes->begin();
-					auto invIt = invokedExpressions->begin();
-
-					for (int i = 0; i < invSize; i++)
-					{
-						auto decType = *decIt;
-						auto invType = (*invIt)->get_type(sa, symbolTable);
-
-						//TODO: check if invType is non-empty pointer
-						if (!invType || !(*decType == *invType ||
-						                  (decType->isRefType() && invType->getPrimitiveType() == Type::Primitive_type::NULL_TYPE)))
-						{
-							validArguments = false;
-							break;
-						}
-
-						decIt++;
-						invIt++;
-					}
-
-					if (validArguments)
-						return method_item.returnType;
-					else
-						sa.reportError("Arguments do not match parameter types.", identifier);
-				}
-				else
-					sa.reportError("Wrong number of arguments.", identifier);
-			}
+				performTypeChecks(identifier, method_it->second, sa, symbolTable);
 			else
 			{
 				sa.reportError("$type{" + class_type->getName() + "} has no method named $ident{" + identifier->getName() + "}",
