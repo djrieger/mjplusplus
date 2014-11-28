@@ -15,7 +15,7 @@ namespace ast
 		private:
 			shptr<Ident> method_name;
 			shptr<Arguments> arguments;
-			shptr<const ast::MethodDeclaration> callTarget;
+			shptr<const MethodDeclaration> callTarget;
 		public:
 			MethodInvocation(shptr<Ident> method_name, shptr<Arguments> arguments);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
@@ -31,6 +31,7 @@ namespace ast
 			 * @return	The target method's return type if the call is valid, an empty shared pointer otherwise
 			 */
 			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType);
+			virtual shptr<const MethodDeclaration> getTarget() const;
 			virtual bool lValueHelp() const;
 			virtual void accept(ASTVisitor& visitor) const;
 	};
