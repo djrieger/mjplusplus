@@ -15,7 +15,7 @@ namespace ast
 		out << ']';
 	}
 
-	shptr<Type> ArrayAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) const
+	shptr<Type> ArrayAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) 
 	{
 		auto offsetType = access_offset->get_type(sa, symbolTable);
 
