@@ -14,7 +14,7 @@ void ast::MethodInvocation::toString(std::ostream& out, unsigned int indent, boo
 	arguments->toString(out, indent);
 }
 
-shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<ast::Type> callingType) const
+shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<ast::Type> callingType) 
 {
 	if (callingType->isClassType())
 	{
@@ -59,8 +59,10 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 						invIt++;
 					}
 
-					if (validArguments)
+					if (validArguments) {
+						this->callTarget = method_item.methodNode;
 						return method_item.returnType;
+					}
 					else
 						sa.reportError("Arguments do not match parameter types.", method_name);
 				}
