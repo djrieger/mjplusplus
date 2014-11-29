@@ -148,5 +148,5 @@ unsigned int ast::MethodDeclaration::countVariableDeclarations() const
 
 void ast::MethodDeclaration::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<MethodDeclaration const>(shared_from_this()));
 }

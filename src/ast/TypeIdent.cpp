@@ -30,5 +30,5 @@ shptr<ast::Type> const& ast::TypeIdent::getType() const
 
 void ast::TypeIdent::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<TypeIdent const>(shared_from_this()));
 }

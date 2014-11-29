@@ -33,5 +33,5 @@ bool ast::Ident::operator!=(ast::Ident const& other)
 
 void ast::Ident::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<Ident const>(shared_from_this()));
 }

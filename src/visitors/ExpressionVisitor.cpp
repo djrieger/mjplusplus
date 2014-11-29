@@ -5,12 +5,6 @@ ir_node* ExpressionVisitor::getResultNode() const
 	return resultNode;
 }
 
-
-void ExpressionVisitor::visit(shptr<ast::Node const> node)
-{
-
-}
-
 void ExpressionVisitor::visit(shptr<ast::be::Plus const> plusExpr)
 {
 	plusExpr->getLeftChild()->accept(*this);

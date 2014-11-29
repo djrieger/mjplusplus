@@ -124,7 +124,16 @@ int main(int argc, const char** argv)
 			Parser parser(lexer, errorReporter);
 			bool valid = parser.start();
 
-			if (options[CHECK] && parser.getRoot())
+			if (valid && !parser.getRoot())
+			{
+				std::cerr << "Parsing was successfull not there is no tree..." << std::endl;
+				valid = false;
+			}
+
+			if (options[PRINT_AST] && valid)
+				parser.getRoot()->toString(std::cout, 0);
+
+			if (options[CHECK] && valid)
 			{
 				SemanticAnalysis sa(parser.getRoot(), errorReporter);
 
@@ -132,25 +141,20 @@ int main(int argc, const char** argv)
 					valid = false;
 			}
 
-			if (options[PRINT_AST] && parser.getRoot())
-				parser.getRoot()->toString(std::cout, 0);
-
 			errorReporter->printErrors();
+
+			if (options[FIRM] && options[CHECK] && valid)
+			{
+				// TODO
+				// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
+
+				FirmInterface::getInstance().convert(parser.getRoot());
+			}
 
 			if (!valid)
 				return EXIT_FAILURE;
-			else
-			{
-				if (options[FIRM] && options[CHECK])
-				{
-					// TODO
-					// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
 
-					// firmInterface.foo();
-				}
-
-				return EXIT_SUCCESS;
-			}
+			return EXIT_SUCCESS;
 		}
 		catch (std::string msg)
 		{

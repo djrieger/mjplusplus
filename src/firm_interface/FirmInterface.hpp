@@ -29,14 +29,18 @@ class FirmInterface
 		FirmInterface(FirmInterface const&) = delete;
 		void operator=(FirmInterface const&) = delete;
 		static shptr<FirmInterface> instance;
+
+		std::map<shptr<ast::Type>, ir_type*> types;
 	public:
 		~FirmInterface();
 		void foo();
+		void convert(shptr<ast::Program> program);
 		ir_mode* getIntegerMode();
 		ir_mode* getBooleanMode();
 		ir_mode* getReferenceMode();
 		ir_mode* getMode(shptr<ast::Type> ast_type);
 		ir_type* getType(shptr<ast::Type> ast_type);
+		void addClassType(shptr<ast::Ident> class_ident, ir_type* class_type);
 		ir_node* createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right);
 
 };

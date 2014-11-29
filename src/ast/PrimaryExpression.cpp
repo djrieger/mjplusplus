@@ -57,7 +57,7 @@ namespace ast
 
 		void Bool::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Bool const>(shared_from_this()));
 		}
 
 
@@ -156,7 +156,7 @@ namespace ast
 
 		void Ident::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Ident const>(shared_from_this()));
 		}
 
 		Object::Object(Object_Type object_type, source_position_t position) : PrimaryExpression(position), object_type(object_type)
@@ -200,7 +200,7 @@ namespace ast
 
 		void Object::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Object const>(shared_from_this()));
 		}
 
 		Integer::Integer(std::string const& string_value, source_position_t position)
@@ -250,7 +250,7 @@ namespace ast
 
 		void Integer::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Integer const>(shared_from_this()));
 		}
 
 		NewArrayExpression::NewArrayExpression(shptr<Type> type, shptr<Expression> expr) :
@@ -297,7 +297,7 @@ namespace ast
 
 		void NewArrayExpression::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<NewArrayExpression const>(shared_from_this()));
 		}
 
 		NewObjectExpression::NewObjectExpression(shptr<ast::Ident> identifier) : PrimaryExpression(identifier->getPosition()), identifier(identifier)
@@ -337,7 +337,7 @@ namespace ast
 
 		void NewObjectExpression::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<NewObjectExpression const>(shared_from_this()));
 		}
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
@@ -438,7 +438,7 @@ namespace ast
 
 		void MethodInvocation::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<MethodInvocation const>(shared_from_this()));
 		}
 
 	} // namespace pe
