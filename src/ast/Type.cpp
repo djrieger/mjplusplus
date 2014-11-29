@@ -62,12 +62,12 @@ int ast::Type::getDimension() const
 	return dimension;
 }
 
-bool ast::Type::operator==(Type const& other)
+bool ast::Type::operator==(Type const& other) const
 {
 	return !(*this != other);
 }
 
-bool ast::Type::operator!=(Type const& other)
+bool ast::Type::operator!=(Type const& other) const
 {
 	if (this->dimension != other.dimension ||
 	        this->primitive_type != other.primitive_type)
