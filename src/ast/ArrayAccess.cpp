@@ -15,7 +15,7 @@ namespace ast
 		out << ']';
 	}
 
-	shptr<Type> ArrayAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) 
+	shptr<Type> ArrayAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType)
 	{
 		auto offsetType = access_offset->get_type(sa, symbolTable);
 
@@ -42,7 +42,7 @@ namespace ast
 
 	void ArrayAccess::accept(ASTVisitor& visitor) const
 	{
-		visitor.visit(shared_from_this());
+		visitor.visit(std::static_pointer_cast<ArrayAccess const>(shared_from_this()));
 	}
 }
 

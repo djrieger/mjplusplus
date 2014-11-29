@@ -18,8 +18,6 @@ class ExpressionVisitor : public FirmVisitor
 		virtual ir_node* getResultNode() const;
 
 		//ExpressionVisitor(StatementVisitor &statementVisitor);
-		virtual void visit(shptr<ast::Node const> node);
-
 		// primary expressions
 		virtual void visit(shptr<ast::pe::Bool const> boolExpr);
 		virtual void visit(shptr<ast::pe::Ident const> identExpr);

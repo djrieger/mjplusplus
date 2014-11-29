@@ -112,5 +112,5 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 
 void ast::MainMethodDeclaration::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<MainMethodDeclaration const>(shared_from_this()));
 }

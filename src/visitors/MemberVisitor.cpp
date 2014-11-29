@@ -5,12 +5,7 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 	setOwner(classVisitor.getOwner());
 }
 
-void MemberVisitor::visit(shptr<const ast::Node> node)
-{
-
-}
-
-ir_graph* MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
+void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 {
 	// generate method:
 
@@ -35,10 +30,10 @@ ir_graph* MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclara
 
 	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->getName().c_str()), methodType);
 	//TODO: SimpleIf example includes parameters into local variable count
-	return new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
+	function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
 }
 
-ir_entity* MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
+void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
 {
 	// TODO switch on fieldDeclaration->getType()
 	auto fieldASTType = fieldDeclaration->getType();

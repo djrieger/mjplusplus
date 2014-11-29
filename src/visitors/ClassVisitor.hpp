@@ -7,7 +7,6 @@
 class ClassVisitor : public FirmVisitor
 {
 	public:
-		ClassVisitor();
 		virtual void visit(shptr<const ast::ClassDeclaration> classDeclaration);
 };
 

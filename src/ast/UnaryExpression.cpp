@@ -120,7 +120,7 @@ namespace ast
 
 		void Not::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Not const>(shared_from_this()));
 		}
 
 		Neg::Neg(shptr<Expression> child, int size)
@@ -167,7 +167,7 @@ namespace ast
 
 		void Neg::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Neg const>(shared_from_this()));
 		}
 
 	}
