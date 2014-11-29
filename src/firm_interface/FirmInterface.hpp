@@ -1,7 +1,8 @@
 #ifndef FIRM_INTERFACE_HPP
 #define FIRM_INTERFACE_HPP
 
-#include <iostream>
+#include <unordered_map>
+
 #include <libfirm/firm.h>
 #include <libfirm/irdump.h>
 #include <libfirm/irverify.h>
@@ -30,7 +31,7 @@ class FirmInterface
 		void operator=(FirmInterface const&) = delete;
 		static shptr<FirmInterface> instance;
 
-		std::map<shptr<ast::Type>, ir_type*> types;
+		std::unordered_map<shptr<ast::Type>, ir_type*> types;
 	public:
 		~FirmInterface();
 		void foo();
