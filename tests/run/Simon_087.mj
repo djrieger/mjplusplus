@@ -1,0 +1,12 @@
+class a {
+	public static void main(String[] args) {
+		boolean b = false && new a().q();
+		b = true || new a().q();
+		System.out.println(3);
+	}
+	
+	public boolean q() {
+		System.out.println(-2);
+		return true;
+	}
+}

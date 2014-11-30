@@ -68,3 +68,23 @@ Simon_067: multiple shadowings
 Simon_068: modulo operator with negative numbers
 Simon_069: parameter with field access of field used in function
 Simon_070: array assignment of array used in function
+Simon_071: simple if-then (constant true)
+Simon_072: simple if-then (constant false)
+Simon_073: simple if-then-else (constant true)
+Simon_074: simple if-then-else (constant false)
+Simon_075: boolean variables
+Simon_076: boolean fields, including initialization
+Simon_077: boolean parameters
+Simon_078: ==, != (for ints)
+Simon_079: <, >, <=, >=
+Simon_080: ==, != (for booleans)
+Simon_081: ==, != (for reference types)
+Simon_082: unary not
+Simon_083: null checks
+Simon_084: && and || without need for short circuit
+Simon_085: assignment in if condition
+Simon_086: non-pure method call in if condition
+Simon_087: && and || with short circuit
+Simon_088: &&, || in if condition (short circuit)
+Simon_089: return in then branch
+Simon_090: simple while (false)
