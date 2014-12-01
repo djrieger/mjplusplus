@@ -88,3 +88,13 @@ Simon_087: && and || with short circuit
 Simon_088: &&, || in if condition (short circuit)
 Simon_089: return in then branch
 Simon_090: simple while (false)
+Simon_091: simple while (true then false)
+Simon_092: one dimensional counting loop
+Simon_093: two dimensional counting loop
+Simon_094: assignment in while condition
+Simon_095: non-pure method call in while condition
+Simon_096: &&, || in while condition (short circuit)
+Simon_097: if within while
+Simon_098: while within if
+Simon_099: return within while
+Simon_100: nested while/if
