@@ -98,3 +98,13 @@ Simon_097: if within while
 Simon_098: while within if
 Simon_099: return within while
 Simon_100: nested while/if
+Simon_101: factorial (loop version)
+Simon_102: factorial (recursive version)
+Simon_103: root calculation with binary search
+Simon_104: peasant multiplication
+Simon_105: prime test
+Simon_106: sieve of erathostenes (array version)
+Simon_107: sieve of erathostenes (list version)
+Simon_108: list length (recursive)
+Simon_109: list length (loop)
+Simon_110: power function (loop, O(n))
