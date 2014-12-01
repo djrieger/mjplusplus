@@ -108,3 +108,13 @@ Simon_107: sieve of erathostenes (list version)
 Simon_108: list length (recursive)
 Simon_109: list length (loop)
 Simon_110: power function (loop, O(n))
+Simon_111: power function (recursion, O(n))
+Simon_112: power function (recursion, O(log n))
+Simon_113: McCarthy function
+Simon_114: fibonacci (O(phi^n))
+Simon_115: fibonacci (O(n))
+Simon_116: fibonacci (O(log n))
+Simon_117: linear congruential generator
+Simon_118: quicksort (primitive version on lists)
+Simon_119: selection sort
+Simon_120: permutation composition
