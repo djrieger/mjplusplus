@@ -1,6 +1,7 @@
 #ifndef EXPRESSION_VISITOR_HPP
 #define EXPRESSION_VISITOR_HPP
 
+#include <functional>
 #include "FirmVisitor.hpp"
 #include "../ast/BinaryExpression.hpp"
 #include "../ast/PrimaryExpression.hpp"
@@ -12,6 +13,10 @@ class ExpressionVisitor : public FirmVisitor
 
 	private:
 		ir_node* resultNode;
+		void visitBinaryExpression(
+			shptr<ast::be::BinaryExpression const> binExpr,
+			std::function<ir_node* (ir_node*, ir_node*)> createResultNode
+		);
 
 	public:
 
