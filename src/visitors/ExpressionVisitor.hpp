@@ -13,6 +13,12 @@ class ExpressionVisitor : public FirmVisitor
 
 	private:
 		ir_node* resultNode;
+		/*
+		 * Create an ir_node for binExpr by calling createResultNode.
+		 * createResultNode gets the nodes left and right as parameters, obtained by calling accept()
+		 * on leftChild and rightChild of binExpr, respectively. It has to return a new ir_node
+		 * which is then set as this->resultNode.
+		 */
 		void visitBinaryExpression(
 			shptr<ast::be::BinaryExpression const> binExpr,
 			std::function<ir_node* (ir_node*, ir_node*)> createResultNode
