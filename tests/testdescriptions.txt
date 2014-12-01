@@ -118,3 +118,13 @@ Simon_117: linear congruential generator
 Simon_118: quicksort (primitive version on lists)
 Simon_119: selection sort
 Simon_120: permutation composition
+Simon_121: collatz conjecture
+Simon_122: array reverse
+Simon_123: hirsch index
+Simon_124: merge arrays
+Simon_125: binomial coefficients (factorial version)
+Simon_126: binomial coefficients (recursive version)
+Simon_127: binomial coefficients (dynamic programming version)
+Simon_128: Ackermann function
+Simon_129: horner's method
+Simon_130: "ping pong" (mutual recursive calls)
