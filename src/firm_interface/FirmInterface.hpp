@@ -56,7 +56,7 @@ class FirmInterface
 		}
 		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
 		ir_node* createNodeForIntegerConstant(int);
-		ir_node* createNodeForBoolConstant(bool);
+		ir_node* createNodeForBooleanConstant(bool);
 
 		~FirmInterface();
 		void foo();
