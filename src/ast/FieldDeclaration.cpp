@@ -15,14 +15,21 @@ void ast::FieldDeclaration::toString(std::ostream& out, unsigned int indent, boo
 	out << ";\n";
 }
 
-std::string ast::FieldDeclaration::getName() const
+std::string ast::FieldDeclaration::getNameForSort() const
 {
 	return '%' + type_and_name->getName();
 }
 
+
+std::string ast::FieldDeclaration::getName() const
+{
+	return type_and_name->getName();
+}
+
+
 void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
-	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+	auto symbol = Symbol::makeSymbol(this->getNameForSort(), shptr<Scope>());
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
