@@ -28,6 +28,31 @@ namespace std
 	};
 }
 
+struct JumpTarget {
+	ir_node *targetNode;
+	bool first;
+
+	JumpTarget(): targetNode(NULL), first(false) {}
+
+	void jumpFromBlock(ir_node* sourceBlock)
+	{
+		if (!this->targetNode) {
+			this->targetNode = sourceBlock;
+			this->first = true;
+		} else if (this->first) {
+			ir_node *jmpNode = new_r_Jmp(this->targetNode);
+			this->targetNode = new_immBlock();
+			this->first = false;
+			add_immBlock_pred(this->targetNode, jmpNode);
+		} 
+
+		if (this->targetNode) {
+			ir_node *jmpNode = new_r_Jmp(sourceBlock);
+			add_immBlock_pred(this->targetNode, jmpNode);
+		}
+	}
+};
+
 class FirmInterface
 {
 
