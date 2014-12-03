@@ -38,7 +38,7 @@ void ExpressionVisitor::visit(shptr<ast::be::Plus const> plusExpr)
 void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 {
 	bool value = boolExpr->getValue();
-	this->resultNode = FirmInterface::getInstance().createNodeForBoolConstant(value);
+	this->resultNode = FirmInterface::getInstance().createNodeForBooleanConstant(value);
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 {
@@ -69,11 +69,28 @@ void ExpressionVisitor::visit(shptr<ast::pe::Object const> objectExpr)
 // unary expressions
 void ExpressionVisitor::visit(shptr<ast::ue::Neg const> negExpr)
 {
-	;
+	shptr<ast::Expression> child = negExpr->getChild();
+	child->accept(*this);
+
+	if (negExpr->getSize() % 2 == 1)
+	{
+		ir_node* left = this->resultNode;
+		ir_node* right = FirmInterface::getInstance().createNodeForIntegerConstant(-1);
+		this->resultNode = new_Mul(left, right, FirmInterface::getInstance().getIntegerMode());
+	}
 }
+
 void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 {
-	;
+	shptr<ast::Expression> child = notExpr->getChild();
+	child->accept(*this);
+
+	if (notExpr->getSize() == 1)
+	{
+		ir_node* left = FirmInterface::getInstance().createNodeForBooleanConstant(true);
+		ir_node* right = this->resultNode;
+		this->resultNode = new_Sub(left, right, FirmInterface::getInstance().getBooleanMode());
+	}
 }
 
 // binary expressions
