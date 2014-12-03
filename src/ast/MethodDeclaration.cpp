@@ -155,6 +155,9 @@ unsigned int ast::MethodDeclaration::countVariableDeclarations() const
 shptr<std::map<std::string, int>> ast::MethodDeclaration::setVariablePositions() const
 {
 
+	// If you change anything here, you might want to make changes to
+	// MainMethodDeclaration::setVariablePositions(), too!
+
 	auto var2pos = std::make_shared<std::map<std::string, int>>();
 	int pos = 0;
 
