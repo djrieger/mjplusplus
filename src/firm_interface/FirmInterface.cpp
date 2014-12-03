@@ -128,12 +128,14 @@ ir_node* FirmInterface::createNodeForBooleanConstant(bool x)
 
 ir_node* FirmInterface::createModOperation(ir_node* left, ir_node* right)
 {
-	return NULL; //TODO: implement
+	ir_node* memory = get_store();
+	return new_Mod(memory, left, right, getIntegerMode(), op_pin_state_pinned);
 }
 
 ir_node* FirmInterface::createDivOperation(ir_node* left, ir_node* right)
 {
-	return NULL; //TODO: implement
+	ir_node* memory = get_store();
+	return new_DivRL(memory, left, right, getIntegerMode(), op_pin_state_pinned); //op_pin_state_floats??
 }
 
 void FirmInterface::foo()
