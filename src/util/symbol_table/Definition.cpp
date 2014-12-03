@@ -1,14 +1,19 @@
 #include "Definition.hpp"
 #include "Symbol.hpp"
 
-shptr<Symbol>  Definition::getSymbol() const
+shptr<Symbol> Definition::getSymbol() const
 {
 	return symbol;
 }
 
-shptr<ast::Type>  Definition::getType() const
+shptr<ast::Type> Definition::getType() const
 {
-	return type;
+	return declaringNode ? declaringNode->getDeclType() : shptr<ast::Type>();
 }
 
-Definition::Definition(shptr<Symbol> symbol, shptr<ast::Type> type): symbol(symbol), type(type) {}
+shptr<ast::VariableDeclaration const> Definition::getDeclaringNode() const
+{
+	return declaringNode;
+}
+
+Definition::Definition(shptr<Symbol> symbol, shptr<ast::VariableDeclaration const> declaringNode): symbol(symbol), declaringNode(declaringNode) {}

@@ -30,7 +30,6 @@ namespace ast
 			 * @return	The target method's return type if the call is valid, an empty shared pointer otherwise
 			 */
 			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType);
-			virtual shptr<const MethodDeclaration> getTarget() const;
 			virtual bool lValueHelp() const;
 			virtual void accept(ASTVisitor& visitor) const;
 	};

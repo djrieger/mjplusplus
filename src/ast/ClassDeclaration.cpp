@@ -49,6 +49,7 @@ namespace ast
 			if (dynamic_cast<MainMethodDeclaration*>(classMemberNode.get()))
 				containsMainMethod = true;
 
+			classMemberNode->setDeclaration(std::static_pointer_cast<ClassDeclaration const>(shared_from_this()));
 			classMemberNode->collectDefinition(sa, symbolTable, class_name->getName());
 
 		}
@@ -59,11 +60,7 @@ namespace ast
 	void ClassDeclaration::analyze(SemanticAnalysis& sa) const
 	{
 		auto symbolTable = std::make_shared<SymbolTable>();
-		auto t = std::make_shared<Type>(class_name);
-		auto s = Symbol::makeSymbol("this", symbolTable->getCurrentScope());
-		auto d = std::make_shared<Definition>(s, t);
 		symbolTable->enterScope();
-		symbolTable->insert(s, d);
 
 		for (auto& classMemberNode : *members)
 			classMemberNode->analyze(sa, symbolTable);

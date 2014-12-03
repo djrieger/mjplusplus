@@ -25,7 +25,12 @@ shptr<ast::Ident> const& ast::TypeIdent::getIdent() const
 
 shptr<ast::Type> const& ast::TypeIdent::getType() const
 {
-	return this->type;
+	return type;
+}
+
+shptr<ast::Type> const& ast::TypeIdent::getDeclType() const
+{
+	return type;
 }
 
 void ast::TypeIdent::accept(ASTVisitor& visitor) const

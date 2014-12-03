@@ -57,7 +57,7 @@ void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbo
 	symbolTable->leaveScope();
 
 	// insert this method into symbol table of this class
-	auto definition = std::make_shared<Definition>(symbol, returnType);
+	auto definition = std::make_shared<Definition>(symbol, nullptr);
 	symbolTable->insert(symbol, definition);
 
 	// insert this method into the method table in the class table
@@ -88,7 +88,7 @@ shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticA
 		else if (primitiveType == Type::Primitive_type::NONE && sa.getClassTable().find(parameter->getType()->getClassName()) == sa.getClassTable().end())
 			sa.reportError("Type $type{" + parameter->getType()->getClassName() + "} of parameter $ident{" + parameter->getName() + "} undeclared.", parameter->getType()->getClassNameIdent());
 
-		auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
+		auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter);
 		symbolTable->insert(paramSymbol, paramDefinition);
 	}
 
@@ -100,16 +100,20 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 	//std::cout << "copying " << return_type_and_name->getName() << std::endl;
 	symbolTable->enterScope();
 	auto s = Symbol::makeSymbol("return", symbolTable->getCurrentScope());
-	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
+	auto d = std::make_shared<Definition>(s, return_type_and_name);
 	symbolTable->insert(s, d);
 	collectParameters(sa, symbolTable);
+
+	auto tt = std::make_shared<TypeIdent>(std::make_shared<Type>(declaration->getIdent()), declaration->getIdent());
+	auto ts = Symbol::makeSymbol("this", symbolTable->getCurrentScope());
+	auto td = std::make_shared<Definition>(ts, tt);
+	symbolTable->insert(ts, td);
 
 	auto system_s = Symbol::makeSymbol("System");
 
 	if (!symbolTable->definedInCurrentScope(system_s))
 	{
-		auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("$System").classNode->getIdent());
-		auto system_d = std::make_shared<Definition>(system_s, system_t);
+		auto system_d = std::make_shared<Definition>(system_s, SemanticAnalysis::systemTypeIdent);
 		symbolTable->insert(system_s, system_d);
 	}
 

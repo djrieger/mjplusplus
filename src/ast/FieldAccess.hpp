@@ -2,11 +2,12 @@
 #define FIELDACCESS_HPP
 
 #include "PostfixOp.hpp"
+#include "IdentBase.hpp"
 #include "Ident.hpp"
 
 namespace ast
 {
-	class FieldAccess : public PostfixOp
+	class FieldAccess : public PostfixOp, public IdentBase
 	{
 		private:
 			shptr<Ident> field_name;

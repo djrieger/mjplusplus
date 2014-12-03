@@ -10,11 +10,13 @@ namespace ast
 {
 	class ClassMember : public Node
 	{
-
+		protected:
+			shptr<ClassDeclaration const> declaration;
 		public:
 			virtual std::string getName() const = 0;
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const = 0;
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const = 0;
+			void setDeclaration(shptr<ClassDeclaration const> decl);
 	};
 }
 

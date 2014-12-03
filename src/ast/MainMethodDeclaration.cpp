@@ -35,8 +35,8 @@ void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<S
 	//	auto foo = collectParameters(sa, symbolTable);
 	//	symbolTable->leaveScope();
 
-	// insert this field into symbol table of this class
-	auto definition = std::make_shared<Definition>(symbol, returnType);
+	// insert this method into symbol table of this class
+	auto definition = std::make_shared<Definition>(symbol, nullptr);
 	symbolTable->insert(symbol, definition);
 
 	// insert this method into the method table in the class table
@@ -60,7 +60,7 @@ shptr<vec<shptr<ast::Type>>> ast::MainMethodDeclaration::collectParameters(Seman
 	//we know we only have one parameter, which is of a pseudo-type String[]
 	auto parameter = (*parameters)[0];
 	auto paramSymbol = Symbol::makeSymbol(parameter->getName(), shptr<Scope>());
-	auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter->getType());
+	auto paramDefinition = std::make_shared<Definition>(paramSymbol, parameter);
 	symbolTable->insert(paramSymbol, paramDefinition);
 	auto params_type = std::make_shared<vec<shptr<ast::Type>>>();
 	params_type->push_back(parameter->getType());
@@ -76,7 +76,7 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	symbolTable->insert(ts, td);
 
 	auto s = Symbol::makeSymbol("return", symbolTable->getCurrentScope());
-	auto d = std::make_shared<Definition>(s, return_type_and_name->getType());
+	auto d = std::make_shared<Definition>(s, return_type_and_name);
 	symbolTable->insert(s, d);
 	//collectParameters(sa, symbolTable);
 	auto parameter = (*parameters)[0];
@@ -84,15 +84,15 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 	lexer::Token dit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("void"), { -1, 0}};
 	auto p = std::make_shared<Ident>(dit);
 	auto param_type = std::make_shared<ast::Type>(p);
-	auto paramDefinition = std::make_shared<Definition>(paramSymbol, param_type);
+	auto param_type_ident = std::make_shared<TypeIdent>(param_type, parameter->getIdent());
+	auto paramDefinition = std::make_shared<Definition>(paramSymbol, param_type_ident);
 	symbolTable->insert(paramSymbol, paramDefinition);
 
 	auto system_s = Symbol::makeSymbol("System");
 
 	if (!symbolTable->definedInCurrentScope(system_s))
 	{
-		auto system_t = std::make_shared<ast::Type>(sa.getClassTable().at("$System").classNode->getIdent());
-		auto system_d = std::make_shared<Definition>(system_s, system_t);
+		auto system_d = std::make_shared<Definition>(system_s, SemanticAnalysis::systemTypeIdent);
 		symbolTable->insert(system_s, system_d);
 	}
 

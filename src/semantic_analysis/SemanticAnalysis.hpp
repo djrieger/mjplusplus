@@ -62,6 +62,8 @@ class SemanticAnalysis
 		//shptr<SymbolTable> getSymbolTable() const;
 		std::unordered_map<std::string, ClassTableItem> const& getClassTable() const;
 		bool isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptable = false);
+
+		static shptr<ast::TypeIdent> const systemTypeIdent;
 };
 
 #endif

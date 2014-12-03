@@ -20,6 +20,11 @@ std::string ast::FieldDeclaration::getName() const
 	return '%' + type_and_name->getName();
 }
 
+shptr<ast::Type> const& ast::FieldDeclaration::getDeclType() const
+{
+	return type_and_name->getType();
+}
+
 void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
 	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
@@ -39,7 +44,7 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 		sa.reportError("Cannot have a field with void as base type.", type_and_name->getIdent());
 
 	// insert this field into symbol table of this class
-	auto definition = std::make_shared<Definition>(symbol, type);
+	auto definition = std::make_shared<Definition>(symbol, std::static_pointer_cast<FieldDeclaration const>(shared_from_this()));
 	symbolTable->insert(symbol, definition);
 
 	// insert this field into the method table in the class table

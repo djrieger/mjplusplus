@@ -16,7 +16,7 @@ class FieldTable
 	public:
 		struct FieldTableItem
 		{
-			shptr<const ast::FieldDeclaration> methodNode;
+			shptr<ast::FieldDeclaration const> fieldNode;
 			shptr<ast::Type> type;
 		};
 

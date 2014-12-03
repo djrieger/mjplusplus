@@ -15,11 +15,11 @@ namespace ast
 	class MethodInvocationBase
 	{
 		protected:
-			shptr<const MethodDeclaration> callTarget;
+			mutable shptr<MethodDeclaration const> declaration;
 			shptr<Arguments> arguments;
+			MethodInvocationBase(shptr<Arguments> arguments);
 		public:
 			shptr<ast::Type> performTypeChecks(shptr<ast::Ident> method_ident, MethodTable::MethodTableItem const& method_item, SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-			MethodInvocationBase(shptr<Arguments> arguments);
 	};
 }
 
