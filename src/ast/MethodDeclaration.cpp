@@ -156,3 +156,8 @@ void ast::MethodDeclaration::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<MethodDeclaration const>(shared_from_this()));
 }
+
+std::string ast::MethodDeclaration::mangle(std::string class_name) const
+{
+	return FirmInterface::replace_dollar(class_name) + "_M" + getName();
+}

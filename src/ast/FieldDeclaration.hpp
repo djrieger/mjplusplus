@@ -22,6 +22,7 @@ namespace ast
 			virtual std::string getNameForSort() const;
 			virtual void accept(ASTVisitor& visitor) const;
 			virtual shptr<ast::Type> getType() const;
+			std::string mangle(std::string class_name) const;
 	};
 }
 #endif // FIELDDECLARATION_HPP
