@@ -29,14 +29,21 @@ void ast::MethodDeclaration::toString(std::ostream& out, unsigned int indent, bo
 		out << "{ }\n";
 }
 
-std::string ast::MethodDeclaration::getName() const
+std::string ast::MethodDeclaration::getNameForSort() const
 {
 	return "#" + return_type_and_name->getName();
 }
 
+
+std::string ast::MethodDeclaration::getName() const
+{
+	return return_type_and_name->getName();
+}
+
+
 void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
-	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+	auto symbol = Symbol::makeSymbol(this->getNameForSort(), shptr<Scope>());
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))

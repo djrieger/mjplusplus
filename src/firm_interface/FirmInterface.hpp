@@ -14,6 +14,20 @@
 #include "../ast/BinaryExpression.hpp"
 #include "../ast/PrimaryExpression.hpp"
 
+namespace std
+{
+	template<>
+	struct hash<pair<ir_type*, string>>
+	{
+		size_t operator ()(pair<ir_type*, string> const& t) const
+		{
+			hash<ir_type*> hi;
+			hash<string> hs;
+			return hi(t.first) ^ hs(t.second);
+		}
+	};
+}
+
 class FirmInterface
 {
 	public:
@@ -34,6 +48,9 @@ class FirmInterface
 		std::string out_name;
 
 		std::unordered_map<shptr<ast::Type>, ir_type*> types;
+		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classMethodEntities;
+		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classFieldEntities;
+
 	public:
 		~FirmInterface();
 		void foo();
@@ -45,6 +62,10 @@ class FirmInterface
 		ir_mode* getMode(shptr<ast::Type> ast_type);
 		ir_type* getType(shptr<ast::Type> ast_type);
 		void addClassType(shptr<ast::Ident> class_ident, ir_type* class_type);
+		void addMethod(ir_type* class_type, std::string method_name, ir_entity* ent);
+		void addField(ir_type* class_type, std::string method_name, ir_entity* ent);
+		ir_entity* getMethodEntity(ir_type* class_type, std::string method_name);
+		ir_entity* getFieldEntity(ir_type* class_type, std::string method_name);
 		ir_node* createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right);
 
 		void setInput(std::string const& in);

@@ -25,7 +25,7 @@ namespace ast
 		auto sortMembers = [](const shptr<ast::ClassMember>& a,
 		                      const shptr<ast::ClassMember>& b) -> bool
 		{
-			return a->getName() < b->getName();
+			return a->getNameForSort() < b->getNameForSort();
 		};
 		std::sort(members->begin(), members->end(), sortMembers);
 
