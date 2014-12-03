@@ -44,6 +44,8 @@ class FirmInterface
 		FirmInterface(FirmInterface const&) = delete;
 		void operator=(FirmInterface const&) = delete;
 		static shptr<FirmInterface> instance;
+		std::string in_name;
+		std::string out_name;
 
 		std::unordered_map<shptr<ast::Type>, ir_type*> types;
 		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classMethodEntities;
@@ -53,6 +55,7 @@ class FirmInterface
 		~FirmInterface();
 		void foo();
 		void convert(shptr<ast::Program> program);
+		void build();
 		ir_mode* getIntegerMode();
 		ir_mode* getBooleanMode();
 		ir_mode* getReferenceMode();
@@ -65,6 +68,8 @@ class FirmInterface
 		ir_entity* getFieldEntity(ir_type* class_type, std::string method_name);
 		ir_node* createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right);
 
+		void setInput(std::string const& in);
+		void setOutput(std::string const& out);
 };
 
 #endif

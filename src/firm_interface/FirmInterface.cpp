@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <cstring>
+#include <stdio.h>
 
 #include "FirmInterface.hpp"
 
@@ -16,6 +17,19 @@ FirmInterface::FirmInterface()
 {
 	ir_init();
 	printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
+	be_parse_arg("isa=amd64");
+	ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
+	set_modeP(modeP);
+}
+
+void FirmInterface::setInput(std::string const& in)
+{
+	in_name = in;
+}
+
+void FirmInterface::setOutput(std::string const& out)
+{
+	out_name = out;
 }
 
 void FirmInterface::convert(shptr<ast::Program> program)
@@ -32,6 +46,26 @@ void FirmInterface::convert(shptr<ast::Program> program)
 		std::cerr << e << std::endl;
 		throw;
 	}
+
+	build();
+}
+
+void FirmInterface::build()
+{
+	lower_highlevel();
+	FILE* o = fopen(out_name.c_str(), "w");
+
+	try
+	{
+		be_main(o, in_name.c_str());
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong" << std::endl;
+		throw;
+	}
+
+	fclose(o);
 }
 
 ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
