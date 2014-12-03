@@ -56,6 +56,7 @@ class FirmInterface
 		void foo();
 		void convert(shptr<ast::Program> program);
 		void build();
+		static std::string replace_dollar(std::string name);
 		ir_mode* getIntegerMode();
 		ir_mode* getBooleanMode();
 		ir_mode* getReferenceMode();
