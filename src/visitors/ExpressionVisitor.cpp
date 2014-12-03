@@ -88,7 +88,11 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 // binary expressions
 void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 {
-	;
+	ir_node* lhs = NULL; //TODO: get lhs variable of eqExpr
+	ir_node* rhs = NULL; //TODO: get rhs variable of eqExpr
+	unsigned int pos = 0;//lhs->pos;
+	set_value(pos, rhs);
+	this->resultNode = rhs; //return rhs or lhs?
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
