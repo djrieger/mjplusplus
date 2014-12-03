@@ -1,4 +1,5 @@
 #include "MethodInvocationBase.hpp"
+#include "Arguments.hpp"
 
 ast::MethodInvocationBase::MethodInvocationBase(shptr<Arguments> arguments): arguments(arguments) {}
 

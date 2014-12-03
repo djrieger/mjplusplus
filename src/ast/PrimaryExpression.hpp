@@ -116,6 +116,7 @@ namespace ast
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
+				virtual std::string const& getIdentifier() const;
 				virtual shptr<Arguments> getArguments() const;
 			private:
 				shptr<ast::Ident> identifier;
