@@ -272,3 +272,16 @@ ir_node* FirmInterface::createOperation(shptr<ast::be::Plus const> expr, ir_node
 	// probably use new_r_Add(block, ...);
 	return new_d_Add(NULL, left, right, getIntegerMode());
 }
+
+std::string FirmInterface::replace_dollar(std::string name)
+{
+	std::string s = name;
+
+	for (int i = 0; i < s.size(); ++i)
+	{
+		if (s[i] == '$')
+			s = s.substr(0, i) + "_C" + s.substr(i + 1, s.size() - i - 1);
+	}
+
+	return s;
+}
