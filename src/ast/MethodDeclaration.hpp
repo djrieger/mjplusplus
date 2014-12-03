@@ -35,6 +35,8 @@ namespace ast
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			shptr<Block> getBlock() const;
 			unsigned int countVariableDeclarations() const;
+			shptr<std::map<std::string, int>> setVariablePositions() const;
+
 			std::string mangle(std::string class_name) const;
 
 			virtual void accept(ASTVisitor& visitor) const;
