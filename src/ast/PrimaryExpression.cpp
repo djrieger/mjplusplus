@@ -87,7 +87,10 @@ namespace ast
 					if (sa.isTypeDefined(ident_type))
 					{
 						if (ident_type->getName() != "$System")
+						{
+							declaration = ident_def->getDeclaringNode();
 							return ident_type;
+						}
 						else
 							system_type = ident_type;
 					}
@@ -104,19 +107,6 @@ namespace ast
 			if (!definition)
 			{
 				// in a static function aka main
-				if (ident_symbol)
-				{
-					shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
-
-					if (ident_def)
-					{
-						shptr<Type> ident_type = ident_def->getType();
-
-						if (sa.isTypeDefined(ident_type))
-							return ident_type;
-					}
-				}
-
 				if (system_type)
 					return system_type;
 				else
@@ -126,14 +116,15 @@ namespace ast
 			{
 				// in a non-static function
 				auto class_type = definition->getType();
-				auto class_item  = class_table[class_type->getClassName()];
+				auto class_item = class_table[class_type->getClassName()];
 
 				auto field_table = class_item.fieldTable->getFieldTable();
 				auto field_it = field_table.find(identifier->getName());
 
 				if (field_it != field_table.end())
 				{
-					auto field_item = field_it->second;
+					auto& field_item = field_it->second;
+					declaration = field_item.fieldNode;
 					return field_item.type;
 				}
 				else
@@ -341,8 +332,9 @@ namespace ast
 		}
 
 		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
-			Ident(identifier),
-			MethodInvocationBase(arguments)
+			PrimaryExpression(identifier->getPosition()),
+			MethodInvocationBase(arguments),
+			identifier(identifier)
 		{
 
 		}
@@ -368,12 +360,11 @@ namespace ast
 
 			auto class_type = definition->getType();
 			auto class_item  = class_table[class_type->getClassName()];
-
 			auto method_table = class_item.methodTable->getMethodTable();
 			auto method_it = method_table.find(identifier->getName());
 
 			if (method_it != method_table.end())
-				performTypeChecks(identifier, method_it->second, sa, symbolTable);
+				return performTypeChecks(identifier, method_it->second, sa, symbolTable);
 			else
 			{
 				sa.reportError("$type{" + class_type->getName() + "} has no method named $ident{" + identifier->getName() + "}",

@@ -27,7 +27,7 @@ class MethodTable
 
 	public:
 		bool insertMethod(const std::string& methodName, shptr<const ast::MethodDeclaration>& node,
-		                  shptr<ast::Type>&  returnType, shptr<vec<shptr<ast::Type>>>& parameterTypes);
+		                  shptr<ast::Type>& returnType, shptr<vec<shptr<ast::Type>>>& parameterTypes);
 		std::unordered_map<std::string, MethodTableItem> const& getMethodTable() const;
 };
 #endif

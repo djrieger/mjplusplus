@@ -5,6 +5,7 @@
 #include "Expression.hpp"
 #include "Arguments.hpp"
 #include "Ident.hpp"
+#include "IdentBase.hpp"
 #include "Type.hpp"
 #include "MethodInvocationBase.hpp"
 #include <vector>
@@ -36,7 +37,7 @@ namespace ast
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
-		class Ident : public PrimaryExpression
+		class Ident : public PrimaryExpression, public IdentBase
 		{
 			public:
 				Ident(shptr<ast::Ident> identifier);
@@ -44,7 +45,7 @@ namespace ast
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual void accept(ASTVisitor& visitor) const;
-			protected:
+			private:
 				shptr<ast::Ident> identifier;
 		};
 
@@ -105,7 +106,7 @@ namespace ast
 				shptr<ast::Ident> identifier;
 		};
 
-		class MethodInvocation : public Ident, public MethodInvocationBase
+		class MethodInvocation : public PrimaryExpression, public MethodInvocationBase
 		{
 			public:
 				MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments);
@@ -115,6 +116,8 @@ namespace ast
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
 				virtual shptr<Arguments> getArguments() const;
+			private:
+				shptr<ast::Ident> identifier;
 		};
 	} // namespace pe
 

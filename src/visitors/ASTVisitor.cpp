@@ -221,7 +221,7 @@ void ASTVisitor::visit(shptr<ast::pe::Integer const> node)
 
 void ASTVisitor::visit(shptr<ast::pe::MethodInvocation const> node)
 {
-	visit(std::static_pointer_cast<ast::pe::Ident const>(node));
+	visit(std::static_pointer_cast<ast::pe::PrimaryExpression const>(node));
 }
 
 void ASTVisitor::visit(shptr<ast::pe::NewArrayExpression const> node)

@@ -1,5 +1,6 @@
 #include "SemanticAnalysis.hpp"
 #include "../ast/Program.hpp"
+#include "../ast/TypeIdent.hpp"
 
 #include "../util/ErrorReporter.hpp"
 
@@ -53,6 +54,9 @@ std::unordered_map<std::string, SemanticAnalysis::ClassTableItem> const& Semanti
 
 bool SemanticAnalysis::isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptable)
 {
+	if (!type)
+		return false;
+
 	auto primitiveType = type->getPrimitiveType();
 
 	if (primitiveType == ast::Type::Primitive_type::VOID)
@@ -75,3 +79,8 @@ bool SemanticAnalysis::isTypeDefined(shptr<ast::Type> type, bool isVoidAcceptabl
 	// Primary type
 	return true;
 }
+
+shptr<ast::TypeIdent> const SemanticAnalysis::systemTypeIdent = std::make_shared<ast::TypeIdent>(
+            std::make_shared<ast::Type>(std::make_shared<ast::Ident>(lexer::Token {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}})),
+            std::make_shared<ast::Ident>(lexer::Token {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("System"), { -1, 0}})
+        );

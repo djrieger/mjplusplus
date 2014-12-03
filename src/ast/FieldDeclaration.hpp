@@ -4,10 +4,11 @@
 #include "../globals.hpp"
 #include "ClassMember.hpp"
 #include "TypeIdent.hpp"
+#include "VariableDeclaration.hpp"
 
 namespace ast
 {
-	class FieldDeclaration : public ClassMember
+	class FieldDeclaration : public ClassMember, public VariableDeclaration
 	{
 		protected:
 			shptr<TypeIdent> type_and_name;
@@ -21,6 +22,7 @@ namespace ast
 			virtual std::string getName() const;
 			virtual void accept(ASTVisitor& visitor) const;
 			virtual shptr<ast::Type> getType() const;
+			virtual shptr<Type> const& getDeclType() const;
 	};
 }
 #endif // FIELDDECLARATION_HPP

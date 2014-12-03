@@ -30,6 +30,7 @@ namespace ast
 				if (field_it != field_table.end())
 				{
 					auto field_item = field_it->second;
+					declaration = field_item.fieldNode;
 					return field_item.type;
 				}
 				else

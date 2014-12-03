@@ -4,6 +4,7 @@ ast::MethodInvocationBase::MethodInvocationBase(shptr<Arguments> arguments): arg
 
 shptr<ast::Type> ast::MethodInvocationBase::performTypeChecks(shptr<ast::Ident> method_ident, MethodTable::MethodTableItem const& method_item, SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
+	declaration = method_item.methodNode;
 	shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;
 	shptr<vec<shptr<ast::Expression>>> invokedExpressions = arguments->getArgumentExpressions();
 

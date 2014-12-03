@@ -5,17 +5,19 @@
 #include "Node.hpp"
 #include "Type.hpp"
 #include "Ident.hpp"
+#include "VariableDeclaration.hpp"
 
 namespace ast
 {
-	class TypeIdent : public Node
+	class TypeIdent : public Node, public VariableDeclaration
 	{
 		public:
 			TypeIdent(shptr<Type> type, shptr<Ident> identifier);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual std::string getName() const;
-			shptr<Type> const& getType() const;
+			virtual shptr<Type> const& getType() const;
 			shptr<Ident> const& getIdent() const;
+			virtual shptr<Type> const& getDeclType() const;
 			virtual void accept(ASTVisitor& visitor) const;
 		private:
 			shptr<Type> type;

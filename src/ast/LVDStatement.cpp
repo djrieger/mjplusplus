@@ -12,6 +12,11 @@ ast::LVDStatement::LVDStatement(shptr<TypeIdent> type_ident, shptr<Expression> i
 	;
 }
 
+shptr<ast::Type> const& ast::LVDStatement::getDeclType() const
+{
+	return type_ident->getType();
+}
+
 void ast::LVDStatement::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	out << std::string(indent, '\t');
@@ -47,7 +52,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 		return false;
 	}
 
-	auto d = std::make_shared<Definition>(s, type_ident->getType());
+	auto d = std::make_shared<Definition>(s, std::static_pointer_cast<LVDStatement const>(shared_from_this()));
 	symbolTable->insert(s, d);
 
 	if (init_expr)

@@ -5,10 +5,11 @@
 #include "Expression.hpp"
 #include "Statement.hpp"
 #include "TypeIdent.hpp"
+#include "VariableDeclaration.hpp"
 
 namespace ast
 {
-	class LVDStatement : public Statement
+	class LVDStatement : public Statement, public VariableDeclaration
 	{
 		protected:
 			shptr<TypeIdent> type_ident;
@@ -22,6 +23,7 @@ namespace ast
 
 			virtual unsigned int countVariableDeclarations() const;
 			virtual void accept(ASTVisitor& visitor) const;
+			virtual shptr<ast::Type> const& getDeclType() const;
 	};
 }
 

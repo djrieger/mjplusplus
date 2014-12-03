@@ -1,9 +1,8 @@
 #ifndef DEFINITION_HPP
 #define DEFINITION_HPP
 
-//#include "../../ast/Type.hpp"
 #include "../../ast/Node.hpp"
-//#include "Symbol.hpp"
+#include "../../ast/VariableDeclaration.hpp"
 
 class Symbol;
 
@@ -15,15 +14,14 @@ namespace ast
 class Definition
 {
 	private:
-		shptr<Symbol>   symbol;
-		shptr<ast::Type>  type;
-		shptr<ast::Node> declaringNode;
+		shptr<Symbol> symbol;
+		shptr<ast::VariableDeclaration const> declaringNode;
 	public:
 		shptr<Symbol> getSymbol() const;
-		shptr<ast::Type>  getType() const;
+		shptr<ast::Type> getType() const;
+		shptr<ast::VariableDeclaration const> getDeclaringNode() const;
 
-		Definition(shptr<Symbol> symbol, shptr<ast::Type> type);
-		//Definition(Symbol const &symbol, shptr<ast::Node> declaringNode);
+		Definition(shptr<Symbol> symbol, shptr<ast::VariableDeclaration const> declaringNode);
 };
 
 #endif
