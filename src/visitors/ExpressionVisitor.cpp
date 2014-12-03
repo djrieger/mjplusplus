@@ -6,8 +6,8 @@ ir_node* ExpressionVisitor::getResultNode() const
 }
 
 void ExpressionVisitor::visitBinaryExpression(
-	shptr<ast::be::BinaryExpression const> binExpr,
-	std::function<ir_node* (ir_node*, ir_node*)> createResultNode)
+    shptr<ast::be::BinaryExpression const> binExpr,
+    std::function<ir_node* (ir_node*, ir_node*)> createResultNode)
 {
 	binExpr->getLeftChild()->accept(*this);
 	ir_node* left = this->resultNode;
@@ -20,9 +20,10 @@ void ExpressionVisitor::visitBinaryExpression(
 
 void ExpressionVisitor::visit(shptr<ast::be::Plus const> plusExpr)
 {
-	visitBinaryExpression(plusExpr, [plusExpr] (ir_node *left, ir_node *right) -> ir_node* {
+	visitBinaryExpression(plusExpr, [plusExpr] (ir_node * left, ir_node * right) -> ir_node*
+	{
 		return FirmInterface::getInstance().createOperation(plusExpr, left, right);
-	});	
+	});
 }
 
 // primary expressions
@@ -94,7 +95,8 @@ void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
 }
 void ExpressionVisitor::visit(shptr<ast::be::LessThan const> lessThanExpr)
 {
-	visitBinaryExpression(lessThanExpr, [lessThanExpr] (ir_node* left, ir_node *right) -> ir_node * {
+	visitBinaryExpression(lessThanExpr, [lessThanExpr] (ir_node * left, ir_node * right) -> ir_node *
+	{
 		return new_d_Cmp(NULL, left, right, ir_relation::ir_relation_less);
 	});
 }
