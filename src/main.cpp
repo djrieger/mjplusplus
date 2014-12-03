@@ -57,13 +57,14 @@ int main(int argc, const char** argv)
 		return EXIT_FAILURE;
 	}
 
+	std::string file_name(parse.nonOption(0));
 	std::string out_name;
 
 	if (options[OUT])
 		out_name = std::string(options[OUT].arg);
+	else
+		out_name = file_name.substr(0, file_name.find_last_of('.'));
 
-
-	std::string file_name(parse.nonOption(0));
 	lexer::Stateomat stateomat;
 
 	if (options[DUMPLEXGRAPH])
@@ -131,6 +132,8 @@ int main(int argc, const char** argv)
 
 		if (options[FIRM] && options[CHECK] && valid)
 		{
+			FirmInterface::getInstance().setInput(file_name);
+			FirmInterface::getInstance().setOutput(out_name + (options[OUT] ? "" : ".S"));
 			// TODO
 			// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
 
