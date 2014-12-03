@@ -13,6 +13,9 @@ namespace ast
 		protected:
 			IdentBase();
 			mutable shptr<VariableDeclaration const> declaration;
+
+		public:
+			shptr<VariableDeclaration const> getDeclaration() const;
 	};
 }
 

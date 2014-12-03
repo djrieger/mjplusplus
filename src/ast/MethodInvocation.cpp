@@ -1,8 +1,8 @@
 #include "../globals.hpp"
 #include "MethodInvocation.hpp"
 
-ast::MethodInvocation::MethodInvocation(shptr<Ident> method_name, shptr<Arguments> arguments)
-	: MethodInvocationBase(arguments), method_name(method_name)
+ast::MethodInvocation::MethodInvocation(shptr<ast::Ident> method_name, shptr<ast::Arguments> arguments)
+	: MethodInvocationBase(method_name, arguments)
 {
 
 }
