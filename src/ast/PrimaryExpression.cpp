@@ -389,6 +389,11 @@ namespace ast
 			return true;
 		}
 
+		std::string const& MethodInvocation::getIdentifier() const
+		{
+			return identifier->getName();
+		}
+
 		shptr<Arguments> MethodInvocation::getArguments() const
 		{
 			return arguments;

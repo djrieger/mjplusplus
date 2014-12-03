@@ -2,16 +2,17 @@
 #define METHOD_INVOCATION_BASE_HPP
 
 #include "../globals.hpp"
-#include "Expression.hpp"
-#include "MethodDeclaration.hpp"
 #include "../util/MethodTable.hpp"
-#include "Arguments.hpp"
-#include "Ident.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
 #include "../util/symbol_table/symbol_table.hpp"
 
 namespace ast
 {
+	class Ident;
+	class Type;
+	class MethodDeclaration;
+	class Arguments;
+
 	class MethodInvocationBase
 	{
 		protected:
