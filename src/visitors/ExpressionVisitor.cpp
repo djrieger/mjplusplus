@@ -18,8 +18,10 @@ void ExpressionVisitor::visitBinaryExpression(
 	this->resultNode = createResultNode(left, right);
 }
 
-void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation) {
-	visitBinaryExpression(binaryExpression, [binaryExpression, relation] (ir_node* left, ir_node *right) -> ir_node * {
+void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation)
+{
+	visitBinaryExpression(binaryExpression, [binaryExpression, relation] (ir_node * left, ir_node * right) -> ir_node *
+	{
 		return new_d_Cmp(NULL, left, right, relation);
 	});
 }
