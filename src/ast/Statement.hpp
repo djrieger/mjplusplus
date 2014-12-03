@@ -2,8 +2,8 @@
 #define STATEMENT_HPP
 
 #include "Node.hpp"
-
 #include "../semantic_analysis/SemanticAnalysis.hpp"
+#include "../visitors/ASTVisitor.hpp"
 
 namespace ast
 {
@@ -26,6 +26,8 @@ namespace ast
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const = 0;
 
 			virtual unsigned int countVariableDeclarations() const;
+
+			virtual void accept(ASTVisitor& visitor) const;
 	};
 }
 
