@@ -149,6 +149,11 @@ namespace ast
 			return shptr<ast::Type>();
 		}
 
+		std::string const& Ident::getIdentifier() const
+		{
+			return identifier->getName();
+		}
+
 		bool Ident::isLValue() const
 		{
 			return true;

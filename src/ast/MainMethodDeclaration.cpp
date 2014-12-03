@@ -19,7 +19,7 @@ void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent
 
 void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
-	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+	auto symbol = Symbol::makeSymbol(this->getNameForSort(), shptr<Scope>());
 
 	if (return_type_and_name->getName() != "main")
 		sa.reportError("Main method has name $ident{" + return_type_and_name->getName() + "} instead of 'main'.", return_type_and_name->getIdent());
