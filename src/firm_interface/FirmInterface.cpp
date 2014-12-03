@@ -126,6 +126,11 @@ ir_node* FirmInterface::createNodeForBooleanConstant(bool x)
 	return new_Const(x ? get_tarval_b_true() : get_tarval_b_false());
 }
 
+ir_node* FirmInterface::createModOperation(ir_node* left, ir_node* right)
+{
+	return NULL; //TODO: implement
+}
+
 void FirmInterface::foo()
 {
 	const unsigned int paramsCount = 0;
@@ -269,14 +274,6 @@ void FirmInterface::addField(ir_type* class_type, std::string method_name, ir_en
 ir_entity* FirmInterface::getFieldEntity(ir_type* class_type, std::string method_name)
 {
 	return classFieldEntities[ {class_type, method_name}];
-}
-
-// overload for all
-ir_node* FirmInterface::createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right)
-{
-	// first paramater is dbg_info, last parameter is mode
-	// probably use new_r_Add(block, ...);
-	return new_d_Add(NULL, left, right, getIntegerMode());
 }
 
 std::string FirmInterface::replace_dollar(std::string name)
