@@ -57,6 +57,7 @@ class FirmInterface
 		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
 		ir_node* createNodeForIntegerConstant(int);
 		ir_node* createNodeForBooleanConstant(bool);
+		ir_node* createModOperation(ir_node* left, ir_node* right);
 
 		~FirmInterface();
 		void foo();
@@ -73,7 +74,6 @@ class FirmInterface
 		void addField(ir_type* class_type, std::string method_name, ir_entity* ent);
 		ir_entity* getMethodEntity(ir_type* class_type, std::string method_name);
 		ir_entity* getFieldEntity(ir_type* class_type, std::string method_name);
-		ir_node* createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right);
 
 		void setInput(std::string const& in);
 		void setOutput(std::string const& out);
