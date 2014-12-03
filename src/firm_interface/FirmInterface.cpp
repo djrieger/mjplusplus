@@ -152,7 +152,7 @@ ir_mode* FirmInterface::getReferenceMode()
 //probably to do: getMode(type) -> mode
 ir_mode* FirmInterface::getMode(shptr<ast::Type> ast_type)
 {
-	if (ast_type->isInteger())
+	if (ast_type->isAnyInteger())
 		return getIntegerMode();
 	else if (ast_type->isBool())
 		return getBooleanMode();

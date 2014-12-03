@@ -95,6 +95,11 @@ bool ast::Type::isClassType()
 
 bool ast::Type::isInteger()
 {
+	return dimension == 0 && primitive_type == ast::Type::Primitive_type::INT;
+}
+
+bool ast::Type::isAnyInteger()
+{
 	return dimension == 0 && (primitive_type == ast::Type::Primitive_type::INT || primitive_type == ast::Type::Primitive_type::INT_NEG_ONLY);
 }
 

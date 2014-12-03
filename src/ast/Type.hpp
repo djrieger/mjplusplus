@@ -39,6 +39,7 @@ namespace ast
 			bool isRefType(bool checkNullType = false);
 			bool isClassType();
 			bool isInteger();
+			bool isAnyInteger();
 			bool isBool();
 			bool isVoid();
 			bool isArray();
