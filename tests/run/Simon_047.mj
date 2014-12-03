@@ -5,6 +5,7 @@ class a {
 	}
 	
 	public void q() {
+		x = new int[3];
 		x[2] = 2;
 		w();
 	}

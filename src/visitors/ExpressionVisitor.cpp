@@ -6,8 +6,8 @@ ir_node* ExpressionVisitor::getResultNode() const
 }
 
 void ExpressionVisitor::visitBinaryExpression(
-	shptr<ast::be::BinaryExpression const> binExpr,
-	std::function<ir_node* (ir_node*, ir_node*)> createResultNode)
+    shptr<ast::be::BinaryExpression const> binExpr,
+    std::function<ir_node* (ir_node*, ir_node*)> createResultNode)
 {
 	binExpr->getLeftChild()->accept(*this);
 	ir_node* left = this->resultNode;
@@ -26,9 +26,10 @@ void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpressio
 
 void ExpressionVisitor::visit(shptr<ast::be::Plus const> plusExpr)
 {
-	visitBinaryExpression(plusExpr, [plusExpr] (ir_node *left, ir_node *right) -> ir_node* {
+	visitBinaryExpression(plusExpr, [plusExpr] (ir_node * left, ir_node * right) -> ir_node*
+	{
 		return FirmInterface::getInstance().createOperation(plusExpr, left, right);
-	});	
+	});
 }
 
 // primary expressions

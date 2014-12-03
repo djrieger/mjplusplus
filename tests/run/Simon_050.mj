@@ -4,6 +4,7 @@ class a {
 		{
 			System.out.println(1);
 			b System = new b();
+			System.out = new b();
 			System.out.println(1);
 		}
 		System.out.println(1);
