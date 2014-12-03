@@ -73,15 +73,16 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         shptr<ast::Arguments const> arguments)
 {
 
-	ir_entity* ent = getMethodEntity(class_type, method_name);
-	int argc = arguments->getArgumentsSize();
+	ir_entity* method_ent = getMethodEntity(class_type, method_name);
+	int argc = arguments->getArgumentsSize() + 1;
 
 	ir_node** in = (ir_node**) calloc(argc, sizeof(ir_node*));
 	int in_counter = 0;
 
 	ExpressionVisitor exprVisitor;
 
-	//TODO: We also need to add "this" to the parameters -> via caller
+	in[in_counter++] = caller;
+
 	for (shptr<ast::Expression> argumentExpr : * (arguments->getArgumentExpressions()))
 	{
 		argumentExpr->accept(exprVisitor);
@@ -90,8 +91,8 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 
 	// create the call
 	ir_node* store = get_store();
-	ir_node* callee = new_Address(ent);
-	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(ent));
+	ir_node* callee = new_Address(method_ent);
+	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
 
 	// update the current store
 	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
@@ -101,7 +102,7 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
 	ir_node* result = new_Proj(tuple, getIntegerMode(), 0);
 
-	free(in);
+	free(in); // necessary?
 	return result;
 }
 
