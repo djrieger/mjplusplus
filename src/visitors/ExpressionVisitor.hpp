@@ -1,6 +1,7 @@
 #ifndef EXPRESSION_VISITOR_HPP
 #define EXPRESSION_VISITOR_HPP
 
+#include <functional>
 #include "FirmVisitor.hpp"
 #include "../ast/BinaryExpression.hpp"
 #include "../ast/PrimaryExpression.hpp"
@@ -12,14 +13,26 @@ class ExpressionVisitor : public FirmVisitor
 
 	private:
 		ir_node* resultNode;
+		/*
+		 * Create an ir_node for binExpr by calling createResultNode.
+		 * createResultNode gets the nodes left and right as parameters, obtained by calling accept()
+		 * on leftChild and rightChild of binExpr, respectively. It has to return a new ir_node
+		 * which is then set as this->resultNode.
+		 */
+		void visitBinaryExpression(
+		    shptr<ast::be::BinaryExpression const> binExpr,
+		    std::function<ir_node* (ir_node*, ir_node*)> createResultNode
+		);
+		/**
+		 * Create a new compare node for the given expression and ir_relation and set it as this->resultNode
+		 */
+		void visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation);
 
 	public:
 
 		virtual ir_node* getResultNode() const;
 
 		//ExpressionVisitor(StatementVisitor &statementVisitor);
-		virtual void visit(shptr<ast::Node const> node);
-
 		// primary expressions
 		virtual void visit(shptr<ast::pe::Bool const> boolExpr);
 		virtual void visit(shptr<ast::pe::Ident const> identExpr);

@@ -15,7 +15,7 @@ for i in run/*.mj ; do
 	echo $i
 	#extract substring
 	prefix=$(expr $i : '\(.*\)\.mj')
-	../mj++ --check --out $prefix.S $i #> /dev/null
+	../mj++ -co $prefix.S $i #> /dev/null
 	ret=$?
 	echo $ret
 	if [ $ret -eq 0 ] ; then
@@ -25,7 +25,7 @@ for i in run/*.mj ; do
 		echo $ret
 		if [ $ret -eq 0 ] ; then
 			#check diff
-			$prefix.out | diff $prefix.check -
+			./$prefix.out | diff $prefix.check -
 			ret=$?
 			echo $ret
 			if [ $ret -eq 0 ] ; then
@@ -42,4 +42,6 @@ for i in run/*.mj ; do
 		segfaults=$((segfaults + 1))
 	fi
 done
-echo "ran" $((succeeded + failed+segfaults)) "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults, \033[1;31m" $compfailed "\033[0mcompilation errors and\033[1;31m" $asmerrors "\033[0massembler errors."
+
+total=$((succeeded + failed+segfaults+asmerrors+compfailed))
+echo "ran" $total "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults, \033[1;31m" $compfailed "\033[0mcompilation errors and\033[1;31m" $asmerrors "\033[0massembler errors."

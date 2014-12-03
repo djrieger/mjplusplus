@@ -48,3 +48,83 @@ Simon_047: arrays as fields
 Simon_048: chaining of method and fields
 Simon_049: field shadowed by local variable
 Simon_050: different System.out.println() methods
+Simon_051: field contains this pointer
+Simon_052: variable use in own initializer (with assignment)
+Simon_053: integer overflow handling
+Simon_054: println ( MIN_INT )
+Simon_055: handling of minus MIN_INT
+Simon_056: arrays of objects
+Simon_057: chain of field accesses and array accesses
+Simon_058: chain of method invocation and array accesses
+Simon_059: chain of all postfix operations
+Simon_060: threedimensional arrays with pointers to same subarrays
+Simon_061: nesting of multiple parameters
+Simon_062: multiple parameters with assignments
+Simon_063: multiple parameters with field assignments (not used in function)
+Simon_064: nesting of multiple parameters with non-pure functions
+Simon_065: array access with assignment in index
+Simon_066: array assignment with assignment in index
+Simon_067: multiple shadowings
+Simon_068: modulo operator with negative numbers
+Simon_069: parameter with field access of field used in function
+Simon_070: array assignment of array used in function
+Simon_071: simple if-then (constant true)
+Simon_072: simple if-then (constant false)
+Simon_073: simple if-then-else (constant true)
+Simon_074: simple if-then-else (constant false)
+Simon_075: boolean variables
+Simon_076: boolean fields, including initialization
+Simon_077: boolean parameters
+Simon_078: ==, != (for ints)
+Simon_079: <, >, <=, >=
+Simon_080: ==, != (for booleans)
+Simon_081: ==, != (for reference types)
+Simon_082: unary not
+Simon_083: null checks
+Simon_084: && and || without need for short circuit
+Simon_085: assignment in if condition
+Simon_086: non-pure method call in if condition
+Simon_087: && and || with short circuit
+Simon_088: &&, || in if condition (short circuit)
+Simon_089: return in then branch
+Simon_090: simple while (false)
+Simon_091: simple while (true then false)
+Simon_092: one dimensional counting loop
+Simon_093: two dimensional counting loop
+Simon_094: assignment in while condition
+Simon_095: non-pure method call in while condition
+Simon_096: &&, || in while condition (short circuit)
+Simon_097: if within while
+Simon_098: while within if
+Simon_099: return within while
+Simon_100: nested while/if
+Simon_101: factorial (loop version)
+Simon_102: factorial (recursive version)
+Simon_103: root calculation with binary search
+Simon_104: peasant multiplication
+Simon_105: prime test
+Simon_106: sieve of erathostenes (array version)
+Simon_107: sieve of erathostenes (list version)
+Simon_108: list length (recursive)
+Simon_109: list length (loop)
+Simon_110: power function (loop, O(n))
+Simon_111: power function (recursion, O(n))
+Simon_112: power function (recursion, O(log n))
+Simon_113: McCarthy function
+Simon_114: fibonacci (O(phi^n))
+Simon_115: fibonacci (O(n))
+Simon_116: fibonacci (O(log n))
+Simon_117: linear congruential generator
+Simon_118: quicksort (primitive version on lists)
+Simon_119: selection sort
+Simon_120: permutation composition
+Simon_121: collatz conjecture
+Simon_122: array reverse
+Simon_123: hirsch index
+Simon_124: merge arrays
+Simon_125: binomial coefficients (factorial version)
+Simon_126: binomial coefficients (recursive version)
+Simon_127: binomial coefficients (dynamic programming version)
+Simon_128: Ackermann function
+Simon_129: horner's method
+Simon_130: "ping pong" (mutual recursive calls)

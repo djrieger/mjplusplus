@@ -7,5 +7,5 @@ ast::Expression::Expression(source_position_t position) : PositionAwareNode(posi
 
 void ast::Expression::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<Expression const>(shared_from_this()));
 }

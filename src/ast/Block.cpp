@@ -78,6 +78,6 @@ namespace ast
 
 	void ast::Block::accept(ASTVisitor& visitor) const
 	{
-		visitor.visit(shared_from_this());
+		visitor.visit(std::static_pointer_cast<Block const>(shared_from_this()));
 	}
 }

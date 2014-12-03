@@ -1,17 +1,17 @@
-class list {
+class a {
 	public int x;
-	public list next;
+	public a next;
 	public static void main(String[] a) {
-		new list().q();
+		new a().q();
 	}
 	
 	public void q() {
-		list w = next().next().next();
+		a w = next().next().next();
 		System.out.println(w.x);
 	}
 	
-	public list next() {
-		next = new list();
+	public a next() {
+		next = new a();
 		next.x = x+1;
 		return next;
 	}

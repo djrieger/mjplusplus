@@ -53,5 +53,5 @@ unsigned int ast::WhileStatement::countVariableDeclarations() const
 
 void ast::WhileStatement::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<WhileStatement const>(shared_from_this()));
 }

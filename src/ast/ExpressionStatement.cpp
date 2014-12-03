@@ -25,5 +25,5 @@ bool ast::ExpressionStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> 
 
 void ast::ExpressionStatement::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<ExpressionStatement const>(shared_from_this()));
 }

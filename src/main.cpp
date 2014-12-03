@@ -40,128 +40,114 @@ int main(int argc, const char** argv)
 	option::Parser parse(usage, argc, argv, &options[0], &buffer[0]);
 
 	if (parse.error())
+	{
+		option::printUsage(std::cout, usage);
 		// optionally print error message
 		return EXIT_FAILURE;
-
-	if (parse.nonOptionsCount() == 0)
-	{
-		std::cout << "Missing files, see usage:" << std::endl;
-		option::printUsage(std::cout, usage);
-		return EXIT_FAILURE;
 	}
-
-	if (options[HELP])
+	else if (options[HELP])
 	{
 		option::printUsage(std::cout, usage);
 		return EXIT_SUCCESS;
 	}
-
-	if (argc == 0)
+	else if (parse.nonOptionsCount() == 0)
 	{
 		std::cerr << "No file specified for compilation" << std::endl << std::endl;
 		option::printUsage(std::cout, usage);
 		return EXIT_FAILURE;
 	}
 
-	// iterate over options to detect if multiple options are specified
-	int num_options = 0;
+	std::string file_name(parse.nonOption(0));
+	std::string out_name;
 
-	for (int begin = HELP; begin <= CHECK; ++begin)
-		num_options += options[begin] ? 1 : 0;
+	if (options[OUT])
+		out_name = std::string(options[OUT].arg);
+	else
+		out_name = file_name.substr(0, file_name.find_last_of('.'));
 
-	// require exactly one of the options
-	if (num_options <= 2)
+	lexer::Stateomat stateomat;
+
+	if (options[DUMPLEXGRAPH])
 	{
-		/*
-		if (argc - num_options != 2)
+		try
 		{
-			std::cout << "Missing file." << std::endl;
-			return EXIT_FAILURE;
-		}*/
-
-		std::string file_name = argv[argc - 1];
-		lexer::Stateomat stateomat;
-
-		if (options[DUMPLEXGRAPH])
+			stateomat.dump_graph(!options[OUT] ? "lexgraph.gml" : out_name);
+		}
+		catch (std::string e)
 		{
-			try
+			std::cerr << e << std::endl;
+		}
+
+		return EXIT_SUCCESS;
+	}
+
+	try
+	{
+		auto errorReporter = std::make_shared<ErrorReporter>(file_name, !options[SUPPRESS_ERRORS]);
+		lexer::Lexer lexer(file_name.c_str(), stateomat, errorReporter);
+
+
+		if (options[LEXTEST])
+		{
+			lexer::Token t(lexer.get_next_token());
+
+			while (t.token_type != lexer::Token::Token_type::TOKEN_ERROR && t.token_type != lexer::Token::Token_type::TOKEN_EOF)
 			{
-				stateomat.dump_graph(file_name);
+				t.print();
+				t = lexer.get_next_token();
 			}
-			catch (std::string e)
+
+			if (t.token_type != lexer::Token::Token_type::TOKEN_EOF)
 			{
-				std::cerr << e << std::endl;
+				std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
+				return EXIT_FAILURE;
 			}
 
 			return EXIT_SUCCESS;
 		}
 
-		try
+		Parser parser(lexer, errorReporter);
+		bool valid = parser.start();
+
+		if (valid && !parser.getRoot())
 		{
-			auto errorReporter = std::make_shared<ErrorReporter>(file_name, !options[SUPPRESS_ERRORS]);
-			lexer::Lexer lexer(file_name.c_str(), stateomat, errorReporter);
-
-
-			if (options[LEXTEST])
-			{
-				lexer::Token t(lexer.get_next_token());
-
-				while (t.token_type != lexer::Token::Token_type::TOKEN_ERROR && t.token_type != lexer::Token::Token_type::TOKEN_EOF)
-				{
-					t.print();
-					t = lexer.get_next_token();
-				}
-
-				if (t.token_type != lexer::Token::Token_type::TOKEN_EOF)
-				{
-					std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
-					return EXIT_FAILURE;
-				}
-
-				return EXIT_SUCCESS;
-			}
-
-			Parser parser(lexer, errorReporter);
-			bool valid = parser.start();
-
-			if (options[CHECK] && parser.getRoot())
-			{
-				SemanticAnalysis sa(parser.getRoot(), errorReporter);
-
-				if (!sa.start())
-					valid = false;
-			}
-
-			if (options[PRINT_AST] && parser.getRoot())
-				parser.getRoot()->toString(std::cout, 0);
-
-			errorReporter->printErrors();
-
-			if (!valid)
-				return EXIT_FAILURE;
-			else
-			{
-				if (options[FIRM] && options[CHECK])
-				{
-					// TODO
-					// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
-
-					// firmInterface.foo();
-				}
-
-				return EXIT_SUCCESS;
-			}
+			std::cerr << "Parsing was successful but there is no tree..." << std::endl;
+			valid = false;
 		}
-		catch (std::string msg)
+
+		if (options[PRINT_AST] && valid)
+			parser.getRoot()->toString(std::cout, 0);
+
+		if (options[CHECK] && valid)
 		{
-			std::cout << msg << std::endl;
+			SemanticAnalysis sa(parser.getRoot(), errorReporter);
+
+			if (!sa.start())
+				valid = false;
+		}
+
+
+
+		errorReporter->printErrors();
+
+		if (options[FIRM] && options[CHECK] && valid)
+		{
+			FirmInterface::getInstance().setInput(file_name);
+			FirmInterface::getInstance().setOutput(out_name + (options[OUT] ? "" : ".S"));
+			// TODO
+			// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
+
+			FirmInterface::getInstance().convert(parser.getRoot());
+		}
+
+		if (!valid)
 			return EXIT_FAILURE;
-		}
 
+		return EXIT_SUCCESS;
 	}
-	else
+	catch (std::string msg)
 	{
-		std::cout << "You can only specify up to 1 option. See --help for usage." << std::endl;
+		std::cout << msg << std::endl;
 		return EXIT_FAILURE;
 	}
 }

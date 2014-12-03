@@ -33,7 +33,7 @@ shptr<vec<shptr<ast::Expression>>> ast::Arguments::getArgumentExpressions() cons
 
 void ast::Arguments::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<Arguments const>(shared_from_this()));
 }
 
 int ast::Arguments::getArgumentsSize() const

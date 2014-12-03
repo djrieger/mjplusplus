@@ -1,8 +1,14 @@
-#include "FirmInterface.hpp"
-#include "../lexer/token.hpp"
+#include <iostream>
+
 #include <cstring>
+#include <stdio.h>
+
+#include "FirmInterface.hpp"
+
+#include "../lexer/token.hpp"
 #include "../ast/LVDStatement.hpp"
 #include "../ast/Block.hpp"
+#include "../visitors/ProgramVisitor.hpp"
 #include "../visitors/MemberVisitor.hpp"
 #include "../visitors/ExpressionVisitor.hpp"
 
@@ -11,8 +17,56 @@ FirmInterface::FirmInterface()
 {
 	ir_init();
 	printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
+	be_parse_arg("isa=amd64");
+	ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
+	set_modeP(modeP);
 }
 
+void FirmInterface::setInput(std::string const& in)
+{
+	in_name = in;
+}
+
+void FirmInterface::setOutput(std::string const& out)
+{
+	out_name = out;
+}
+
+void FirmInterface::convert(shptr<ast::Program> program)
+{
+	std::cout << "converting Program" << std::endl;
+	ProgramVisitor v;
+
+	try
+	{
+		program->accept(v);
+	}
+	catch (char const* e)
+	{
+		std::cerr << e << std::endl;
+		throw;
+	}
+
+	build();
+}
+
+void FirmInterface::build()
+{
+	lower_highlevel();
+	FILE* o = fopen(out_name.c_str(), "w");
+
+	try
+	{
+		be_main(o, in_name.c_str());
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong" << std::endl;
+		throw;
+	}
+
+	fclose(o);
+}
 
 ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
 {
@@ -132,7 +186,7 @@ ir_mode* FirmInterface::getReferenceMode()
 //probably to do: getMode(type) -> mode
 ir_mode* FirmInterface::getMode(shptr<ast::Type> ast_type)
 {
-	if (ast_type->isInteger())
+	if (ast_type->isAnyInteger())
 		return getIntegerMode();
 	else if (ast_type->isBool())
 		return getBooleanMode();
@@ -143,9 +197,51 @@ ir_mode* FirmInterface::getMode(shptr<ast::Type> ast_type)
 
 ir_type* FirmInterface::getType(shptr<ast::Type> ast_type)
 {
-	return new_type_primitive(getMode(ast_type));
+	auto it = types.find(ast_type);
+
+	if (it != types.end())
+		return it->second;
+
+	ir_type* r;
+
+	if (ast_type->isBool() || ast_type->isInteger())
+	{
+		// add new primitive
+		r = new_type_primitive(getMode(ast_type));
+
+	}
+	else if (ast_type->isArray())
+	{
+		// add new array + recursion for lesser dimensions
+		r = new_type_array(getType(ast_type->de_array()));
+	}
+	else
+	{
+		std::cerr << "Trying to get firm type for ";
+		ast_type->toString(std::cerr, 0);
+		std::cerr << " which should exist already, returning int pointer." << std::endl;
+		ir_type* int_type = getType(std::make_shared<ast::Type>(ast::Type::Primitive_type::INT));
+		r = new_type_pointer(int_type);
+	}
+
+	types[ast_type] = r;
+	return r;
 }
 
+void FirmInterface::addClassType(shptr<ast::Ident> class_ident, ir_type* class_type)
+{
+	auto ast_type = std::make_shared<ast::Type>(class_ident);
+	std::cerr << "Adding type for " << get_class_name(class_type) << "." << std::endl;
+	auto it = types.find(ast_type);
+
+	if (it != types.end())
+	{
+		std::cerr << "\taka fixing the existing one" << std::endl;
+		set_pointer_points_to_type(it->second, class_type);
+	}
+	else
+		types[ast_type] = new_type_pointer(class_type);
+}
 
 // overload for all
 ir_node* FirmInterface::createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right)

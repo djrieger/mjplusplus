@@ -2,7 +2,7 @@
 #include "MethodInvocation.hpp"
 
 ast::MethodInvocation::MethodInvocation(shptr<Ident> method_name, shptr<Arguments> arguments)
-	: method_name(method_name), MethodInvocationBase(arguments)
+	: MethodInvocationBase(arguments), method_name(method_name)
 {
 
 }
@@ -54,5 +54,5 @@ bool ast::MethodInvocation::lValueHelp() const
 
 void ast::MethodInvocation::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<MethodInvocation const>(shared_from_this()));
 }

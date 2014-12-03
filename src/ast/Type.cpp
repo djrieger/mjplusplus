@@ -62,12 +62,12 @@ int ast::Type::getDimension() const
 	return dimension;
 }
 
-bool ast::Type::operator==(Type const& other)
+bool ast::Type::operator==(Type const& other) const
 {
 	return !(*this != other);
 }
 
-bool ast::Type::operator!=(Type const& other)
+bool ast::Type::operator!=(Type const& other) const
 {
 	if (this->dimension != other.dimension ||
 	        this->primitive_type != other.primitive_type)
@@ -96,6 +96,11 @@ bool ast::Type::isClassType()
 bool ast::Type::isInteger()
 {
 	return dimension == 0 && primitive_type == ast::Type::Primitive_type::INT;
+}
+
+bool ast::Type::isAnyInteger()
+{
+	return dimension == 0 && (primitive_type == ast::Type::Primitive_type::INT || primitive_type == ast::Type::Primitive_type::INT_NEG_ONLY);
 }
 
 bool ast::Type::isBool()
@@ -152,5 +157,5 @@ std::string ast::Type::getName() const
 
 void ast::Type::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<Type const>(shared_from_this()));
 }

@@ -13,9 +13,8 @@ class MemberVisitor : public FirmVisitor
 		ClassVisitor& classVisitor;
 	public:
 		MemberVisitor(ClassVisitor& classVisitor);
-		virtual void visit(shptr<const ast::Node> node);
-		virtual ir_graph* visit(shptr<const ast::MethodDeclaration> node);
-		virtual ir_entity* visit(shptr<const ast::FieldDeclaration> fieldDeclaration);
+		virtual void visit(shptr<const ast::MethodDeclaration> node);
+		virtual void visit(shptr<const ast::FieldDeclaration> fieldDeclaration);
 		ir_graph* getGraph() const;
 };
 
