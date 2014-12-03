@@ -131,6 +131,11 @@ ir_node* FirmInterface::createModOperation(ir_node* left, ir_node* right)
 	return NULL; //TODO: implement
 }
 
+ir_node* FirmInterface::createDivOperation(ir_node* left, ir_node* right)
+{
+	return NULL; //TODO: implement
+}
+
 void FirmInterface::foo()
 {
 	const unsigned int paramsCount = 0;

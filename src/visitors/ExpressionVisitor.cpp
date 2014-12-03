@@ -86,17 +86,17 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 }
 
 // binary expressions
+void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
+{
+	;
+}
+
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
 	;
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
-{
-	;
-}
-
-void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 {
 	;
 }
@@ -120,12 +120,6 @@ void ExpressionVisitor::visit(shptr<ast::be::GreaterThan const> greaterThanExpr)
 void ExpressionVisitor::visit(shptr<ast::be::GreaterThanEq const> greaterThanEqExpr)
 {
 	visitRelationalExpression(greaterThanEqExpr, ir_relation::ir_relation_greater_equal);
-}
-
-void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
-{
-	std::cerr << "ExpressionVisitor visited Invalid: in" << __FILE__
-	          << " at " << __LINE__ << std::endl;
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::LessThan const> lessThanExpr)
@@ -172,7 +166,16 @@ void ExpressionVisitor::visit(shptr<ast::be::Mult const> multExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::Slash const> slashExpr)
 {
-	;
+	visitBinaryExpression(slashExpr, [] (ir_node * left, ir_node * right) -> ir_node*
+	{
+		return FirmInterface::getInstance().createDivOperation(left, right);
+	});
+}
+
+void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
+{
+	std::cerr << "ExpressionVisitor visited Invalid: in" << __FILE__
+	          << " at " << __LINE__ << std::endl;
 }
 
 // postfix expression
