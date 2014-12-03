@@ -29,8 +29,10 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 	}
 
 	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->getName().c_str()), methodType);
+	FirmInterface::getInstance().addMethod(owner, methodDeclaration->getName(), ent);
 	//TODO: SimpleIf example includes parameters into local variable count
 	function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
+
 }
 
 void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
@@ -42,6 +44,7 @@ void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
 	auto offset = get_type_size_bytes(owner);
 	set_type_size_bytes(owner, offset + 8U);
 	ir_entity* field = new_entity(owner, new_id_from_str(fieldDeclaration->getName().c_str()), field_ir_type);
+	FirmInterface::getInstance().addField(owner, fieldDeclaration->getName(), field);
 	set_entity_offset(field, offset);
 }
 

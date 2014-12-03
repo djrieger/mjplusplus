@@ -38,7 +38,9 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 {
 
 	// TODO: find the corresponding entity for this method
-	ir_entity* ent = NULL;
+	ir_type* class_type = NULL;// TODO: get ast::Type of calling object ("this" or whatever)
+	std::string const& method_name = expr->getIdentifier();
+	ir_entity* ent = getMethodEntity(class_type, method_name);
 
 	shptr<ast::Arguments> arguments = expr->getArguments();
 	int argc = arguments->getArgumentsSize();
@@ -207,6 +209,26 @@ void FirmInterface::addClassType(shptr<ast::Ident> class_ident, ir_type* class_t
 	}
 	else
 		types[ast_type] = new_type_pointer(class_type);
+}
+
+void FirmInterface::addMethod(ir_type* class_type, std::string method_name, ir_entity* ent)
+{
+	classMethodEntities[ {class_type, method_name}] = ent;
+}
+
+ir_entity* FirmInterface::getMethodEntity(ir_type* class_type, std::string method_name)
+{
+	return classMethodEntities[ {class_type, method_name}];
+}
+
+void FirmInterface::addField(ir_type* class_type, std::string method_name, ir_entity* ent)
+{
+	classFieldEntities[ {class_type, method_name}] = ent;
+}
+
+ir_entity* FirmInterface::getFieldEntity(ir_type* class_type, std::string method_name)
+{
+	return classFieldEntities[ {class_type, method_name}];
 }
 
 // overload for all
