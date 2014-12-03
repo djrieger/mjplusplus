@@ -130,12 +130,14 @@ ir_node* FirmInterface::createModOperation(ir_node* left, ir_node* right)
 {
 	ir_node* memory = get_store();
 	return new_Mod(memory, left, right, getIntegerMode(), op_pin_state_pinned);
+	// maybe set_store()
 }
 
 ir_node* FirmInterface::createDivOperation(ir_node* left, ir_node* right)
 {
 	ir_node* memory = get_store();
 	return new_DivRL(memory, left, right, getIntegerMode(), op_pin_state_pinned); //op_pin_state_floats??
+	// maybe set_store()
 }
 
 void FirmInterface::foo()
