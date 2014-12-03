@@ -76,6 +76,15 @@ namespace ast
 		return variableDeclarations;
 	}
 
+	int ast::Block::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+	{
+
+		for (auto& blockStatement : *block_statements)
+			pos = blockStatement->setVariablePositions(var2pos, pos);
+
+		return pos;
+	}
+
 	void ast::Block::accept(ASTVisitor& visitor) const
 	{
 		visitor.visit(std::static_pointer_cast<Block const>(shared_from_this()));

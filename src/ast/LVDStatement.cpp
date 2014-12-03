@@ -85,3 +85,9 @@ unsigned int ast::LVDStatement::countVariableDeclarations() const
 {
 	return 1;
 }
+
+int ast::LVDStatement::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+{
+	(*var2pos)[this->type_ident->getName()] = pos++;
+	return pos;
+}

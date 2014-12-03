@@ -71,6 +71,15 @@ namespace ast
 				out << ')';
 		}
 
+		shptr<Expression> UnaryExpression::getChild() const
+		{
+			return child;
+		}
+
+		int UnaryExpression::getSize() const
+		{
+			return size;
+		}
 
 		bool UnaryExpression::isLValue() const
 		{

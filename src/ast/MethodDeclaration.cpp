@@ -29,14 +29,21 @@ void ast::MethodDeclaration::toString(std::ostream& out, unsigned int indent, bo
 		out << "{ }\n";
 }
 
-std::string ast::MethodDeclaration::getName() const
+std::string ast::MethodDeclaration::getNameForSort() const
 {
 	return "#" + return_type_and_name->getName();
 }
 
+
+std::string ast::MethodDeclaration::getName() const
+{
+	return return_type_and_name->getName();
+}
+
+
 void ast::MethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
-	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+	auto symbol = Symbol::makeSymbol(this->getNameForSort(), shptr<Scope>());
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
@@ -149,7 +156,32 @@ unsigned int ast::MethodDeclaration::countVariableDeclarations() const
 	return block ? block->countVariableDeclarations() : 0;
 }
 
+shptr<std::map<std::string, int>> ast::MethodDeclaration::setVariablePositions() const
+{
+
+	// If you change anything here, you might want to make changes to
+	// MainMethodDeclaration::setVariablePositions(), too!
+
+	auto var2pos = std::make_shared<std::map<std::string, int>>();
+	int pos = 0;
+
+	(*var2pos)["this"] = pos++;
+
+	for (auto parameter : *parameters)
+		(*var2pos)[parameter->getName()] = pos++;
+
+	if (block)
+		pos = block->setVariablePositions(var2pos, pos);
+
+	return var2pos;
+}
+
 void ast::MethodDeclaration::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<MethodDeclaration const>(shared_from_this()));
+}
+
+std::string ast::MethodDeclaration::mangle(std::string class_name) const
+{
+	return FirmInterface::replace_dollar(class_name) + "_M" + getName();
 }

@@ -28,7 +28,12 @@ class ExpressionVisitor : public FirmVisitor
 		 */
 		void visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation);
 
+
+		shptr<JumpTarget> trueTarget;
+		shptr<JumpTarget> falseTarget;
 	public:
+		ExpressionVisitor();
+		ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget);
 
 		virtual ir_node* getResultNode() const;
 

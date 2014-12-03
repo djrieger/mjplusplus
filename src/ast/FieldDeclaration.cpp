@@ -1,6 +1,7 @@
 #include "../globals.hpp"
 #include "FieldDeclaration.hpp"
 #include "../lexer/token.hpp"
+#include "../firm_interface/FirmInterface.hpp"
 
 ast::FieldDeclaration::FieldDeclaration(shptr<TypeIdent> type_and_name) : type_and_name(type_and_name)
 {
@@ -15,7 +16,7 @@ void ast::FieldDeclaration::toString(std::ostream& out, unsigned int indent, boo
 	out << ";\n";
 }
 
-std::string ast::FieldDeclaration::getName() const
+std::string ast::FieldDeclaration::getNameForSort() const
 {
 	return '%' + type_and_name->getName();
 }
@@ -25,9 +26,14 @@ shptr<ast::Type> const& ast::FieldDeclaration::getDeclType() const
 	return type_and_name->getType();
 }
 
+std::string ast::FieldDeclaration::getName() const
+{
+	return type_and_name->getName();
+}
+
 void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
-	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+	auto symbol = Symbol::makeSymbol(this->getNameForSort(), shptr<Scope>());
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
@@ -67,4 +73,9 @@ void ast::FieldDeclaration::accept(ASTVisitor& visitor) const
 shptr<ast::Type> ast::FieldDeclaration::getType() const
 {
 	return this->type_and_name->getType();
+}
+
+std::string ast::FieldDeclaration::mangle(std::string class_name) const
+{
+	return FirmInterface::replace_dollar(class_name) + "_F" + getName();
 }

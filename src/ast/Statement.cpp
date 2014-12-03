@@ -12,4 +12,14 @@ namespace ast
 	{
 		return 0;
 	}
+
+	void Statement::accept(ASTVisitor& visitor) const
+	{
+		visitor.visit(std::static_pointer_cast<Statement const>(shared_from_this()));
+	}
+
+	int Statement::setVariablePositions(shptr<std::map<std::string, int>>, int pos) const
+	{
+		return pos;
+	}
 }

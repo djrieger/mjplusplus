@@ -45,6 +45,7 @@ namespace ast
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual void accept(ASTVisitor& visitor) const;
+				virtual std::string const& getIdentifier() const;
 			private:
 				shptr<ast::Ident> identifier;
 		};
