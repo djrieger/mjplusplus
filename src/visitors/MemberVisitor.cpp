@@ -17,6 +17,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 	set_method_param_type(methodType, 0, owner);
 
 	int i = 1;
+
 	for (auto& param : *methodDeclaration->getParameters())
 	{
 		auto type = FirmInterface::getInstance().getType(param->getType());

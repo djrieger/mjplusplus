@@ -30,15 +30,7 @@ namespace std
 
 class FirmInterface
 {
-	public:
-		static FirmInterface& getInstance()
-		{
-			static FirmInterface instance;
-			return instance;
-		}
-		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
-		ir_node* createNodeForIntegerConstant(int);
-		ir_node* createNodeForBoolConstant(bool);
+
 	private:
 		FirmInterface();
 		FirmInterface(FirmInterface const&) = delete;
@@ -51,7 +43,21 @@ class FirmInterface
 		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classMethodEntities;
 		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classFieldEntities;
 
+		ir_node* createNodeForMethodCall(ir_node* caller,
+		                                 ir_type* class_type,
+		                                 std::string const& method_name,
+		                                 shptr<ast::Arguments> arguments);
+
 	public:
+		static FirmInterface& getInstance()
+		{
+			static FirmInterface instance;
+			return instance;
+		}
+		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
+		ir_node* createNodeForIntegerConstant(int);
+		ir_node* createNodeForBoolConstant(bool);
+
 		~FirmInterface();
 		void foo();
 		void convert(shptr<ast::Program> program);
