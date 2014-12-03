@@ -1,7 +1,27 @@
 #include "MethodInvocationBase.hpp"
 #include "Arguments.hpp"
 
-ast::MethodInvocationBase::MethodInvocationBase(shptr<Arguments> arguments): arguments(arguments) {}
+ast::MethodInvocationBase::MethodInvocationBase(shptr<Ident> method_name, shptr<Arguments> arguments)
+	: method_name(method_name), arguments(arguments)
+{
+
+}
+
+std::string const& ast::MethodInvocationBase::getIdentifier() const
+{
+	return method_name->getName();
+}
+
+shptr<ast::Arguments const> ast::MethodInvocationBase::getArguments() const
+{
+	return arguments;
+}
+
+
+shptr<ast::MethodDeclaration const> ast::MethodInvocationBase::getDeclaration() const
+{
+	return declaration;
+}
 
 shptr<ast::Type> ast::MethodInvocationBase::performTypeChecks(shptr<ast::Ident> method_ident, MethodTable::MethodTableItem const& method_item, SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
