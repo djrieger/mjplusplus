@@ -11,10 +11,12 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 
 	unsigned int paramsCount = methodDeclaration->getParameters()->size();
 	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
-	ir_type* methodType = new_type_method(paramsCount, hasReturnType);
+	ir_type* methodType = new_type_method(paramsCount + 1, hasReturnType);
 
-	int i = 0;
+	// this pointer as first parameter
+	set_method_param_type(methodType, 0, owner);
 
+	int i = 1;
 	for (auto& param : *methodDeclaration->getParameters())
 	{
 		auto type = FirmInterface::getInstance().getType(param->getType());
