@@ -106,4 +106,20 @@ namespace ast
 	{
 		visitor.visit(std::static_pointer_cast<IfStatement const>(shared_from_this()));
 	}
+
+	shptr<Expression> IfStatement::getCondition() const
+	{
+		return this->condition;
+	}
+
+	shptr<Statement> IfStatement::getThenStatement() const
+	{
+		return this->thenStatement;
+	}
+
+	shptr<Statement> IfStatement::getElseStatement() const
+	{
+		return this->elseStatement;
+	}
+
 }

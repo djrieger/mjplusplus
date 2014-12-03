@@ -2,8 +2,8 @@
 #define STATEMENT_HPP
 
 #include "Node.hpp"
-
 #include "../semantic_analysis/SemanticAnalysis.hpp"
+#include "../visitors/ASTVisitor.hpp"
 
 namespace ast
 {
@@ -24,8 +24,8 @@ namespace ast
 			 * @return true iff all paths of this statement contsin a return statement
 			 */
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const = 0;
-
 			virtual unsigned int countVariableDeclarations() const;
+			virtual void accept(ASTVisitor& visitor) const;
 			virtual int setVariablePositions(shptr<std::map<std::string, int>>, int) const;
 	};
 }
