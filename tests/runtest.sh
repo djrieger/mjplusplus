@@ -15,7 +15,7 @@ for i in run/*.mj ; do
 	echo $i
 	#extract substring
 	prefix=$(expr $i : '\(.*\)\.mj')
-	../mj++ --check --out $prefix.S $i #> /dev/null
+	../mj++ -co $prefix.S $i #> /dev/null
 	ret=$?
 	echo $ret
 	if [ $ret -eq 0 ] ; then
@@ -25,7 +25,7 @@ for i in run/*.mj ; do
 		echo $ret
 		if [ $ret -eq 0 ] ; then
 			#check diff
-			$prefix.out | diff $prefix.check -
+			./$prefix.out | diff $prefix.check -
 			ret=$?
 			echo $ret
 			if [ $ret -eq 0 ] ; then
