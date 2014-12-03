@@ -18,6 +18,12 @@ void ExpressionVisitor::visitBinaryExpression(
 	this->resultNode = createResultNode(left, right);
 }
 
+void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation) {
+	visitBinaryExpression(binaryExpression, [binaryExpression, relation] (ir_node* left, ir_node *right) -> ir_node * {
+		return new_d_Cmp(NULL, left, right, relation);
+	});
+}
+
 void ExpressionVisitor::visit(shptr<ast::be::Plus const> plusExpr)
 {
 	visitBinaryExpression(plusExpr, [plusExpr] (ir_node *left, ir_node *right) -> ir_node* {
@@ -78,15 +84,15 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 }
 void ExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)
 {
-	;
+	visitRelationalExpression(eqEqExpr, ir_relation::ir_relation_equal);
 }
 void ExpressionVisitor::visit(shptr<ast::be::GreaterThan const> greaterThanExpr)
 {
-	;
+	visitRelationalExpression(greaterThanExpr, ir_relation::ir_relation_greater);
 }
 void ExpressionVisitor::visit(shptr<ast::be::GreaterThanEq const> greaterThanEqExpr)
 {
-	;
+	visitRelationalExpression(greaterThanEqExpr, ir_relation::ir_relation_greater_equal);
 }
 void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
 {
@@ -94,13 +100,11 @@ void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
 }
 void ExpressionVisitor::visit(shptr<ast::be::LessThan const> lessThanExpr)
 {
-	visitBinaryExpression(lessThanExpr, [lessThanExpr] (ir_node* left, ir_node *right) -> ir_node * {
-		return new_d_Cmp(NULL, left, right, ir_relation::ir_relation_less);
-	});
+	visitRelationalExpression(lessThanExpr, ir_relation::ir_relation_less);
 }
 void ExpressionVisitor::visit(shptr<ast::be::LessThanEq const> lessThanEqExpr)
 {
-	;
+	visitRelationalExpression(lessThanEqExpr, ir_relation::ir_relation_less_equal);
 }
 void ExpressionVisitor::visit(shptr<ast::be::Minus const> minusExpr)
 {
