@@ -20,8 +20,8 @@ class ExpressionVisitor : public FirmVisitor
 		 * which is then set as this->resultNode.
 		 */
 		void visitBinaryExpression(
-			shptr<ast::be::BinaryExpression const> binExpr,
-			std::function<ir_node* (ir_node*, ir_node*)> createResultNode
+		    shptr<ast::be::BinaryExpression const> binExpr,
+		    std::function<ir_node* (ir_node*, ir_node*)> createResultNode
 		);
 
 	public:
