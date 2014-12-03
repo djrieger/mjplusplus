@@ -1,5 +1,10 @@
 #include "ExpressionVisitor.hpp"
 
+ExpressionVisitor::ExpressionVisitor() {}
+
+ExpressionVisitor::ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget): trueTarget(trueTarget), falseTarget(falseTarget)
+{}
+
 ir_node* ExpressionVisitor::getResultNode() const
 {
 	return resultNode;
