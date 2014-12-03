@@ -13,7 +13,7 @@ namespace ast
 		return 0;
 	}
 
-	int Statement::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+	int Statement::setVariablePositions(shptr<std::map<std::string, int>>, int pos) const
 	{
 		return pos;
 	}

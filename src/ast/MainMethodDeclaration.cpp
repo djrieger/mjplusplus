@@ -114,7 +114,19 @@ void ast::MainMethodDeclaration::accept(ASTVisitor& visitor) const
 	visitor.visit(std::static_pointer_cast<MainMethodDeclaration const>(shared_from_this()));
 }
 
-std::string ast::MainMethodDeclaration::mangle(std::string class_name) const
+std::string ast::MainMethodDeclaration::mangle(std::string) const
 {
 	return "main";
+}
+
+shptr<std::map<std::string, int>> ast::MainMethodDeclaration::setVariablePositions() const
+{
+
+	auto var2pos = std::make_shared<std::map<std::string, int>>();
+	int pos = 0;
+
+	if (block)
+		pos = block->setVariablePositions(var2pos, pos);
+
+	return var2pos;
 }
