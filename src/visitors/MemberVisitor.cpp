@@ -5,12 +5,7 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 	setOwner(classVisitor.getOwner());
 }
 
-void MemberVisitor::visit(shptr<const ast::Node> node)
-{
-
-}
-
-ir_graph* MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
+void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 {
 	// generate method:
 
@@ -34,29 +29,20 @@ ir_graph* MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclara
 	}
 
 	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->getName().c_str()), methodType);
-	return new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
+	//TODO: SimpleIf example includes parameters into local variable count
+	function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
 }
 
-ir_entity* MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
+void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
 {
 	// TODO switch on fieldDeclaration->getType()
-	ir_type* field_ir_type;
 	auto fieldASTType = fieldDeclaration->getType();
-
-	if (fieldASTType->isInteger())
-		field_ir_type = new_type_primitive(mode_Is);
-
-	/*	else if (fieldASTType->isArray())
-		{
-			if (fieldASTType->getPrimitiveType()->isInteger())
-				field_ir_type = new_type_array(new_type_primitive(mode_Is));
-			else
-			{
-
-			}
-		}*/
-
-	new_entity(owner, new_id_from_str(fieldDeclaration->getName().c_str()), field_ir_type);
+	ir_type* field_ir_type = FirmInterface::getInstance().getType(fieldASTType);
+	// expand class for this member. TODO: not everything needs 8 bytes, try to pack things
+	auto offset = get_type_size_bytes(owner);
+	set_type_size_bytes(owner, offset + 8U);
+	ir_entity* field = new_entity(owner, new_id_from_str(fieldDeclaration->getName().c_str()), field_ir_type);
+	set_entity_offset(field, offset);
 }
 
 ir_graph* MemberVisitor::getGraph() const

@@ -73,7 +73,7 @@ bool ast::LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolT
 
 void ast::LVDStatement::accept(ASTVisitor& visitor) const
 {
-	visitor.visit(shared_from_this());
+	visitor.visit(std::static_pointer_cast<LVDStatement const>(shared_from_this()));
 }
 
 unsigned int ast::LVDStatement::countVariableDeclarations() const

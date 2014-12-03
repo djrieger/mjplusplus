@@ -14,7 +14,7 @@ namespace ast
 		field_name->toString(out, indent);
 	}
 
-	shptr<Type> FieldAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable>, shptr<Type> callingType) 
+	shptr<Type> FieldAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable>, shptr<Type> callingType)
 	{
 		if (callingType->isClassType())
 		{
@@ -54,6 +54,6 @@ namespace ast
 
 	void FieldAccess::accept(ASTVisitor& visitor) const
 	{
-		visitor.visit(shared_from_this());
+		visitor.visit(std::static_pointer_cast<FieldAccess const>(shared_from_this()));
 	}
 }

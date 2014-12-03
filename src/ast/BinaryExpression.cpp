@@ -172,7 +172,7 @@ namespace ast
 
 		void NotEq::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<NotEq const>(shared_from_this()));
 		}
 
 
@@ -205,7 +205,7 @@ namespace ast
 
 		void Mult::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Mult const>(shared_from_this()));
 		}
 
 		Plus::Plus(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -237,7 +237,7 @@ namespace ast
 
 		void Plus::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Plus const>(shared_from_this()));
 		}
 
 		Minus::Minus(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -269,7 +269,7 @@ namespace ast
 
 		void Minus::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Minus const>(shared_from_this()));
 		}
 
 		Slash::Slash(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -301,7 +301,7 @@ namespace ast
 
 		void Slash::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Slash const>(shared_from_this()));
 		}
 
 		LessThanEq::LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -333,7 +333,7 @@ namespace ast
 
 		void LessThanEq::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<LessThanEq const>(shared_from_this()));
 		}
 
 		LessThan::LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -365,7 +365,7 @@ namespace ast
 
 		void LessThan::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<LessThan const>(shared_from_this()));
 		}
 
 		EqEq::EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -418,7 +418,7 @@ namespace ast
 
 		void EqEq::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<EqEq const>(shared_from_this()));
 		}
 
 		Eq::Eq(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -472,7 +472,7 @@ namespace ast
 
 		void Eq::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Eq const>(shared_from_this()));
 		}
 
 		GreaterThanEq::GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -504,7 +504,7 @@ namespace ast
 
 		void GreaterThanEq::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<GreaterThanEq const>(shared_from_this()));
 		}
 
 		GreaterThan::GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -536,7 +536,7 @@ namespace ast
 
 		void GreaterThan::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<GreaterThan const>(shared_from_this()));
 		}
 
 		Mod::Mod(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -568,7 +568,7 @@ namespace ast
 
 		void Mod::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Mod const>(shared_from_this()));
 		}
 
 		AndAnd::AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -611,7 +611,7 @@ namespace ast
 
 		void AndAnd::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<AndAnd const>(shared_from_this()));
 		}
 
 		OrOr::OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -653,7 +653,7 @@ namespace ast
 
 		void OrOr::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<OrOr const>(shared_from_this()));
 		}
 
 		Invalid::Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild)
@@ -675,7 +675,7 @@ namespace ast
 
 		void Invalid::accept(ASTVisitor& visitor) const
 		{
-			visitor.visit(shared_from_this());
+			visitor.visit(std::static_pointer_cast<Invalid const>(shared_from_this()));
 		}
 
 	}

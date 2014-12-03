@@ -24,6 +24,7 @@ namespace ast
 			virtual void analyze(SemanticAnalysis& sa) const;
 			void addPseudoClasses();
 			virtual void accept(ASTVisitor& visitor) const;
+			shptr<vec<shptr<ClassDeclaration>>> const getClasses() const;
 	};
 }
 
