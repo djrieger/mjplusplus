@@ -2,7 +2,9 @@
 #define STATEMENT_VISITOR_HPP
 
 #include "FirmVisitor.hpp"
-#include "../ast/ClassDeclaration.hpp"
+#include "../ast/IfStatement.hpp"
+#include "../ast/WhileStatement.hpp"
+#include "../ast/ReturnStatement.hpp"
 
 class StatementVisitor : public FirmVisitor
 {
