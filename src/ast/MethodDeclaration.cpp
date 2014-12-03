@@ -152,6 +152,23 @@ unsigned int ast::MethodDeclaration::countVariableDeclarations() const
 	return block ? block->countVariableDeclarations() : 0;
 }
 
+shptr<std::map<std::string, int>> ast::MethodDeclaration::setVariablePositions() const
+{
+
+	auto var2pos = std::make_shared<std::map<std::string, int>>();
+	int pos = 0;
+
+	(*var2pos)["this"] = pos++;
+
+	for (auto parameter : *parameters)
+		(*var2pos)[parameter->getName()] = pos++;
+
+	if (block)
+		pos = block->setVariablePositions(var2pos, pos);
+
+	return var2pos;
+}
+
 void ast::MethodDeclaration::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<MethodDeclaration const>(shared_from_this()));

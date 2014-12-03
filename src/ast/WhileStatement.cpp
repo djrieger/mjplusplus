@@ -51,6 +51,15 @@ unsigned int ast::WhileStatement::countVariableDeclarations() const
 	return statement ? statement->countVariableDeclarations() : 0;
 }
 
+int ast::WhileStatement::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+{
+
+	if (statement)
+		pos = statement->setVariablePositions(var2pos, pos);
+
+	return pos;
+}
+
 void ast::WhileStatement::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<WhileStatement const>(shared_from_this()));
