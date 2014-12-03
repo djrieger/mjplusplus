@@ -16,6 +16,7 @@ namespace ast
 			virtual shptr<vec<shptr<ast::Type>>> collectParameters(SemanticAnalysis&, shptr<SymbolTable> symbolTable) const;
 			void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual void accept(ASTVisitor& visitor) const;
+			std::string mangle(std::string class_name) const;
 	};
 }
 

@@ -8,6 +8,7 @@
 #include "Statement.hpp"
 #include "Block.hpp"
 #include "LVDStatement.hpp"
+#include "../firm_interface/FirmInterface.hpp"
 
 namespace ast
 {
@@ -34,6 +35,7 @@ namespace ast
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			shptr<Block> getBlock() const;
 			unsigned int countVariableDeclarations() const;
+			std::string mangle(std::string class_name) const;
 
 			virtual void accept(ASTVisitor& visitor) const;
 	};

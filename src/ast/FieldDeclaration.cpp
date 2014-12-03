@@ -1,6 +1,7 @@
 #include "../globals.hpp"
 #include "FieldDeclaration.hpp"
 #include "../lexer/token.hpp"
+#include "../firm_interface/FirmInterface.hpp"
 
 ast::FieldDeclaration::FieldDeclaration(shptr<TypeIdent> type_and_name) : type_and_name(type_and_name)
 {
@@ -69,4 +70,9 @@ void ast::FieldDeclaration::accept(ASTVisitor& visitor) const
 shptr<ast::Type> ast::FieldDeclaration::getType() const
 {
 	return this->type_and_name->getType();
+}
+
+std::string ast::FieldDeclaration::mangle(std::string class_name) const
+{
+	return FirmInterface::replace_dollar(class_name) + "_F" + getName();
 }
