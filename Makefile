@@ -44,4 +44,7 @@ styleclean:
 doc: $(SOURCE_FILES) $(HEADER_FILES) 
 	doxygen config/doxygen.config
 
+assemble:
+	gcc -m64 out.S src/firm_interface/print.asm
+
 .PHONY: doc

@@ -90,8 +90,36 @@ namespace ast
 		       + (elseStatement ? elseStatement->countVariableDeclarations() : 0);
 	}
 
+	int IfStatement::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+	{
+
+		if (thenStatement)
+			pos = thenStatement->setVariablePositions(var2pos, pos);
+
+		if (elseStatement)
+			pos = elseStatement->setVariablePositions(var2pos, pos);
+
+		return pos;
+	}
+
 	void IfStatement::accept(ASTVisitor& visitor) const
 	{
 		visitor.visit(std::static_pointer_cast<IfStatement const>(shared_from_this()));
 	}
+
+	shptr<Expression> IfStatement::getCondition() const
+	{
+		return this->condition;
+	}
+
+	shptr<Statement> IfStatement::getThenStatement() const
+	{
+		return this->thenStatement;
+	}
+
+	shptr<Statement> IfStatement::getElseStatement() const
+	{
+		return this->elseStatement;
+	}
+
 }

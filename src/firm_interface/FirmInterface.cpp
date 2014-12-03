@@ -67,14 +67,13 @@ void FirmInterface::build()
 
 	fclose(o);
 }
-
-ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
+ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
+        ir_type* class_type,
+        std::string const& method_name,
+        shptr<ast::Arguments> arguments)
 {
 
-	// TODO: find the corresponding entity for this method
-	ir_entity* ent = NULL;
-
-	shptr<ast::Arguments> arguments = expr->getArguments();
+	ir_entity* ent = getMethodEntity(class_type, method_name);
 	int argc = arguments->getArgumentsSize();
 
 	ir_node** in = (ir_node**) calloc(argc, sizeof(ir_node*));
@@ -82,7 +81,7 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 
 	ExpressionVisitor exprVisitor;
 
-	//TODO: We also need to add "this" to the parameters.
+	//TODO: We also need to add "this" to the parameters -> via caller
 	for (shptr<ast::Expression> argumentExpr : * (arguments->getArgumentExpressions()))
 	{
 		argumentExpr->accept(exprVisitor);
@@ -103,8 +102,18 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 	ir_node* result = new_Proj(tuple, getIntegerMode(), 0);
 
 	free(in);
-
 	return result;
+}
+
+ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
+{
+	ir_node* caller = NULL; //TODO: get caller ("this")
+	ir_type* class_type = NULL; //TODO: get caller class type
+
+	auto method_name = expr->getIdentifier();
+	auto arguments = expr->getArguments();
+
+	return createNodeForMethodCall(caller, class_type, method_name, arguments);
 }
 
 ir_node* FirmInterface::createNodeForIntegerConstant(int x)
@@ -112,10 +121,23 @@ ir_node* FirmInterface::createNodeForIntegerConstant(int x)
 	return new_Const_long(getIntegerMode(), x);
 }
 
-ir_node* FirmInterface::createNodeForBoolConstant(bool x)
+ir_node* FirmInterface::createNodeForBooleanConstant(bool x)
 {
-	//TODO: let this create a real boolean node
-	return new_Const_long(getIntegerMode(), (x ? 1 : 0));
+	return new_Const(x ? get_tarval_b_true() : get_tarval_b_false());
+}
+
+ir_node* FirmInterface::createModOperation(ir_node* left, ir_node* right)
+{
+	ir_node* memory = get_store();
+	return new_Mod(memory, left, right, getIntegerMode(), op_pin_state_pinned);
+	// maybe set_store()
+}
+
+ir_node* FirmInterface::createDivOperation(ir_node* left, ir_node* right)
+{
+	ir_node* memory = get_store();
+	return new_DivRL(memory, left, right, getIntegerMode(), op_pin_state_pinned); //op_pin_state_floats??
+	// maybe set_store()
 }
 
 void FirmInterface::foo()
@@ -243,10 +265,35 @@ void FirmInterface::addClassType(shptr<ast::Ident> class_ident, ir_type* class_t
 		types[ast_type] = new_type_pointer(class_type);
 }
 
-// overload for all
-ir_node* FirmInterface::createOperation(shptr<ast::be::Plus const> expr, ir_node* left, ir_node* right)
+void FirmInterface::addMethod(ir_type* class_type, std::string method_name, ir_entity* ent)
 {
-	// first paramater is dbg_info, last parameter is mode
-	// probably use new_r_Add(block, ...);
-	return new_d_Add(NULL, left, right, getIntegerMode());
+	classMethodEntities[ {class_type, method_name}] = ent;
+}
+
+ir_entity* FirmInterface::getMethodEntity(ir_type* class_type, std::string method_name)
+{
+	return classMethodEntities[ {class_type, method_name}];
+}
+
+void FirmInterface::addField(ir_type* class_type, std::string method_name, ir_entity* ent)
+{
+	classFieldEntities[ {class_type, method_name}] = ent;
+}
+
+ir_entity* FirmInterface::getFieldEntity(ir_type* class_type, std::string method_name)
+{
+	return classFieldEntities[ {class_type, method_name}];
+}
+
+std::string FirmInterface::replace_dollar(std::string name)
+{
+	std::string s = name;
+
+	for (int i = 0; i < s.size(); ++i)
+	{
+		if (s[i] == '$')
+			s = s.substr(0, i) + "_C" + s.substr(i + 1, s.size() - i - 1);
+	}
+
+	return s;
 }

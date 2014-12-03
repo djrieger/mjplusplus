@@ -8,6 +8,7 @@
 #include "Statement.hpp"
 #include "Block.hpp"
 #include "LVDStatement.hpp"
+#include "../firm_interface/FirmInterface.hpp"
 
 namespace ast
 {
@@ -26,6 +27,7 @@ namespace ast
 			 */
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual std::string getName() const;
+			virtual std::string getNameForSort() const;
 			shptr<vec<shptr<TypeIdent>>> getParameters() const;
 			shptr<Type> getReturnType() const;
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const;
@@ -33,6 +35,9 @@ namespace ast
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			shptr<Block> getBlock() const;
 			unsigned int countVariableDeclarations() const;
+			virtual shptr<std::map<std::string, int>> setVariablePositions() const;
+
+			std::string mangle(std::string class_name) const;
 
 			virtual void accept(ASTVisitor& visitor) const;
 	};

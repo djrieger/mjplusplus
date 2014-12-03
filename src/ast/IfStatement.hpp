@@ -20,7 +20,12 @@ namespace ast
 			virtual Statement::Type getType() const;
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual unsigned int countVariableDeclarations() const;
+			virtual int setVariablePositions(shptr<std::map<std::string, int>>, int) const;
 			virtual void accept(ASTVisitor& visitor) const;
+
+			virtual shptr<Expression> getCondition() const;
+			virtual shptr<Statement> getThenStatement() const;
+			virtual shptr<Statement> getElseStatement() const;
 	};
 }
 

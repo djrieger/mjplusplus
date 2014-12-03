@@ -19,7 +19,7 @@ void ast::MainMethodDeclaration::toString(std::ostream& out, unsigned int indent
 
 void ast::MainMethodDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
 {
-	auto symbol = Symbol::makeSymbol(this->getName(), shptr<Scope>());
+	auto symbol = Symbol::makeSymbol(this->getNameForSort(), shptr<Scope>());
 
 	if (return_type_and_name->getName() != "main")
 		sa.reportError("Main method has name $ident{" + return_type_and_name->getName() + "} instead of 'main'.", return_type_and_name->getIdent());
@@ -112,4 +112,21 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 void ast::MainMethodDeclaration::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<MainMethodDeclaration const>(shared_from_this()));
+}
+
+std::string ast::MainMethodDeclaration::mangle(std::string) const
+{
+	return "main";
+}
+
+shptr<std::map<std::string, int>> ast::MainMethodDeclaration::setVariablePositions() const
+{
+
+	auto var2pos = std::make_shared<std::map<std::string, int>>();
+	int pos = 0;
+
+	if (block)
+		pos = block->setVariablePositions(var2pos, pos);
+
+	return var2pos;
 }
