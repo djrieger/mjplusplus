@@ -18,6 +18,7 @@ namespace ast
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const = 0;
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const = 0;
 			void setDeclaration(shptr<ClassDeclaration const> decl);
+			shptr<ClassDeclaration const> getDeclaration() const;
 	};
 }
 

@@ -11,6 +11,8 @@ class MemberVisitor : public FirmVisitor
 	protected:
 		ir_graph* function_graph;
 		ClassVisitor& classVisitor;
+
+		void createReturnNodeAndFinalize(ir_graph* irg);
 	public:
 		MemberVisitor(ClassVisitor& classVisitor);
 		virtual void visit(shptr<const ast::MethodDeclaration> node);
