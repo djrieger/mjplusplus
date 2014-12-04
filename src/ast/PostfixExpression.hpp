@@ -21,6 +21,9 @@ namespace ast
 			virtual bool standalone() const;
 			virtual std::pair<bool, bool> constBool() const;
 			virtual void accept(ASTVisitor& visitor) const;
+
+			shptr<Expression> getChild() const;
+			shptr<vec<shptr<PostfixOp>>> getPostfixOps() const;
 	};
 }
 #endif // POSTFIXEXPRESSION_HPP

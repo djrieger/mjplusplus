@@ -1,4 +1,5 @@
 #include "ExpressionVisitor.hpp"
+#include "PostfixOpsVisitor.hpp"
 
 ExpressionVisitor::ExpressionVisitor() {}
 
@@ -109,7 +110,7 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 	ir_node* rhs = NULL; //TODO: get rhs variable of eqExpr
 	ast::MethodDeclaration* currentMethodDeclaration = NULL;
 
-	int lhs_pos = (*currentMethodDeclaration->setVariablePositions())[lhs_ident];
+	int lhs_pos = (*FirmInterface::getInstance().getVarMap())[lhs_ident]; // (*currentMethodDeclaration->createVariablePositions())[lhs_ident];
 
 	set_value(lhs_pos, rhs);
 
@@ -206,5 +207,12 @@ void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
 // postfix expression
 void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpression)
 {
-	;
+	std::cout << "Visiting PostfixExpression" << std::endl;
+	postfixExpression->getChild()->accept(*this);
+	PostfixOpsVisitor popsVisitor(*this);
+	for (auto &it: *postfixExpression->getPostfixOps())
+	{
+		it->accept(popsVisitor);
+	}
+	resultNode = popsVisitor.getResultNode();
 }

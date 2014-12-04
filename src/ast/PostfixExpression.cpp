@@ -69,3 +69,11 @@ void ast::PostfixExpression::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<PostfixExpression const>(shared_from_this()));
 }
+
+shptr<ast::Expression> ast::PostfixExpression::getChild() const {
+	return this->child;
+}
+
+shptr<vec<shptr<ast::PostfixOp>>> ast::PostfixExpression::getPostfixOps() const {
+	return this->postfix_op;
+}

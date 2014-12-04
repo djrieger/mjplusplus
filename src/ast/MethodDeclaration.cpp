@@ -157,11 +157,11 @@ unsigned int ast::MethodDeclaration::countVariableDeclarations() const
 	return block ? block->countVariableDeclarations() : 0;
 }
 
-shptr<std::map<std::string, int>> ast::MethodDeclaration::setVariablePositions() const
+void ast::MethodDeclaration::createVariablePositions() const
 {
 
 	// If you change anything here, you might want to make changes to
-	// MainMethodDeclaration::setVariablePositions(), too!
+	// MainMethodDeclaration::createVariablePositions(), too!
 
 	auto var2pos = std::make_shared<std::map<std::string, int>>();
 	FirmInterface::getInstance().setVarMap(var2pos);
@@ -174,8 +174,6 @@ shptr<std::map<std::string, int>> ast::MethodDeclaration::setVariablePositions()
 
 	if (block)
 		pos = block->setVariablePositions(pos);
-
-	return var2pos;
 }
 
 void ast::MethodDeclaration::accept(ASTVisitor& visitor) const

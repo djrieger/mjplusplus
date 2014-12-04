@@ -35,7 +35,7 @@ namespace ast
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			shptr<Block> getBlock() const;
 			unsigned int countVariableDeclarations() const;
-			virtual shptr<std::map<std::string, int>> setVariablePositions() const;
+			void createVariablePositions() const;
 			/**
 			 * Mangles this methods's name using ClassMember::mangle() and appends _Mmethodname
 			 */

@@ -120,7 +120,7 @@ std::string ast::MainMethodDeclaration::mangle(std::string) const
 	return "main";
 }
 
-shptr<std::map<std::string, int>> ast::MainMethodDeclaration::setVariablePositions() const
+void ast::MainMethodDeclaration::createVariablePositions() const
 {
 
 	auto var2pos = std::make_shared<std::map<std::string, int>>();
@@ -129,6 +129,4 @@ shptr<std::map<std::string, int>> ast::MainMethodDeclaration::setVariablePositio
 
 	if (block)
 		pos = block->setVariablePositions(pos);
-
-	return var2pos;
 }
