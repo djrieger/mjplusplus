@@ -3,15 +3,18 @@
 PostfixOpsVisitor::PostfixOpsVisitor(ExpressionVisitor& expressionVisitor): expressionVisitor(expressionVisitor)
 {}
 
-void PostfixOpsVisitor::visit(shptr<ast::FieldAccess const> fieldAccess) {
+void PostfixOpsVisitor::visit(shptr<ast::FieldAccess const> fieldAccess)
+{
 	std::cout << "Visiting FieldAccess" << std::endl;
 }
 
-void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess) {
+void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess)
+{
 
 }
 
-void PostfixOpsVisitor::visit(shptr<ast::MethodInvocation const> methodInvocation) {
+void PostfixOpsVisitor::visit(shptr<ast::MethodInvocation const> methodInvocation)
+{
 	std::cout << "Visiting MethodInvocation" << std::endl;
 
 	ir_node* caller = expressionVisitor.getResultNode();
@@ -19,6 +22,7 @@ void PostfixOpsVisitor::visit(shptr<ast::MethodInvocation const> methodInvocatio
 }
 
 
-ir_node *PostfixOpsVisitor::getResultNode() const {
+ir_node* PostfixOpsVisitor::getResultNode() const
+{
 	return this->resultNode;
 }

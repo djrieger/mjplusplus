@@ -3,6 +3,8 @@
 
 #include "FirmVisitor.hpp"
 #include "ClassVisitor.hpp"
+#include "ProtoClassVisitor.hpp"
+#include "ClassTypeVisitor.hpp"
 #include "../ast/Program.hpp"
 
 class ProgramVisitor : public FirmVisitor

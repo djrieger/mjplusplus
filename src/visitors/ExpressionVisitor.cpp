@@ -46,13 +46,17 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	// System
 	VariableDeclVisitor vdVisitor(identExpr);
 	auto decl = identExpr->getDeclaration();
-	if (decl) {
+
+	if (decl)
+	{
 		std::cout << "got declaration " << std::endl;
 		decl->accept(vdVisitor);
 		this->resultNode = vdVisitor.getResultNode();
-	} else {
+	}
+	else
+	{
 		std::cout << "got System " << std::endl;
-		// TODO: Create System 
+		// TODO: Create System
 		// FirmInterface::getInstance().createSystemNode()
 	}
 }
@@ -224,7 +228,8 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 	std::cout << "Visiting PostfixExpression" << std::endl;
 	postfixExpression->getChild()->accept(*this);
 	PostfixOpsVisitor popsVisitor(*this);
-	for (auto &it: *postfixExpression->getPostfixOps())
+
+	for (auto& it : *postfixExpression->getPostfixOps())
 	{
 		it->accept(popsVisitor);
 		this->resultNode = popsVisitor.getResultNode();

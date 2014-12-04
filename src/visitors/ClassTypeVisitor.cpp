@@ -1,15 +1,16 @@
 #include <iostream>
+#include "ProtoMemberVisitor.hpp"
+#include "ClassTypeVisitor.hpp"
 
-#include "ClassVisitor.hpp"
-#include "MemberVisitor.hpp"
 
-void ClassVisitor::visit(shptr<const ast::ClassDeclaration> classDeclaration)
+void ClassTypeVisitor::visit(shptr<const ast::ClassDeclaration> classDeclaration)
 {
-	std::cout << "Visiting class " << classDeclaration->getName() << std::endl;
+	std::cout << "Visiting class type of " << classDeclaration->getName() << std::endl;
 	ir_type* classType = FirmInterface::getInstance()
 	                     .getType(std::make_shared<ast::Type>(classDeclaration->getIdent()));
+
 	setOwner(classType);
-	MemberVisitor visitor(*this);
+	ProtoMemberVisitor visitor(*this);
 
 	for (auto& member : *classDeclaration->getMembers())
 	{
@@ -17,8 +18,4 @@ void ClassVisitor::visit(shptr<const ast::ClassDeclaration> classDeclaration)
 		// TODO: Do something with result
 		//visitor.getResult();
 	}
-
-	// new_type_size_bytes(irtype, ...)
-	// SEE get_ir_type()
-
 }
