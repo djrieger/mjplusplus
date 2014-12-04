@@ -12,7 +12,7 @@ class MemberVisitor : public FirmVisitor
 		ir_graph* function_graph;
 		ClassVisitor& classVisitor;
 
-		void createReturnNodeAndFinalize(ir_graph* irg);
+		void visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg);
 	public:
 		MemberVisitor(ClassVisitor& classVisitor);
 		virtual void visit(shptr<const ast::MethodDeclaration> node);

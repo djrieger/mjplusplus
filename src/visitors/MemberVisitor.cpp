@@ -6,8 +6,17 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 	setOwner(classVisitor.getOwner());
 }
 
-void MemberVisitor::createReturnNodeAndFinalize(ir_graph* irg)
+void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 {
+	methodDeclaration->createVariablePositions();
+
+	StatementVisitor stmtVisitor(*this);
+	if (methodDeclaration->getBlock()) {
+		methodDeclaration->getBlock()->accept(stmtVisitor);
+	} else {
+		std::cout << "  Empty method body" << std::endl;
+	}
+
 	ir_node* currentMemState = get_store();
 	ir_node* x = new_Return(currentMemState, 0, NULL);
 	add_immBlock_pred(get_irg_end_block(irg), x);
@@ -53,13 +62,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 
 		set_current_ir_graph(function_graph);
 
-		StatementVisitor stmtVisitor(*this);
-		if (methodDeclaration->getBlock()) {
-			methodDeclaration->getBlock()->accept(stmtVisitor);
-		} else {
-			std::cout << "  Empty method body" << std::endl;
-		}
-		createReturnNodeAndFinalize(function_graph);
+		visitMethodBodyAndFinalize(methodDeclaration, function_graph);
 	}
 }
 
@@ -81,13 +84,7 @@ void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl
 
 	set_current_ir_graph(irg);
 
-	StatementVisitor stmtVisitor(*this);
-	if (mainMethodDecl->getBlock()) {
-		mainMethodDecl->getBlock()->accept(stmtVisitor);
-	} else {
-		std::cout << "  Empty method body" << std::endl;
-	}
-	createReturnNodeAndFinalize(irg);
+	visitMethodBodyAndFinalize(mainMethodDecl, irg);
 }
 
 void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
