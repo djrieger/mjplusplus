@@ -236,6 +236,12 @@ ir_node* FirmInterface::createDivOperation(ir_node* left, ir_node* right)
 	// maybe set_store()
 }
 
+
+ir_node* FirmInterface::createNullPointerNode()
+{
+	return new_Const_long(mode_P, 0);
+}
+
 void FirmInterface::foo()
 {
 	const unsigned int paramsCount = 0;
