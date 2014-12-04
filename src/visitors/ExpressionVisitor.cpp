@@ -1,5 +1,6 @@
 #include "ExpressionVisitor.hpp"
 #include "PostfixOpsVisitor.hpp"
+#include "VariableDeclVisitor.hpp"
 
 ExpressionVisitor::ExpressionVisitor() {}
 
@@ -43,6 +44,17 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	// Param / Local Variable
 	// Member
 	// System
+	VariableDeclVisitor vdVisitor(identExpr);
+	auto decl = identExpr->getDeclaration();
+	if (decl) {
+		std::cout << "got declaration " << std::endl;
+		decl->accept(vdVisitor);
+		this->resultNode = vdVisitor.getResultNode();
+	} else {
+		std::cout << "got System " << std::endl;
+		// TODO: Create System 
+		// FirmInterface::getInstance().createSystemNode()
+	}
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
 {

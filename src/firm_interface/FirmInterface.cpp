@@ -149,14 +149,51 @@ void FirmInterface::build()
 #endif
 }
 
+ir_entity *FirmInterface::createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration)
+{
+	std::string mangledMethodName = methodDeclaration->mangle();
+
+	unsigned int paramsCount = methodDeclaration->getParameters()->size();
+	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
+	ir_type* methodType = new_type_method(paramsCount + 1, hasReturnType);
+
+	// this pointer as first parameter
+	// TODO: owner must be firm pointer type
+	set_method_param_type(methodType, 0, caller);
+
+	int i = 1;
+
+	for (auto& param : *methodDeclaration->getParameters())
+	{
+		auto type = FirmInterface::getInstance().getType(param->getType());
+		set_method_param_type(methodType, i, type);
+		i++;
+	}
+
+	if (hasReturnType)
+	{
+		auto type = FirmInterface::getInstance().getType(methodDeclaration->getReturnType());
+		set_method_res_type(methodType, 0, type);
+	}
+
+	ir_entity* ent = new_entity(get_glob_type(), new_id_from_str(mangledMethodName.c_str()), methodType);
+	return ent;
+}
+
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         ir_type* class_type,
         std::string const& method_name,
-        shptr<ast::Arguments const> arguments)
+        shptr<ast::Arguments const> arguments,
+        shptr<ast::MethodDeclaration const> methodDeclaration)
 {
+	std::cout << "- method " << method_name << std::endl;
+	ir_entity* method_ent = createMethodEntity(class_type, methodDeclaration); //getMethodEntity(get_glob_type(), method_name);
+	std::cout << "- method_ent=" << method_ent << std::endl;
+	std::cout << classMethodEntities.size() << std::endl;
 
-	ir_entity* method_ent = getMethodEntity(class_type, method_name);
+
 	int argc = arguments->getArgumentsSize() + 1;
+	std::cout << "- argc=" << argc << std::endl;
 
 	ir_node** in = (ir_node**) calloc(argc, sizeof(ir_node*));
 	int in_counter = 0;
@@ -174,6 +211,7 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	// create the call
 	ir_node* store = get_store();
 	ir_node* callee = new_Address(method_ent);
+	// TODO: Segfault here, says: 
 	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
 
 	// update the current store
@@ -194,21 +232,22 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 	ir_node* caller = get_value(this_pos, mode_P);
 	ir_type* class_type = get_irn_type_attr(caller);
 
-	auto method_name = expr->getIdentifier();
+	auto method_name = expr->getDeclaration()->mangle();
 	auto arguments = expr->getArguments();
 
-	return createNodeForMethodCall(caller, class_type, method_name, arguments);
+	return createNodeForMethodCall(caller, class_type, method_name, arguments, expr->getDeclaration());
 }
 
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr)
 {
-	auto methodDecl = expr->getDeclaration();
-	ir_type* class_type = get_irn_type_attr(caller);
+	auto classIdent = expr->getDeclaration()->getDeclaration()->getIdent();
+	auto classAstType = std::make_shared<ast::Type>(classIdent);
+	ir_type* classFirmType = FirmInterface::getInstance().getType(classAstType);
 
-	auto method_name = expr->getIdentifier();
+	auto method_name = expr->getDeclaration()->mangle();
 	auto arguments = expr->getArguments();
 
-	return createNodeForMethodCall(caller, class_type, method_name, arguments);
+	return createNodeForMethodCall(caller, classFirmType, method_name, arguments, expr->getDeclaration());
 }
 
 ir_node* FirmInterface::createNodeForIntegerConstant(int64_t x)
