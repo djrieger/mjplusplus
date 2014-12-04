@@ -189,7 +189,7 @@ namespace ast
 			return shptr<Type>();
 		}
 
-		Object_Type Object::getObjectType() const
+		Object::Object_Type Object::getObjectType() const
 		{
 			return object_type;
 		}

@@ -92,6 +92,7 @@ class FirmInterface
 		ir_node* createNodeForBooleanConstant(bool);
 		ir_node* createModOperation(ir_node* left, ir_node* right);
 		ir_node* createDivOperation(ir_node* left, ir_node* right);
+		ir_node* createNullPointerNode();
 
 		~FirmInterface();
 		void foo();
