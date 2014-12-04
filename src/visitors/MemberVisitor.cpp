@@ -13,7 +13,19 @@ void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaratio
 	StatementVisitor stmtVisitor(*this);
 
 	if (methodDeclaration->getBlock())
+	{
 		methodDeclaration->getBlock()->accept(stmtVisitor);
+
+		//TODO: only do this when void AND no explicit return.
+		if (methodDeclaration->getReturnType()->isVoid()) // && hasNoReturn()
+		{
+			std::cout << "  void method (with no return;)" << std::endl;
+
+			ir_node* currentMemState = get_store();
+			ir_node* x = new_Return(currentMemState, 0, NULL);
+			add_immBlock_pred(get_irg_end_block(irg), x);
+		}
+	}
 	else
 	{
 		std::cout << "  Empty method body" << std::endl;
@@ -42,6 +54,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 		//TODO: SimpleIf example includes parameters into local variable count
 		//ATTENTION: methodDeclaration->countVariableDeclarations() + 1
 		//			 since there is an assertion, that pos+1 < irg->n_loc
+		//			 BE-FUCKING-CAUSE THEY COUNT THE PROJ AS PARAMETER!!! (maybe)
 		function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations() + 1);
 
 
