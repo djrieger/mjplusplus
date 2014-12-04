@@ -20,7 +20,7 @@ namespace ast
 			shptr<vec<shptr<Statement>>> getStatements() const;
 
 			virtual unsigned int countVariableDeclarations() const;
-			virtual int setVariablePositions(shptr<std::map<std::string, int>>, int) const;
+			virtual int setVariablePositions(int) const;
 
 			virtual void accept(ASTVisitor& visitor) const;
 	};

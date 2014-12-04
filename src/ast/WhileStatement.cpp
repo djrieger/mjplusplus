@@ -51,11 +51,11 @@ unsigned int ast::WhileStatement::countVariableDeclarations() const
 	return statement ? statement->countVariableDeclarations() : 0;
 }
 
-int ast::WhileStatement::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+int ast::WhileStatement::setVariablePositions(int pos) const
 {
 
 	if (statement)
-		pos = statement->setVariablePositions(var2pos, pos);
+		pos = statement->setVariablePositions(pos);
 
 	return pos;
 }

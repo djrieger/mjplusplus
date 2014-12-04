@@ -76,11 +76,11 @@ namespace ast
 		return variableDeclarations;
 	}
 
-	int ast::Block::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+	int ast::Block::setVariablePositions(int pos) const
 	{
 
 		for (auto& blockStatement : *block_statements)
-			pos = blockStatement->setVariablePositions(var2pos, pos);
+			pos = blockStatement->setVariablePositions(pos);
 
 		return pos;
 	}
