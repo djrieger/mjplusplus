@@ -60,7 +60,18 @@ void ExpressionVisitor::visit(shptr<ast::pe::NewObjectExpression const> newObjec
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Object const> objectExpr)
 {
-	;
+	switch (objectExpr->getObjectType())
+	{
+		case ast::pe::Object::NULL_OBJECT:
+		{
+			this->resultNode = FirmInterface::getInstance().createNullPointerNode();
+		}
+
+		case ast::pe::Object::THIS_OBJECT:
+		{
+			this->resultNode = get_value(0, mode_P);
+		}
+	}
 }
 
 // unary expressions

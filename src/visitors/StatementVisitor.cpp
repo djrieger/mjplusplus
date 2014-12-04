@@ -1,6 +1,11 @@
 #include "StatementVisitor.hpp"
 #include "ExpressionVisitor.hpp"
 
+StatementVisitor::StatementVisitor(MemberVisitor& memberVisitor): memberVisitor(memberVisitor)
+{
+	setOwner(memberVisitor.getOwner());
+}
+
 ir_node* StatementVisitor::getResultNode() const
 {
 	return this->resultNode;

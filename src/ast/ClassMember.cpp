@@ -1,4 +1,5 @@
 #include "ClassMember.hpp"
+#include "../firm_interface/FirmInterface.hpp"
 
 void ast::ClassMember::setDeclaration(shptr<ClassDeclaration const> decl)
 {
@@ -8,4 +9,9 @@ void ast::ClassMember::setDeclaration(shptr<ClassDeclaration const> decl)
 shptr<ast::ClassDeclaration const> ast::ClassMember::getDeclaration() const
 {
 	return this->declaration;
+}
+
+std::string ast::ClassMember::mangle() const
+{
+	return FirmInterface::replace_dollar(declaration->getName());
 }

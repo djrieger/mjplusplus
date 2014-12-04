@@ -2,6 +2,7 @@
 #define STATEMENT_VISITOR_HPP
 
 #include "FirmVisitor.hpp"
+#include "MemberVisitor.hpp"
 #include "../ast/IfStatement.hpp"
 #include "../ast/WhileStatement.hpp"
 #include "../ast/ReturnStatement.hpp"
@@ -13,7 +14,11 @@ class StatementVisitor : public FirmVisitor
 {
 	protected:
 		ir_node* resultNode;
+
+		MemberVisitor& memberVisitor;
 	public:
+		StatementVisitor(MemberVisitor& memberVisitor);
+
 		virtual void visit(shptr<const ast::IfStatement> ifStatement);
 		virtual void visit(shptr<const ast::WhileStatement> whileStmt);
 		virtual void visit(shptr<const ast::ReturnStatement> returnStmt);
