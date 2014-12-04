@@ -53,7 +53,7 @@ void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
 {
 
 	// save old block; is this even necessary?
-	auto oldBlock = get_cur_block();
+	//auto oldBlock = get_cur_block();
 
 	// create new Block and set it as current; is this even necessary?
 	ir_node* block = new_r_immBlock(get_current_ir_graph());
@@ -66,7 +66,7 @@ void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
 		stmt->accept(*this);
 
 	//restore old block; is this even necessary?
-	set_cur_block(oldBlock);
+	//set_cur_block(oldBlock);
 }
 
 void StatementVisitor::visit(shptr<const ast::ExpressionStatement> exprStmt)
