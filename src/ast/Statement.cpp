@@ -18,7 +18,7 @@ namespace ast
 		visitor.visit(std::static_pointer_cast<Statement const>(shared_from_this()));
 	}
 
-	int Statement::setVariablePositions(shptr<std::map<std::string, int>>, int pos) const
+	int Statement::setVariablePositions(int pos) const
 	{
 		return pos;
 	}

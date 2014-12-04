@@ -69,6 +69,7 @@ class FirmInterface
 		static shptr<FirmInterface> instance;
 		std::string in_name;
 		std::string out_name;
+		shptr<std::map<std::string, int>> var2pos;
 
 		std::unordered_map<shptr<ast::Type>, ir_type*> types;
 		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classMethodEntities;
@@ -110,6 +111,10 @@ class FirmInterface
 
 		void setInput(std::string const& in);
 		void setOutput(std::string const& out);
+
+		shptr<std::map<std::string, int>> getVarMap();
+		void setVarMap(shptr<std::map<std::string, int>> newVar2pos);
+
 };
 
 #endif
