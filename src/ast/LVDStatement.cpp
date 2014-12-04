@@ -18,6 +18,16 @@ shptr<ast::Type> const& ast::LVDStatement::getDeclType() const
 	return type_ident->getType();
 }
 
+shptr<ast::Ident> ast::LVDStatement::getIdent() const
+{
+	return type_ident->getIdent();
+}
+
+shptr<ast::Expression> const& ast::LVDStatement::getInitialization() const
+{
+	return init_expr;
+}
+
 void ast::LVDStatement::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	out << std::string(indent, '\t');
