@@ -31,6 +31,11 @@ void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpressio
 	{
 		return new_Cmp(left, right, relation);
 	});
+	ir_node* cond = new_Cond(resultNode);
+	ir_node* pt = new_Proj(cond, get_modeX(), COND_JMP_PRED_TRUE);
+	trueTarget->jumpFromBlock(pt);
+	ir_node* pf = new_Proj(cond, get_modeX(), COND_JMP_PRED_FALSE);
+	falseTarget->jumpFromBlock(pf);
 }
 
 // primary expressions
@@ -95,25 +100,18 @@ void ExpressionVisitor::visit(shptr<ast::ue::Neg const> negExpr)
 	shptr<ast::Expression> child = negExpr->getChild();
 	child->accept(*this);
 
-	if (negExpr->getSize() % 2 == 1)
-	{
-		ir_node* left = this->resultNode;
-		ir_node* right = FirmInterface::getInstance().createNodeForIntegerConstant(-1);
-		this->resultNode = new_Mul(left, right, FirmInterface::getInstance().getIntegerMode());
-	}
+	if (negExpr->getSize() & 1)
+		this->resultNode = new_Minus(this->resultNode, FirmInterface::getInstance().getIntegerMode());
 }
 
 void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 {
 	shptr<ast::Expression> child = notExpr->getChild();
-	child->accept(*this);
 
-	if (notExpr->getSize() == 1)
-	{
-		ir_node* left = FirmInterface::getInstance().createNodeForBooleanConstant(true);
-		ir_node* right = this->resultNode;
-		this->resultNode = new_Sub(left, right, FirmInterface::getInstance().getBooleanMode());
-	}
+	if (notExpr->getSize() & 1)
+		trueTarget.swap(falseTarget);
+
+	child->accept(*this);
 }
 
 // binary expressions
@@ -133,12 +131,20 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
-	;
+	auto rightTarget = std::make_shared<JumpTarget>();
+	ExpressionVisitor vleft(rightTarget, falseTarget);
+	andAndExpr->getLeftChild()->accept(vleft);
+	set_cur_block(rightTarget->targetNode);
+	andAndExpr->getRightChild()->accept(*this);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 {
-	;
+	auto rightTarget = std::make_shared<JumpTarget>();
+	ExpressionVisitor vleft(trueTarget, rightTarget);
+	orOrExpr->getLeftChild()->accept(vleft);
+	set_cur_block(rightTarget->targetNode);
+	orOrExpr->getRightChild()->accept(*this);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)
@@ -149,7 +155,7 @@ void ExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)
 void ExpressionVisitor::visit(shptr<ast::be::NotEq const> notEqExpr)
 {
 	//see documentation for libFirm: ir_releation_less_greater for integers is "not equal".
-	visitRelationalExpression(notEqExpr, ir_relation::ir_relation_less_greater);
+	visitRelationalExpression(notEqExpr, ir_relation::ir_relation_unordered_greater_equal);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::GreaterThan const> greaterThanExpr)
