@@ -24,7 +24,7 @@ class ExpressionVisitor : public FirmVisitor
 		    std::function<ir_node* (ir_node*, ir_node*)> createResultNode
 		);
 		/**
-		 * Create a new compare node for the given expression and ir_relation and set it as this->resultNode
+		 * Create a new compare node for the given expression andFirmInterface:: ir_relation and set it as this->resultNode
 		 */
 		void visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation);
 

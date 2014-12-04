@@ -253,6 +253,38 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller, shptr<ast::Meth
 	return createNodeForMethodCall(caller, classFirmType, method_name, arguments, expr->getDeclaration());
 }
 
+ir_node* FirmInterface::createNodeForCallocCall(ir_node* count, unsigned int size)
+{
+	static ir_type* proc_calloc = NULL;
+	static ir_entity* callocMethodEntity = NULL;
+
+	if (!proc_calloc)
+	{
+		// calloc
+		proc_calloc = new_type_method(2, 1);
+		set_method_param_type(proc_calloc, 0, new_type_primitive(mode_Is));
+		set_method_param_type(proc_calloc, 1, new_type_primitive(mode_Is));
+		ir_type* globalOwner = get_glob_type();
+		callocMethodEntity = new_entity(globalOwner, new_id_from_str("calloc"), proc_calloc);
+	}
+
+	// call calloc
+	ir_node* args[] = {count, new_Const_long(mode_Is, size)};
+	ir_graph* irg = get_current_ir_graph();
+	ir_node* store = get_irg_no_mem(irg); // get_store();
+	ir_node* callee = new_Address(callocMethodEntity);
+	ir_node* call_node = new_Call(store, callee, 2, args, proc_calloc);
+
+	// update the current store
+	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
+	set_store(new_store);
+
+	// get the result
+	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
+	ir_node* result = new_Proj(tuple, getReferenceMode(), 0);
+	return result;
+}
+
 ir_node* FirmInterface::createNodeForIntegerConstant(int64_t x)
 {
 	return new_Const_long(getIntegerMode(), x);
