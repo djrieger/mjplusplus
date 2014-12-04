@@ -8,8 +8,6 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 
 void MemberVisitor::createReturnNodeAndFinalize(ir_graph* irg)
 {
-	set_current_ir_graph(irg);
-
 	ir_node* currentMemState = get_store();
 	ir_node* x = new_Return(currentMemState, 0, NULL);
 	add_immBlock_pred(get_irg_end_block(irg), x);
@@ -53,11 +51,14 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 		//TODO: SimpleIf example includes parameters into local variable count
 		function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
 
-		// Segfault:
-		/*
+		set_current_ir_graph(function_graph);
+
 		StatementVisitor stmtVisitor(*this);
-		methodDeclaration->getBlock()->accept(stmtVisitor);
-		*/
+		if (methodDeclaration->getBlock()) {
+			methodDeclaration->getBlock()->accept(stmtVisitor);
+		} else {
+			std::cout << "  Empty method body" << std::endl;
+		}
 		createReturnNodeAndFinalize(function_graph);
 	}
 }
@@ -78,11 +79,14 @@ void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl
 	ir_entity* mainMethodEntity = new_entity(globalOwner, new_id_from_str(mainMethodName.c_str()), proc_main);
 	ir_graph* irg = new_ir_graph(mainMethodEntity, mainMethodDecl->countVariableDeclarations());
 
-	// Segfault:
-	/*
+	set_current_ir_graph(irg);
+
 	StatementVisitor stmtVisitor(*this);
-	mainMethodDecl->getBlock()->accept(stmtVisitor);
-	*/
+	if (mainMethodDecl->getBlock()) {
+		mainMethodDecl->getBlock()->accept(stmtVisitor);
+	} else {
+		std::cout << "  Empty method body" << std::endl;
+	}
 	createReturnNodeAndFinalize(irg);
 }
 
