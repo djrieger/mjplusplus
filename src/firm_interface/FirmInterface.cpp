@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <stdio.h>
+#include <cstdlib>
 
 #include "FirmInterface.hpp"
 
@@ -72,11 +73,82 @@ void FirmInterface::build()
 
 	fclose(o);
 
-	std::ofstream output(out_name, std::ios::app);
-	std::ifstream asmInput("src/firm_interface/print.asm");
+#ifdef __APPLE__
+	std::string printFunAsm = "	.section	__TEXT,__text,regular,pure_instructions \n \
+								.globl	_COut_Mprintln \n \
+								.align	4, 0x90 \n \
+							_COut_Mprintln:                         ## @COut_Mprintln \n \
+								.cfi_startproc \n \
+							## BB#0: \n \
+								pushq	%rbp \n \
+							Ltmp2: \n \
+								.cfi_def_cfa_offset 16 \n \
+							Ltmp3: \n \
+								.cfi_offset %rbp, -16 \n \
+								movq	%rsp, %rbp \n \
+							Ltmp4: \n \
+								.cfi_def_cfa_register %rbp \n \
+								subq	$16, %rsp \n \
+								leaq	L_.str(%rip), %rax \n \
+								movl	%edi, -4(%rbp) \n \
+								movl	-4(%rbp), %esi \n \
+								movq	%rax, %rdi \n \
+								movb	$0, %al \n \
+								callq	_printf \n \
+								movl	$0, %esi \n \
+								movl	%eax, -8(%rbp)          ## 4-byte Spill \n \
+								movl	%esi, %eax \n \
+								addq	$16, %rsp \n \
+								popq	%rbp \n \
+								retq \n \
+								.cfi_endproc \n \
+							 \n \
+								.section	__TEXT,__cstring,cstring_literals \n \
+							L_.str:                                 ## @.str \n \
+								.asciz	\"%d\\n\" \n \
+							.subsections_via_symbols \n \
+							";
+#else
+	std::string printFunAsm = "	.file	"print.c" \n \
+								.section	.rodata \n \
+							.LC0: \n \
+								.string	" % d\n \n" \n \
+								.text \n \
+								.globl	_COut_Mprintln \n \
+								.type	_COut_Mprintln, @function \n \
+							_COut_Mprintln: \n \
+							.LFB0: \n \
+								.cfi_startproc \n \
+								pushq	%rbp \n \
+								.cfi_def_cfa_offset 16 \n \
+								.cfi_offset 6, -16 \n \
+								movq	%rsp, %rbp \n \
+								.cfi_def_cfa_register 6 \n \
+								subq	$16, %rsp \n \
+								movl	%edi, -4(%rbp) \n \
+								movl	-4(%rbp), %eax \n \
+								movl	%eax, %esi \n \
+								movl	$.LC0, %edi \n \
+								movl	$0, %eax \n \
+								call	printf \n \
+								movl	$0, %eax \n \
+								leave \n \
+								.cfi_def_cfa 7, 8 \n \
+								ret \n \
+								.cfi_endproc \n \
+								";
+#endif
 
-	output << asmInput.rdbuf();
+	std::ofstream output(out_name, std::ios::app);
+	output << printFunAsm;
+	output.close();
+
+#ifdef __APPLE__
+	std::system(std::string("sed -i '' 's/.*\\.size.*$//' " + out_name).c_str());
+	std::system(std::string("sed -i '' 's/.*\\.type.*$//' " + out_name).c_str());
+#endif
 }
+
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         ir_type* class_type,
         std::string const& method_name,
@@ -169,22 +241,28 @@ void FirmInterface::foo()
 	const unsigned int paramsCount = 0;
 	const unsigned int resultsCount = 0;
 	const unsigned int localVarsCount = 0;
-	
+
+#ifndef __APPLE__
+	std::string mainMethodName = "main";
+#else
+	std::string mainMethodName = "_main";
+#endif
+
 	// main
 	ir_type* proc_main = new_type_method(paramsCount, resultsCount);
 	ir_type* globalOwner = get_glob_type();      /* the class in which this method is defined */
-	ir_entity* mainMethodEntity = new_entity(globalOwner, new_id_from_str("main"), proc_main);
+	ir_entity* mainMethodEntity = new_entity(globalOwner, new_id_from_str(mainMethodName.c_str()), proc_main);
 	ir_graph* irg = new_ir_graph(mainMethodEntity, localVarsCount);
 	set_current_ir_graph(irg);
 
 	// println
 	ir_type* proc_print = new_type_method(1, 0);
 	set_method_param_type(proc_print, 0, new_type_primitive(mode_Is));
-	ir_entity* printMethodEntity = new_entity(globalOwner, new_id_from_str("_COut_Mprintln"), proc_print);	
+	ir_entity* printMethodEntity = new_entity(globalOwner, new_id_from_str("_COut_Mprintln"), proc_print);
 	//new_ir_graph(printMethodEntity, 1);
 
 	// call println
-	ir_node *arg = new_Const_long(mode_Is, 42);
+	ir_node* arg = new_Const_long(mode_Is, 42);
 	ir_node* store = get_irg_no_mem(irg); // get_store();
 	ir_node* callee = new_Address(printMethodEntity);
 	ir_node* call_node = new_Call(store, callee, 1, &arg, proc_print);
