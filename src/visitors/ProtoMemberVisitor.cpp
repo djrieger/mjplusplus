@@ -18,7 +18,7 @@ void ProtoMemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclara
 		ir_entity* ent = FirmInterface::getInstance().createMethodEntity(owner, methodDeclaration);
 
 		std::cout << "Inserting into classMethodEntities global type, method with name: " << methodDeclaration->getName() << ", ent: " << ent << std::endl;
-		FirmInterface::getInstance().addMethod(get_glob_type(), mangledMethodName, ent);
+		FirmInterface::getInstance().addMethod(owner, mangledMethodName, ent);
 	}
 }
 
@@ -38,7 +38,6 @@ void ProtoMemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclarati
 	std::cout << "OWNER= " << owner << std::endl;
 	auto offset = get_type_size_bytes(owner);
 
-	//TODO: segfault!
 	set_type_size_bytes(owner, offset + 8U);
 	ir_entity* field = new_entity(owner,
 	                              new_id_from_str(fieldDeclaration->mangle().c_str()),
