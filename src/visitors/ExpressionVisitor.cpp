@@ -40,7 +40,9 @@ void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 {
-	;
+	// Param / Local Variable
+	// Member
+	// System
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
 {
@@ -213,6 +215,6 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 	for (auto &it: *postfixExpression->getPostfixOps())
 	{
 		it->accept(popsVisitor);
+		this->resultNode = popsVisitor.getResultNode();
 	}
-	resultNode = popsVisitor.getResultNode();
 }

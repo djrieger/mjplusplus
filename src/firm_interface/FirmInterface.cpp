@@ -184,7 +184,7 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
 	ir_node* result = new_Proj(tuple, getIntegerMode(), 0);
 
-	free(in); // necessary?
+	free(in); 
 	return result;
 }
 
@@ -200,11 +200,10 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 	return createNodeForMethodCall(caller, class_type, method_name, arguments);
 }
 
-ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::MethodInvocation const> expr)
+ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr)
 {
 	auto methodDecl = expr->getDeclaration();
-	ir_node* caller = NULL; //TODO: get caller
-	ir_type* class_type = NULL; //TODO: get caller class type
+	ir_type* class_type = get_irn_type_attr(caller);
 
 	auto method_name = expr->getIdentifier();
 	auto arguments = expr->getArguments();
