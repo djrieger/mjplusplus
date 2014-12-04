@@ -5,6 +5,17 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 	setOwner(classVisitor.getOwner());
 }
 
+void MemberVisitor::createReturnNodeAndFinalize(ir_graph* irg)
+{
+	set_current_ir_graph(irg);
+
+	ir_node* currentMemState = get_store();
+	ir_node* x = new_Return(currentMemState, 0, NULL);
+	add_immBlock_pred(get_irg_end_block(irg), x);
+
+	irg_finalize_cons(irg);
+}
+
 void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 {
 	unsigned int paramsCount = methodDeclaration->getParameters()->size();
@@ -29,11 +40,12 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 		set_method_res_type(methodType, 0, type);
 	}
 
-	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->getName().c_str()), methodType);
+	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->mangle(methodDeclaration->getDeclaration()->getName()).c_str()), methodType);
 	FirmInterface::getInstance().addMethod(owner, methodDeclaration->getName(), ent);
 	//TODO: SimpleIf example includes parameters into local variable count
 	function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
 
+	createReturnNodeAndFinalize(function_graph);
 }
 
 void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl)
@@ -48,6 +60,8 @@ void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl
 	ir_type* globalOwner = get_glob_type();
 	ir_entity* mainMethodEntity = new_entity(globalOwner, new_id_from_str(mainMethodName.c_str()), proc_main);
 	ir_graph* irg = new_ir_graph(mainMethodEntity, mainMethodDecl->countVariableDeclarations());
+
+	createReturnNodeAndFinalize(irg);
 }
 
 void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)

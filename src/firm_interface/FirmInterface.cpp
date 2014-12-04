@@ -37,14 +37,14 @@ void FirmInterface::setOutput(std::string const& out)
 void FirmInterface::convert(shptr<ast::Program> program)
 {
 	std::cout << "converting Program" << std::endl;
-	foo();
-	/*
-
+	//foo();
+	
 	ProgramVisitor v;
 
 	try
 	{
 		program->accept(v);
+		dump_all_ir_graphs("testsuffix");
 	}
 	catch (char const* e)
 	{
@@ -52,7 +52,7 @@ void FirmInterface::convert(shptr<ast::Program> program)
 		throw;
 	}
 
-	build(); */
+	build();
 }
 
 void FirmInterface::build()
