@@ -43,7 +43,7 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
 {
-	int x = atoi(integerExpr->getStringValue().c_str());
+	int64_t x = atoll(integerExpr->getStringValue().c_str());
 	this->resultNode = FirmInterface::getInstance().createNodeForIntegerConstant(x);
 }
 void ExpressionVisitor::visit(shptr<ast::pe::MethodInvocation const> methodInvocationExpr)
@@ -93,10 +93,15 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 // binary expressions
 void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 {
-	ir_node* lhs = NULL; //TODO: get lhs variable of eqExpr
+
+	std::string lhs_ident = NULL;
 	ir_node* rhs = NULL; //TODO: get rhs variable of eqExpr
-	unsigned int pos = 0;//lhs->pos;
-	set_value(pos, rhs);
+	ast::MethodDeclaration* currentMethodDeclaration = NULL;
+
+	int lhs_pos = (*currentMethodDeclaration->setVariablePositions())[lhs_ident];
+
+	set_value(lhs_pos, rhs);
+
 	this->resultNode = rhs; //return rhs or lhs?
 }
 
