@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include <cstring>
 #include <stdio.h>
@@ -35,6 +36,9 @@ void FirmInterface::setOutput(std::string const& out)
 void FirmInterface::convert(shptr<ast::Program> program)
 {
 	std::cout << "converting Program" << std::endl;
+	foo();
+	/*
+
 	ProgramVisitor v;
 
 	try
@@ -47,12 +51,13 @@ void FirmInterface::convert(shptr<ast::Program> program)
 		throw;
 	}
 
-	build();
+	build(); */
 }
 
 void FirmInterface::build()
 {
 	lower_highlevel();
+
 	FILE* o = fopen(out_name.c_str(), "w");
 
 	try
@@ -66,6 +71,11 @@ void FirmInterface::build()
 	}
 
 	fclose(o);
+
+	std::ofstream output(out_name, std::ios::app);
+	std::ifstream asmInput("src/firm_interface/print.asm");
+
+	output << asmInput.rdbuf();
 }
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         ir_type* class_type,
@@ -145,42 +155,42 @@ void FirmInterface::foo()
 	const unsigned int paramsCount = 0;
 	const unsigned int resultsCount = 0;
 	const unsigned int localVarsCount = 0;
-
-	ir_type* owner = get_glob_type();      /* the class in which this method is defined */
-	auto typeInt = std::make_shared<ast::Type>(ast::Type::Primitive_type::VOID);
-	// Token(Token_type const& token_type, std::string const& string_value, source_position_t const& position);
-	lexer::Token mainToken(lexer::Token::Token_type::TOKEN_IDENT, "main", std::pair<unsigned int, unsigned int>(1, 1));
-	auto ident = std::make_shared<ast::Ident>(mainToken);
-	auto typeIdent = std::make_shared<ast::TypeIdent>(typeInt, ident);
-
-	auto parameters = std::make_shared<vec<shptr<ast::TypeIdent>>>();
-	lexer::Token paramToken(lexer::Token::Token_type::TOKEN_IDENT, "argc", std::pair<unsigned int, unsigned int>(1, 1));
-	auto parameterName = std::make_shared<ast::Ident>(paramToken);
-	parameters->push_back(std::make_shared<ast::TypeIdent>(typeInt, parameterName));
-
-	auto block = std::shared_ptr<ast::Block>();
-	ir_graph* irg; //= generateMethod(owner, std::make_shared<ast::MethodDeclaration>(typeIdent, parameters, block));
-
+	
+	// main
+	ir_type* proc_main = new_type_method(paramsCount, resultsCount);
+	ir_type* globalOwner = get_glob_type();      /* the class in which this method is defined */
+	ir_entity* mainMethodEntity = new_entity(globalOwner, new_id_from_str("main"), proc_main);
+	ir_graph* irg = new_ir_graph(mainMethodEntity, localVarsCount);
 	set_current_ir_graph(irg);
 
-	ir_node* currentMemState = get_store();
-	//ir_node *startBlockArray[1];
-	//startBlockArray[0] = get_irg_start_block(irg);
-	ir_node* returnNode = new_Return (currentMemState, 0, NULL); //1, startBlockArray);
-	mature_immBlock (get_r_cur_block(irg));
+	// println
+	ir_type* proc_print = new_type_method(1, 0);
+	set_method_param_type(proc_print, 0, new_type_primitive(mode_Is));
+	ir_entity* printMethodEntity = new_entity(globalOwner, new_id_from_str("_COut_Mprintln"), proc_print);	
+	//new_ir_graph(printMethodEntity, 1);
 
-	add_immBlock_pred (get_irg_end_block(irg), returnNode); // number of inputs does not match metho type (0 inputs, 1 declared)
-	mature_immBlock (get_irg_end_block(irg));
-	/*
-	if (irg_verify(irg) != 0) {
-		std::cout << "Verification successful;" << std::endl;
-	} else {
-		std::cout << "Verification failed;" << std::endl;
-	}*/
+	// call println
+	ir_node *arg = new_Const_long(mode_Is, 42);
+	ir_node* store = get_irg_no_mem(irg); // get_store();
+	ir_node* callee = new_Address(printMethodEntity);
+	ir_node* call_node = new_Call(store, callee, 1, &arg, proc_print);
+
+	// update the current store
+	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
+	set_store(new_store);
+
+	ir_node* currentMemState = get_store();
+	ir_node* x = new_Return (currentMemState, 0, NULL);
+	add_immBlock_pred (get_irg_end_block(irg), x);
+
 	irg_finalize_cons (irg);
 	dump_ir_graph (irg, 0);
 
+
+
 	std::cout << "Dumped ycomp graph" << std::endl;
+
+	build();
 }
 
 FirmInterface::~FirmInterface()
