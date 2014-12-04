@@ -130,7 +130,7 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::MethodInvocation cons
 	return createNodeForMethodCall(caller, class_type, method_name, arguments);
 }
 
-ir_node* FirmInterface::createNodeForIntegerConstant(int x)
+ir_node* FirmInterface::createNodeForIntegerConstant(int64_t x)
 {
 	return new_Const_long(getIntegerMode(), x);
 }

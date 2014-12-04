@@ -87,7 +87,7 @@ class FirmInterface
 		}
 		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
 		ir_node* createNodeForMethodCall(shptr<ast::MethodInvocation const> expr);
-		ir_node* createNodeForIntegerConstant(int);
+		ir_node* createNodeForIntegerConstant(int64_t);
 		ir_node* createNodeForBooleanConstant(bool);
 		ir_node* createModOperation(ir_node* left, ir_node* right);
 		ir_node* createDivOperation(ir_node* left, ir_node* right);
