@@ -399,3 +399,13 @@ std::string FirmInterface::replace_dollar(std::string name)
 
 	return s;
 }
+
+shptr<std::map<std::string, int>> FirmInterface::getVarMap()
+{
+	return var2pos;
+}
+
+void FirmInterface::setVarMap(shptr<std::map<std::string, int>> newVar2pos)
+{
+	var2pos = newVar2pos;
+}

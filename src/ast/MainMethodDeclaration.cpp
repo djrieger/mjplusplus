@@ -1,6 +1,7 @@
 #include "../globals.hpp"
 #include "MainMethodDeclaration.hpp"
 #include "TypeIdent.hpp"
+#include "../firm_interface/FirmInterface.hpp"
 
 
 ast::MainMethodDeclaration::MainMethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent> > > parameters, shptr<Block> block)
@@ -123,10 +124,11 @@ shptr<std::map<std::string, int>> ast::MainMethodDeclaration::setVariablePositio
 {
 
 	auto var2pos = std::make_shared<std::map<std::string, int>>();
+	FirmInterface::getInstance().setVarMap(var2pos);
 	int pos = 0;
 
 	if (block)
-		pos = block->setVariablePositions(var2pos, pos);
+		pos = block->setVariablePositions(pos);
 
 	return var2pos;
 }

@@ -63,7 +63,7 @@ namespace ast
 	bool IfStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 	{
 		// TODO: if we can determine the condition at compile time, one statement doesn't matter for definite return analysis
-		// still perform sementic analysis though
+		// still perform semantic analysis though
 		auto cond = condition->get_type(sa, symbolTable);
 
 		if (!cond || *cond != ast::Type(ast::Type::Primitive_type::BOOLEAN)) //TODO: isBool()
@@ -90,14 +90,14 @@ namespace ast
 		       + (elseStatement ? elseStatement->countVariableDeclarations() : 0);
 	}
 
-	int IfStatement::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+	int IfStatement::setVariablePositions(int pos) const
 	{
 
 		if (thenStatement)
-			pos = thenStatement->setVariablePositions(var2pos, pos);
+			pos = thenStatement->setVariablePositions(pos);
 
 		if (elseStatement)
-			pos = elseStatement->setVariablePositions(var2pos, pos);
+			pos = elseStatement->setVariablePositions(pos);
 
 		return pos;
 	}
