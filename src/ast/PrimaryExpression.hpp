@@ -90,6 +90,8 @@ namespace ast
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual void accept(ASTVisitor& visitor) const;
+				shptr<Type> getType() const;
+				shptr<Expression> getSize() const;
 			private:
 				shptr<Type> type;
 				shptr<Expression> expr;
@@ -104,6 +106,7 @@ namespace ast
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
+				shptr<ast::Ident> getIdent() const;
 			private:
 				shptr<ast::Ident> identifier;
 		};

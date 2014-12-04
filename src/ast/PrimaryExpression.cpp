@@ -296,6 +296,16 @@ namespace ast
 			return false;
 		}
 
+		shptr<Type> NewArrayExpression::getType() const
+		{
+			return type;
+		}
+
+		shptr<Expression> NewArrayExpression::getSize() const
+		{
+			return expr;
+		}
+
 		void NewArrayExpression::accept(ASTVisitor& visitor) const
 		{
 			visitor.visit(std::static_pointer_cast<NewArrayExpression const>(shared_from_this()));
@@ -324,6 +334,11 @@ namespace ast
 				sa.reportError("Type $type{" + type->getName() + "} not defined!", identifier);
 				return shptr<Type>();
 			}
+		}
+
+		shptr<ast::Ident> NewObjectExpression::getIdent() const
+		{
+			return identifier;
 		}
 
 		bool NewObjectExpression::isLValue() const
