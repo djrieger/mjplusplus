@@ -19,7 +19,7 @@ void MemberVisitor::createReturnNodeAndFinalize(ir_graph* irg)
 
 void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 {
-	std::cout << "Visiting method " << methodDeclaration->mangle() << std::endl;
+	std::cout << "  Visiting method " << methodDeclaration->mangle() << std::endl;
 
 	std::string mangledMethodName = methodDeclaration->mangle();
 
@@ -71,7 +71,7 @@ void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl
 	std::string mainMethodName = "_main";
 #endif
 
-	std::cout << "Visiting main method " << mainMethodName << std::endl;
+	std::cout << "  Visiting main method " << mainMethodName << std::endl;
 
 	ir_type* proc_main = new_type_method(0, 0);
 	ir_type* globalOwner = get_glob_type();
@@ -88,7 +88,7 @@ void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl
 
 void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
 {
-	std::cout << "Visiting field " << fieldDeclaration->mangle() << std::endl;
+	std::cout << "  Visiting field " << fieldDeclaration->mangle() << std::endl;
 
 	// TODO switch on fieldDeclaration->getType()
 	auto fieldASTType = fieldDeclaration->getType();
