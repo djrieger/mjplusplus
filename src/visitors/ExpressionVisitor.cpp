@@ -43,7 +43,7 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
 {
-	int x = atoi(integerExpr->getStringValue().c_str());
+	int64_t x = atoll(integerExpr->getStringValue().c_str());
 	this->resultNode = FirmInterface::getInstance().createNodeForIntegerConstant(x);
 }
 void ExpressionVisitor::visit(shptr<ast::pe::MethodInvocation const> methodInvocationExpr)
