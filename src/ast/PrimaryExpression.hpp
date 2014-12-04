@@ -110,16 +110,12 @@ namespace ast
 		class MethodInvocation : public PrimaryExpression, public MethodInvocationBase
 		{
 			public:
-				MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments);
+				MethodInvocation(shptr<ast::Ident> method_name, shptr<Arguments> arguments);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
-				virtual std::string const& getIdentifier() const;
-				virtual shptr<Arguments> getArguments() const;
-			private:
-				shptr<ast::Ident> identifier;
 		};
 	} // namespace pe
 

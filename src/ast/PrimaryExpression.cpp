@@ -336,17 +336,16 @@ namespace ast
 			visitor.visit(std::static_pointer_cast<NewObjectExpression const>(shared_from_this()));
 		}
 
-		MethodInvocation::MethodInvocation(shptr<ast::Ident> identifier, shptr<Arguments> arguments) :
-			PrimaryExpression(identifier->getPosition()),
-			MethodInvocationBase(arguments),
-			identifier(identifier)
+		MethodInvocation::MethodInvocation(shptr<ast::Ident> method_name, shptr<Arguments> arguments) :
+			PrimaryExpression(method_name->getPosition()),
+			MethodInvocationBase(method_name, arguments)
 		{
 
 		}
 
 		void MethodInvocation::toString(std::ostream& out, unsigned int indent, bool) const
 		{
-			identifier->toString(out, indent);
+			method_name->toString(out, indent);
 			arguments->toString(out, indent);
 		}
 
@@ -359,21 +358,21 @@ namespace ast
 
 			if (!definition)
 			{
-				sa.reportError("Symbol not defined!", this->identifier);
+				sa.reportError("Symbol not defined!", this->method_name);
 				return shptr<ast::Type>();
 			}
 
 			auto class_type = definition->getType();
 			auto class_item  = class_table[class_type->getClassName()];
 			auto method_table = class_item.methodTable->getMethodTable();
-			auto method_it = method_table.find(identifier->getName());
+			auto method_it = method_table.find(method_name->getName());
 
 			if (method_it != method_table.end())
-				return performTypeChecks(identifier, method_it->second, sa, symbolTable);
+				return performTypeChecks(method_name, method_it->second, sa, symbolTable);
 			else
 			{
-				sa.reportError("$type{" + class_type->getName() + "} has no method named $ident{" + identifier->getName() + "}",
-				               identifier);
+				sa.reportError("$type{" + class_type->getName() + "} has no method named $ident{" + method_name->getName() + "}",
+				               method_name);
 			}
 
 			return shptr<ast::Type>();
@@ -387,16 +386,6 @@ namespace ast
 		bool MethodInvocation::standalone() const
 		{
 			return true;
-		}
-
-		std::string const& MethodInvocation::getIdentifier() const
-		{
-			return identifier->getName();
-		}
-
-		shptr<Arguments> MethodInvocation::getArguments() const
-		{
-			return arguments;
 		}
 
 		void MethodInvocation::accept(ASTVisitor& visitor) const

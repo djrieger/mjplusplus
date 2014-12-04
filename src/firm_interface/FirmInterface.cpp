@@ -80,18 +80,19 @@ void FirmInterface::build()
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         ir_type* class_type,
         std::string const& method_name,
-        shptr<ast::Arguments> arguments)
+        shptr<ast::Arguments const> arguments)
 {
 
-	ir_entity* ent = getMethodEntity(class_type, method_name);
-	int argc = arguments->getArgumentsSize();
+	ir_entity* method_ent = getMethodEntity(class_type, method_name);
+	int argc = arguments->getArgumentsSize() + 1;
 
 	ir_node** in = (ir_node**) calloc(argc, sizeof(ir_node*));
 	int in_counter = 0;
 
 	ExpressionVisitor exprVisitor;
 
-	//TODO: We also need to add "this" to the parameters -> via caller
+	in[in_counter++] = caller;
+
 	for (shptr<ast::Expression> argumentExpr : * (arguments->getArgumentExpressions()))
 	{
 		argumentExpr->accept(exprVisitor);
@@ -100,8 +101,8 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 
 	// create the call
 	ir_node* store = get_store();
-	ir_node* callee = new_Address(ent);
-	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(ent));
+	ir_node* callee = new_Address(method_ent);
+	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
 
 	// update the current store
 	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
@@ -111,13 +112,26 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
 	ir_node* result = new_Proj(tuple, getIntegerMode(), 0);
 
-	free(in);
+	free(in); // necessary?
 	return result;
 }
 
 ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
 {
-	ir_node* caller = NULL; //TODO: get caller ("this")
+	int this_pos = 0;
+	ir_node* caller = get_value(this_pos, mode_P);
+	ir_type* class_type = get_irn_type_attr(caller);
+
+	auto method_name = expr->getIdentifier();
+	auto arguments = expr->getArguments();
+
+	return createNodeForMethodCall(caller, class_type, method_name, arguments);
+}
+
+ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::MethodInvocation const> expr)
+{
+	auto methodDecl = expr->getDeclaration();
+	ir_node* caller = NULL; //TODO: get caller
 	ir_type* class_type = NULL; //TODO: get caller class type
 
 	auto method_name = expr->getIdentifier();
@@ -126,7 +140,7 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 	return createNodeForMethodCall(caller, class_type, method_name, arguments);
 }
 
-ir_node* FirmInterface::createNodeForIntegerConstant(int x)
+ir_node* FirmInterface::createNodeForIntegerConstant(int64_t x)
 {
 	return new_Const_long(getIntegerMode(), x);
 }
