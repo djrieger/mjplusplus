@@ -27,3 +27,8 @@ void ast::ExpressionStatement::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<ExpressionStatement const>(shared_from_this()));
 }
+
+shptr<ast::Expression> ast::ExpressionStatement::getExpression() const
+{
+	return this->expression;
+}

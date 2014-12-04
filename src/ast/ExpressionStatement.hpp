@@ -16,6 +16,7 @@ namespace ast
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual void accept(ASTVisitor& visitor) const;
+			virtual shptr<Expression> getExpression() const;
 	};
 }
 #endif // EXPRESIONSTATEMENT
