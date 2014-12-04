@@ -13,6 +13,9 @@ void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess) {
 
 void PostfixOpsVisitor::visit(shptr<ast::MethodInvocation const> methodInvocation) {
 	std::cout << "Visiting MethodInvocation" << std::endl;
+
+	ir_node* caller = expressionVisitor.getResultNode();
+	this->resultNode = FirmInterface::getInstance().createNodeForMethodCall(caller, methodInvocation);
 }
 
 
