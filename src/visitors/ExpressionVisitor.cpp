@@ -72,12 +72,19 @@ void ExpressionVisitor::visit(shptr<ast::pe::MethodInvocation const> methodInvoc
 }
 void ExpressionVisitor::visit(shptr<ast::pe::NewArrayExpression const> newArrayExpr)
 {
-	;
+	newArrayExpr->getSize()->accept(*this);
+	ir_type* t = FirmInterface::getInstance().getType(newArrayExpr->getType()->de_array());
+	resultNode = FirmInterface::getInstance().createNodeForCallocCall(resultNode, get_type_size_bytes(t));
 }
+
 void ExpressionVisitor::visit(shptr<ast::pe::NewObjectExpression const> newObjectExpr)
 {
-	;
+	ir_node* one = FirmInterface::getInstance().createNodeForIntegerConstant(1);
+	auto at = std::make_shared<ast::Type>(newObjectExpr->getIdent());
+	ir_type* t = FirmInterface::getInstance().getType(at);
+	resultNode = FirmInterface::getInstance().createNodeForCallocCall(one, get_type_size_bytes(get_pointer_points_to_type(t)));
 }
+
 void ExpressionVisitor::visit(shptr<ast::pe::Object const> objectExpr)
 {
 	switch (objectExpr->getObjectType())
@@ -230,7 +237,8 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 	std::cout << "Visiting PostfixExpression" << std::endl;
 	postfixExpression->getChild()->accept(*this);
 	PostfixOpsVisitor popsVisitor(*this);
-	for (auto &it: *postfixExpression->getPostfixOps())
+
+	for (auto& it : *postfixExpression->getPostfixOps())
 	{
 		it->accept(popsVisitor);
 		this->resultNode = popsVisitor.getResultNode();
