@@ -7,8 +7,6 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 
 void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 {
-	// generate method:
-
 	unsigned int paramsCount = methodDeclaration->getParameters()->size();
 	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
 	ir_type* methodType = new_type_method(paramsCount + 1, hasReturnType);
@@ -36,6 +34,20 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 	//TODO: SimpleIf example includes parameters into local variable count
 	function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
 
+}
+
+void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl)
+{
+#ifndef __APPLE__
+	std::string mainMethodName = "main";
+#else
+	std::string mainMethodName = "_main";
+#endif
+
+	ir_type* proc_main = new_type_method(0, 0);
+	ir_type* globalOwner = get_glob_type();
+	ir_entity* mainMethodEntity = new_entity(globalOwner, new_id_from_str(mainMethodName.c_str()), proc_main);
+	ir_graph* irg = new_ir_graph(mainMethodEntity, mainMethodDecl->countVariableDeclarations());
 }
 
 void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
