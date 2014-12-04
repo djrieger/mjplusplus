@@ -149,7 +149,7 @@ void FirmInterface::build()
 #endif
 }
 
-ir_entity* FirmInterface::createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration)
+ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration)
 {
 	std::string mangledMethodName = methodDeclaration->mangle();
 
@@ -161,7 +161,7 @@ ir_entity* FirmInterface::createMethodEntity(ir_type* caller, shptr<ast::MethodD
 
 	// this pointer as first parameter
 	// TODO: owner must be firm pointer type
-	set_method_param_type(methodType, 0, caller);
+	set_method_param_type(methodType, 0, owner);
 
 	int i = 1;
 
@@ -178,7 +178,7 @@ ir_entity* FirmInterface::createMethodEntity(ir_type* caller, shptr<ast::MethodD
 		set_method_res_type(methodType, 0, type);
 	}
 
-	ir_entity* ent = new_entity(get_glob_type(), new_id_from_str(mangledMethodName.c_str()), methodType);
+	ir_entity* ent = new_entity(owner, new_id_from_str(mangledMethodName.c_str()), methodType);
 	return ent;
 }
 
@@ -189,7 +189,8 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         shptr<ast::MethodDeclaration const> methodDeclaration)
 {
 	std::cout << "- method " << method_name << std::endl;
-	ir_entity* method_ent = createMethodEntity(class_type, methodDeclaration); //getMethodEntity(get_glob_type(), method_name);
+	ir_type* owner = get_pointer_points_to_type(class_type);
+	ir_entity* method_ent = getMethodEntity(owner, method_name);//createMethodEntity(class_type, methodDeclaration);
 	std::cout << "- method_ent=" << method_ent << std::endl;
 
 	int argc = arguments->getArgumentsSize() + 1;
@@ -212,7 +213,8 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	ir_node* store = get_store();
 	ir_node* callee = new_Address(method_ent);
 
-	std::cout << "- callee=" << callee << std::endl;
+	std::cout << "- caller=" << caller << std::endl;
+	//std::cout << "- caller-type=" << get_irn_type_attr(caller) << std::endl;
 
 	// TODO: Abort here, says: expected mode P64 for input
 	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
@@ -223,7 +225,12 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 
 	// get the result
 	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
-	ir_node* result = new_Proj(tuple, getIntegerMode(), 0);
+	ir_node* result = NULL;
+
+	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
+
+	if (hasReturnType)
+		result = new_Proj(tuple, getIntegerMode(), 0);
 
 	free(in);
 	return result;
