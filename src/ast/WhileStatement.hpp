@@ -21,6 +21,8 @@ namespace ast
 			virtual unsigned int countVariableDeclarations() const;
 			virtual int setVariablePositions(int) const;
 			virtual void accept(ASTVisitor& visitor) const;
+			virtual shptr<Expression> getCondition() const;
+			virtual shptr<Statement> getLoopStatement() const;
 	};
 }
 
