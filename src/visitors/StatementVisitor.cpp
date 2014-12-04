@@ -128,4 +128,9 @@ void StatementVisitor::visit(shptr<const ast::LVDStatement> lvdStmt)
 		lvdStmt->getInitialization()->accept(expr_visitor);
 		set_value(v, expr_visitor.getResultNode());
 	}
+	else
+	{
+		ir_node* null = new_Const_long(FirmInterface::getInstance().getMode(lvdStmt->getDeclType()), 0);
+		set_value(v, null);
+	}
 }
