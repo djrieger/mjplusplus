@@ -46,15 +46,33 @@ void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
 
 void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
 {
-	;
+
+	// save old block; is this even necessary?
+	auto oldBlock = get_cur_block();
+
+	// create new Block and set it as current; is this even necessary?
+	ir_node* block = new_r_immBlock(get_current_ir_graph());
+	set_cur_block(block);
+	// iterate over statements in the block and convert them to firm
+	// the statements are responsible to attach themselves to the current block
+	auto stmts = blockStmt->getStatements();
+
+	for (auto& stmt : *stmts)
+		stmt->accept(*this);
+
+	//restore old block; is this even necessary?
+	set_cur_block(oldBlock);
 }
 
 void StatementVisitor::visit(shptr<const ast::ExpressionStatement> exprStmt)
 {
-	;
+	// an ExpressionStatement is just an expression, that can stand alone, so visit the expression node
+	ExpressionVisitor expr_visitor;
+	exprStmt->getExpression()->accept(expr_visitor);
 }
 
 void StatementVisitor::visit(shptr<const ast::LVDStatement> lvdStmt)
 {
-	;
+	// get the variable position from the map
+	// evaluate the expression determining the value, if present-
 }
