@@ -109,10 +109,10 @@ void FirmInterface::build()
 							.subsections_via_symbols \n \
 							";
 #else
-	std::string printFunAsm = "	.file	"print.c" \n \
+	std::string printFunAsm = "	.file	\"print.c\" \n \
 								.section	.rodata \n \
 							.LC0: \n \
-								.string	" % d\n \n" \n \
+								.string	\"%d\\n\" \n \
 								.text \n \
 								.globl	_COut_Mprintln \n \
 								.type	_COut_Mprintln, @function \n \
