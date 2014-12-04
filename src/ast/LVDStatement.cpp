@@ -1,5 +1,6 @@
 #include "../globals.hpp"
 #include "LVDStatement.hpp"
+#include "../firm_interface/FirmInterface.hpp"
 
 ast::LVDStatement::LVDStatement(shptr<TypeIdent> type_ident)
 	: type_ident(type_ident)
@@ -86,8 +87,8 @@ unsigned int ast::LVDStatement::countVariableDeclarations() const
 	return 1;
 }
 
-int ast::LVDStatement::setVariablePositions(shptr<std::map<std::string, int>> var2pos, int pos) const
+int ast::LVDStatement::setVariablePositions(int pos) const
 {
-	(*var2pos)[this->type_ident->getName()] = pos++;
+	(*FirmInterface::getInstance().getVarMap())[this->type_ident->getName()] = pos++;
 	return pos;
 }
