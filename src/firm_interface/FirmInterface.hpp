@@ -78,7 +78,8 @@ class FirmInterface
 		ir_node* createNodeForMethodCall(ir_node* caller,
 		                                 ir_type* class_type,
 		                                 std::string const& method_name,
-		                                 shptr<ast::Arguments const> arguments);
+		                                 shptr<ast::Arguments const> arguments,
+		                                 shptr<ast::MethodDeclaration const> methodDeclaration);
 
 	public:
 		static FirmInterface& getInstance()
@@ -109,6 +110,7 @@ class FirmInterface
 		void addField(ir_type* class_type, std::string method_name, ir_entity* ent);
 		ir_entity* getMethodEntity(ir_type* class_type, std::string method_name);
 		ir_entity* getFieldEntity(ir_type* class_type, std::string method_name);
+		ir_entity *createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration);
 
 		void setInput(std::string const& in);
 		void setOutput(std::string const& out);
