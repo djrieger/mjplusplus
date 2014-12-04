@@ -1,0 +1,5 @@
+class a {
+	public static void main(String[] a) {
+		boolean b = System == System;
+	}
+}
