@@ -24,7 +24,10 @@ namespace ast
 			virtual void accept(ASTVisitor& visitor) const;
 			virtual shptr<ast::Type> getType() const;
 			virtual shptr<Type> const& getDeclType() const;
-			std::string mangle(std::string class_name) const;
+			/**
+			 * Mangles this field's name using ClassMember::mangle() and appends _Ffieldname
+			 */
+			virtual std::string mangle() const;
 	};
 }
 #endif // FIELDDECLARATION_HPP

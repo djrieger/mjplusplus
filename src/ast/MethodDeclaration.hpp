@@ -36,8 +36,10 @@ namespace ast
 			shptr<Block> getBlock() const;
 			unsigned int countVariableDeclarations() const;
 			virtual shptr<std::map<std::string, int>> setVariablePositions() const;
-
-			std::string mangle(std::string class_name) const;
+			/**
+			 * Mangles this methods's name using ClassMember::mangle() and appends _Mmethodname
+			 */
+			virtual std::string mangle() const;
 
 			virtual void accept(ASTVisitor& visitor) const;
 	};

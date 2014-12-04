@@ -40,7 +40,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 		set_method_res_type(methodType, 0, type);
 	}
 
-	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->mangle(methodDeclaration->getDeclaration()->getName()).c_str()), methodType);
+	ir_entity* ent = new_entity(owner, new_id_from_str(methodDeclaration->mangle().c_str()), methodType);
 	FirmInterface::getInstance().addMethod(owner, methodDeclaration->getName(), ent);
 	//TODO: SimpleIf example includes parameters into local variable count
 	function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
