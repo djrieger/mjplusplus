@@ -3,7 +3,8 @@
 
 #include "FirmVisitor.hpp"
 
-class VariableDeclVisitor : public FirmVisitor {
+class VariableDeclVisitor : public FirmVisitor
+{
 	protected:
 		shptr<ast::pe::Ident const> ident;
 		ir_node* resultNode;

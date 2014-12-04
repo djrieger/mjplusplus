@@ -149,13 +149,15 @@ void FirmInterface::build()
 #endif
 }
 
-ir_entity *FirmInterface::createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration)
+ir_entity* FirmInterface::createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration)
 {
 	std::string mangledMethodName = methodDeclaration->mangle();
 
 	unsigned int paramsCount = methodDeclaration->getParameters()->size();
 	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
 	ir_type* methodType = new_type_method(paramsCount + 1, hasReturnType);
+
+	std::cout << "- ParamsCount = " << (paramsCount + 1) << std::endl;
 
 	// this pointer as first parameter
 	// TODO: owner must be firm pointer type
@@ -189,8 +191,6 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	std::cout << "- method " << method_name << std::endl;
 	ir_entity* method_ent = createMethodEntity(class_type, methodDeclaration); //getMethodEntity(get_glob_type(), method_name);
 	std::cout << "- method_ent=" << method_ent << std::endl;
-	std::cout << classMethodEntities.size() << std::endl;
-
 
 	int argc = arguments->getArgumentsSize() + 1;
 	std::cout << "- argc=" << argc << std::endl;
@@ -211,7 +211,10 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	// create the call
 	ir_node* store = get_store();
 	ir_node* callee = new_Address(method_ent);
-	// TODO: Segfault here, says: 
+
+	std::cout << "- callee=" << callee << std::endl;
+
+	// TODO: Abort here, says: expected mode P64 for input
 	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
 
 	// update the current store
@@ -222,7 +225,7 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
 	ir_node* result = new_Proj(tuple, getIntegerMode(), 0);
 
-	free(in); 
+	free(in);
 	return result;
 }
 

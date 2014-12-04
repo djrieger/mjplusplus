@@ -4,7 +4,8 @@
 #include "FirmVisitor.hpp"
 #include "ExpressionVisitor.hpp"
 
-class PostfixOpsVisitor: public FirmVisitor {
+class PostfixOpsVisitor: public FirmVisitor
+{
 	public:
 		virtual void visit(shptr<ast::FieldAccess const> fieldAccess);
 		virtual void visit(shptr<ast::ArrayAccess const> arrayAccess);

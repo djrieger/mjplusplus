@@ -3,14 +3,16 @@
 VariableDeclVisitor::VariableDeclVisitor(shptr<ast::pe::Ident const> ident): ident(ident)
 {}
 
-void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclaration) {
+void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclaration)
+{
 	// public int field;
 	//FirmInterface::getInstance().getFieldEntity()
-	// Class node { public Node parent; 
+	// Class node { public Node parent;
 	// parent.foo();
 }
 
-void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement) {
+void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
+{
 	// int i
 	auto varMap = FirmInterface::getInstance().getVarMap();
 	auto varName = lvdStatement->getIdent()->getName();
@@ -18,11 +20,12 @@ void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement) {
 	resultNode = get_value(pos, mode_P);
 }
 
-void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent) {
-  // $System System
+void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
+{
+	// $System System
 }
 
-ir_node* VariableDeclVisitor::getResultNode() const 
+ir_node* VariableDeclVisitor::getResultNode() const
 {
 	return this->resultNode;
 }
