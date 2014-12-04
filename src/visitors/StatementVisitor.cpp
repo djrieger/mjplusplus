@@ -13,9 +13,9 @@ ir_node* StatementVisitor::getResultNode() const
 
 void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 {
-	shptr<JumpTarget> trueTarget;
-	shptr<JumpTarget> falseTarget;
-	shptr<JumpTarget> exitTarget;
+	auto trueTarget = std::make_shared<JumpTarget>();
+	auto falseTarget = std::make_shared<JumpTarget>();
+	auto exitTarget = std::make_shared<JumpTarget>();
 	ExpressionVisitor condVisitor(ifStatement->getThenStatement() ? trueTarget : exitTarget,
 	                              ifStatement->getElseStatement() ? falseTarget : exitTarget
 	                             );
@@ -44,9 +44,9 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 {
-	shptr<JumpTarget> headTarget;
-	shptr<JumpTarget> loopTarget;
-	shptr<JumpTarget> exitTarget;
+	auto headTarget = std::make_shared<JumpTarget>();
+	auto loopTarget = std::make_shared<JumpTarget>();
+	auto exitTarget = std::make_shared<JumpTarget>();
 
 	set_cur_block(headTarget->targetNode);
 
@@ -60,6 +60,8 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 		ir_node* loopNode = getResultNode();
 		headTarget->jumpFromBlock(loopNode);
 	}
+	else
+		headTarget->jumpFromBlock(headTarget->targetNode);
 
 	set_cur_block(exitTarget->targetNode);
 	this->resultNode = exitTarget->targetNode;
