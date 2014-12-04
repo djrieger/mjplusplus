@@ -1,35 +1,31 @@
-	.section	__TEXT,__text,regular,pure_instructions
+	.file	"print.c"
+	.section	.rodata
+.LC0:
+	.string	"%d\n"
+	.text
 	.globl	_COut_Mprintln
-	.align	4, 0x90
-_COut_Mprintln:                         ## @COut_Mprintln
+	.type	_COut_Mprintln, @function
+_COut_Mprintln:
+.LFB0:
 	.cfi_startproc
-## BB#0:
 	pushq	%rbp
-Ltmp2:
 	.cfi_def_cfa_offset 16
-Ltmp3:
-	.cfi_offset %rbp, -16
+	.cfi_offset 6, -16
 	movq	%rsp, %rbp
-Ltmp4:
-	.cfi_def_cfa_register %rbp
+	.cfi_def_cfa_register 6
 	subq	$16, %rsp
-	leaq	L_.str(%rip), %rax
 	movl	%edi, -4(%rbp)
-	movl	-4(%rbp), %esi
-	movq	%rax, %rdi
-	movb	$0, %al
-	callq	_printf
-	movl	$0, %esi
-	movl	%eax, -8(%rbp)          ## 4-byte Spill
-	movl	%esi, %eax
-	addq	$16, %rsp
-	popq	%rbp
-	retq
+	movl	-4(%rbp), %eax
+	movl	%eax, %esi
+	movl	$.LC0, %edi
+	movl	$0, %eax
+	call	printf
+	movl	$0, %eax
+	leave
+	.cfi_def_cfa 7, 8
+	ret
 	.cfi_endproc
-
-	.section	__TEXT,__cstring,cstring_literals
-L_.str:                                 ## @.str
-	.asciz	"%d\n"
-
-
-.subsections_via_symbols
+.LFE0:
+	.size	_COut_Mprintln, .-_COut_Mprintln
+	.ident	"GCC: (Debian 4.9.1-19) 4.9.1"
+	.section	.note.GNU-stack,"",@progbits
