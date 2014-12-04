@@ -189,6 +189,11 @@ namespace ast
 			return shptr<Type>();
 		}
 
+		Object_Type Object::getObjectType() const
+		{
+			return object_type;
+		}
+
 		bool Object::isLValue() const
 		{
 			return false;
