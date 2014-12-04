@@ -15,11 +15,11 @@ void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaratio
 		methodDeclaration->getBlock()->accept(stmtVisitor);
 	} else {
 		std::cout << "  Empty method body" << std::endl;
-	}
 
-	ir_node* currentMemState = get_store();
-	ir_node* x = new_Return(currentMemState, 0, NULL);
-	add_immBlock_pred(get_irg_end_block(irg), x);
+		ir_node* currentMemState = get_store();
+		ir_node* x = new_Return(currentMemState, 0, NULL);
+		add_immBlock_pred(get_irg_end_block(irg), x);
+	}
 
 	irg_finalize_cons(irg);
 }
