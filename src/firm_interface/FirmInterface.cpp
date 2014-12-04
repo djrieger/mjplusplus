@@ -38,7 +38,7 @@ void FirmInterface::convert(shptr<ast::Program> program)
 {
 	std::cout << "converting Program" << std::endl;
 	//foo();
-	
+
 	ProgramVisitor v;
 
 	try
