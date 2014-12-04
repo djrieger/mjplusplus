@@ -3,7 +3,7 @@
 
 #include "FirmVisitor.hpp"
 #include "ClassVisitor.hpp"
-#include "../ast/MethodDeclaration.hpp"
+#include "../ast/MainMethodDeclaration.hpp"
 #include "../ast/FieldDeclaration.hpp"
 
 class MemberVisitor : public FirmVisitor
@@ -14,6 +14,7 @@ class MemberVisitor : public FirmVisitor
 	public:
 		MemberVisitor(ClassVisitor& classVisitor);
 		virtual void visit(shptr<const ast::MethodDeclaration> node);
+		virtual void visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl);
 		virtual void visit(shptr<const ast::FieldDeclaration> fieldDeclaration);
 		ir_graph* getGraph() const;
 };
