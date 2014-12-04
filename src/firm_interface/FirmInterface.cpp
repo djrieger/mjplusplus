@@ -38,7 +38,7 @@ void FirmInterface::convert(shptr<ast::Program> program)
 {
 	std::cout << "converting Program" << std::endl;
 	//foo();
-	
+
 	ProgramVisitor v;
 
 	try
@@ -391,7 +391,7 @@ std::string FirmInterface::replace_dollar(std::string name)
 {
 	std::string s = name;
 
-	for (int i = 0; i < s.size(); ++i)
+	for (size_t i = 0; i < s.size(); ++i)
 	{
 		if (s[i] == '$')
 			s = s.substr(0, i) + "_C" + s.substr(i + 1, s.size() - i - 1);

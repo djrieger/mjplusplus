@@ -30,6 +30,16 @@ void ast::WhileStatement::toString(std::ostream& out, unsigned int indent, bool 
 		out << "{ }\n";
 }
 
+shptr<ast::Expression> ast::WhileStatement::getCondition() const
+{
+	return this->condition;
+}
+
+shptr<ast::Statement> ast::WhileStatement::getLoopStatement() const
+{
+	return statement;
+}
+
 bool ast::WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	auto cond = condition->get_type(sa, symbolTable);

@@ -21,10 +21,12 @@ namespace ast
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
 			virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 
+			shptr<Ident> getIdent() const;
 			virtual unsigned int countVariableDeclarations() const;
 			virtual int setVariablePositions(int) const;
 			virtual void accept(ASTVisitor& visitor) const;
 			virtual shptr<ast::Type> const& getDeclType() const;
+			shptr<ast::Expression> const& getInitialization() const;
 	};
 }
 

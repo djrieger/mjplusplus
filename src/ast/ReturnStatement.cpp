@@ -25,6 +25,11 @@ void ast::ReturnStatement::toString(std::ostream& out, unsigned int indent, bool
 	out << ";\n";
 }
 
+shptr<ast::Expression> ast::ReturnStatement::getExpression() const
+{
+	return expression;
+}
+
 bool ast::ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
 	auto ret_type = Symbol::makeSymbol("return", symbolTable->getCurrentScope())->getCurrentDefinition()->getType();
