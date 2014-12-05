@@ -13,19 +13,34 @@ ir_node* StatementVisitor::getResultNode() const
 
 void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 {
+	// Create a new block for the condition and append condition block to current block
+	ir_node* curBlock = get_cur_block();
+	ir_node* condBlock = new_immBlock();
+	add_immBlock_pred(condBlock, curBlock);
+	set_cur_block(condBlock);
+
+	std::cout << "Visiting if: set new block for condition" << std::endl;
+
 	auto trueTarget = std::make_shared<JumpTarget>();
 	auto falseTarget = std::make_shared<JumpTarget>();
 	auto exitTarget = std::make_shared<JumpTarget>();
 	ExpressionVisitor condVisitor(ifStatement->getThenStatement() ? trueTarget : exitTarget,
 	                              ifStatement->getElseStatement() ? falseTarget : exitTarget
 	                             );
+
+	std::cout << "if: accepting condition..." << std::endl;
+
 	ifStatement->getCondition()->accept(condVisitor); // TODO: Implement accept(ExpressionVisitor) for Expression subclasses
 
+	std::cout << "if: accepted condition" << std::endl;
 
 	if (ifStatement->getThenStatement())
 	{
 		set_cur_block(trueTarget->targetNode);
 		ifStatement->getThenStatement()->accept(*this); // TODO: Implement accept(StatementVisitor) for Statement subclasses
+
+		std::cout << "if: accepted then statement" << std::endl;
+
 		ir_node* trueNode = getResultNode();
 		exitTarget->jumpFromBlock(trueNode);
 	}
@@ -34,11 +49,14 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 	{
 		set_cur_block(falseTarget->targetNode);
 		ifStatement->getElseStatement()->accept(*this); // TODO: Implement accept(StatementVisitor) for Statement subclasses
+
+		std::cout << "if: accepted else statement" << std::endl;
+
 		ir_node* falseNode = getResultNode();
 		exitTarget->jumpFromBlock(falseNode);
 	}
 
-	set_cur_block(exitTarget->targetNode);
+	//set_cur_block(exitTarget->targetNode);
 	this->resultNode = exitTarget->targetNode;
 }
 
