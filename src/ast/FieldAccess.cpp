@@ -14,6 +14,11 @@ namespace ast
 		field_name->toString(out, indent);
 	}
 
+	shptr<Ident> FieldAccess::getFieldName() const
+	{
+		return field_name;
+	}
+
 	shptr<Type> FieldAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable>, shptr<Type> callingType)
 	{
 		if (callingType->isClassType())

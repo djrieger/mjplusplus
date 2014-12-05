@@ -2,6 +2,7 @@
 #include "PostfixOpsVisitor.hpp"
 #include "VariableDeclVisitor.hpp"
 #include <sstream>
+#include <tuple>
 
 ExpressionVisitor::ExpressionVisitor() {}
 
@@ -70,8 +71,13 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	else
 	{
 		std::cout << "got System " << std::endl;
-		// TODO: Create System
-		// FirmInterface::getInstance().createSystemNode()
+		ir_entity* system_ent;
+		std::tie(system_ent, std::ignore) = FirmInterface::getInstance().getSystemNode();
+		resultNode = get_atomic_ent_value(system_ent);
+		lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
+		auto si = std::make_shared<ast::Ident>(sit);
+		auto s = std::make_shared<ast::Type>(si);
+		resultType = FirmInterface::getInstance().getType(s);
 	}
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
@@ -88,14 +94,15 @@ void ExpressionVisitor::visit(shptr<ast::pe::NewArrayExpression const> newArrayE
 	newArrayExpr->getSize()->accept(*this);
 	ir_type* t = FirmInterface::getInstance().getType(newArrayExpr->getType()->de_array());
 	resultNode = FirmInterface::getInstance().createNodeForCallocCall(resultNode, get_type_size_bytes(t));
+	resultType = FirmInterface::getInstance().getType(newArrayExpr->getType());
 }
 
 void ExpressionVisitor::visit(shptr<ast::pe::NewObjectExpression const> newObjectExpr)
 {
 	ir_node* one = FirmInterface::getInstance().createNodeForIntegerConstant(1);
 	auto at = std::make_shared<ast::Type>(newObjectExpr->getIdent());
-	ir_type* t = FirmInterface::getInstance().getType(at);
-	resultNode = FirmInterface::getInstance().createNodeForCallocCall(one, get_type_size_bytes(get_pointer_points_to_type(t)));
+	resultType = FirmInterface::getInstance().getType(at);
+	resultNode = FirmInterface::getInstance().createNodeForCallocCall(one, get_type_size_bytes(get_pointer_points_to_type(resultType)));
 }
 
 void ExpressionVisitor::visit(shptr<ast::pe::Object const> objectExpr)
