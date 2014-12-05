@@ -37,9 +37,7 @@ void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaratio
 		methodDeclaration->getBlock()->accept(stmtVisitor);
 	}
 	else
-	{
 		std::cout << "  Empty method body" << std::endl;
-	}
 
 	// current block did not contain a return statement, add one:
 	if (get_cur_block())
