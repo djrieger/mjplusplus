@@ -6,6 +6,7 @@ PostfixOpsVisitor::PostfixOpsVisitor(ExpressionVisitor& expressionVisitor): expr
 void PostfixOpsVisitor::visit(shptr<ast::FieldAccess const> fieldAccess)
 {
 	std::cout << "Visiting FieldAccess" << std::endl;
+	//TODO: use VariableDeclVisitor
 }
 
 void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess)
