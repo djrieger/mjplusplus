@@ -66,7 +66,7 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	// System
 	ir_node* current_this = get_value(0, mode_P);
 
-	VariableDeclVisitor vdVisitor(current_this, identExpr);
+	VariableDeclVisitor vdVisitor(current_this);
 	auto decl = identExpr->getDeclaration();
 
 	if (decl)
@@ -271,7 +271,7 @@ void ExpressionVisitor::visit(shptr<ast::be::Slash const> slashExpr)
 	});
 }
 
-void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
+void ExpressionVisitor::visit(shptr<ast::be::Invalid const>)
 {
 	std::cerr << "ExpressionVisitor visited Invalid: in" << __FILE__
 	          << " at " << __LINE__ << std::endl;

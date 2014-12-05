@@ -1,13 +1,13 @@
 #include "VariableDeclVisitor.hpp"
 
-VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this, shptr<ast::pe::Ident const> ident): current_this(current_this), ident(ident)
+VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this): current_this(current_this)
 {}
 
 void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclaration)
 {
 
-	std::cout << "vd visit FieldDecl" << std::endl;
 	//Our variable was declared as field => Our variable is a fieldaccess.
+	std::cout << "vd visit FieldDecl" << std::endl;
 	ir_node* mem = get_store();
 	ir_type* this_type = FirmInterface::getInstance().getType(std::make_shared<ast::Type>(fieldDeclaration->getDeclaration()->getIdent()));
 	ir_entity* field = FirmInterface::getInstance().getFieldEntity(get_pointer_points_to_type(this_type), fieldDeclaration->mangle());
@@ -24,15 +24,25 @@ void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
 	//Our variable was declared as LV => Our variable is a LV.
 	auto varMap = FirmInterface::getInstance().getVarMap();
 	auto varName = lvdStatement->getIdent()->getName();
+
+	std::cout << "vd visit LVDDecl " << varName << std::endl;
+
 	int pos = (*varMap)[varName];
 	resultType = FirmInterface::getInstance().getType(lvdStatement->getDeclType());
 	resultNode = get_value(pos, FirmInterface::getInstance().getMode(lvdStatement->getDeclType()));
-	std::cout << "LVDStatement " << varName << "=" << resultNode << "@" << pos << std::endl;
 }
 
 void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
 {
-	//Our variable was declared as type ident => Our variable is a parameter.
+	//Our variable was declared as type ident => Our variable is a parameter (and we treat it as LV).
+	auto varMap = FirmInterface::getInstance().getVarMap();
+	auto varName = typeIdent->getName();
+
+	std::cout << "vd visit TypeIdent/Parameter " << varName << std::endl;
+
+	int pos = (*varMap)[varName];
+	resultType = FirmInterface::getInstance().getType(typeIdent->getDeclType());
+	resultNode = get_value(pos, FirmInterface::getInstance().getMode(typeIdent->getDeclType()));
 }
 
 ir_node* VariableDeclVisitor::getResultNode() const
