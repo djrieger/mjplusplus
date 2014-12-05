@@ -57,6 +57,7 @@ void FirmInterface::convert(shptr<ast::Program> program)
 
 void FirmInterface::build()
 {
+	std::cout << "Building" << std::endl;
 	lower_highlevel();
 
 	FILE* o = fopen(out_name.c_str(), "w");
@@ -274,14 +275,15 @@ ir_node* FirmInterface::createNodeForCallocCall(ir_node* count, unsigned int siz
 		proc_calloc = new_type_method(2, 1);
 		set_method_param_type(proc_calloc, 0, new_type_primitive(mode_Is));
 		set_method_param_type(proc_calloc, 1, new_type_primitive(mode_Is));
+		set_method_res_type(proc_calloc, 0, new_type_primitive(mode_P));
 		ir_type* globalOwner = get_glob_type();
 		callocMethodEntity = new_entity(globalOwner, new_id_from_str("calloc"), proc_calloc);
 	}
 
 	// call calloc
-	ir_node* args[] = {count, new_Const_long(mode_Is, size)};
-	ir_graph* irg = get_current_ir_graph();
-	ir_node* store = get_irg_no_mem(irg); // get_store();
+	ir_node* args[] = {count, FirmInterface::getInstance().createNodeForIntegerConstant(size)};
+	//ir_graph* irg = get_current_ir_graph();
+	ir_node* store = get_store(); // get_store();
 	ir_node* callee = new_Address(callocMethodEntity);
 	ir_node* call_node = new_Call(store, callee, 2, args, proc_calloc);
 
@@ -474,6 +476,56 @@ void FirmInterface::addField(ir_type* class_type, std::string method_name, ir_en
 ir_entity* FirmInterface::getFieldEntity(ir_type* class_type, std::string field_name)
 {
 	return classFieldEntities[ {class_type, field_name}];
+}
+
+std::tuple<ir_entity*, ir_entity*> FirmInterface::getSystemNode()
+{
+	static ir_entity* system_ent = NULL;
+	static ir_entity* out_ent = NULL;
+
+	if (!system_ent)
+	{
+		lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), { -1, 0}};
+		auto o = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(oit));
+
+		ir_type* out_type = getType(o);
+		out_ent = new_entity(get_glob_type(), new_id_from_str("Out"), out_type);
+		set_entity_initializer(out_ent, get_initializer_null());
+
+		lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
+		auto s = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(sit));
+
+		ir_type* system_type = getType(s);
+		system_ent = new_entity(get_glob_type(), new_id_from_str("System"), system_type);
+		set_entity_initializer(system_ent, get_initializer_null());
+	}
+
+	return std::tuple<ir_entity*, ir_entity*>(system_ent, out_ent);
+}
+
+void FirmInterface::initSystem()
+{
+	ir_entity* system_ent;
+	ir_entity* out_ent;
+	std::tie(system_ent, out_ent) = getSystemNode();
+
+	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), { -1, 0}};
+	auto o = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(oit));
+	ir_type* out_type = getType(o);
+
+	lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
+	auto s = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(sit));
+	ir_type* system_type = getType(s);
+
+	ir_node* one = createNodeForIntegerConstant(1);
+	ir_node* out_n = createNodeForCallocCall(one, get_type_size_bytes(out_type));
+	set_atomic_ent_value(out_ent, out_n);
+	ir_node* system_n = createNodeForCallocCall(one, get_type_size_bytes(system_type));
+	set_atomic_ent_value(system_ent, system_n);
+
+	ir_entity* out_field = getFieldEntity(get_pointer_points_to_type(system_type), "_CSystem_Fout");
+	ir_node* addr = new_Add(system_n, FirmInterface::getInstance().createNodeForIntegerConstant(get_entity_offset(out_field)), mode_P);
+	set_store(new_Proj(new_Store(get_store(), addr, out_n, out_type, cons_none), mode_M, pn_Store_M));
 }
 
 std::string FirmInterface::replace_dollar(std::string name)

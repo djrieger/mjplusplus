@@ -96,6 +96,11 @@ void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl
 
 	set_current_ir_graph(irg);
 
+
+	std::cout << "  Building System" << std::endl;
+	FirmInterface::getInstance().initSystem();
+	std::cout << "  Done Building System" << std::endl;
+
 	visitMethodBodyAndFinalize(mainMethodDecl, irg);
 }
 

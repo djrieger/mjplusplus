@@ -1,6 +1,6 @@
 #include "VariableDeclVisitor.hpp"
 
-VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this, shptr<ast::pe::Ident const> ident): current_this(current_this), ident(ident)
+VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this, shptr<ast::IdentBase const> ident): ident(ident), current_this(current_this)
 {}
 
 void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclaration)
