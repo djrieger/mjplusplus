@@ -55,7 +55,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 		//ATTENTION: methodDeclaration->countVariableDeclarations() + 1
 		//			 since there is an assertion, that pos+1 < irg->n_loc
 		//			 BE-FUCKING-CAUSE THEY COUNT THE PROJ AS PARAMETER!!! (maybe)
-		function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations() + 1);
+		function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations() + 1 + methodDeclaration->getParameters()->size());
 
 
 		set_current_ir_graph(function_graph);

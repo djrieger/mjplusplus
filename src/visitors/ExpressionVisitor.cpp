@@ -1,6 +1,7 @@
 #include "ExpressionVisitor.hpp"
 #include "PostfixOpsVisitor.hpp"
 #include "VariableDeclVisitor.hpp"
+#include <sstream>
 
 ExpressionVisitor::ExpressionVisitor() {}
 
@@ -129,15 +130,33 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 {
 
-	std::string lhs_ident = NULL;
-	ir_node* rhs = NULL; //TODO: get rhs variable of eqExpr
-	ast::MethodDeclaration* currentMethodDeclaration = NULL;
+	std::stringstream output;
+	std::cout << "eqExpr.toString = " << eqExpr << " pointing to "; // << (*eqExpr);
+	//eqExpr->toString(output, false);
+	std::cout << std::endl;
 
-	int lhs_pos = (*FirmInterface::getInstance().getVarMap())[lhs_ident]; // (*currentMethodDeclaration->createVariablePositions())[lhs_ident];
+	std::string lhs_ident; 
+	eqExpr->getLeftChild()->accept(*this);
+	std::cout << "1" << std::endl;
 
-	set_value(lhs_pos, rhs);
+	eqExpr->getRightChild()->accept(*this); //TODO: get rhs variable of eqExpr
+	ir_node* rhs = this->resultNode;
+	std::cout << "2" << std::endl;
 
-	this->resultNode = rhs; //return rhs or lhs?
+	auto lhsIdent = std::dynamic_pointer_cast<ast::pe::Ident>(eqExpr->getLeftChild());
+	std::cout << "3" << std::endl;
+	if (lhsIdent)
+	{
+		std::cout << "3a" << std::endl;
+		// simple case such as i = 5, lhs is an ident aka local variable
+		int lhs_pos = (*FirmInterface::getInstance().getVarMap())[lhsIdent->getIdentifier()];
+		std::cout << "lhs_pos =" << lhs_pos << std::endl;
+		set_value(lhs_pos, rhs);
+	} else {
+		std::cout << "3b" << std::endl;
+		std::cout << "Complex left-hand side expressions not implemented yet" << std::endl;
+	}
+	//this->resultNode = rhs; see above
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
