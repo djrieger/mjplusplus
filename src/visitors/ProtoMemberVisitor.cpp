@@ -31,7 +31,6 @@ void ProtoMemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclarati
 {
 	std::cout << "  Visiting field " << fieldDeclaration->mangle() << std::endl;
 
-	// TODO switch on fieldDeclaration->getType()
 	auto fieldASTType = fieldDeclaration->getType();
 	ir_type* field_ir_type = FirmInterface::getInstance().getType(fieldASTType);
 	// expand class for this member. TODO: not everything needs 8 bytes, try to pack things
