@@ -26,3 +26,8 @@ ir_node* PostfixOpsVisitor::getResultNode() const
 {
 	return this->resultNode;
 }
+
+ir_type* PostfixOpsVisitor::getResultType() const
+{
+	return this->resultType;
+}

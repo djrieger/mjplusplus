@@ -161,7 +161,9 @@ ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDe
 
 	// this pointer as first parameter
 	// TODO: owner must be firm pointer type
-	set_method_param_type(methodType, 0, owner);
+	auto ast_class_type = std::make_shared<ast::Type>(methodDeclaration->getDeclaration()->getIdent());
+	ir_type* class_ref_type = getType(ast_class_type);
+	set_method_param_type(methodType, 0, class_ref_type);
 
 	int i = 1;
 

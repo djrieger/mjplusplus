@@ -12,6 +12,11 @@ ir_node* ExpressionVisitor::getResultNode() const
 	return resultNode;
 }
 
+ir_type* ExpressionVisitor::getResultType() const
+{
+	return resultType;
+}
+
 void ExpressionVisitor::visitBinaryExpression(
     shptr<ast::be::BinaryExpression const> binExpr,
     std::function<ir_node* (ir_node*, ir_node*)> createResultNode)
@@ -49,14 +54,17 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	// Param / Local Variable
 	// Member
 	// System
-	VariableDeclVisitor vdVisitor(identExpr);
+	ir_node* current_this = get_value(0, mode_P);
+
+	VariableDeclVisitor vdVisitor(current_this, identExpr);
 	auto decl = identExpr->getDeclaration();
 
 	if (decl)
 	{
 		std::cout << "got declaration " << std::endl;
 		decl->accept(vdVisitor);
-		this->resultNode = vdVisitor.getResultNode();
+		resultNode = vdVisitor.getResultNode();
+		resultType = vdVisitor.getResultType();
 	}
 	else
 	{
@@ -245,6 +253,7 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 	for (auto& it : *postfixExpression->getPostfixOps())
 	{
 		it->accept(popsVisitor);
-		this->resultNode = popsVisitor.getResultNode();
+		resultNode = popsVisitor.getResultNode();
+		resultType = popsVisitor.getResultType();
 	}
 }

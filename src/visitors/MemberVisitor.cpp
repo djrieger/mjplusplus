@@ -14,6 +14,20 @@ void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaratio
 
 	if (methodDeclaration->getBlock())
 	{
+		//methodDeclaration->getParameters();
+		ir_node* start = get_irg_start(irg);
+		ir_node* args = new_Proj(start, mode_T, pn_Start_T_args);
+		ir_entity* m_ent = get_irg_entity(irg);
+		ir_type* m_type = get_entity_type(m_ent);
+		size_t param_count = get_method_n_params(m_type);
+
+		for (size_t i = 0; i < param_count; i++)
+		{
+			ir_type* p_type = get_method_param_type(m_type, i);
+			ir_node* arg = new_Proj(args, get_type_mode(p_type), i);
+			set_value(i, arg);
+		}
+
 		methodDeclaration->getBlock()->accept(stmtVisitor);
 
 		//TODO: only do this when void AND no explicit return.

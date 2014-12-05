@@ -12,9 +12,11 @@ class PostfixOpsVisitor: public FirmVisitor
 		virtual void visit(shptr<ast::MethodInvocation const> methodInvocation);
 
 		virtual ir_node* getResultNode() const;
+		virtual ir_type* getResultType() const;
 		PostfixOpsVisitor(ExpressionVisitor& expressionVisitor);
 	protected:
 		ir_node* resultNode;
+		ir_type* resultType;
 		ExpressionVisitor& expressionVisitor;
 };
 
