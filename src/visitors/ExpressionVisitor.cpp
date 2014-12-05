@@ -260,7 +260,7 @@ void ExpressionVisitor::visit(shptr<ast::be::Slash const> slashExpr)
 	});
 }
 
-void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
+void ExpressionVisitor::visit(shptr<ast::be::Invalid const>)
 {
 	std::cerr << "ExpressionVisitor visited Invalid: in" << __FILE__
 	          << " at " << __LINE__ << std::endl;

@@ -6,8 +6,8 @@
 class VariableDeclVisitor : public FirmVisitor
 {
 	protected:
-		shptr<ast::pe::Ident const> ident;
 		ir_node* current_this;
+		shptr<ast::pe::Ident const> ident;
 		ir_node* resultNode;
 		ir_type* resultType;
 	public:
