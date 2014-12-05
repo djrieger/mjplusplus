@@ -8,6 +8,12 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 
 void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 {
+	// create initial basic block for method body
+	/*ir_node* initialBlock = new_Block(0, NULL);
+	add_immBlock_pred(initialBlock, get_irg_start_block(irg));
+	set_cur_block(initialBlock);*/
+	set_cur_block(get_irg_start_block(irg));
+
 	methodDeclaration->createVariablePositions();
 
 	StatementVisitor stmtVisitor(*this);
@@ -29,21 +35,16 @@ void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaratio
 		}
 
 		methodDeclaration->getBlock()->accept(stmtVisitor);
-
-		//TODO: only do this when void AND no explicit return.
-		if (methodDeclaration->getReturnType()->isVoid()) // && hasNoReturn()
-		{
-			std::cout << "  void method (with no return;)" << std::endl;
-
-			ir_node* currentMemState = get_store();
-			ir_node* x = new_Return(currentMemState, 0, NULL);
-			add_immBlock_pred(get_irg_end_block(irg), x);
-		}
 	}
 	else
 	{
 		std::cout << "  Empty method body" << std::endl;
+	}
 
+	// current block did not contain a return statement, add one:
+	if (get_cur_block())
+	{
+		std::cout << "adding default return firm node at end of method" << std::endl;
 		ir_node* currentMemState = get_store();
 		ir_node* x = new_Return(currentMemState, 0, NULL);
 		add_immBlock_pred(get_irg_end_block(irg), x);

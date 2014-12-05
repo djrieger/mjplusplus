@@ -90,6 +90,8 @@ void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
 
 	ir_graph* irg = get_current_ir_graph();
 	add_immBlock_pred(get_irg_end_block(irg), ret);
+
+	set_cur_block(NULL);
 }
 
 void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
