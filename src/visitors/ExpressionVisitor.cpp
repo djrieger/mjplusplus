@@ -23,9 +23,11 @@ void ExpressionVisitor::visitBinaryExpression(
     shptr<ast::be::BinaryExpression const> binExpr,
     std::function<ir_node* (ir_node*, ir_node*)> createResultNode)
 {
+	std::cout << "accepting be left child" << std::endl;
 	binExpr->getLeftChild()->accept(*this);
 	ir_node* left = this->resultNode;
 
+	std::cout << "accepting be right child" << std::endl;
 	binExpr->getRightChild()->accept(*this);
 	ir_node* right = this->resultNode;
 
@@ -34,14 +36,21 @@ void ExpressionVisitor::visitBinaryExpression(
 
 void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation)
 {
+	std::cout << "visitRelationalExpression" << std::endl;
 	visitBinaryExpression(binaryExpression, [relation] (ir_node * left, ir_node * right) -> ir_node *
 	{
+		std::cout << "returning new_Cmp" << std::endl;
 		return new_Cmp(left, right, relation);
 	});
+	std::cout << "creating new_Cond" << std::endl;
 	ir_node* cond = new_Cond(resultNode);
+	std::cout << "creating new_Proj 1" << std::endl;
 	ir_node* pt = new_Proj(cond, get_modeX(), COND_JMP_PRED_TRUE);
+	std::cout << "calling jumpFromBlock 1" << std::endl;
 	trueTarget->jumpFromBlock(pt);
+	std::cout << "creating new_Proj 2" << std::endl;
 	ir_node* pf = new_Proj(cond, get_modeX(), COND_JMP_PRED_FALSE);
+	std::cout << "calling jumpFromBlock 2" << std::endl;
 	falseTarget->jumpFromBlock(pf);
 }
 
@@ -58,7 +67,7 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	// System
 	ir_node* current_this = get_value(0, mode_P);
 
-	VariableDeclVisitor vdVisitor(current_this, identExpr);
+	VariableDeclVisitor vdVisitor(current_this);
 	auto decl = identExpr->getDeclaration();
 
 	if (decl)
@@ -83,6 +92,7 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
 {
 	int64_t x = atoll(integerExpr->getStringValue().c_str());
+	std::cout << "visiting integer with value " << x << std::endl;
 	this->resultNode = FirmInterface::getInstance().createNodeForIntegerConstant(x);
 }
 void ExpressionVisitor::visit(shptr<ast::pe::MethodInvocation const> methodInvocationExpr)
@@ -198,6 +208,7 @@ void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)
 {
+	std::cout << "visiting EqEq" << std::endl;
 	visitRelationalExpression(eqEqExpr, ir_relation::ir_relation_equal);
 }
 
@@ -267,7 +278,7 @@ void ExpressionVisitor::visit(shptr<ast::be::Slash const> slashExpr)
 	});
 }
 
-void ExpressionVisitor::visit(shptr<ast::be::Invalid const> invalidExpr)
+void ExpressionVisitor::visit(shptr<ast::be::Invalid const>)
 {
 	std::cerr << "ExpressionVisitor visited Invalid: in" << __FILE__
 	          << " at " << __LINE__ << std::endl;
