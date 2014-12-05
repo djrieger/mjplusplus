@@ -161,7 +161,7 @@ ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDe
 
 	// this pointer as first parameter
 	// TODO: owner must be firm pointer type
-	set_method_param_type(methodType, 0, owner);
+	set_method_param_type(methodType, 0, new_type_primitive(mode_P));
 
 	int i = 1;
 
@@ -188,6 +188,8 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         shptr<ast::Arguments const> arguments,
         shptr<ast::MethodDeclaration const> methodDeclaration)
 {
+	//std::cout << "caller type=" << get_irn_type_attr(caller) << std::endl;
+
 	std::cout << "- method " << method_name << std::endl;
 	ir_type* owner = get_pointer_points_to_type(class_type);
 	ir_entity* method_ent = getMethodEntity(owner, method_name);//createMethodEntity(class_type, methodDeclaration);
@@ -201,14 +203,15 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 
 	ExpressionVisitor exprVisitor;
 
-	in[in_counter++] = caller;
 
+	in[in_counter++] = caller;
+/*
 	for (shptr<ast::Expression> argumentExpr : * (arguments->getArgumentExpressions()))
 	{
 		argumentExpr->accept(exprVisitor);
 		in[in_counter++] = exprVisitor.getResultNode();
 	}
-
+*/
 	// create the call
 	ir_node* store = get_store();
 	ir_node* callee = new_Address(method_ent);
