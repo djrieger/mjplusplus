@@ -190,9 +190,11 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
         shptr<ast::Arguments const> arguments,
         shptr<ast::MethodDeclaration const> methodDeclaration)
 {
+	//std::cout << "caller type=" << get_irn_type_attr(caller) << std::endl;
+
 	std::cout << "- method " << method_name << std::endl;
 	ir_type* owner = get_pointer_points_to_type(class_type);
-	ir_entity* method_ent = getMethodEntity(owner, method_name);//createMethodEntity(class_type, methodDeclaration);
+	ir_entity* method_ent = getMethodEntity(owner, method_name);
 	std::cout << "- method_ent=" << method_ent << std::endl;
 
 	int argc = arguments->getArgumentsSize() + 1;
@@ -202,6 +204,7 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	int in_counter = 0;
 
 	ExpressionVisitor exprVisitor;
+
 
 	in[in_counter++] = caller;
 
@@ -216,9 +219,7 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	ir_node* callee = new_Address(method_ent);
 
 	std::cout << "- caller=" << caller << std::endl;
-	//std::cout << "- caller-type=" << get_irn_type_attr(caller) << std::endl;
 
-	// TODO: Abort here, says: expected mode P64 for input
 	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
 
 	// update the current store
@@ -470,9 +471,9 @@ void FirmInterface::addField(ir_type* class_type, std::string method_name, ir_en
 	classFieldEntities[ {class_type, method_name}] = ent;
 }
 
-ir_entity* FirmInterface::getFieldEntity(ir_type* class_type, std::string method_name)
+ir_entity* FirmInterface::getFieldEntity(ir_type* class_type, std::string field_name)
 {
-	return classFieldEntities[ {class_type, method_name}];
+	return classFieldEntities[ {class_type, field_name}];
 }
 
 std::string FirmInterface::replace_dollar(std::string name)

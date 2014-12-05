@@ -73,14 +73,17 @@ void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
 
 	if (returnStmt->getExpression())
 	{
+		std::cout << "Visiting return stmt with expression" << std::endl;
 		ExpressionVisitor expr_visitor;
 		returnStmt->getExpression()->accept(expr_visitor);
 		ir_node* currentMemState = get_store();
 		ir_node* ret_expr = expr_visitor.getResultNode();
+
 		ret = new_Return(currentMemState, 1, &ret_expr);
 	}
 	else
 	{
+		std::cout << "Visiting return stmt without expr" << std::endl;
 		ir_node* currentMemState = get_store();
 		ret = new_Return(currentMemState, 0, NULL);
 	}
@@ -112,6 +115,7 @@ void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
 void StatementVisitor::visit(shptr<const ast::ExpressionStatement> exprStmt)
 {
 	// an ExpressionStatement is just an expression, that can stand alone, so visit the expression node
+	std::cout << "visiting ExpressionStatement" << std::endl;
 	ExpressionVisitor expr_visitor;
 	exprStmt->getExpression()->accept(expr_visitor);
 }
@@ -121,15 +125,18 @@ void StatementVisitor::visit(shptr<const ast::LVDStatement> lvdStmt)
 	// get the variable position from the map
 	// evaluate the expression determining the value, if present-
 	int v = (*FirmInterface::getInstance().getVarMap())[lvdStmt->getIdent()->getName()];
+	std::cout << "visiting lvdStmt, name=" << lvdStmt->getIdent()->getName() << ", varNum=" << v << std::endl;
 
 	if (lvdStmt->getInitialization())
 	{
+		std::cout << "found variable initialization" << std::endl;
 		ExpressionVisitor expr_visitor;
 		lvdStmt->getInitialization()->accept(expr_visitor);
 		set_value(v, expr_visitor.getResultNode());
 	}
 	else
 	{
+		std::cout << "var decl without init" << std::endl;
 		ir_node* null = new_Const_long(FirmInterface::getInstance().getMode(lvdStmt->getDeclType()), 0);
 		set_value(v, null);
 	}
