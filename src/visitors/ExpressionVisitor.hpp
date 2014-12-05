@@ -13,6 +13,7 @@ class ExpressionVisitor : public FirmVisitor
 
 	private:
 		ir_node* resultNode;
+		ir_type* resultType;
 		/*
 		 * Create an ir_node for binExpr by calling createResultNode.
 		 * createResultNode gets the nodes left and right as parameters, obtained by calling accept()
@@ -36,6 +37,7 @@ class ExpressionVisitor : public FirmVisitor
 		ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget);
 
 		virtual ir_node* getResultNode() const;
+		virtual ir_type* getResultType() const;
 
 		//ExpressionVisitor(StatementVisitor &statementVisitor);
 		// primary expressions

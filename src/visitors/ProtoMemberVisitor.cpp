@@ -42,7 +42,7 @@ void ProtoMemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclarati
 	ir_entity* field = new_entity(owner,
 	                              new_id_from_str(fieldDeclaration->mangle().c_str()),
 	                              field_ir_type);
-	FirmInterface::getInstance().addField(owner, fieldDeclaration->getName(), field);
+	FirmInterface::getInstance().addField(owner, fieldDeclaration->mangle(), field);
 	set_entity_offset(field, offset);
 }
 
