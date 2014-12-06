@@ -15,7 +15,7 @@ for i in run/*.mj ; do
 	echo $i
 	#extract substring
 	prefix=$(expr $i : '\(.*\)\.mj')
-	LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ -cfo $prefix.S $i #> /dev/null
+	LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ -cfo $prefix.S $i > /dev/null
 	ret=$?
 	echo $ret
 	if [ $ret -eq 0 ] ; then
