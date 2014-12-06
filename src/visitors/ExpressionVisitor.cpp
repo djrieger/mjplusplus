@@ -2,7 +2,6 @@
 #include "PostfixOpsVisitor.hpp"
 #include "VariableDeclVisitor.hpp"
 #include <sstream>
-#include <tuple>
 
 ExpressionVisitor::ExpressionVisitor() {}
 
@@ -69,13 +68,17 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	else
 	{
 		std::cout << "got System " << std::endl;
-		ir_entity* system_ent;
-		std::tie(system_ent, std::ignore) = FirmInterface::getInstance().getSystemNode();
-		resultNode = get_atomic_ent_value(system_ent);
+
 		lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
 		auto si = std::make_shared<ast::Ident>(sit);
 		auto s = std::make_shared<ast::Type>(si);
 		resultType = FirmInterface::getInstance().getType(s);
+
+		ir_entity* system_ent = FirmInterface::getInstance().getSystemNode();
+		ir_node* system_addr = new_Address(system_ent);
+		ir_node* load = new_Load(get_store(), system_addr, get_type_mode(resultType), resultType, cons_none);
+		set_store(new_Proj(load, mode_M, pn_Load_M));
+		resultNode = new_Proj(load, mode_P, pn_Load_res);
 	}
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
