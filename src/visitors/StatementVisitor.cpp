@@ -13,12 +13,6 @@ ir_node* StatementVisitor::getResultNode() const
 
 void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 {
-	// Create a new block for the condition and append condition block to current block
-	ir_node* curBlock = get_cur_block();
-	ir_node* condBlock = new_immBlock();
-	add_immBlock_pred(condBlock, curBlock);
-	set_cur_block(condBlock);
-
 	std::cout << "Visiting if: set new block for condition" << std::endl;
 
 	auto trueTarget = std::make_shared<JumpTarget>();
@@ -28,36 +22,42 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 	                              ifStatement->getElseStatement() ? falseTarget : exitTarget
 	                             );
 
-	std::cout << "if: accepting condition..." << std::endl;
+	ifStatement->getCondition()->accept(condVisitor);
+	ir_node* compareNode = condVisitor.getResultNode();
 
-	ifStatement->getCondition()->accept(condVisitor); // TODO: Implement accept(ExpressionVisitor) for Expression subclasses
+	ir_node* cond = new_Cond(compareNode);
+	ir_node* projTrue = new_Proj(cond, get_modeX(), pn_Cond_true);
+	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);
 
-	std::cout << "if: accepted condition" << std::endl;
+	ir_node* exitBlock = new_immBlock();
 
 	if (ifStatement->getThenStatement())
 	{
-		set_cur_block(trueTarget->targetNode);
-		ifStatement->getThenStatement()->accept(*this); // TODO: Implement accept(StatementVisitor) for Statement subclasses
+		ir_node* thenBlock = new_immBlock();
+		add_immBlock_pred(thenBlock, projTrue);
+		mature_immBlock(thenBlock);
+		set_cur_block(thenBlock);
 
-		std::cout << "if: accepted then statement" << std::endl;
+		ifStatement->getThenStatement()->accept(*this);
 
-		ir_node* trueNode = getResultNode();
-		exitTarget->jumpFromBlock(trueNode);
+		add_immBlock_pred(exitBlock, new_Jmp());
 	}
 
 	if (ifStatement->getElseStatement())
 	{
-		set_cur_block(falseTarget->targetNode);
-		ifStatement->getElseStatement()->accept(*this); // TODO: Implement accept(StatementVisitor) for Statement subclasses
+		ir_node* elseBlock = new_immBlock();
+		add_immBlock_pred(elseBlock, projFalse);
+		mature_immBlock(elseBlock);
+		set_cur_block(elseBlock);
 
-		std::cout << "if: accepted else statement" << std::endl;
-
-		ir_node* falseNode = getResultNode();
-		exitTarget->jumpFromBlock(falseNode);
+		ifStatement->getElseStatement()->accept(*this);
+		
+		add_immBlock_pred(exitBlock, new_Jmp());
 	}
 
-	//set_cur_block(exitTarget->targetNode);
-	this->resultNode = exitTarget->targetNode;
+	mature_immBlock(exitBlock);
+	set_cur_block(exitBlock);
+	this->resultNode = exitBlock;
 }
 
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)

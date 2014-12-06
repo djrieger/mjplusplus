@@ -37,8 +37,8 @@ void FirmInterface::setOutput(std::string const& out)
 void FirmInterface::convert(shptr<ast::Program> program)
 {
 	std::cout << "converting Program" << std::endl;
-	foo();
-/*
+	//foo();
+
 	ProgramVisitor v;
 
 	try
@@ -53,7 +53,7 @@ void FirmInterface::convert(shptr<ast::Program> program)
 	}
 
 	build();
-*/
+
 }
 
 void FirmInterface::build()
