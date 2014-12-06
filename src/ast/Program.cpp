@@ -71,13 +71,13 @@ void ast::Program::addPseudoClasses()
 	auto p = std::make_shared<std::vector<shptr<ClassMember>>>();
 	p->push_back(std::make_shared<MethodDeclaration>(pr, pa, shptr<ast::Block>()));
 
-	// class $out
-	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), { -1, 0}};
+	// class $Out
+	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Out"), { -1, 0}};
 	auto oi = std::make_shared<Ident>(oit);
 	auto o = std::make_shared<ClassDeclaration>(oi, p);
 	classes->push_back(o);
 
-	// #out out
+	// $Out out
 	auto ft = std::make_shared<Type>(oi);
 	lexer::Token fnt {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("out"), { -1, 0}};
 	auto fn = std::make_shared<Ident>(fnt);

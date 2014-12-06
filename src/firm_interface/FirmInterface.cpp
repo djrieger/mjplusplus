@@ -110,34 +110,39 @@ void FirmInterface::build()
 							.subsections_via_symbols \n \
 							";
 #else
-	std::string printFunAsm = "	.file	\"print.c\" \n \
-								.section	.rodata \n \
-							.LC0: \n \
-								.string	\"%d\\n\" \n \
-								.text \n \
-								.globl	_COut_Mprintln \n \
-								.type	_COut_Mprintln, @function \n \
-							_COut_Mprintln: \n \
-							.LFB0: \n \
-								.cfi_startproc \n \
-								pushq	%rbp \n \
-								.cfi_def_cfa_offset 16 \n \
-								.cfi_offset 6, -16 \n \
-								movq	%rsp, %rbp \n \
-								.cfi_def_cfa_register 6 \n \
-								subq	$16, %rsp \n \
-								movl	%edi, -4(%rbp) \n \
-								movl	-4(%rbp), %eax \n \
-								movl	%eax, %esi \n \
-								movl	$.LC0, %edi \n \
-								movl	$0, %eax \n \
-								call	printf \n \
-								movl	$0, %eax \n \
-								leave \n \
-								.cfi_def_cfa 7, 8 \n \
-								ret \n \
-								.cfi_endproc \n \
-								";
+	std::string printFunAsm = "        .file   \"print.c\" \n\
+			.section        .rodata.str1.1,\"aMS\",@progbits,1 \n\
+	.LC0: \n\
+			.string \"%d\\n\" \n\
+			.section        .text.unlikely,\"ax\",@progbits \n\
+	.LCOLDB1: \n\
+			.text \n\
+	.LHOTB1: \n\
+			.p2align 4,,15 \n\
+			.globl  _COut_Mprintln \n\
+			.type   _COut_Mprintln, @function \n\
+	_COut_Mprintln: \n\
+	.LFB11: \n\
+			.cfi_startproc \n\
+			subq    $8, %rsp \n\
+			.cfi_def_cfa_offset 16 \n\
+			movl    $.LC0, %edi \n\
+			xorl    %eax, %eax \n\
+			call    printf \n\
+			xorl    %eax, %eax \n\
+			addq    $8, %rsp \n\
+			.cfi_def_cfa_offset 8 \n\
+			ret \n\
+			.cfi_endproc \n\
+	.LFE11: \n\
+			.size   _COut_Mprintln, .-_COut_Mprintln \n\
+			.section        .text.unlikely \n\
+	.LCOLDE1: \n\
+			.text \n\
+	.LHOTE1: \n\
+			.ident  \"GCC: (Debian 4.9.1-19) 4.9.1\" \n\
+			.section        .note.GNU-stack,\"\",@progbits \n\
+";
 #endif
 
 	std::ofstream output(out_name, std::ios::app);
@@ -478,20 +483,12 @@ ir_entity* FirmInterface::getFieldEntity(ir_type* class_type, std::string field_
 	return classFieldEntities[ {class_type, field_name}];
 }
 
-std::tuple<ir_entity*, ir_entity*> FirmInterface::getSystemNode()
+ir_entity* FirmInterface::getSystemNode()
 {
 	static ir_entity* system_ent = NULL;
-	static ir_entity* out_ent = NULL;
 
 	if (!system_ent)
 	{
-		lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), { -1, 0}};
-		auto o = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(oit));
-
-		ir_type* out_type = getType(o);
-		out_ent = new_entity(get_glob_type(), new_id_from_str("Out"), out_type);
-		set_entity_initializer(out_ent, get_initializer_null());
-
 		lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
 		auto s = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(sit));
 
@@ -500,16 +497,14 @@ std::tuple<ir_entity*, ir_entity*> FirmInterface::getSystemNode()
 		set_entity_initializer(system_ent, get_initializer_null());
 	}
 
-	return std::tuple<ir_entity*, ir_entity*>(system_ent, out_ent);
+	return system_ent;
 }
 
 void FirmInterface::initSystem()
 {
-	ir_entity* system_ent;
-	ir_entity* out_ent;
-	std::tie(system_ent, out_ent) = getSystemNode();
+	ir_entity* system_ent = getSystemNode();
 
-	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$out"), { -1, 0}};
+	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Out"), { -1, 0}};
 	auto o = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(oit));
 	ir_type* out_type = getType(o);
 
@@ -519,9 +514,10 @@ void FirmInterface::initSystem()
 
 	ir_node* one = createNodeForIntegerConstant(1);
 	ir_node* out_n = createNodeForCallocCall(one, get_type_size_bytes(out_type));
-	set_atomic_ent_value(out_ent, out_n);
 	ir_node* system_n = createNodeForCallocCall(one, get_type_size_bytes(system_type));
-	set_atomic_ent_value(system_ent, system_n);
+	ir_node* system_addr = new_Address(system_ent);
+
+	set_store(new_Proj(new_Store(get_store(), system_addr, system_n, system_type, cons_none), mode_M, pn_Store_M));
 
 	ir_entity* out_field = getFieldEntity(get_pointer_points_to_type(system_type), "_CSystem_Fout");
 	ir_node* addr = new_Add(system_n, FirmInterface::getInstance().createNodeForIntegerConstant(get_entity_offset(out_field)), mode_P);
