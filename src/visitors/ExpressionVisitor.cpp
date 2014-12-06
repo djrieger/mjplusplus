@@ -3,9 +3,9 @@
 #include "VariableDeclVisitor.hpp"
 #include <sstream>
 
-ExpressionVisitor::ExpressionVisitor() {}
+ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
 
-ExpressionVisitor::ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget): trueTarget(trueTarget), falseTarget(falseTarget)
+ExpressionVisitor::ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget): store_value(NULL), do_store(false), trueTarget(trueTarget), falseTarget(falseTarget)
 {}
 
 ir_node* ExpressionVisitor::getResultNode() const
@@ -66,11 +66,11 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	// System
 	ir_node* current_this = get_value(0, mode_P);
 
-	VariableDeclVisitor vdVisitor(current_this);
 	auto decl = identExpr->getDeclaration();
 
 	if (decl)
 	{
+		VariableDeclVisitor vdVisitor(current_this, (do_store && store_value) ? store_value : NULL);
 		std::cout << "got declaration " << std::endl;
 		decl->accept(vdVisitor);
 		resultNode = vdVisitor.getResultNode();
@@ -157,38 +157,19 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 // binary expressions
 void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 {
+	/* plan:
+	 * evaluate rhs, save result node
+	 * evaluate lhs, but replace final load by store
+	 */
 
-	std::stringstream output;
-	std::cout << "eqExpr.toString = " << eqExpr << " pointing to "; // << (*eqExpr);
-	//eqExpr->toString(output, false);
-	std::cout << std::endl;
+	eqExpr->getRightChild()->accept(*this);
+	store_value = resultNode;
+	ir_node* rhs = resultNode;
 
-	std::string lhs_ident;
+	do_store = true;
 	eqExpr->getLeftChild()->accept(*this);
-	std::cout << "1" << std::endl;
-
-	eqExpr->getRightChild()->accept(*this); //TODO: get rhs variable of eqExpr
-	ir_node* rhs = this->resultNode;
-	std::cout << "2" << std::endl;
-
-	auto lhsIdent = std::dynamic_pointer_cast<ast::pe::Ident>(eqExpr->getLeftChild());
-	std::cout << "3" << std::endl;
-
-	if (lhsIdent)
-	{
-		std::cout << "3a" << std::endl;
-		// simple case such as i = 5, lhs is an ident aka local variable
-		int lhs_pos = (*FirmInterface::getInstance().getVarMap())[lhsIdent->getIdentifier()];
-		std::cout << "lhs_pos =" << lhs_pos << std::endl;
-		set_value(lhs_pos, rhs);
-	}
-	else
-	{
-		std::cout << "3b" << std::endl;
-		std::cout << "Complex left-hand side expressions not implemented yet" << std::endl;
-	}
-
-	//this->resultNode = rhs; see above
+	do_store = false;
+	resultNode = rhs;
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
@@ -291,12 +272,31 @@ void ExpressionVisitor::visit(shptr<ast::be::Invalid const>)
 void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpression)
 {
 	std::cout << "Visiting PostfixExpression" << std::endl;
-	postfixExpression->getChild()->accept(*this);
-	PostfixOpsVisitor popsVisitor(*this);
+	bool old_do_store = do_store;
+	//only the last PostfixOp does the store - or the PrimaryExpression if there are no PostfixOps
+	do_store &= !postfixExpression->getPostfixOps()->empty();
 
-	for (auto& it : *postfixExpression->getPostfixOps())
+	postfixExpression->getChild()->accept(*this);
+	auto pops = postfixExpression->getPostfixOps();
+
+	if (!pops->empty())
 	{
-		it->accept(popsVisitor);
+		PostfixOpsVisitor popsVisitor(*this);
+
+		for (auto it = pops->begin(); it != pops->end() - 1; it++)
+		{
+			(*it)->accept(popsVisitor);
+			resultNode = popsVisitor.getResultNode();
+			resultType = popsVisitor.getResultType();
+		}
+
+		//last PostfixOp may store
+		do_store = old_do_store;
+
+		if (do_store)
+			popsVisitor.setStoreValue(store_value);
+
+		pops->back()->accept(popsVisitor);
 		resultNode = popsVisitor.getResultNode();
 		resultType = popsVisitor.getResultType();
 	}

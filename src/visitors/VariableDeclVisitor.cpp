@@ -1,6 +1,6 @@
 #include "VariableDeclVisitor.hpp"
 
-VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this/*, shptr<ast::IdentBase const> ident*/): /*ident(ident),*/ current_this(current_this)
+VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this, ir_node* store_value): current_this(current_this), store_value(store_value)
 {}
 
 void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclaration)
@@ -13,9 +13,20 @@ void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclarat
 	ir_entity* field = FirmInterface::getInstance().getFieldEntity(get_pointer_points_to_type(this_type), fieldDeclaration->mangle());
 	ir_node* addr = new_Add(current_this, FirmInterface::getInstance().createNodeForIntegerConstant(get_entity_offset(field)), mode_P);
 	ir_type* field_type = get_entity_type(field);
-	ir_node* load = new_Load(mem, addr, get_type_mode(field_type), field_type, cons_none);
-	set_store(new_Proj(load, mode_M, pn_Load_M));
-	resultNode = new_Proj(load, get_type_mode(field_type), pn_Load_res);
+
+	if (store_value)
+	{
+		ir_node* store = new_Store(mem, addr, store_value, field_type, cons_none);
+		set_store(new_Proj(store, mode_M, pn_Store_M));
+		resultNode = store_value;
+	}
+	else
+	{
+		ir_node* load = new_Load(mem, addr, get_type_mode(field_type), field_type, cons_none);
+		set_store(new_Proj(load, mode_M, pn_Load_M));
+		resultNode = new_Proj(load, get_type_mode(field_type), pn_Load_res);
+	}
+
 	resultType = field_type;
 }
 
@@ -29,7 +40,14 @@ void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
 
 	int pos = (*varMap)[varName];
 	resultType = FirmInterface::getInstance().getType(lvdStatement->getDeclType());
-	resultNode = get_value(pos, FirmInterface::getInstance().getMode(lvdStatement->getDeclType()));
+
+	if (store_value)
+	{
+		set_value(pos, store_value);
+		resultNode = store_value;
+	}
+	else
+		resultNode = get_value(pos, FirmInterface::getInstance().getMode(lvdStatement->getDeclType()));
 }
 
 void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
@@ -42,7 +60,14 @@ void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
 
 	int pos = (*varMap)[varName];
 	resultType = FirmInterface::getInstance().getType(typeIdent->getDeclType());
-	resultNode = get_value(pos, FirmInterface::getInstance().getMode(typeIdent->getDeclType()));
+
+	if (store_value)
+	{
+		set_value(pos, store_value);
+		resultNode = store_value;
+	}
+	else
+		resultNode = get_value(pos, FirmInterface::getInstance().getMode(typeIdent->getDeclType()));
 }
 
 ir_node* VariableDeclVisitor::getResultNode() const
