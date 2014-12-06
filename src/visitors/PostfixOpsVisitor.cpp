@@ -2,14 +2,14 @@
 #include "VariableDeclVisitor.hpp"
 #include "../ast/FieldAccess.hpp"
 
-PostfixOpsVisitor::PostfixOpsVisitor(ExpressionVisitor& expressionVisitor): expressionVisitor(expressionVisitor)
+PostfixOpsVisitor::PostfixOpsVisitor(ExpressionVisitor& expressionVisitor): storeValue(NULL), expressionVisitor(expressionVisitor)
 {}
 
 void PostfixOpsVisitor::visit(shptr<ast::FieldAccess const> fieldAccess)
 {
 	std::cout << "Visiting FieldAccess" << std::endl;
 	// Member
-	VariableDeclVisitor vdVisitor(expressionVisitor.getResultNode()/*, fieldAccess*/);
+	VariableDeclVisitor vdVisitor(expressionVisitor.getResultNode(), storeValue);
 	auto decl = fieldAccess->getDeclaration();
 
 	if (decl)
@@ -45,4 +45,9 @@ ir_node* PostfixOpsVisitor::getResultNode() const
 ir_type* PostfixOpsVisitor::getResultType() const
 {
 	return this->resultType;
+}
+
+void PostfixOpsVisitor::setStoreValue(ir_node* storeValue)
+{
+	this->storeValue = storeValue;
 }

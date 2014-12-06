@@ -6,12 +6,12 @@
 class VariableDeclVisitor : public FirmVisitor
 {
 	protected:
-		//shptr<ast::IdentBase const> ident;//unneeded?
 		ir_node* current_this;
+		ir_node* store_value;
 		ir_node* resultNode;
 		ir_type* resultType;
 	public:
-		VariableDeclVisitor(ir_node* current_this/*, shptr<ast::IdentBase const> ident*/);
+		VariableDeclVisitor(ir_node* current_this, ir_node* store_value = NULL);
 
 		virtual void visit(shptr<ast::FieldDeclaration const> fieldDeclaration);
 		virtual void visit(shptr<ast::LVDStatement const> lvdStatement);

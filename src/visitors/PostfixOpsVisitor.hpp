@@ -13,10 +13,12 @@ class PostfixOpsVisitor: public FirmVisitor
 
 		virtual ir_node* getResultNode() const;
 		virtual ir_type* getResultType() const;
+		void setStoreValue(ir_node* storeValue);
 		PostfixOpsVisitor(ExpressionVisitor& expressionVisitor);
 	protected:
 		ir_node* resultNode;
 		ir_type* resultType;
+		ir_node* storeValue;
 		ExpressionVisitor& expressionVisitor;
 };
 

@@ -14,6 +14,8 @@ class ExpressionVisitor : public FirmVisitor
 	private:
 		ir_node* resultNode;
 		ir_type* resultType;
+		ir_node* store_value;
+		bool do_store;
 		/*
 		 * Create an ir_node for binExpr by calling createResultNode.
 		 * createResultNode gets the nodes left and right as parameters, obtained by calling accept()
