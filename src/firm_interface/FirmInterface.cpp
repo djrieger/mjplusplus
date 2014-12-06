@@ -360,7 +360,7 @@ void FirmInterface::foo()
 	// if 	
 	ir_node * mainAddrNode = new_Address(mainMethodEntity);
 	ir_node * printAddrNode = new_Address(printMethodEntity);
-	ir_node* cmpNode = new_Cmp(mainAddrNode, printAddrNode, ir_relation::ir_relation_less);
+	ir_node* cmpNode = new_Cmp(new_Const_long(mode_Is, 7), new_Const_long(mode_Is, 4), ir_relation::ir_relation_greater);
 	ir_node* condNode = new_Cond(cmpNode);
 	
 	ir_node* projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
