@@ -134,7 +134,7 @@ class FirmInterface
 		ir_entity* getMethodEntity(ir_type* class_type, std::string method_name);
 		ir_entity* getFieldEntity(ir_type* class_type, std::string method_name);
 		ir_entity* createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration);
-		std::tuple<ir_entity*, ir_entity*> getSystemNode();
+		ir_entity* getSystemNode();
 		void initSystem();
 
 		void setInput(std::string const& in);
