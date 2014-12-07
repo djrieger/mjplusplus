@@ -12,7 +12,9 @@ void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclarat
 	ir_node* mem = get_store();
 	ir_type* this_type = FirmInterface::getInstance().getType(std::make_shared<ast::Type>(fieldDeclaration->getDeclaration()->getIdent()));
 	ir_entity* field = FirmInterface::getInstance().getFieldEntity(get_pointer_points_to_type(this_type), fieldDeclaration->mangle());
-	ir_node* addr = new_Add(current_this, FirmInterface::getInstance().createNodeForIntegerConstant(get_entity_offset(field)), mode_P);
+	ir_mode* addr_mode = get_reference_mode_unsigned_eq(mode_P);
+	ir_node* offset_node = new_Const_long(addr_mode, get_entity_offset(field));
+	ir_node* addr = new_Conv(new_Add(new_Conv(current_this, addr_mode), offset_node, addr_mode), mode_P);
 	ir_type* field_type = get_entity_type(field);
 
 	if (store_value)
