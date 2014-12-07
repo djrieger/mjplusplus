@@ -14,9 +14,70 @@
 #include "firm_interface/FirmInterface.hpp"
 
 
+int dumpLexGraph(lexer::Stateomat stateomat, std::string out_name)
+{
+	try
+	{
+		stateomat.dump_graph(out_name);
+	}
+	catch (std::string e)
+	{
+		std::cerr << e << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+int lexTest(lexer::Lexer lexer)
+{
+	lexer::Token t(lexer.get_next_token());
+
+	while (t.token_type != lexer::Token::Token_type::TOKEN_ERROR && t.token_type != lexer::Token::Token_type::TOKEN_EOF)
+	{
+		t.print();
+		t = lexer.get_next_token();
+	}
+
+	if (t.token_type != lexer::Token::Token_type::TOKEN_EOF)
+	{
+		std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+bool runSemanticAnalysis(shptr<ast::Program> root, shptr<ErrorReporter> errorReporter)
+{
+	SemanticAnalysis sa(root, errorReporter);
+	bool valid = sa.start();
+	errorReporter->printErrors();
+	return valid;
+}
+
+void runFirm(std::string file_name, std::string out_name, shptr<ast::Program> root)
+{
+	FirmInterface::getInstance().setInput(file_name);
+	FirmInterface::getInstance().setOutput(out_name);
+	// TODO
+	// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
+
+	FirmInterface::getInstance().convert(root);
+}
+
+int compileAssembly(std::string out_name_assembly)
+{
+	std::cout << "Compiling" << std::endl;
+	//TODO: may check if "gcc" is installed...or something.
+	std::string cmd = "gcc " + out_name_assembly + " -o " + out_name_assembly.substr(0, out_name_assembly.find_last_of('.'));
+	int ret = system(cmd.c_str());
+	return ret;
+}
+
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS, FIRM, OUT};
+	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS, FIRM, OUT, COMPILE_FIRM};
 	static const option::Descriptor usage[] =
 	{
 		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
@@ -27,7 +88,8 @@ int main(int argc, const char** argv)
 		{CHECK, 0, "c", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
 		{SUPPRESS_ERRORS, 0, "s", "suppress-errors", option::Arg::None, "  --suppress-errors\tprevents any errors from being printed"},
 		{FIRM, 0, "f", "firm", option::Arg::None, "  --firm\tInitialize libFirm"},
-		{OUT, 0, "o", "out", option::Arg::Required, "  --out FILE\tWrite binary to FILE"},
+		{OUT, 0, "o", "out", option::Arg::Required, "  --out FILE\tSet the output for various commands to FILE"},
+		{COMPILE_FIRM, 0, "cf", "compile-firm", option::Arg::None, "  --compile-firm\tRun the semantic analysis, build the FIRM-graph and produce backend-code using FIRM."},
 		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
 		{0, 0, 0, 0, 0, 0}
 	};
@@ -68,18 +130,7 @@ int main(int argc, const char** argv)
 	lexer::Stateomat stateomat;
 
 	if (options[DUMPLEXGRAPH])
-	{
-		try
-		{
-			stateomat.dump_graph(!options[OUT] ? "lexgraph.gml" : out_name);
-		}
-		catch (std::string e)
-		{
-			std::cerr << e << std::endl;
-		}
-
-		return EXIT_SUCCESS;
-	}
+		return dumpLexGraph(stateomat, !options[OUT] ? "lexgraph.gml" : out_name);
 
 	try
 	{
@@ -88,23 +139,7 @@ int main(int argc, const char** argv)
 
 
 		if (options[LEXTEST])
-		{
-			lexer::Token t(lexer.get_next_token());
-
-			while (t.token_type != lexer::Token::Token_type::TOKEN_ERROR && t.token_type != lexer::Token::Token_type::TOKEN_EOF)
-			{
-				t.print();
-				t = lexer.get_next_token();
-			}
-
-			if (t.token_type != lexer::Token::Token_type::TOKEN_EOF)
-			{
-				std::cerr << "Error: Lexer failed at line " << t.position.first << ", column " << t.position.second << std::endl;
-				return EXIT_FAILURE;
-			}
-
-			return EXIT_SUCCESS;
-		}
+			return lexTest(lexer);
 
 		Parser parser(lexer, errorReporter);
 		bool valid = parser.start();
@@ -120,24 +155,22 @@ int main(int argc, const char** argv)
 
 		if (options[CHECK] && valid)
 		{
-			SemanticAnalysis sa(parser.getRoot(), errorReporter);
+			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
 
-			if (!sa.start())
-				valid = false;
+			if (options[FIRM] && valid)
+				runFirm(file_name, out_name + (options[OUT] ? "" : ".S"), parser.getRoot());
+
 		}
-
-
-
-		errorReporter->printErrors();
-
-		if (options[FIRM] && options[CHECK] && valid)
+		else if (options[COMPILE_FIRM] && valid)
 		{
-			FirmInterface::getInstance().setInput(file_name);
-			FirmInterface::getInstance().setOutput(out_name + (options[OUT] ? "" : ".S"));
-			// TODO
-			// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
+			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
 
-			FirmInterface::getInstance().convert(parser.getRoot());
+			if (valid)
+			{
+				std::string out_name_assembly = out_name + (options[OUT] ? "" : ".S");
+				runFirm(file_name, out_name_assembly, parser.getRoot());
+				compileAssembly(out_name_assembly);
+			}
 		}
 
 		if (!valid)

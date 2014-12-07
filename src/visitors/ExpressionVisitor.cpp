@@ -34,11 +34,12 @@ void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpressio
 	std::cout << "visitRelationalExpression" << std::endl;
 	visitBinaryExpression(binaryExpression, [&] (ir_node * left, ir_node * right) -> ir_node *
 	{
-		if (thenBlock && elseBlock) {
-			ir_node *cmpNode = new_Cmp(left, right, relation);
-			ir_node *condNode = new_Cond(cmpNode);
-			ir_node *projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
-			ir_node *projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
+		if (thenBlock && elseBlock)
+		{
+			ir_node* cmpNode = new_Cmp(left, right, relation);
+			ir_node* condNode = new_Cond(cmpNode);
+			ir_node* projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
+			ir_node* projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
 			add_immBlock_pred(thenBlock, projTrue);
 			add_immBlock_pred(elseBlock, projFalse);
 		}
@@ -54,11 +55,12 @@ void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 	bool value = boolExpr->getValue();
 	this->resultNode = FirmInterface::getInstance().createNodeForBooleanConstant(value);
 
-	if (thenBlock && elseBlock) {
-		ir_node *cmpNode = new_Cmp(FirmInterface::getInstance().createNodeForBooleanConstant(true), resultNode, ir_relation::ir_relation_equal);
-		ir_node *condNode = new_Cond(cmpNode);
-		ir_node *projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
-		ir_node *projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
+	if (thenBlock && elseBlock)
+	{
+		ir_node* cmpNode = new_Cmp(FirmInterface::getInstance().createNodeForBooleanConstant(true), resultNode, ir_relation::ir_relation_equal);
+		ir_node* condNode = new_Cond(cmpNode);
+		ir_node* projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
+		ir_node* projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
 		add_immBlock_pred(thenBlock, projTrue);
 		add_immBlock_pred(elseBlock, projFalse);
 	}
@@ -153,8 +155,10 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 	shptr<ast::Expression> child = notExpr->getChild();
 
 	std::cout << "Before swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
+
 	if (notExpr->getSize() & 1)
 		std::swap(thenBlock, elseBlock);
+
 	std::cout << "After swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	child->accept(*this);
 }
@@ -181,10 +185,10 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
-	ir_node *originalThenBlock = thenBlock;
-	ir_node * originalElseBlock = elseBlock;
+	ir_node* originalThenBlock = thenBlock;
+	ir_node* originalElseBlock = elseBlock;
 
-	ir_node * rightExprBlock = new_immBlock();
+	ir_node* rightExprBlock = new_immBlock();
 	thenBlock = rightExprBlock;
 	andAndExpr->getLeftChild()->accept(*this);
 	mature_immBlock(rightExprBlock);
@@ -199,10 +203,10 @@ void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 {
-	ir_node *originalThenBlock = thenBlock;
-	ir_node * originalElseBlock = elseBlock;
+	ir_node* originalThenBlock = thenBlock;
+	ir_node* originalElseBlock = elseBlock;
 
-	ir_node * rightExprBlock = new_immBlock();
+	ir_node* rightExprBlock = new_immBlock();
 	elseBlock = rightExprBlock; // only change
 	orOrExpr->getLeftChild()->accept(*this);
 	mature_immBlock(rightExprBlock);
