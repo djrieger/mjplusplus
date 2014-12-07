@@ -198,7 +198,10 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
 
 	if (hasReturnType)
-		result = new_Proj(tuple, getIntegerMode(), 0);
+	{
+		ir_mode* result_mode = getMode(methodDeclaration->getReturnType());
+		result = new_Proj(tuple, result_mode, 0);
+	}
 
 	free(in);
 	return result;
