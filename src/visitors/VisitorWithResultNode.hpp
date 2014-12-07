@@ -7,8 +7,11 @@ class VisitorWithResultNode : public FirmVisitor
 {
 	protected:
 		ir_node* resultNode;
+		ir_type* resultType;
+
 	public:
 		virtual ir_node* getResultNode() const;
+		virtual ir_type* getResultType() const;
 };
 
 #endif
