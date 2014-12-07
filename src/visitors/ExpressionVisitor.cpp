@@ -43,7 +43,6 @@ void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpressio
 			add_immBlock_pred(elseBlock, projFalse);
 		}
 
-		//return new_Cmp(left, right, relation);
 		return NULL; // could return cond node
 	});
 }

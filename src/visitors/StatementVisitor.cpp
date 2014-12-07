@@ -74,30 +74,6 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 	set_cur_block(exitBlock);
 	mature_immBlock(exitBlock);
 	this->resultNode = exitBlock;
-
-	/*
-	auto headTarget = std::make_shared<JumpTarget>();
-	auto loopTarget = std::make_shared<JumpTarget>();
-	auto exitTarget = std::make_shared<JumpTarget>();
-
-	set_cur_block(headTarget->targetNode);
-
-	ExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? loopTarget : headTarget, exitTarget);
-	whileStmt->getCondition()->accept(condVisitor); // TODO: Implement accept(ExpressionVisitor) for Expression subclasses
-
-	if (whileStmt->getLoopStatement())
-	{
-		set_cur_block(loopTarget->targetNode);
-		whileStmt->getLoopStatement()->accept(*this); // TODO: Implement accept(StatementVisitor) for Statement subclasses
-		ir_node* loopNode = getResultNode();
-		headTarget->jumpFromBlock(loopNode);
-	}
-	else
-		headTarget->jumpFromBlock(headTarget->targetNode);
-
-	set_cur_block(exitTarget->targetNode);
-	this->resultNode = exitTarget->targetNode;
-	*/
 }
 
 void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
