@@ -140,6 +140,12 @@ namespace ast
 
 			if (leftType && rightType)
 			{
+				if (leftType->isSpecialType() || rightType->isSpecialType()) {
+					//System or System.out are our pseudo-classes
+					sa.reportError("Can't compare non-existing values of System or System.out.", leftChild);
+					return shptr<Type>();
+				}
+				
 				if (*leftType == *rightType && leftType->getPrimitiveType() != Type::Primitive_type::INT_NEG_ONLY)
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
@@ -386,6 +392,12 @@ namespace ast
 
 			if (leftType && rightType)
 			{
+				if (leftType->isSpecialType() || rightType->isSpecialType()) {
+					//System or System.out are our pseudo-classes
+					sa.reportError("Can't compare non-existing values of System or System.out.", leftChild);
+					return shptr<Type>();
+				}
+				
 				if (*leftType == *rightType && leftType->getPrimitiveType() != Type::Primitive_type::INT_NEG_ONLY)
 					return std::make_shared<Type>(Type::Primitive_type::BOOLEAN);
 				else
@@ -439,6 +451,11 @@ namespace ast
 
 			if (leftType && rightType)
 			{
+				if (leftType->isSpecialType() || rightType->isSpecialType()) {
+					//System or System.out are our pseudo-classes
+					sa.reportError("Can't assign to non-existing values of System or System.out.", leftChild);
+					return shptr<Type>();
+				}
 
 				if (leftChild->isLValue())
 				{
