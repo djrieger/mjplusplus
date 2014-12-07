@@ -42,30 +42,32 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 {
 	ir_node* whileCondBlock = new_immBlock();
-	ir_node* whileBodyBlock = new_immBlock();
+	ir_node* whileBodyBlock = NULL;
+	if (whileStmt->getLoopStatement())
+		whileBodyBlock = new_immBlock();
 	ir_node* exitBlock = new_immBlock();
 
 	// this is necessary for correctly handling infinite loops
 	keep_alive(whileCondBlock);
 
-
 	add_immBlock_pred(whileCondBlock, new_Jmp());
 	
-
 	// create while condition
-	ExpressionVisitor condVisitor(whileBodyBlock, exitBlock);
+	ExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? whileBodyBlock : whileCondBlock, exitBlock); 
 	set_cur_block(whileCondBlock);
 	whileStmt->getCondition()->accept(condVisitor);
 
-	mature_immBlock(whileBodyBlock);
+	if (whileStmt->getLoopStatement()) {
+		mature_immBlock(whileBodyBlock);
 
-	// create while body
-	set_cur_block(whileBodyBlock);
-	if (whileStmt->getLoopStatement())
+		// create while body
+		set_cur_block(whileBodyBlock);
 		whileStmt->getLoopStatement()->accept(*this);
 
-	// append while body to while condition
-	add_immBlock_pred(whileCondBlock, new_Jmp());
+		// append while body to while condition
+		add_immBlock_pred(whileCondBlock, new_Jmp());
+	}
+
 	mature_immBlock(whileCondBlock);	
 
 	// finalize
