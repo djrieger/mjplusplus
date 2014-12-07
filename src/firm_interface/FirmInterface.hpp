@@ -28,7 +28,7 @@ namespace std
 		}
 	};
 }
-
+/*
 struct JumpTarget
 {
 	ir_node* targetNode;
@@ -82,7 +82,7 @@ struct JumpTarget
 		std::cout << std::endl;
 	}
 };
-
+*/
 class FirmInterface
 {
 

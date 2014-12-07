@@ -21,7 +21,7 @@ class StatementVisitor : public VisitorWithResultNode
 		 * @param precedingProjection	The Firm projection node to use as predecessor for the then/else block
 		 * @param exitBlock	The exitBlock to use as successor for the Jump node
 		 */
-		void visitThenOrElse(shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock);
+		void visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock);
 	public:
 		StatementVisitor(MemberVisitor& memberVisitor);
 

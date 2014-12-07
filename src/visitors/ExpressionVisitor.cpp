@@ -2,10 +2,11 @@
 #include "PostfixOpsVisitor.hpp"
 #include "VariableDeclVisitor.hpp"
 #include <sstream>
+#include <algorithm>
 
 ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
 
-ExpressionVisitor::ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget): store_value(NULL), do_store(false), trueTarget(trueTarget), falseTarget(falseTarget)
+ExpressionVisitor::ExpressionVisitor(ir_node* thenBlock, ir_node* elseBlock): store_value(NULL), do_store(false), thenBlock(thenBlock), elseBlock(elseBlock)
 {}
 
 ir_type* ExpressionVisitor::getResultType() const
@@ -133,7 +134,7 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 	shptr<ast::Expression> child = notExpr->getChild();
 
 	if (notExpr->getSize() & 1)
-		trueTarget.swap(falseTarget);
+		std::swap(thenBlock, elseBlock);
 
 	child->accept(*this);
 }
@@ -160,20 +161,24 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
+	/* TODO
 	auto rightTarget = std::make_shared<JumpTarget>();
 	ExpressionVisitor vleft(rightTarget, falseTarget);
 	andAndExpr->getLeftChild()->accept(vleft);
 	set_cur_block(rightTarget->targetNode);
 	andAndExpr->getRightChild()->accept(*this);
+	*/
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 {
+	/* TODO
 	auto rightTarget = std::make_shared<JumpTarget>();
 	ExpressionVisitor vleft(trueTarget, rightTarget);
 	orOrExpr->getLeftChild()->accept(vleft);
 	set_cur_block(rightTarget->targetNode);
 	orOrExpr->getRightChild()->accept(*this);
+	*/
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)

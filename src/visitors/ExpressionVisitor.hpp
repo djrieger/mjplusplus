@@ -31,11 +31,11 @@ class ExpressionVisitor : public VisitorWithResultNode
 		void visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation);
 
 
-		shptr<JumpTarget> trueTarget;
-		shptr<JumpTarget> falseTarget;
+		ir_node* thenBlock;
+		ir_node* elseBlock;
 	public:
 		ExpressionVisitor();
-		ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget);
+		ExpressionVisitor(ir_node* thenBlock, ir_node* elseBlock);
 
 		virtual ir_type* getResultType() const;
 
