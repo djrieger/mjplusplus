@@ -32,9 +32,19 @@ void ExpressionVisitor::visitBinaryExpression(
 void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation)
 {
 	std::cout << "visitRelationalExpression" << std::endl;
-	visitBinaryExpression(binaryExpression, [relation] (ir_node * left, ir_node * right) -> ir_node *
+	visitBinaryExpression(binaryExpression, [&] (ir_node * left, ir_node * right) -> ir_node *
 	{
-		return new_Cmp(left, right, relation);
+		if (thenBlock && elseBlock) {
+			ir_node *cmpNode = new_Cmp(left, right, relation);
+			ir_node *condNode = new_Cond(cmpNode);
+			ir_node *projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
+			ir_node *projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
+			add_immBlock_pred(thenBlock, projTrue);
+			add_immBlock_pred(elseBlock, projFalse);
+		}
+
+		//return new_Cmp(left, right, relation);
+		return NULL; // could return cond node
 	});
 }
 
@@ -47,7 +57,7 @@ void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 
 	if (thenBlock && elseBlock) {
 		ir_node *cmpNode = new_Cmp(FirmInterface::getInstance().createNodeForBooleanConstant(true), resultNode, ir_relation::ir_relation_equal);
-		ir_node * condNode = new_Cond(cmpNode);
+		ir_node *condNode = new_Cond(cmpNode);
 		ir_node *projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
 		ir_node *projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
 		add_immBlock_pred(thenBlock, projTrue);
@@ -172,13 +182,22 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
-	/* TODO
-	auto rightTarget = std::make_shared<JumpTarget>();
-	ExpressionVisitor vleft(rightTarget, falseTarget);
-	andAndExpr->getLeftChild()->accept(vleft);
-	set_cur_block(rightTarget->targetNode);
+	//auto rightTarget = std::make_shared<JumpTarget>();
+	//ExpressionVisitor vleft(rightTarget, falseTarget);
+	ir_node *originalThenBlock = thenBlock;
+	ir_node * originalElseBlock = elseBlock;
+
+	ir_node * rightExprBlock = new_immBlock();
+	thenBlock = rightExprBlock;
+	andAndExpr->getLeftChild()->accept(*this);
+	mature_immBlock(rightExprBlock);
+
+	thenBlock = originalThenBlock;
+	elseBlock = originalElseBlock;
+
+	set_cur_block(rightExprBlock);
+
 	andAndExpr->getRightChild()->accept(*this);
-	*/
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
