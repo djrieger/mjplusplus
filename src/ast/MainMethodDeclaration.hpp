@@ -17,7 +17,8 @@ namespace ast
 			void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual void accept(ASTVisitor& visitor) const;
 			std::string mangle(std::string class_name) const;
-			void createVariablePositions() const;
+			virtual unsigned int countVariableDeclarations() const;
+			virtual void createVariablePositions() const;
 	};
 }
 

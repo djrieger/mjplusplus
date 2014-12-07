@@ -11,7 +11,7 @@ ir_node* StatementVisitor::getResultNode() const
 	return this->resultNode;
 }
 
-void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStmt, ir_node *precedingProjection, ir_node* exitBlock)
+void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock)
 {
 	ir_node* thenOrElseBlock = new_immBlock();
 	add_immBlock_pred(thenOrElseBlock, precedingProjection);
