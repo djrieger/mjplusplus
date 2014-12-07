@@ -150,12 +150,14 @@ ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDe
 }
 
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
-        ir_type* class_type,
-        std::string const& method_name,
         shptr<ast::Arguments const> arguments,
         shptr<ast::MethodDeclaration const> methodDeclaration)
 {
-	//std::cout << "caller type=" << get_irn_type_attr(caller) << std::endl;
+	auto classIdent = methodDeclaration->getDeclaration()->getIdent();
+	auto classAstType = std::make_shared<ast::Type>(classIdent);
+	ir_type* class_type = FirmInterface::getInstance().getType(classAstType);
+
+	auto method_name = methodDeclaration->mangle();
 
 	std::cout << "- method " << method_name << std::endl;
 	ir_type* owner = get_pointer_points_to_type(class_type);
@@ -211,27 +213,15 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 {
 	int this_pos = 0;
 	ir_node* caller = get_value(this_pos, mode_P);
-
-	auto classIdent = expr->getDeclaration()->getDeclaration()->getIdent();
-	auto classAstType = std::make_shared<ast::Type>(classIdent);
-	ir_type* classFirmType = FirmInterface::getInstance().getType(classAstType);
-
-	auto method_name = expr->getDeclaration()->mangle();
 	auto arguments = expr->getArguments();
 
-	return createNodeForMethodCall(caller, classFirmType, method_name, arguments, expr->getDeclaration());
+	return createNodeForMethodCall(caller, arguments, expr->getDeclaration());
 }
 
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr)
 {
-	auto classIdent = expr->getDeclaration()->getDeclaration()->getIdent();
-	auto classAstType = std::make_shared<ast::Type>(classIdent);
-	ir_type* classFirmType = FirmInterface::getInstance().getType(classAstType);
-
-	auto method_name = expr->getDeclaration()->mangle();
 	auto arguments = expr->getArguments();
-
-	return createNodeForMethodCall(caller, classFirmType, method_name, arguments, expr->getDeclaration());
+	return createNodeForMethodCall(caller, arguments, expr->getDeclaration());
 }
 
 ir_node* FirmInterface::createNodeForCallocCall(ir_node* count, unsigned int size)

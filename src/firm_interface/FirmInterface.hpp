@@ -100,8 +100,6 @@ class FirmInterface
 		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classFieldEntities;
 
 		ir_node* createNodeForMethodCall(ir_node* caller,
-		                                 ir_type* class_type,
-		                                 std::string const& method_name,
 		                                 shptr<ast::Arguments const> arguments,
 		                                 shptr<ast::MethodDeclaration const> methodDeclaration);
 
