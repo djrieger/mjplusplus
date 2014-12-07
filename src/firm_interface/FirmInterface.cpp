@@ -516,7 +516,11 @@ void FirmInterface::initSystem()
 	set_store(new_Proj(new_Store(get_store(), system_addr, system_n, system_type, cons_none), mode_M, pn_Store_M));
 
 	ir_entity* out_field = getFieldEntity(get_pointer_points_to_type(system_type), "_CSystem_Fout");
-	ir_node* addr = new_Add(system_n, FirmInterface::getInstance().createNodeForIntegerConstant(get_entity_offset(out_field)), mode_P);
+
+	ir_mode* addr_mode = get_reference_mode_unsigned_eq(mode_P);
+	ir_node* offset_node = new_Const_long(addr_mode, get_entity_offset(out_field));
+	ir_node* addr = new_Conv(new_Add(new_Conv(system_n, addr_mode), offset_node, addr_mode), mode_P);
+
 	set_store(new_Proj(new_Store(get_store(), addr, out_n, out_type, cons_none), mode_M, pn_Store_M));
 }
 
