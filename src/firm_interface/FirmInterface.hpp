@@ -43,7 +43,9 @@ struct JumpTarget
 		if (!this->targetNode)
 		{
 			std::cout << " zeroeth ";
-			this->targetNode = sourceBlock;
+			this->targetNode = new_immBlock();
+			add_immBlock_pred(this->targetNode, sourceBlock);
+			//this->targetNode = sourceBlock;
 			this->first = true;
 		}
 		else if (this->first)

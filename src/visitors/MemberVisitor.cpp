@@ -64,13 +64,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 
 		std::cout << "Revisiting MethodDeclaration: " << mangledMethodName << ", ent: " << ent << std::endl;
 
-		//TODO: SimpleIf example includes parameters into local variable count
-		//ATTENTION: methodDeclaration->countVariableDeclarations() + 1
-		//			 since there is an assertion, that pos+1 < irg->n_loc
-		//			 BE-FUCKING-CAUSE THEY COUNT THE PROJ AS PARAMETER!!! (maybe)
-		function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations() + 1 + methodDeclaration->getParameters()->size());
-
-
+		function_graph = new_ir_graph(ent, methodDeclaration->countVariableDeclarations());
 		set_current_ir_graph(function_graph);
 
 		visitMethodBodyAndFinalize(methodDeclaration, function_graph);
@@ -79,12 +73,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 
 void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl)
 {
-
-#ifndef __APPLE__
 	std::string mainMethodName = "main";
-#else
-	std::string mainMethodName = "_main";
-#endif
 
 	std::cout << "  Visiting main method " << mainMethodName << std::endl;
 
