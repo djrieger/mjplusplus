@@ -8,8 +8,6 @@ StatementVisitor::StatementVisitor(MemberVisitor& memberVisitor): memberVisitor(
 
 void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* exitBlock)
 {
-	//ir_node* thenOrElseBlock = new_immBlock();
-	//add_immBlock_pred(thenOrElseBlock, precedingProjection);
 	mature_immBlock(thenOrElseBlock);
 	set_cur_block(thenOrElseBlock);
 
@@ -29,12 +27,7 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 	                             );
 
 	ifStatement->getCondition()->accept(condVisitor);
-	//ir_node* compareNode = condVisitor.getResultNode();
-
-	/*ir_node* cond = new_Cond(compareNode);
-	ir_node* projTrue = new_Proj(cond, get_modeX(), pn_Cond_true);
-	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);*/
-
+	
 	if (ifStatement->getThenStatement())
 		visitThenOrElse(thenBlock, ifStatement->getThenStatement(), exitBlock);
 
@@ -48,6 +41,38 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 {
+	ir_node* whileCondBlock = new_immBlock();
+	ir_node* whileBodyBlock = new_immBlock();
+	ir_node* exitBlock = new_immBlock();
+
+	// this is necessary for correctly handling infinite loops
+	keep_alive(whileCondBlock);
+
+
+	add_immBlock_pred(whileCondBlock, new_Jmp());
+	
+
+	// create while condition
+	ExpressionVisitor condVisitor(whileBodyBlock, exitBlock);
+	set_cur_block(whileCondBlock);
+	whileStmt->getCondition()->accept(condVisitor);
+
+	mature_immBlock(whileBodyBlock);
+
+	// create while body
+	set_cur_block(whileBodyBlock);
+	if (whileStmt->getLoopStatement())
+		whileStmt->getLoopStatement()->accept(*this);
+
+	// append while body to while condition
+	add_immBlock_pred(whileCondBlock, new_Jmp());
+	mature_immBlock(whileCondBlock);	
+
+	// finalize
+	set_cur_block(exitBlock);
+	mature_immBlock(exitBlock);
+	this->resultNode = exitBlock;
+
 	/*
 	auto headTarget = std::make_shared<JumpTarget>();
 	auto loopTarget = std::make_shared<JumpTarget>();
