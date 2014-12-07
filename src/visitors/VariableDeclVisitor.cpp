@@ -45,11 +45,6 @@ void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
 	resultNode = get_value(pos, FirmInterface::getInstance().getMode(typeIdent->getDeclType()));
 }
 
-ir_node* VariableDeclVisitor::getResultNode() const
-{
-	return this->resultNode;
-}
-
 ir_type* VariableDeclVisitor::getResultType() const
 {
 	return resultType;
