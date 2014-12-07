@@ -73,12 +73,7 @@ void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)
 
 void MemberVisitor::visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl)
 {
-
-#ifndef __APPLE__
 	std::string mainMethodName = "main";
-#else
-	std::string mainMethodName = "_main";
-#endif
 
 	std::cout << "  Visiting main method " << mainMethodName << std::endl;
 
