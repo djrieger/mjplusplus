@@ -17,7 +17,7 @@ Run the compiler like this:
 
 `--check`: Run the semantic analysis on the given `FILE`.
 
- `--firm` : Initialize libFirm, build the grahphs and create an assembly file. Only works in combination with `--check`.
+ `--firm` : Build the graphs and create an assembly file. Only works with `--check`.
 
  `--compile-firm` : Run the semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc.
 
