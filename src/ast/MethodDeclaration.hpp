@@ -34,8 +34,8 @@ namespace ast
 			virtual shptr<vec<shptr<ast::Type>>> collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			shptr<Block> getBlock() const;
-			unsigned int countVariableDeclarations() const;
-			void createVariablePositions() const;
+			virtual unsigned int countVariableDeclarations() const;
+			virtual void createVariablePositions() const;
 			/**
 			 * Mangles this methods's name using ClassMember::mangle() and appends _Mmethodname
 			 */
