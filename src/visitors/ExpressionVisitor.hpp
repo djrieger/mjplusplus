@@ -2,17 +2,16 @@
 #define EXPRESSION_VISITOR_HPP
 
 #include <functional>
-#include "FirmVisitor.hpp"
+#include "VisitorWithResultNode.hpp"
 #include "../ast/BinaryExpression.hpp"
 #include "../ast/PrimaryExpression.hpp"
 #include "../ast/UnaryExpression.hpp"
 #include "../ast/PostfixExpression.hpp"
 
-class ExpressionVisitor : public FirmVisitor
+class ExpressionVisitor : public VisitorWithResultNode
 {
 
 	private:
-		ir_node* resultNode;
 		ir_type* resultType;
 		ir_node* store_value;
 		bool do_store;
@@ -38,7 +37,6 @@ class ExpressionVisitor : public FirmVisitor
 		ExpressionVisitor();
 		ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget);
 
-		virtual ir_node* getResultNode() const;
 		virtual ir_type* getResultType() const;
 
 		//ExpressionVisitor(StatementVisitor &statementVisitor);

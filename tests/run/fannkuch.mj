@@ -1,0 +1,76 @@
+/* The Computer Language Benchmarks Game
+   http://benchmarksgame.alioth.debian.org/
+
+   contributed by Isaac Gouy
+   converted to Java by Oleg Mazurov
+   converted to glorious MiniJava by Sebastian Ullrich
+*/
+
+class fannkuchredux
+{
+   public int fannkuch(int n) {
+      int[] perm = new int[n];
+      int[] perm1 = new int[n];
+      int[] count = new int[n];
+      int maxFlipsCount = 0;
+      int permCount = 0;
+      int checksum = 0;
+
+      {int i=0; while(i<n) { perm1[i] = i; i=i+1; }}
+      int r = n;
+
+      while (true) {
+
+         while (r != 1){ count[r-1] = r; r=r-1; }
+
+         {int i=0; while(i<n) { perm[i] = perm1[i]; i=i+1; }}
+         int flipsCount = 0;
+         int k;
+
+         while ( !((k=perm[0]) == 0) ) {
+            int k2 = (k+1) / 2;
+            {int i=0; while(i<k2) {
+               int temp = perm[i]; perm[i] = perm[k-i]; perm[k-i] = temp;
+               i=i+1;
+            }}
+            flipsCount=flipsCount+1;
+         }
+
+         if (flipsCount > maxFlipsCount)
+           maxFlipsCount = flipsCount;
+         if (permCount%2 == 0)
+           checksum = checksum + flipsCount;
+         else
+           checksum = checksum - flipsCount;
+
+         /* Use incremental change to generate another permutation */
+         boolean brek = false;
+         while (!brek) {
+            if (r == n) {
+	       System.out.println( checksum );
+	       return maxFlipsCount;
+	    }
+            int perm0 = perm1[0];
+            int i = 0;
+            while (i < r) {
+               int j = i + 1;
+               perm1[i] = perm1[j];
+               i = j;
+            }
+            perm1[r] = perm0;
+
+            count[r] = count[r] - 1;
+            if (count[r] > 0) brek=true;
+            else r=r+1;
+         }
+
+         permCount=permCount+1;
+      }
+      return 0;
+   }
+
+   public static void main(String[] args){
+      int n = 11;
+      System.out.println(new fannkuchredux().fannkuch(n));
+   }
+}

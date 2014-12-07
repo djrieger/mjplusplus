@@ -70,7 +70,6 @@ shptr<vec<shptr<ast::Type>>> ast::MainMethodDeclaration::collectParameters(Seman
 
 void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	//std::cout << "copying " << return_type_and_name->getName() << std::endl;
 	symbolTable->enterScope();
 	auto ts = Symbol::makeSymbol("this");
 	auto td = shptr<Definition>();
@@ -106,7 +105,6 @@ void ast::MainMethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable
 		sa.reportError("Method $ident{" + return_type_and_name->getName() + "} returns non-void but not all paths return", return_type_and_name->getIdent());
 
 	symbolTable->leaveScope();
-	//std::cout << "done" << std::endl;
 }
 
 
@@ -120,9 +118,15 @@ std::string ast::MainMethodDeclaration::mangle(std::string) const
 	return "main";
 }
 
+unsigned int ast::MainMethodDeclaration::countVariableDeclarations() const
+{
+	// Don't count this parameter and method parameters!
+	// Note that the implementation for MethodDeclaration should differ!
+	return block ? block->countVariableDeclarations() : 0;
+}
+
 void ast::MainMethodDeclaration::createVariablePositions() const
 {
-
 	auto var2pos = std::make_shared<std::map<std::string, int>>();
 	FirmInterface::getInstance().setVarMap(var2pos);
 	int pos = 0;

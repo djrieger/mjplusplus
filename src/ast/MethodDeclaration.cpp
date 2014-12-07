@@ -105,7 +105,6 @@ shptr<vec<shptr<ast::Type>>> ast::MethodDeclaration::collectParameters(SemanticA
 
 void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
 {
-	//std::cout << "copying " << return_type_and_name->getName() << std::endl;
 	symbolTable->enterScope();
 	auto s = Symbol::makeSymbol("return", symbolTable->getCurrentScope());
 	auto d = std::make_shared<Definition>(s, return_type_and_name);
@@ -134,7 +133,6 @@ void ast::MethodDeclaration::analyze(SemanticAnalysis& sa, shptr<SymbolTable> sy
 		sa.reportError("Method $ident{" + return_type_and_name->getName() + "} returns non-void but not all paths return", return_type_and_name->getIdent());
 
 	symbolTable->leaveScope();
-	//std::cout << "done" << std::endl;
 }
 
 shptr<vec<shptr<ast::TypeIdent>>> ast::MethodDeclaration::getParameters() const
@@ -154,7 +152,9 @@ shptr<ast::Block> ast::MethodDeclaration::getBlock() const
 
 unsigned int ast::MethodDeclaration::countVariableDeclarations() const
 {
-	return block ? block->countVariableDeclarations() : 0;
+	// Number of method parameters + this parameter + local variables in block.
+	// Note that the implementation for MainMethodDeclaration should differ!
+	return parameters->size() + 1 + (block ? block->countVariableDeclarations() : 0);
 }
 
 void ast::MethodDeclaration::createVariablePositions() const

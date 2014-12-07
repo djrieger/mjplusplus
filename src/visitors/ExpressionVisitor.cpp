@@ -8,11 +8,6 @@ ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
 ExpressionVisitor::ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget): store_value(NULL), do_store(false), trueTarget(trueTarget), falseTarget(falseTarget)
 {}
 
-ir_node* ExpressionVisitor::getResultNode() const
-{
-	return resultNode;
-}
-
 ir_type* ExpressionVisitor::getResultType() const
 {
 	return resultType;
@@ -38,19 +33,8 @@ void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpressio
 	std::cout << "visitRelationalExpression" << std::endl;
 	visitBinaryExpression(binaryExpression, [relation] (ir_node * left, ir_node * right) -> ir_node *
 	{
-		std::cout << "returning new_Cmp" << std::endl;
 		return new_Cmp(left, right, relation);
 	});
-	std::cout << "creating new_Cond" << std::endl;
-	ir_node* cond = new_Cond(resultNode);
-	std::cout << "creating new_Proj 1" << std::endl;
-	ir_node* pt = new_Proj(cond, get_modeX(), COND_JMP_PRED_TRUE);
-	std::cout << "calling jumpFromBlock 1" << std::endl;
-	trueTarget->jumpFromBlock(pt);
-	std::cout << "creating new_Proj 2" << std::endl;
-	ir_node* pf = new_Proj(cond, get_modeX(), COND_JMP_PRED_FALSE);
-	std::cout << "calling jumpFromBlock 2" << std::endl;
-	falseTarget->jumpFromBlock(pf);
 }
 
 // primary expressions

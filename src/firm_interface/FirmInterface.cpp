@@ -53,6 +53,7 @@ void FirmInterface::convert(shptr<ast::Program> program)
 	}
 
 	build();
+
 }
 
 void FirmInterface::build()
@@ -74,42 +75,6 @@ void FirmInterface::build()
 
 	fclose(o);
 
-#ifdef __APPLE__
-	std::string printFunAsm = "	.section	__TEXT,__text,regular,pure_instructions \n \
-								.globl	_COut_Mprintln \n \
-								.align	4, 0x90 \n \
-							_COut_Mprintln:                         ## @COut_Mprintln \n \
-								.cfi_startproc \n \
-							## BB#0: \n \
-								pushq	%rbp \n \
-							Ltmp2: \n \
-								.cfi_def_cfa_offset 16 \n \
-							Ltmp3: \n \
-								.cfi_offset %rbp, -16 \n \
-								movq	%rsp, %rbp \n \
-							Ltmp4: \n \
-								.cfi_def_cfa_register %rbp \n \
-								subq	$16, %rsp \n \
-								leaq	L_.str(%rip), %rax \n \
-								movl	%edi, -4(%rbp) \n \
-								movl	-4(%rbp), %esi \n \
-								movq	%rax, %rdi \n \
-								movb	$0, %al \n \
-								callq	_printf \n \
-								movl	$0, %esi \n \
-								movl	%eax, -8(%rbp)          ## 4-byte Spill \n \
-								movl	%esi, %eax \n \
-								addq	$16, %rsp \n \
-								popq	%rbp \n \
-								retq \n \
-								.cfi_endproc \n \
-							 \n \
-								.section	__TEXT,__cstring,cstring_literals \n \
-							L_.str:                                 ## @.str \n \
-								.asciz	\"%d\\n\" \n \
-							.subsections_via_symbols \n \
-							";
-#else
 	std::string printFunAsm = "        .file   \"print.c\" \n\
 			.section        .rodata.str1.1,\"aMS\",@progbits,1 \n\
 	.LC0: \n\
@@ -143,16 +108,10 @@ void FirmInterface::build()
 			.ident  \"GCC: (Debian 4.9.1-19) 4.9.1\" \n\
 			.section        .note.GNU-stack,\"\",@progbits \n\
 ";
-#endif
 
 	std::ofstream output(out_name, std::ios::app);
 	output << printFunAsm;
 	output.close();
-
-#ifdef __APPLE__
-	std::system(std::string("sed -i '' 's/.*\\.size.*$//' " + out_name).c_str());
-	std::system(std::string("sed -i '' 's/.*\\.type.*$//' " + out_name).c_str());
-#endif
 }
 
 ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration)
@@ -336,13 +295,9 @@ void FirmInterface::foo()
 {
 	const unsigned int paramsCount = 0;
 	const unsigned int resultsCount = 0;
-	const unsigned int localVarsCount = 0;
+	const unsigned int localVarsCount = 1;
 
-#ifndef __APPLE__
 	std::string mainMethodName = "main";
-#else
-	std::string mainMethodName = "_main";
-#endif
 
 	// main
 	ir_type* proc_main = new_type_method(paramsCount, resultsCount);
@@ -351,30 +306,75 @@ void FirmInterface::foo()
 	ir_graph* irg = new_ir_graph(mainMethodEntity, localVarsCount);
 	set_current_ir_graph(irg);
 
+	set_cur_block(get_irg_start_block(irg));
+
 	// println
 	ir_type* proc_print = new_type_method(1, 0);
 	set_method_param_type(proc_print, 0, new_type_primitive(mode_Is));
 	ir_entity* printMethodEntity = new_entity(globalOwner, new_id_from_str("_COut_Mprintln"), proc_print);
-	//new_ir_graph(printMethodEntity, 1);
 
-	// call println
-	ir_node* arg = new_Const_long(mode_Is, 42);
-	ir_node* store = get_irg_no_mem(irg); // get_store();
+
+
+
+	// if
+	ir_node* mainAddrNode = new_Address(mainMethodEntity);
+	ir_node* printAddrNode = new_Address(printMethodEntity);
+	ir_node* cmpNode = new_Cmp(new_Const_long(mode_Is, 7), new_Const_long(mode_Is, 4), ir_relation::ir_relation_greater);
+	ir_node* condNode = new_Cond(cmpNode);
+
+	ir_node* projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
+	ir_node* projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
+
+	// then
+	ir_node* trueBlock = new_immBlock();
+	add_immBlock_pred(trueBlock, projTrue);
+	mature_immBlock(trueBlock);
+	set_cur_block(trueBlock);
+	set_value(0, new_Const_long(mode_Is, 9));
+
+	ir_node* arg = new_Const_long(mode_Is, 1010101010);
+	ir_node* store = get_irg_no_mem(irg);
 	ir_node* callee = new_Address(printMethodEntity);
 	ir_node* call_node = new_Call(store, callee, 1, &arg, proc_print);
 
-	// update the current store
 	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
 	set_store(new_store);
 
+	ir_node* trueJmp = new_Jmp();
+
+	// else
+	ir_node* falseBlock = new_immBlock();
+	add_immBlock_pred(falseBlock, projFalse);
+	mature_immBlock(falseBlock);
+	set_cur_block(falseBlock);
+	set_value(0, new_Const_long(mode_Is, 3));
+
+	arg = new_Const_long(mode_Is, 4); //get_value(0, mode_Is);
+	store = get_irg_no_mem(irg); // get_store();
+	callee = new_Address(printMethodEntity);
+	call_node = new_Call(store, callee, 1, &arg, proc_print);
+
+	new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
+	set_store(new_store);
+
+	ir_node* falseJmp = new_Jmp();
+
+	// after if
+	ir_node* exitBlock = new_immBlock();
+	add_immBlock_pred(exitBlock, trueJmp);
+	add_immBlock_pred(exitBlock, falseJmp);
+	mature_immBlock(exitBlock);
+	set_cur_block(exitBlock);
+
+
+
+	// finalize main
 	ir_node* currentMemState = get_store();
 	ir_node* x = new_Return (currentMemState, 0, NULL);
-	add_immBlock_pred (get_irg_end_block(irg), x);
+	add_immBlock_pred(get_irg_end_block(irg), x);
 
 	irg_finalize_cons (irg);
 	dump_ir_graph (irg, 0);
-
-
 
 	std::cout << "Dumped ycomp graph" << std::endl;
 
