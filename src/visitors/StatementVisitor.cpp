@@ -11,10 +11,20 @@ ir_node* StatementVisitor::getResultNode() const
 	return this->resultNode;
 }
 
+void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStmt, ir_node *precedingProjection, ir_node* exitBlock)
+{
+	ir_node* thenOrElseBlock = new_immBlock();
+	add_immBlock_pred(thenOrElseBlock, precedingProjection);
+	mature_immBlock(thenOrElseBlock);
+	set_cur_block(thenOrElseBlock);
+
+	thenOrElseStmt->accept(*this);
+
+	add_immBlock_pred(exitBlock, new_Jmp());
+}
+
 void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 {
-	std::cout << "Visiting if: set new block for condition" << std::endl;
-
 	auto trueTarget = std::make_shared<JumpTarget>();
 	auto falseTarget = std::make_shared<JumpTarget>();
 	auto exitTarget = std::make_shared<JumpTarget>();
@@ -32,28 +42,10 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 	ir_node* exitBlock = new_immBlock();
 
 	if (ifStatement->getThenStatement())
-	{
-		ir_node* thenBlock = new_immBlock();
-		add_immBlock_pred(thenBlock, projTrue);
-		mature_immBlock(thenBlock);
-		set_cur_block(thenBlock);
-
-		ifStatement->getThenStatement()->accept(*this);
-
-		add_immBlock_pred(exitBlock, new_Jmp());
-	}
+		visitThenOrElse(ifStatement->getThenStatement(), projTrue, exitBlock);
 
 	if (ifStatement->getElseStatement())
-	{
-		ir_node* elseBlock = new_immBlock();
-		add_immBlock_pred(elseBlock, projFalse);
-		mature_immBlock(elseBlock);
-		set_cur_block(elseBlock);
-
-		ifStatement->getElseStatement()->accept(*this);
-		
-		add_immBlock_pred(exitBlock, new_Jmp());
-	}
+		visitThenOrElse(ifStatement->getElseStatement(), projFalse, exitBlock);
 
 	mature_immBlock(exitBlock);
 	set_cur_block(exitBlock);
