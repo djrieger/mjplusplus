@@ -48,12 +48,12 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	// Param / Local Variable
 	// Member
 	// System
-	ir_node* current_this = get_value(0, mode_P);
 
 	auto decl = identExpr->getDeclaration();
 
 	if (decl)
 	{
+		ir_node* current_this = get_value(0, mode_P);
 		VariableDeclVisitor vdVisitor(current_this, (do_store && store_value) ? store_value : NULL);
 		std::cout << "got declaration " << std::endl;
 		decl->accept(vdVisitor);
@@ -145,6 +145,7 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 	 * evaluate rhs, save result node
 	 * evaluate lhs, but replace final load by store
 	 */
+	std::cout << "got assignment" << std::endl;
 
 	eqExpr->getRightChild()->accept(*this);
 	store_value = resultNode;
@@ -154,6 +155,7 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 	eqExpr->getLeftChild()->accept(*this);
 	do_store = false;
 	resultNode = rhs;
+	std::cout << "assignment done" << std::endl;
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
@@ -260,8 +262,10 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 	//only the last PostfixOp does the store - or the PrimaryExpression if there are no PostfixOps
 	do_store &= !postfixExpression->getPostfixOps()->empty();
 
+	std::cout << "ev visit pe" << std::endl;
 	postfixExpression->getChild()->accept(*this);
 	auto pops = postfixExpression->getPostfixOps();
+	std::cout << "ev visit pe done" << std::endl;
 
 	if (!pops->empty())
 	{
@@ -269,9 +273,11 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 
 		for (auto it = pops->begin(); it != pops->end() - 1; it++)
 		{
+			std::cout << "ev/popsv visit pop" << std::endl;
 			(*it)->accept(popsVisitor);
 			resultNode = popsVisitor.getResultNode();
 			resultType = popsVisitor.getResultType();
+			std::cout << "ev/popsv visit pop done" << std::endl;
 		}
 
 		//last PostfixOp may store
@@ -280,8 +286,10 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 		if (do_store)
 			popsVisitor.setStoreValue(store_value);
 
+		std::cout << "ev/popsv visit LAST pop" << std::endl;
 		pops->back()->accept(popsVisitor);
 		resultNode = popsVisitor.getResultNode();
 		resultType = popsVisitor.getResultType();
+		std::cout << "ev/popsv visit LAST pop done" << std::endl;
 	}
 }

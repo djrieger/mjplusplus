@@ -7,7 +7,7 @@ void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclarat
 {
 
 	//Our variable was declared as field => Our variable is a fieldaccess.
-	std::cout << "vd visit FieldDecl" << std::endl;
+	std::cout << "vd visit FieldDecl " << fieldDeclaration->getName() << " to " << (store_value ? "store" : "load") << " (store_value " << store_value << ")" << std::endl;
 	ir_node* mem = get_store();
 	ir_type* this_type = FirmInterface::getInstance().getType(std::make_shared<ast::Type>(fieldDeclaration->getDeclaration()->getIdent()));
 	ir_entity* field = FirmInterface::getInstance().getFieldEntity(get_pointer_points_to_type(this_type), fieldDeclaration->mangle());
@@ -28,6 +28,7 @@ void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclarat
 	}
 
 	resultType = field_type;
+	std::cout << "    done" << std::endl;
 }
 
 void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
@@ -36,7 +37,7 @@ void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
 	auto varMap = FirmInterface::getInstance().getVarMap();
 	auto varName = lvdStatement->getIdent()->getName();
 
-	std::cout << "vd visit LVDDecl " << varName << std::endl;
+	std::cout << "vd visit LVDDecl " << varName << " to " << (store_value ? "store" : "load") << " (store_value " << store_value << ")" << std::endl;
 
 	int pos = (*varMap)[varName];
 	resultType = FirmInterface::getInstance().getType(lvdStatement->getDeclType());
@@ -48,6 +49,8 @@ void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
 	}
 	else
 		resultNode = get_value(pos, FirmInterface::getInstance().getMode(lvdStatement->getDeclType()));
+
+	std::cout << "    done" << std::endl;
 }
 
 void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
@@ -56,7 +59,7 @@ void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
 	auto varMap = FirmInterface::getInstance().getVarMap();
 	auto varName = typeIdent->getName();
 
-	std::cout << "vd visit TypeIdent/Parameter " << varName << std::endl;
+	std::cout << "vd visit TypeIdent/Parameter " << varName << " to " << (store_value ? "store" : "load") << " (store_value " << store_value << ")" << std::endl;
 
 	int pos = (*varMap)[varName];
 	resultType = FirmInterface::getInstance().getType(typeIdent->getDeclType());
@@ -68,9 +71,6 @@ void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)
 	}
 	else
 		resultNode = get_value(pos, FirmInterface::getInstance().getMode(typeIdent->getDeclType()));
-}
 
-ir_type* VariableDeclVisitor::getResultType() const
-{
-	return resultType;
+	std::cout << "    done" << std::endl;
 }

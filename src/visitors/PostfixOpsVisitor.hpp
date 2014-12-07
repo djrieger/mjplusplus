@@ -3,21 +3,18 @@
 
 #include "FirmVisitor.hpp"
 #include "ExpressionVisitor.hpp"
+#include "VisitorWithResultNode.hpp"
 
-class PostfixOpsVisitor: public FirmVisitor
+class PostfixOpsVisitor: public VisitorWithResultNode
 {
 	public:
 		virtual void visit(shptr<ast::FieldAccess const> fieldAccess);
 		virtual void visit(shptr<ast::ArrayAccess const> arrayAccess);
 		virtual void visit(shptr<ast::MethodInvocation const> methodInvocation);
 
-		virtual ir_node* getResultNode() const;
-		virtual ir_type* getResultType() const;
 		void setStoreValue(ir_node* storeValue);
 		PostfixOpsVisitor(ExpressionVisitor& expressionVisitor);
 	protected:
-		ir_node* resultNode;
-		ir_type* resultType;
 		ir_node* storeValue;
 		ExpressionVisitor& expressionVisitor;
 };
