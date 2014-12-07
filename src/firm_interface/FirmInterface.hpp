@@ -29,60 +29,6 @@ namespace std
 	};
 }
 
-struct JumpTarget
-{
-	ir_node* targetNode;
-	bool first;
-
-	JumpTarget(): targetNode(NULL), first(false) {}
-
-	void jumpFromBlock(ir_node* sourceBlock)
-	{
-		std::cout << "jumpFromBlock ";
-
-		if (!this->targetNode)
-		{
-			std::cout << " zeroeth ";
-			this->targetNode = new_immBlock();
-			add_immBlock_pred(this->targetNode, sourceBlock);
-			//this->targetNode = sourceBlock;
-			this->first = true;
-		}
-		else if (this->first)
-		{
-			std::cout << " first ";
-			ir_node* curBlock = get_cur_block();
-
-			this->targetNode = new_immBlock();
-			ir_node* jmpNode = new_r_Jmp(this->targetNode);
-
-			this->first = false;
-			add_immBlock_pred(this->targetNode, curBlock);
-
-			set_cur_block(this->targetNode);
-
-			//ir_node* targetBlock = new_immBlock();
-
-
-		}
-
-		if (this->targetNode)
-		{
-			std::cout << " second ";
-			ir_node* curBlock = get_cur_block();
-			std::cout << " 1 ";
-			ir_node* jmpNode = new_r_Jmp(sourceBlock);
-			std::cout << " 2 ";
-			add_immBlock_pred(this->targetNode, curBlock);
-			std::cout << " 3 ";
-			set_cur_block(this->targetNode);
-			//set_cur_block(this->targetNode);
-		}
-
-		std::cout << std::endl;
-	}
-};
-
 class FirmInterface
 {
 

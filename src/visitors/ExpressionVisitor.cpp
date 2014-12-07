@@ -2,12 +2,12 @@
 #include "PostfixOpsVisitor.hpp"
 #include "VariableDeclVisitor.hpp"
 #include <sstream>
+#include <algorithm>
 
-ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
+ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false), thenBlock(NULL), elseBlock(NULL) {}
 
-ExpressionVisitor::ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget): store_value(NULL), do_store(false), trueTarget(trueTarget), falseTarget(falseTarget)
-{
-}
+ExpressionVisitor::ExpressionVisitor(ir_node* thenBlock, ir_node* elseBlock): store_value(NULL), do_store(false), thenBlock(thenBlock), elseBlock(elseBlock)
+{}
 
 ir_type* ExpressionVisitor::getResultType() const
 {
@@ -32,17 +32,36 @@ void ExpressionVisitor::visitBinaryExpression(
 void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation)
 {
 	std::cout << "visitRelationalExpression" << std::endl;
-	visitBinaryExpression(binaryExpression, [relation] (ir_node * left, ir_node * right) -> ir_node *
+	visitBinaryExpression(binaryExpression, [&] (ir_node * left, ir_node * right) -> ir_node *
 	{
-		return new_Cmp(left, right, relation);
+		if (thenBlock && elseBlock) {
+			ir_node *cmpNode = new_Cmp(left, right, relation);
+			ir_node *condNode = new_Cond(cmpNode);
+			ir_node *projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
+			ir_node *projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
+			add_immBlock_pred(thenBlock, projTrue);
+			add_immBlock_pred(elseBlock, projFalse);
+		}
+
+		return NULL; // could return cond node
 	});
 }
 
 // primary expressions
 void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 {
+	std::cout << "Visiting pe::Bool: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	bool value = boolExpr->getValue();
 	this->resultNode = FirmInterface::getInstance().createNodeForBooleanConstant(value);
+
+	if (thenBlock && elseBlock) {
+		ir_node *cmpNode = new_Cmp(FirmInterface::getInstance().createNodeForBooleanConstant(true), resultNode, ir_relation::ir_relation_equal);
+		ir_node *condNode = new_Cond(cmpNode);
+		ir_node *projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
+		ir_node *projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
+		add_immBlock_pred(thenBlock, projTrue);
+		add_immBlock_pred(elseBlock, projFalse);
+	}
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 {
@@ -133,9 +152,10 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 {
 	shptr<ast::Expression> child = notExpr->getChild();
 
+	std::cout << "Before swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	if (notExpr->getSize() & 1)
-		trueTarget.swap(falseTarget);
-
+		std::swap(thenBlock, elseBlock);
+	std::cout << "After swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	child->accept(*this);
 }
 
@@ -161,19 +181,37 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
-	auto rightTarget = std::make_shared<JumpTarget>();
-	ExpressionVisitor vleft(rightTarget, falseTarget);
-	andAndExpr->getLeftChild()->accept(vleft);
-	set_cur_block(rightTarget->targetNode);
+	ir_node *originalThenBlock = thenBlock;
+	ir_node * originalElseBlock = elseBlock;
+
+	ir_node * rightExprBlock = new_immBlock();
+	thenBlock = rightExprBlock;
+	andAndExpr->getLeftChild()->accept(*this);
+	mature_immBlock(rightExprBlock);
+
+	thenBlock = originalThenBlock;
+	elseBlock = originalElseBlock;
+
+	set_cur_block(rightExprBlock);
+
 	andAndExpr->getRightChild()->accept(*this);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 {
-	auto rightTarget = std::make_shared<JumpTarget>();
-	ExpressionVisitor vleft(trueTarget, rightTarget);
-	orOrExpr->getLeftChild()->accept(vleft);
-	set_cur_block(rightTarget->targetNode);
+	ir_node *originalThenBlock = thenBlock;
+	ir_node * originalElseBlock = elseBlock;
+
+	ir_node * rightExprBlock = new_immBlock();
+	elseBlock = rightExprBlock; // only change
+	orOrExpr->getLeftChild()->accept(*this);
+	mature_immBlock(rightExprBlock);
+
+	thenBlock = originalThenBlock;
+	elseBlock = originalElseBlock;
+
+	set_cur_block(rightExprBlock);
+
 	orOrExpr->getRightChild()->accept(*this);
 }
 

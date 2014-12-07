@@ -6,10 +6,8 @@ StatementVisitor::StatementVisitor(MemberVisitor& memberVisitor): memberVisitor(
 	setOwner(memberVisitor.getOwner());
 }
 
-void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock)
+void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* exitBlock)
 {
-	ir_node* thenOrElseBlock = new_immBlock();
-	add_immBlock_pred(thenOrElseBlock, precedingProjection);
 	mature_immBlock(thenOrElseBlock);
 	set_cur_block(thenOrElseBlock);
 
@@ -20,27 +18,21 @@ void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStm
 
 void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 {
-	auto trueTarget = std::make_shared<JumpTarget>();
-	auto falseTarget = std::make_shared<JumpTarget>();
-	auto exitTarget = std::make_shared<JumpTarget>();
-	ExpressionVisitor condVisitor(ifStatement->getThenStatement() ? trueTarget : exitTarget,
-	                              ifStatement->getElseStatement() ? falseTarget : exitTarget
+	ir_node* thenBlock = new_immBlock();
+	ir_node* elseBlock = new_immBlock();
+	ir_node* exitBlock = new_immBlock();
+
+	ExpressionVisitor condVisitor(ifStatement->getThenStatement() ? thenBlock : exitBlock,
+	                              ifStatement->getElseStatement() ? elseBlock : exitBlock
 	                             );
 
 	ifStatement->getCondition()->accept(condVisitor);
-	ir_node* compareNode = condVisitor.getResultNode();
-
-	ir_node* cond = new_Cond(compareNode);
-	ir_node* projTrue = new_Proj(cond, get_modeX(), pn_Cond_true);
-	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);
-
-	ir_node* exitBlock = new_immBlock();
-
+	
 	if (ifStatement->getThenStatement())
-		visitThenOrElse(ifStatement->getThenStatement(), projTrue, exitBlock);
+		visitThenOrElse(thenBlock, ifStatement->getThenStatement(), exitBlock);
 
 	if (ifStatement->getElseStatement())
-		visitThenOrElse(ifStatement->getElseStatement(), projFalse, exitBlock);
+		visitThenOrElse(elseBlock, ifStatement->getElseStatement(), exitBlock);
 
 	mature_immBlock(exitBlock);
 	set_cur_block(exitBlock);
@@ -49,39 +41,39 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 {
-	std::cout << "visiting while stmt" << std::endl;
-	auto headTarget = std::make_shared<JumpTarget>();
-	auto loopTarget = std::make_shared<JumpTarget>();
-	auto exitTarget = std::make_shared<JumpTarget>();
-
-	// before visiting the condition expression, we want to create and set a new imm_block
-	// as we want the condition to be in its own block as we want to jump there after the loopStatement
-	ExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? loopTarget : headTarget, exitTarget);
-	whileStmt->getCondition()->accept(condVisitor); // TODO: Implement accept(ExpressionVisitor) for Expression subclasses
-	ir_node* compareNode = condVisitor.getResultNode();
-
-	ir_node* cond = new_Cond(compareNode);
-	ir_node* projTrue = new_Proj(cond, get_modeX(), pn_Cond_true);
-	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);
-
+	ir_node* whileCondBlock = new_immBlock();
+	ir_node* whileBodyBlock = NULL;
+	if (whileStmt->getLoopStatement())
+		whileBodyBlock = new_immBlock();
 	ir_node* exitBlock = new_immBlock();
 
-	if (whileStmt->getLoopStatement())
-	{
-		// do not jump to the exitBlock, change this to be the block of loop condition
-		visitThenOrElse(whileStmt->getLoopStatement(), projTrue, exitBlock);
-	}
-	else
-	{
-		// if the LoopStatement doesn't exist, we probably want to jump to the exit block?
+	// this is necessary for correctly handling infinite loops
+	keep_alive(whileCondBlock);
+
+	add_immBlock_pred(whileCondBlock, new_Jmp());
+	
+	// create while condition
+	ExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? whileBodyBlock : whileCondBlock, exitBlock); 
+	set_cur_block(whileCondBlock);
+	whileStmt->getCondition()->accept(condVisitor);
+
+	if (whileStmt->getLoopStatement()) {
+		mature_immBlock(whileBodyBlock);
+
+		// create while body
+		set_cur_block(whileBodyBlock);
+		whileStmt->getLoopStatement()->accept(*this);
+
+		// append while body to while condition
+		add_immBlock_pred(whileCondBlock, new_Jmp());
 	}
 
-	// if the loop condition evaluates to false, we want to jump to the exitBlock directly
-	add_immBlock_pred(exitBlock, projFalse);
+	mature_immBlock(whileCondBlock);	
 
-	mature_immBlock(exitBlock);
+	// finalize
 	set_cur_block(exitBlock);
-	this->resultNode = exitTarget->targetNode;
+	mature_immBlock(exitBlock);
+	this->resultNode = exitBlock;
 }
 
 void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
