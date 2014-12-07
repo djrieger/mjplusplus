@@ -182,8 +182,6 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
-	//auto rightTarget = std::make_shared<JumpTarget>();
-	//ExpressionVisitor vleft(rightTarget, falseTarget);
 	ir_node *originalThenBlock = thenBlock;
 	ir_node * originalElseBlock = elseBlock;
 
@@ -202,13 +200,20 @@ void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 {
-	/* TODO
-	auto rightTarget = std::make_shared<JumpTarget>();
-	ExpressionVisitor vleft(trueTarget, rightTarget);
-	orOrExpr->getLeftChild()->accept(vleft);
-	set_cur_block(rightTarget->targetNode);
+	ir_node *originalThenBlock = thenBlock;
+	ir_node * originalElseBlock = elseBlock;
+
+	ir_node * rightExprBlock = new_immBlock();
+	elseBlock = rightExprBlock; // only change
+	orOrExpr->getLeftChild()->accept(*this);
+	mature_immBlock(rightExprBlock);
+
+	thenBlock = originalThenBlock;
+	elseBlock = originalElseBlock;
+
+	set_cur_block(rightExprBlock);
+
 	orOrExpr->getRightChild()->accept(*this);
-	*/
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)
