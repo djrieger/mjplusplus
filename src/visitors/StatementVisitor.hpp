@@ -1,7 +1,7 @@
 #ifndef STATEMENT_VISITOR_HPP
 #define STATEMENT_VISITOR_HPP
 
-#include "FirmVisitor.hpp"
+#include "VisitorWithResultNode.hpp"
 #include "MemberVisitor.hpp"
 #include "../ast/IfStatement.hpp"
 #include "../ast/WhileStatement.hpp"
@@ -10,10 +10,9 @@
 #include "../ast/ExpressionStatement.hpp"
 #include "../ast/LVDStatement.hpp"
 
-class StatementVisitor : public FirmVisitor
+class StatementVisitor : public VisitorWithResultNode
 {
 	protected:
-		ir_node* resultNode;
 		MemberVisitor& memberVisitor;
 
 		/**
@@ -34,8 +33,6 @@ class StatementVisitor : public FirmVisitor
 		virtual void visit(shptr<const ast::Block> blockStmt);
 		virtual void visit(shptr<const ast::ExpressionStatement> exprStmt);
 		virtual void visit(shptr<const ast::LVDStatement> lvdStmt);
-
-		virtual ir_node* getResultNode() const;
 };
 
 #endif

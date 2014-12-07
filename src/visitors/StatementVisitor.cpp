@@ -6,11 +6,6 @@ StatementVisitor::StatementVisitor(MemberVisitor& memberVisitor): memberVisitor(
 	setOwner(memberVisitor.getOwner());
 }
 
-ir_node* StatementVisitor::getResultNode() const
-{
-	return this->resultNode;
-}
-
 void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock)
 {
 	ir_node* thenOrElseBlock = new_immBlock();
