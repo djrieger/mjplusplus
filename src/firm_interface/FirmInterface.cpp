@@ -264,7 +264,7 @@ ir_node* FirmInterface::createNodeForIntegerConstant(int64_t x)
 
 ir_node* FirmInterface::createNodeForBooleanConstant(bool x)
 {
-	return new_Const(x ? get_tarval_b_true() : get_tarval_b_false());
+	return x ? new_Const_long(getBooleanMode(), true) : new_Const_long(getBooleanMode(), false);
 }
 
 ir_node* FirmInterface::createModOperation(ir_node* left, ir_node* right)
