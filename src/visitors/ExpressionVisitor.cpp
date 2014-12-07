@@ -4,7 +4,7 @@
 #include <sstream>
 #include <algorithm>
 
-ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
+ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false), thenBlock(NULL), elseBlock(NULL) {}
 
 ExpressionVisitor::ExpressionVisitor(ir_node* thenBlock, ir_node* elseBlock): store_value(NULL), do_store(false), thenBlock(thenBlock), elseBlock(elseBlock)
 {}
@@ -41,8 +41,18 @@ void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpressio
 // primary expressions
 void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 {
+	std::cout << "Visiting pe::Bool: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	bool value = boolExpr->getValue();
 	this->resultNode = FirmInterface::getInstance().createNodeForBooleanConstant(value);
+
+	if (thenBlock && elseBlock) {
+		ir_node *cmpNode = new_Cmp(FirmInterface::getInstance().createNodeForBooleanConstant(true), resultNode, ir_relation::ir_relation_equal);
+		ir_node * condNode = new_Cond(cmpNode);
+		ir_node *projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
+		ir_node *projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
+		add_immBlock_pred(thenBlock, projTrue);
+		add_immBlock_pred(elseBlock, projFalse);
+	}
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 {
@@ -133,9 +143,10 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 {
 	shptr<ast::Expression> child = notExpr->getChild();
 
+	std::cout << "Before swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	if (notExpr->getSize() & 1)
 		std::swap(thenBlock, elseBlock);
-
+	std::cout << "After swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	child->accept(*this);
 }
 

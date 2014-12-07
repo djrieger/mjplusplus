@@ -6,10 +6,10 @@ StatementVisitor::StatementVisitor(MemberVisitor& memberVisitor): memberVisitor(
 	setOwner(memberVisitor.getOwner());
 }
 
-void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock)
+void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* exitBlock)
 {
 	//ir_node* thenOrElseBlock = new_immBlock();
-	add_immBlock_pred(thenOrElseBlock, precedingProjection);
+	//add_immBlock_pred(thenOrElseBlock, precedingProjection);
 	mature_immBlock(thenOrElseBlock);
 	set_cur_block(thenOrElseBlock);
 
@@ -29,17 +29,17 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 	                             );
 
 	ifStatement->getCondition()->accept(condVisitor);
-	ir_node* compareNode = condVisitor.getResultNode();
+	//ir_node* compareNode = condVisitor.getResultNode();
 
-	ir_node* cond = new_Cond(compareNode);
+	/*ir_node* cond = new_Cond(compareNode);
 	ir_node* projTrue = new_Proj(cond, get_modeX(), pn_Cond_true);
-	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);
+	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);*/
 
 	if (ifStatement->getThenStatement())
-		visitThenOrElse(thenBlock, ifStatement->getThenStatement(), projTrue, exitBlock);
+		visitThenOrElse(thenBlock, ifStatement->getThenStatement(), exitBlock);
 
 	if (ifStatement->getElseStatement())
-		visitThenOrElse(elseBlock, ifStatement->getElseStatement(), projFalse, exitBlock);
+		visitThenOrElse(elseBlock, ifStatement->getElseStatement(), exitBlock);
 
 	mature_immBlock(exitBlock);
 	set_cur_block(exitBlock);
