@@ -12,7 +12,9 @@ void PostfixOpsVisitor::visit(shptr<ast::FieldAccess const> fieldAccess)
 {
 	std::cout << "Visiting FieldAccess" << std::endl;
 	// Member
-	VariableDeclVisitor vdVisitor(expressionVisitor.getResultNode(), storeValue);
+	ir_node* current_this = expressionVisitor.getResultNode();
+	std::cout << "Field access on current this: " << current_this << std::endl;
+	VariableDeclVisitor vdVisitor(current_this, storeValue);
 	auto decl = fieldAccess->getDeclaration();
 
 	if (decl)
