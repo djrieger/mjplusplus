@@ -6,7 +6,8 @@
 ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
 
 ExpressionVisitor::ExpressionVisitor(shptr<JumpTarget> trueTarget, shptr<JumpTarget> falseTarget): store_value(NULL), do_store(false), trueTarget(trueTarget), falseTarget(falseTarget)
-{}
+{
+}
 
 ir_type* ExpressionVisitor::getResultType() const
 {

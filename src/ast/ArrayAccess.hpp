@@ -17,6 +17,7 @@ namespace ast
 			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) ;
 			virtual bool lValueHelp() const;
 			virtual void accept(ASTVisitor& visitor) const;
+			shptr<Expression> getAccessOffset() const;
 	};
 }
 
