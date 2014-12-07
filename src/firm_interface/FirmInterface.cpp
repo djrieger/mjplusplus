@@ -75,42 +75,6 @@ void FirmInterface::build()
 
 	fclose(o);
 
-#ifdef __APPLE__
-	std::string printFunAsm = "	.section	__TEXT,__text,regular,pure_instructions \n \
-								.globl	_COut_Mprintln \n \
-								.align	4, 0x90 \n \
-							_COut_Mprintln:                         ## @COut_Mprintln \n \
-								.cfi_startproc \n \
-							## BB#0: \n \
-								pushq	%rbp \n \
-							Ltmp2: \n \
-								.cfi_def_cfa_offset 16 \n \
-							Ltmp3: \n \
-								.cfi_offset %rbp, -16 \n \
-								movq	%rsp, %rbp \n \
-							Ltmp4: \n \
-								.cfi_def_cfa_register %rbp \n \
-								subq	$16, %rsp \n \
-								leaq	L_.str(%rip), %rax \n \
-								movl	%edi, -4(%rbp) \n \
-								movl	-4(%rbp), %esi \n \
-								movq	%rax, %rdi \n \
-								movb	$0, %al \n \
-								callq	_printf \n \
-								movl	$0, %esi \n \
-								movl	%eax, -8(%rbp)          ## 4-byte Spill \n \
-								movl	%esi, %eax \n \
-								addq	$16, %rsp \n \
-								popq	%rbp \n \
-								retq \n \
-								.cfi_endproc \n \
-							 \n \
-								.section	__TEXT,__cstring,cstring_literals \n \
-							L_.str:                                 ## @.str \n \
-								.asciz	\"%d\\n\" \n \
-							.subsections_via_symbols \n \
-							";
-#else
 	std::string printFunAsm = "        .file   \"print.c\" \n\
 			.section        .rodata.str1.1,\"aMS\",@progbits,1 \n\
 	.LC0: \n\
@@ -144,16 +108,10 @@ void FirmInterface::build()
 			.ident  \"GCC: (Debian 4.9.1-19) 4.9.1\" \n\
 			.section        .note.GNU-stack,\"\",@progbits \n\
 ";
-#endif
 
 	std::ofstream output(out_name, std::ios::app);
 	output << printFunAsm;
 	output.close();
-
-#ifdef __APPLE__
-	std::system(std::string("sed -i '' 's/.*\\.size.*$//' " + out_name).c_str());
-	std::system(std::string("sed -i '' 's/.*\\.type.*$//' " + out_name).c_str());
-#endif
 }
 
 ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration)
@@ -339,11 +297,7 @@ void FirmInterface::foo()
 	const unsigned int resultsCount = 0;
 	const unsigned int localVarsCount = 1;
 
-#ifndef __APPLE__
 	std::string mainMethodName = "main";
-#else
-	std::string mainMethodName = "_main";
-#endif
 
 	// main
 	ir_type* proc_main = new_type_method(paramsCount, resultsCount);
