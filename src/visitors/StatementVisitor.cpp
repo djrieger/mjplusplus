@@ -49,26 +49,38 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 {
+	std::cout << "visiting while stmt" << std::endl;
 	auto headTarget = std::make_shared<JumpTarget>();
 	auto loopTarget = std::make_shared<JumpTarget>();
 	auto exitTarget = std::make_shared<JumpTarget>();
 
-	set_cur_block(headTarget->targetNode);
-
+	// before visiting the condition expression, we want to create and set a new imm_block
+	// as we want the condition to be in its own block as we want to jump there after the loopStatement
 	ExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? loopTarget : headTarget, exitTarget);
 	whileStmt->getCondition()->accept(condVisitor); // TODO: Implement accept(ExpressionVisitor) for Expression subclasses
+	ir_node* compareNode = condVisitor.getResultNode();
+
+	ir_node* cond = new_Cond(compareNode);
+	ir_node* projTrue = new_Proj(cond, get_modeX(), pn_Cond_true);
+	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);
+
+	ir_node* exitBlock = new_immBlock();
 
 	if (whileStmt->getLoopStatement())
 	{
-		set_cur_block(loopTarget->targetNode);
-		whileStmt->getLoopStatement()->accept(*this); // TODO: Implement accept(StatementVisitor) for Statement subclasses
-		ir_node* loopNode = getResultNode();
-		headTarget->jumpFromBlock(loopNode);
+		// do not jump to the exitBlock, change this to be the block of loop condition
+		visitThenOrElse(whileStmt->getLoopStatement(), projTrue, exitBlock);
 	}
 	else
-		headTarget->jumpFromBlock(headTarget->targetNode);
+	{
+		// if the LoopStatement doesn't exist, we probably want to jump to the exit block?
+	}
 
-	set_cur_block(exitTarget->targetNode);
+	// if the loop condition evaluates to false, we want to jump to the exitBlock directly
+	add_immBlock_pred(exitBlock, projFalse);
+
+	mature_immBlock(exitBlock);
+	set_cur_block(exitBlock);
 	this->resultNode = exitTarget->targetNode;
 }
 
