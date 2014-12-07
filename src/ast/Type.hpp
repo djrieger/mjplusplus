@@ -52,6 +52,10 @@ namespace ast
 			std::string getName() const;
 			int getDimension() const;
 			virtual void accept(ASTVisitor& visitor) const;
+			/**
+			 *  returns whether this type is $System or $out
+			 */
+			bool isSpecialType() const;
 
 		private:
 			Primitive_type primitive_type;
