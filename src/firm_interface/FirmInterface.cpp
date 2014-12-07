@@ -211,12 +211,15 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 {
 	int this_pos = 0;
 	ir_node* caller = get_value(this_pos, mode_P);
-	ir_type* class_type = get_irn_type_attr(caller);
+
+	auto classIdent = expr->getDeclaration()->getDeclaration()->getIdent();
+	auto classAstType = std::make_shared<ast::Type>(classIdent);
+	ir_type* classFirmType = FirmInterface::getInstance().getType(classAstType);
 
 	auto method_name = expr->getDeclaration()->mangle();
 	auto arguments = expr->getArguments();
 
-	return createNodeForMethodCall(caller, class_type, method_name, arguments, expr->getDeclaration());
+	return createNodeForMethodCall(caller, classFirmType, method_name, arguments, expr->getDeclaration());
 }
 
 ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr)
