@@ -296,12 +296,12 @@ void ExpressionVisitor::visit(shptr<ast::be::Invalid const>)
 // postfix expression
 void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpression)
 {
-	std::cout << "Visiting PostfixExpression" << std::endl;
+	std::cout << "Visiting PostfixExpression -- do_store: " << do_store << std::endl;
 	bool old_do_store = do_store;
 	//only the last PostfixOp does the store - or the PrimaryExpression if there are no PostfixOps
-	do_store &= !postfixExpression->getPostfixOps()->empty();
+	do_store &= postfixExpression->getPostfixOps()->empty();
 
-	std::cout << "ev visit pe" << std::endl;
+	std::cout << "ev visit pe -- do_store: " << do_store << " size: " << postfixExpression->getPostfixOps()->size() << std::endl;
 	postfixExpression->getChild()->accept(*this);
 	auto pops = postfixExpression->getPostfixOps();
 	std::cout << "ev visit pe done" << std::endl;
