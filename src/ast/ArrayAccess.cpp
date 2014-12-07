@@ -44,6 +44,11 @@ namespace ast
 	{
 		visitor.visit(std::static_pointer_cast<ArrayAccess const>(shared_from_this()));
 	}
+
+	shptr<Expression> ArrayAccess::getAccessOffset() const
+	{
+		return access_offset;
+	}
 }
 
 

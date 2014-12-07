@@ -1,7 +1,8 @@
 #include "VariableDeclVisitor.hpp"
 
 VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this, ir_node* store_value): current_this(current_this), store_value(store_value)
-{}
+{
+}
 
 void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclaration)
 {
