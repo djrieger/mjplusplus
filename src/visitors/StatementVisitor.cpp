@@ -6,9 +6,9 @@ StatementVisitor::StatementVisitor(MemberVisitor& memberVisitor): memberVisitor(
 	setOwner(memberVisitor.getOwner());
 }
 
-void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock)
+void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* precedingProjection, ir_node* exitBlock)
 {
-	ir_node* thenOrElseBlock = new_immBlock();
+	//ir_node* thenOrElseBlock = new_immBlock();
 	add_immBlock_pred(thenOrElseBlock, precedingProjection);
 	mature_immBlock(thenOrElseBlock);
 	set_cur_block(thenOrElseBlock);
@@ -20,11 +20,12 @@ void StatementVisitor::visitThenOrElse(shptr<const ast::Statement> thenOrElseStm
 
 void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 {
-	auto trueTarget = std::make_shared<JumpTarget>();
-	auto falseTarget = std::make_shared<JumpTarget>();
-	auto exitTarget = std::make_shared<JumpTarget>();
-	ExpressionVisitor condVisitor(ifStatement->getThenStatement() ? trueTarget : exitTarget,
-	                              ifStatement->getElseStatement() ? falseTarget : exitTarget
+	ir_node* thenBlock = new_immBlock();
+	ir_node* elseBlock = new_immBlock();
+	ir_node* exitBlock = new_immBlock();
+
+	ExpressionVisitor condVisitor(ifStatement->getThenStatement() ? thenBlock : exitBlock,
+	                              ifStatement->getElseStatement() ? elseBlock : exitBlock
 	                             );
 
 	ifStatement->getCondition()->accept(condVisitor);
@@ -34,13 +35,11 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 	ir_node* projTrue = new_Proj(cond, get_modeX(), pn_Cond_true);
 	ir_node* projFalse = new_Proj(cond, get_modeX(), pn_Cond_false);
 
-	ir_node* exitBlock = new_immBlock();
-
 	if (ifStatement->getThenStatement())
-		visitThenOrElse(ifStatement->getThenStatement(), projTrue, exitBlock);
+		visitThenOrElse(thenBlock, ifStatement->getThenStatement(), projTrue, exitBlock);
 
 	if (ifStatement->getElseStatement())
-		visitThenOrElse(ifStatement->getElseStatement(), projFalse, exitBlock);
+		visitThenOrElse(elseBlock, ifStatement->getElseStatement(), projFalse, exitBlock);
 
 	mature_immBlock(exitBlock);
 	set_cur_block(exitBlock);
@@ -49,6 +48,7 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 {
+	/*
 	auto headTarget = std::make_shared<JumpTarget>();
 	auto loopTarget = std::make_shared<JumpTarget>();
 	auto exitTarget = std::make_shared<JumpTarget>();
@@ -70,6 +70,7 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 
 	set_cur_block(exitTarget->targetNode);
 	this->resultNode = exitTarget->targetNode;
+	*/
 }
 
 void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
