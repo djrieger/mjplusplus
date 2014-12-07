@@ -7,7 +7,7 @@ Compile by running `make` (debug version) or `make release` (release version) in
 
 Run the compiler like this:
 
-`./mj++ [--dumplexgraph|--lextest|--print-ast|--check] FILE`
+`./mj++ [--dumplexgraph|--lextest|--print-ast|--check [--firm]|--compile-firm] FILE`
 
 `--dumlexgraph`: Dump the automaton that is used by the lexer to a file. (Format: GML)
 
@@ -16,5 +16,9 @@ Run the compiler like this:
 `--print-ast`: Pretty print the parsed file.
 
 `--check`: Run the semantic analysis on the given `FILE`.
+
+ --firm : Initialize libFirm, build the grahphs and create an assembly file. Only works in combination with --check.
+
+ --compile-firm : Run the semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc.
 
 If the compiler is started without an option, the given `FILE` will be parsed and the return signal indicates, if it is correct.
