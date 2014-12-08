@@ -27,6 +27,7 @@ void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaratio
 		for (size_t i = 0; i < param_count; i++)
 		{
 			ir_type* p_type = get_method_param_type(m_type, i);
+			ir_printf("arg %u is type %F mode %F\n", i, p_type, get_type_mode(p_type));
 			ir_node* arg = new_Proj(args, get_type_mode(p_type), i);
 			set_value(i, arg);
 		}

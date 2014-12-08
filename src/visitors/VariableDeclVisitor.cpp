@@ -56,7 +56,7 @@ void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
 		resultNode = get_value(pos, FirmInterface::getInstance().getMode(lvdStatement->getDeclType()));
 
 	std::cout << "    done, var num " << pos << " as " << std::flush;
-	ir_printf("%F, node is %F\n", FirmInterface::getInstance().getMode(lvdStatement->getDeclType()), resultNode);
+	ir_printf("%F, type %F, node %F\n", FirmInterface::getInstance().getMode(lvdStatement->getDeclType()), resultType, resultNode);
 }
 
 void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)

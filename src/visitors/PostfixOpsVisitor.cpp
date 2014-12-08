@@ -35,11 +35,8 @@ void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess)
 
 	// Get the node for the array we are accessing.
 	ir_node* arrayAddress = expressionVisitor.getResultNode();
-
 	ir_type* arrayType = expressionVisitor.getResultType();
-	assert(get_type_mode(arrayType) == mode_P);
-
-	ir_type* elementType = get_array_element_type(arrayType);
+	ir_type* elementType = get_pointer_points_to_type(arrayType);
 
 	// Build an ExpressionVisitor to find out the access offset (which is an
 	// expression).
@@ -47,22 +44,27 @@ void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess)
 	arrayAccess->getAccessOffset()->accept(accessOffsetVisitor);
 	ir_node* accessOffset = accessOffsetVisitor.getResultNode();
 
-	ir_node* elementAddress = new_Sel(arrayAddress, accessOffset, arrayType);
+	/* replaced arrays with pointers since get_type_mode doesn't like them; as result Sel is not usable... */
+	//ir_node* elementAddress = new_Sel(arrayAddress, accessOffset, arrayType);
 
-	// Reserve space for the element.
-	ir_node* element = get_store();
+	ir_mode* addr_mode = get_reference_mode_unsigned_eq(mode_P);
+	ir_node* offset_node = new_Const_long(addr_mode, get_type_size_bytes(elementType));
+	offset_node = new_Mul(offset_node, new_Conv(accessOffset, addr_mode), addr_mode);
+	ir_node* elementAddress = new_Conv(new_Add(new_Conv(arrayAddress, addr_mode), offset_node, addr_mode), mode_P);
+
+	ir_node* mem = get_store();
 
 	if (storeValue)
 	{
 		// We are setting an array element.
-		ir_node* store = new_Store(element, elementAddress, storeValue, elementType, cons_none);
+		ir_node* store = new_Store(mem, elementAddress, storeValue, elementType, cons_none);
 		set_store(new_Proj(store, mode_M, pn_Store_M));
 		resultNode = storeValue;
 	}
 	else
 	{
 		// We are retrieving an array element.
-		ir_node* load = new_Load(element, elementAddress, get_type_mode(elementType), elementType, cons_none);
+		ir_node* load = new_Load(mem, elementAddress, get_type_mode(elementType), elementType, cons_none);
 		set_store(new_Proj(load, mode_M, pn_Load_M));
 		resultNode = new_Proj(load, get_type_mode(elementType), pn_Load_res);
 	}

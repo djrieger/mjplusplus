@@ -431,7 +431,7 @@ ir_type* FirmInterface::getType(shptr<ast::Type> ast_type)
 	else if (ast_type->isArray())
 	{
 		// add new array + recursion for lesser dimensions
-		r = new_type_array(getType(ast_type->de_array()));
+		r = new_type_pointer(getType(ast_type->de_array()));
 	}
 	else
 	{
