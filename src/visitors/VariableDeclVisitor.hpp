@@ -9,6 +9,8 @@ class VariableDeclVisitor : public VisitorWithResultNode
 		ir_node* current_this;
 		ir_node* store_value;
 
+		void visitLVDStatementOrTypeIdent(shptr<ast::VariableDeclaration const> variableDeclaration, std::string varName);
+
 	public:
 		VariableDeclVisitor(ir_node* current_this, ir_node* store_value = NULL);
 

@@ -25,12 +25,10 @@ class StatementVisitor : public FirmVisitor
 	public:
 		StatementVisitor(MemberVisitor& memberVisitor);
 
+		virtual void visit(shptr<const ast::Block> blockStmt);
 		virtual void visit(shptr<const ast::IfStatement> ifStatement);
 		virtual void visit(shptr<const ast::WhileStatement> whileStmt);
 		virtual void visit(shptr<const ast::ReturnStatement> returnStmt);
-
-		// Not implemented yet:
-		virtual void visit(shptr<const ast::Block> blockStmt);
 		virtual void visit(shptr<const ast::ExpressionStatement> exprStmt);
 		virtual void visit(shptr<const ast::LVDStatement> lvdStmt);
 };

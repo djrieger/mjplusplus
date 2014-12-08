@@ -16,10 +16,8 @@ shptr<Definition> SymbolTable::lookup(shptr<Symbol> symbol) const
 
 void SymbolTable::insert(shptr<Symbol> symbol, shptr<Definition> def)
 {
-	//std::cout << "insert: " << symbol->getName() << " - " << dp(symbol->getCurrentDefinition()) << " - " << dp(def);
 	changes.push(std::make_shared<Change>(symbol, symbol->getCurrentDefinition(), symbol->getCurrentScope()));
 	symbol->setCurrentDefinition(def);
-	//std::cout << " - " << dp(symbol->getCurrentDefinition()) << std::endl;
 	symbol->setCurrentScope(this->currentScope);
 }
 
@@ -31,16 +29,12 @@ void SymbolTable::enterScope()
 void SymbolTable::leaveScope()
 {
 	while (this->changes.size() > currentScope->getOldSize())
-		//while (!this->changes.empty())
 	{
 		auto c = changes.top();
-		//std::cout << "leave: " << c->getSymbol()->getName() << " - " << dp(c->getSymbol()->getCurrentDefinition()) << " - " << dp(c->getPreviousDefinition());
 		c->getSymbol()->setCurrentDefinition(c->getPreviousDefinition());
 		c->getSymbol()->setCurrentScope(c->getPreviousScope());
 
-		//std::cout << " - " << dp(c->getSymbol()->getCurrentDefinition()) << std::endl;
 		changes.pop();
-
 	}
 
 	currentScope = currentScope->getParent();

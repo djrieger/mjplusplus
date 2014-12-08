@@ -25,6 +25,15 @@ class ExpressionVisitor : public VisitorWithResultNode
 		    std::function<ir_node* (ir_node*, ir_node*)> createResultNode
 		);
 
+		/**
+		 * Create a then or else block for a boolean expression
+		 * @param  block 		this block is matured and set as current block
+		 * @param  boolValue	create a new const boolean Firm node with this value
+		 * @param  exitBlock	prepend a new Jump node to this block
+		 * @return	the const boolean Firm node with value boolValue
+		 */
+		ir_node* createThenOrElseBlock(ir_node* block, bool boolValue, ir_node* exitBlock);
+
 		/*
 		 * Evaluate boolean expression with help of BoolExpressionVisitor
 		 */
@@ -33,7 +42,6 @@ class ExpressionVisitor : public VisitorWithResultNode
 	public:
 		ExpressionVisitor();
 
-		//ExpressionVisitor(StatementVisitor &statementVisitor);
 		// primary expressions
 		virtual void visit(shptr<ast::pe::Bool const> boolExpr);
 		virtual void visit(shptr<ast::pe::Ident const> identExpr);

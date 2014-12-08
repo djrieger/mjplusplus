@@ -10,29 +10,22 @@ PostfixOpsVisitor::PostfixOpsVisitor(ExpressionVisitor& expressionVisitor): stor
 
 void PostfixOpsVisitor::visit(shptr<ast::FieldAccess const> fieldAccess)
 {
-	std::cout << "Visiting FieldAccess" << std::endl;
 	// Member
 	ir_node* current_this = expressionVisitor.getResultNode();
-	std::cout << "Field access on current this: " << current_this << std::endl;
 	VariableDeclVisitor vdVisitor(current_this, storeValue);
 	auto decl = fieldAccess->getDeclaration();
 
 	if (decl)
 	{
-		std::cout << "got declaration of field" << std::endl;
 		decl->accept(vdVisitor);
 		resultNode = vdVisitor.getResultNode();
 		resultType = vdVisitor.getResultType();
 	}
-	else
-		std::cout << "got System in FieldAccess (currently nothing is done with it)" << std::endl;
-
-	std::cout << "postfixopsvisitor done" << std::endl;
+	// else: got System in FieldAccess 
 }
 
 void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess)
 {
-
 	// Get the node for the array we are accessing.
 	ir_node* arrayAddress = expressionVisitor.getResultNode();
 	ir_type* arrayType = expressionVisitor.getResultType();
@@ -75,8 +68,6 @@ void PostfixOpsVisitor::visit(shptr<ast::ArrayAccess const> arrayAccess)
 
 void PostfixOpsVisitor::visit(shptr<ast::MethodInvocation const> methodInvocation)
 {
-	std::cout << "Visiting MethodInvocation" << std::endl;
-
 	ir_node* caller = expressionVisitor.getResultNode();
 	std::tie(resultNode, resultType) = FirmInterface::getInstance().createNodeForMethodCall(caller, methodInvocation);
 }
