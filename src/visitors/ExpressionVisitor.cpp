@@ -37,10 +37,12 @@ void ExpressionVisitor::visitBoolExpression(shptr<ast::Expression const> express
 	mature_immBlock(thenBlock);
 	set_cur_block(thenBlock);
 	bools[0] = FirmInterface::getInstance().createNodeForBooleanConstant(true);
+	add_immBlock_pred(exitBlock, new_Jmp());
 
 	mature_immBlock(elseBlock);
 	set_cur_block(elseBlock);
 	bools[1] = FirmInterface::getInstance().createNodeForBooleanConstant(false);
+	add_immBlock_pred(exitBlock, new_Jmp());
 
 	mature_immBlock(exitBlock);
 	set_cur_block(exitBlock);
