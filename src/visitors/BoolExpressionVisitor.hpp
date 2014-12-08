@@ -8,7 +8,7 @@
 #include "../ast/UnaryExpression.hpp"
 #include "../ast/PostfixExpression.hpp"
 
-class BoolExpressionVisitor : public VisitorWithResultNode
+class BoolExpressionVisitor : public FirmVisitor
 {
 	private:
 		ir_node* thenBlock;
