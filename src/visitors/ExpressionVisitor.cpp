@@ -99,7 +99,7 @@ void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
 }
 void ExpressionVisitor::visit(shptr<ast::pe::MethodInvocation const> methodInvocationExpr)
 {
-	this->resultNode = FirmInterface::getInstance().createNodeForMethodCall(methodInvocationExpr);
+	std::tie(resultNode, resultType) = FirmInterface::getInstance().createNodeForMethodCall(methodInvocationExpr);
 }
 void ExpressionVisitor::visit(shptr<ast::pe::NewArrayExpression const> newArrayExpr)
 {

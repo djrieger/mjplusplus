@@ -45,9 +45,9 @@ class FirmInterface
 		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classMethodEntities;
 		std::unordered_map<std::pair<ir_type*, std::string>, ir_entity*> classFieldEntities;
 
-		ir_node* createNodeForMethodCall(ir_node* caller,
-		                                 shptr<ast::Arguments const> arguments,
-		                                 shptr<ast::MethodDeclaration const> methodDeclaration);
+		std::tuple<ir_node*, ir_type*> createNodeForMethodCall(ir_node* caller,
+		        shptr<ast::Arguments const> arguments,
+		        shptr<ast::MethodDeclaration const> methodDeclaration);
 
 	public:
 		static FirmInterface& getInstance()
@@ -55,8 +55,8 @@ class FirmInterface
 			static FirmInterface instance;
 			return instance;
 		}
-		ir_node* createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
-		ir_node* createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr);
+		std::tuple<ir_node*, ir_type*> createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr);
+		std::tuple<ir_node*, ir_type*> createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr);
 		ir_node* createNodeForCallocCall(ir_node* count, unsigned int size);
 		ir_node* createNodeForIntegerConstant(int64_t);
 		ir_node* createNodeForBooleanConstant(bool);
