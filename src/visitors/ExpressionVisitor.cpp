@@ -124,11 +124,13 @@ void ExpressionVisitor::visit(shptr<ast::pe::Object const> objectExpr)
 		case ast::pe::Object::NULL_OBJECT:
 		{
 			this->resultNode = FirmInterface::getInstance().createNullPointerNode();
+			break;
 		}
 
 		case ast::pe::Object::THIS_OBJECT:
 		{
 			this->resultNode = get_value(0, mode_P);
+			break;
 		}
 	}
 }
