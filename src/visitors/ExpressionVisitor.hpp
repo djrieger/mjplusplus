@@ -12,7 +12,6 @@ class ExpressionVisitor : public VisitorWithResultNode
 {
 
 	private:
-		ir_type* resultType;
 		ir_node* store_value;
 		bool do_store;
 		/*
