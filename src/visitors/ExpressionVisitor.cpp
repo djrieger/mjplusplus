@@ -11,38 +11,36 @@ void ExpressionVisitor::visitBinaryExpression(
     shptr<ast::be::BinaryExpression const> binExpr,
     std::function<ir_node* (ir_node*, ir_node*)> createResultNode)
 {
-	std::cout << "accepting be left child" << std::endl;
 	binExpr->getLeftChild()->accept(*this);
 	ir_node* left = this->resultNode;
 
-	std::cout << "accepting be right child" << std::endl;
 	binExpr->getRightChild()->accept(*this);
 	ir_node* right = this->resultNode;
 
 	this->resultNode = createResultNode(left, right);
 }
 
+ir_node* ExpressionVisitor::createThenOrElseBlock(ir_node* block, bool boolValue, ir_node* exitBlock)
+{
+	mature_immBlock(block);
+	set_cur_block(block);
+	ir_node* constBoolNode = FirmInterface::getInstance().createNodeForBooleanConstant(boolValue);
+	add_immBlock_pred(exitBlock, new_Jmp());
+
+	return constBoolNode;
+}
+
 void ExpressionVisitor::visitBoolExpression(shptr<ast::Expression const> expression)
 {
-	std::cout << "visitBoolExpression" << std::endl;
-
 	ir_node* thenBlock = new_immBlock();
 	ir_node* elseBlock = new_immBlock();
 	ir_node* exitBlock = new_immBlock();
 
 	BoolExpressionVisitor condVisitor(thenBlock, elseBlock);
 	expression->accept(condVisitor);
-	ir_node* bools[2];
 
-	mature_immBlock(thenBlock);
-	set_cur_block(thenBlock);
-	bools[0] = FirmInterface::getInstance().createNodeForBooleanConstant(true);
-	add_immBlock_pred(exitBlock, new_Jmp());
-
-	mature_immBlock(elseBlock);
-	set_cur_block(elseBlock);
-	bools[1] = FirmInterface::getInstance().createNodeForBooleanConstant(false);
-	add_immBlock_pred(exitBlock, new_Jmp());
+	ir_node* bools[2] = { createThenOrElseBlock(thenBlock, true, exitBlock),
+						  createThenOrElseBlock(elseBlock, false, exitBlock) };
 
 	mature_immBlock(exitBlock);
 	set_cur_block(exitBlock);
@@ -54,10 +52,10 @@ void ExpressionVisitor::visitBoolExpression(shptr<ast::Expression const> express
 // primary expressions
 void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 {
-	std::cout << "Visiting pe::Bool:" << boolExpr->getValue() << std::endl;
 	bool value = boolExpr->getValue();
 	this->resultNode = FirmInterface::getInstance().createNodeForBooleanConstant(value);
 }
+
 void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 {
 	// Param / Local Variable
@@ -70,14 +68,13 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 	{
 		//don't get this pointer here, we might be in main
 		VariableDeclVisitor vdVisitor(NULL, (do_store && store_value) ? store_value : NULL);
-		std::cout << "got declaration " << std::endl;
 		decl->accept(vdVisitor);
 		resultNode = vdVisitor.getResultNode();
 		resultType = vdVisitor.getResultType();
 	}
 	else
 	{
-		std::cout << "got System " << std::endl;
+		// got System
 
 		lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
 		auto si = std::make_shared<ast::Ident>(sit);
@@ -91,16 +88,18 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 		resultNode = new_Proj(load, mode_P, pn_Load_res);
 	}
 }
+
 void ExpressionVisitor::visit(shptr<ast::pe::Integer const> integerExpr)
 {
 	int64_t x = atoll(integerExpr->getStringValue().c_str());
-	std::cout << "visiting integer with value " << x << std::endl;
 	this->resultNode = FirmInterface::getInstance().createNodeForIntegerConstant(x);
 }
+
 void ExpressionVisitor::visit(shptr<ast::pe::MethodInvocation const> methodInvocationExpr)
 {
 	std::tie(resultNode, resultType) = FirmInterface::getInstance().createNodeForMethodCall(methodInvocationExpr);
 }
+
 void ExpressionVisitor::visit(shptr<ast::pe::NewArrayExpression const> newArrayExpr)
 {
 	newArrayExpr->getSize()->accept(*this);
@@ -153,11 +152,7 @@ void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 // binary expressions
 void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 {
-	/* plan:
-	 * evaluate rhs, save result node
-	 * evaluate lhs, but replace final load by store
-	 */
-	std::cout << "got assignment" << std::endl;
+	// Assignment
 
 	eqExpr->getRightChild()->accept(*this);
 	store_value = resultNode;
@@ -167,7 +162,6 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 	eqExpr->getLeftChild()->accept(*this);
 	do_store = false;
 	resultNode = rhs;
-	std::cout << "assignment done" << std::endl;
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
@@ -259,15 +253,12 @@ void ExpressionVisitor::visit(shptr<ast::be::Invalid const>)
 // postfix expression
 void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpression)
 {
-	std::cout << "Visiting PostfixExpression -- do_store: " << do_store << std::endl;
 	bool old_do_store = do_store;
-	//only the last PostfixOp does the store - or the PrimaryExpression if there are no PostfixOps
+	// only the last PostfixOp does the store - or the PrimaryExpression if there are no PostfixOps
 	do_store &= postfixExpression->getPostfixOps()->empty();
 
-	std::cout << "ev visit pe -- do_store: " << do_store << " size: " << postfixExpression->getPostfixOps()->size() << std::endl;
 	postfixExpression->getChild()->accept(*this);
 	auto pops = postfixExpression->getPostfixOps();
-	std::cout << "ev visit pe done" << std::endl;
 
 	if (!pops->empty())
 	{
@@ -275,23 +266,19 @@ void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpress
 
 		for (auto it = pops->begin(); it != pops->end() - 1; it++)
 		{
-			std::cout << "ev/popsv visit pop" << std::endl;
 			(*it)->accept(popsVisitor);
 			resultNode = popsVisitor.getResultNode();
 			resultType = popsVisitor.getResultType();
-			std::cout << "ev/popsv visit pop done" << std::endl;
 		}
 
-		//last PostfixOp may store
+		// last PostfixOp may store
 		do_store = old_do_store;
 
 		if (do_store)
 			popsVisitor.setStoreValue(store_value);
 
-		std::cout << "ev/popsv visit LAST pop" << std::endl;
 		pops->back()->accept(popsVisitor);
 		resultNode = popsVisitor.getResultNode();
 		resultType = popsVisitor.getResultType();
-		std::cout << "ev/popsv visit LAST pop done" << std::endl;
 	}
 }

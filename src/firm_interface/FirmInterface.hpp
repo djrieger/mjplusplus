@@ -37,7 +37,13 @@ class FirmInterface
 		FirmInterface(FirmInterface const&) = delete;
 		void operator=(FirmInterface const&) = delete;
 		static shptr<FirmInterface> instance;
+		/**
+		 * Name of mj source file
+		 */
 		std::string in_name;
+		/**
+		 * Name of assembler file to generate
+		 */
 		std::string out_name;
 		shptr<std::map<std::string, int>> var2pos;
 
@@ -66,9 +72,19 @@ class FirmInterface
 
 		~FirmInterface();
 		void foo();
+		/**
+		 * Convert program to Firm representation and call build() if successful
+		 */
 		void convert(shptr<ast::Program> program);
+		/**
+		 * Convert the generated Firm graphs to assembler and save in file out_name
+		 */
 		void build();
+		/**
+		 * Replace all dollar signs in name with _C
+		 */
 		static std::string replace_dollar(std::string name);
+		// Get Firm type modes
 		ir_mode* getIntegerMode();
 		ir_mode* getBooleanMode();
 		ir_mode* getReferenceMode();
@@ -88,7 +104,6 @@ class FirmInterface
 
 		shptr<std::map<std::string, int>> getVarMap();
 		void setVarMap(shptr<std::map<std::string, int>> newVar2pos);
-
 };
 
 #endif

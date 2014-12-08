@@ -12,6 +12,10 @@ class MemberVisitor : public FirmVisitor
 		ir_graph* function_graph;
 		ClassVisitor& classVisitor;
 
+		/**
+		 * Create method body firm nodes, create local variables for parameters and add
+		 * a trailing return statement if necessary
+		 */
 		void visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg);
 	public:
 		MemberVisitor(ClassVisitor& classVisitor);

@@ -50,6 +50,7 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 
 	if (returns == 2)
 	{
+		// TODO: can this be removed?
 		std::cout << "both branches return" << std::endl;
 		//I could remove the useless exitBlock if I knew how
 		//looks like libFirm doesn't care
@@ -81,6 +82,7 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 	set_cur_block(whileCondBlock);
 	whileStmt->getCondition()->accept(condVisitor);
 
+	// prevent "No memory chain found in graph" Firm errors
 	get_store();
 
 	if (whileStmt->getLoopStatement())
@@ -109,7 +111,7 @@ void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
 
 	if (returnStmt->getExpression())
 	{
-		std::cout << "Visiting return stmt with expression" << std::endl;
+		// "return EXPRESSION;"
 		ExpressionVisitor expr_visitor;
 		returnStmt->getExpression()->accept(expr_visitor);
 		ir_node* currentMemState = get_store();
@@ -119,7 +121,7 @@ void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
 	}
 	else
 	{
-		std::cout << "Visiting return stmt without expr" << std::endl;
+		// "return;"
 		ir_node* currentMemState = get_store();
 		ret = new_Return(currentMemState, 0, NULL);
 	}
@@ -132,13 +134,6 @@ void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
 
 void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
 {
-
-	// save old block; is this even necessary? -- i don't think so
-	//auto oldBlock = get_cur_block();
-
-	// create new Block and set it as current; is this even necessary?
-	//ir_node* block = new_r_immBlock(get_current_ir_graph());
-	//set_cur_block(block);
 	// iterate over statements in the block and convert them to firm
 	// the statements are responsible to attach themselves to the current block
 	auto stmts = blockStmt->getStatements();
@@ -150,15 +145,11 @@ void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
 		if (!get_cur_block())
 			break;
 	}
-
-	//restore old block; is this even necessary?
-	//set_cur_block(oldBlock);
 }
 
 void StatementVisitor::visit(shptr<const ast::ExpressionStatement> exprStmt)
 {
-	// an ExpressionStatement is just an expression, that can stand alone, so visit the expression node
-	std::cout << "visiting ExpressionStatement" << std::endl;
+	// an ExpressionStatement is just an expression that can stand alone, so visit the expression node
 	ExpressionVisitor expr_visitor;
 	exprStmt->getExpression()->accept(expr_visitor);
 }
@@ -168,18 +159,17 @@ void StatementVisitor::visit(shptr<const ast::LVDStatement> lvdStmt)
 	// get the variable position from the map
 	// evaluate the expression determining the value, if present-
 	int v = (*FirmInterface::getInstance().getVarMap())[lvdStmt->getIdent()->getName()];
-	std::cout << "visiting lvdStmt, name=" << lvdStmt->getIdent()->getName() << ", varNum=" << v << std::endl;
 
 	if (lvdStmt->getInitialization())
 	{
-		std::cout << "found variable initialization" << std::endl;
+		// found variable initialization
 		ExpressionVisitor expr_visitor;
 		lvdStmt->getInitialization()->accept(expr_visitor);
 		set_value(v, expr_visitor.getResultNode());
 	}
 	else
 	{
-		std::cout << "var decl without init" << std::endl;
+		// Variable declaration statement without initialization
 		ir_node* null = new_Const_long(FirmInterface::getInstance().getMode(lvdStmt->getDeclType()), 0);
 		set_value(v, null);
 	}

@@ -8,8 +8,6 @@ BoolExpressionVisitor::BoolExpressionVisitor(ir_node* thenBlock, ir_node* elseBl
 
 void BoolExpressionVisitor::boolFromExpression(shptr<ast::Expression const> expression)
 {
-	std::cout << "boolFromExpression: then = " << thenBlock << ", else = " << elseBlock << std::endl;
-
 	ExpressionVisitor exprVisit;
 	expression->accept(exprVisit);
 
@@ -23,8 +21,6 @@ void BoolExpressionVisitor::boolFromExpression(shptr<ast::Expression const> expr
 
 void BoolExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation)
 {
-	std::cout << "visitRelationalExpression" << std::endl;
-
 	ExpressionVisitor exprVisit;
 	binaryExpression->getLeftChild()->accept(exprVisit);
 	ir_node* left = exprVisit.getResultNode();
@@ -60,12 +56,9 @@ void BoolExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 {
 	shptr<ast::Expression> child = notExpr->getChild();
 
-	std::cout << "Before swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
-
 	if (notExpr->getSize() & 1)
 		std::swap(thenBlock, elseBlock);
 
-	std::cout << "After swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
 	child->accept(*this);
 }
 
@@ -113,7 +106,6 @@ void BoolExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 
 void BoolExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)
 {
-	std::cout << "visiting EqEq" << std::endl;
 	visitRelationalExpression(eqEqExpr, ir_relation::ir_relation_equal);
 }
 

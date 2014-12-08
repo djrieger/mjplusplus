@@ -36,15 +36,12 @@ void FirmInterface::setOutput(std::string const& out)
 
 void FirmInterface::convert(shptr<ast::Program> program)
 {
-	std::cout << "converting Program" << std::endl;
-	//foo();
-
 	ProgramVisitor v;
 
 	try
 	{
 		program->accept(v);
-		dump_all_ir_graphs("testsuffix");
+		//dump_all_ir_graphs("testsuffix");
 	}
 	catch (char const* e)
 	{
@@ -53,7 +50,6 @@ void FirmInterface::convert(shptr<ast::Program> program)
 	}
 
 	build();
-
 }
 
 void FirmInterface::build()
@@ -122,8 +118,6 @@ ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDe
 	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
 	ir_type* methodType = new_type_method(paramsCount + 1, hasReturnType);
 
-	std::cout << "- ParamsCount = " << (paramsCount + 1) << std::endl;
-
 	// this pointer as first parameter
 	// TODO: owner must be firm pointer type
 	auto ast_class_type = std::make_shared<ast::Type>(methodDeclaration->getDeclaration()->getIdent());
@@ -159,13 +153,10 @@ std::tuple<ir_node*, ir_type*> FirmInterface::createNodeForMethodCall(ir_node* c
 
 	auto method_name = methodDeclaration->mangle();
 
-	std::cout << "- method " << method_name << std::endl;
 	ir_type* owner = get_pointer_points_to_type(class_type);
 	ir_entity* method_ent = getMethodEntity(owner, method_name);
-	std::cout << "- method_ent=" << method_ent << std::endl;
 
 	int argc = arguments->getArgumentsSize() + 1;
-	std::cout << "- argc=" << argc << std::endl;
 
 	ir_node** in = (ir_node**) calloc(argc, sizeof(ir_node*));
 	int in_counter = 0;
@@ -184,8 +175,6 @@ std::tuple<ir_node*, ir_type*> FirmInterface::createNodeForMethodCall(ir_node* c
 	// create the call
 	ir_node* store = get_store();
 	ir_node* callee = new_Address(method_ent);
-
-	std::cout << "- caller=" << caller << std::endl;
 
 	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
 	free(in);
@@ -292,97 +281,11 @@ ir_node* FirmInterface::createNullPointerNode()
 
 void FirmInterface::foo()
 {
-	const unsigned int paramsCount = 0;
-	const unsigned int resultsCount = 0;
-	const unsigned int localVarsCount = 1;
-
-	std::string mainMethodName = "main";
-
-	// main
-	ir_type* proc_main = new_type_method(paramsCount, resultsCount);
-	ir_type* globalOwner = get_glob_type();      /* the class in which this method is defined */
-	ir_entity* mainMethodEntity = new_entity(globalOwner, new_id_from_str(mainMethodName.c_str()), proc_main);
-	ir_graph* irg = new_ir_graph(mainMethodEntity, localVarsCount);
-	set_current_ir_graph(irg);
-
-	set_cur_block(get_irg_start_block(irg));
-
-	// println
-	ir_type* proc_print = new_type_method(1, 0);
-	set_method_param_type(proc_print, 0, new_type_primitive(mode_Is));
-	ir_entity* printMethodEntity = new_entity(globalOwner, new_id_from_str("_COut_Mprintln"), proc_print);
-
-
-
-
-	// if
-	ir_node* mainAddrNode = new_Address(mainMethodEntity);
-	ir_node* printAddrNode = new_Address(printMethodEntity);
-	ir_node* cmpNode = new_Cmp(new_Const_long(mode_Is, 7), new_Const_long(mode_Is, 4), ir_relation::ir_relation_greater);
-	ir_node* condNode = new_Cond(cmpNode);
-
-	ir_node* projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
-	ir_node* projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
-
-	// then
-	ir_node* trueBlock = new_immBlock();
-	add_immBlock_pred(trueBlock, projTrue);
-	mature_immBlock(trueBlock);
-	set_cur_block(trueBlock);
-	set_value(0, new_Const_long(mode_Is, 9));
-
-	ir_node* arg = new_Const_long(mode_Is, 1010101010);
-	ir_node* store = get_irg_no_mem(irg);
-	ir_node* callee = new_Address(printMethodEntity);
-	ir_node* call_node = new_Call(store, callee, 1, &arg, proc_print);
-
-	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
-	set_store(new_store);
-
-	ir_node* trueJmp = new_Jmp();
-
-	// else
-	ir_node* falseBlock = new_immBlock();
-	add_immBlock_pred(falseBlock, projFalse);
-	mature_immBlock(falseBlock);
-	set_cur_block(falseBlock);
-	set_value(0, new_Const_long(mode_Is, 3));
-
-	arg = new_Const_long(mode_Is, 4); //get_value(0, mode_Is);
-	store = get_irg_no_mem(irg); // get_store();
-	callee = new_Address(printMethodEntity);
-	call_node = new_Call(store, callee, 1, &arg, proc_print);
-
-	new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
-	set_store(new_store);
-
-	ir_node* falseJmp = new_Jmp();
-
-	// after if
-	ir_node* exitBlock = new_immBlock();
-	add_immBlock_pred(exitBlock, trueJmp);
-	add_immBlock_pred(exitBlock, falseJmp);
-	mature_immBlock(exitBlock);
-	set_cur_block(exitBlock);
-
-
-
-	// finalize main
-	ir_node* currentMemState = get_store();
-	ir_node* x = new_Return (currentMemState, 0, NULL);
-	add_immBlock_pred(get_irg_end_block(irg), x);
-
-	irg_finalize_cons (irg);
-	dump_ir_graph (irg, 0);
-
-	std::cout << "Dumped ycomp graph" << std::endl;
-
-	build();
+	
 }
 
 FirmInterface::~FirmInterface()
 {
-	// TODO: free graph, ir_type nodes etc.
 	ir_finish();
 	std::cout << "Destroyed FirmInterface instance" << std::endl;
 }
@@ -436,9 +339,7 @@ ir_type* FirmInterface::getType(shptr<ast::Type> ast_type)
 	}
 	else
 	{
-		std::cerr << "Trying to get firm type for ";
 		ast_type->toString(std::cerr, 0);
-		std::cerr << " which should exist already, returning int pointer." << std::endl;
 		ir_type* int_type = getType(std::make_shared<ast::Type>(ast::Type::Primitive_type::INT));
 		r = new_type_pointer(int_type);
 	}
@@ -450,12 +351,10 @@ ir_type* FirmInterface::getType(shptr<ast::Type> ast_type)
 void FirmInterface::addClassType(shptr<ast::Ident> class_ident, ir_type* class_type)
 {
 	auto ast_type = std::make_shared<ast::Type>(class_ident);
-	std::cerr << "Adding type for " << get_class_name(class_type) << "." << std::endl;
 	auto it = types.find(ast_type);
 
 	if (it != types.end())
 	{
-		std::cerr << "\taka fixing the existing one" << std::endl;
 		set_pointer_points_to_type(it->second, class_type);
 	}
 	else
