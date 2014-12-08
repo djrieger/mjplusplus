@@ -81,6 +81,8 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 	set_cur_block(whileCondBlock);
 	whileStmt->getCondition()->accept(condVisitor);
 
+	get_store();
+
 	if (whileStmt->getLoopStatement())
 	{
 		mature_immBlock(whileBodyBlock);
