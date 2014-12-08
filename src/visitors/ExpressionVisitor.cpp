@@ -1,18 +1,11 @@
 #include "ExpressionVisitor.hpp"
+#include "BoolExpressionVisitor.hpp"
 #include "PostfixOpsVisitor.hpp"
 #include "VariableDeclVisitor.hpp"
 #include <sstream>
 #include <algorithm>
 
-ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false), thenBlock(NULL), elseBlock(NULL) {}
-
-ExpressionVisitor::ExpressionVisitor(ir_node* thenBlock, ir_node* elseBlock): store_value(NULL), do_store(false), thenBlock(thenBlock), elseBlock(elseBlock)
-{}
-
-ir_type* ExpressionVisitor::getResultType() const
-{
-	return resultType;
-}
+ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
 
 void ExpressionVisitor::visitBinaryExpression(
     shptr<ast::be::BinaryExpression const> binExpr,
@@ -29,41 +22,39 @@ void ExpressionVisitor::visitBinaryExpression(
 	this->resultNode = createResultNode(left, right);
 }
 
-void ExpressionVisitor::visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation)
+void ExpressionVisitor::visitBoolExpression(shptr<ast::Expression const> expression)
 {
-	std::cout << "visitRelationalExpression" << std::endl;
-	visitBinaryExpression(binaryExpression, [&] (ir_node * left, ir_node * right) -> ir_node *
-	{
-		if (thenBlock && elseBlock)
-		{
-			ir_node* cmpNode = new_Cmp(left, right, relation);
-			ir_node* condNode = new_Cond(cmpNode);
-			ir_node* projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
-			ir_node* projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
-			add_immBlock_pred(thenBlock, projTrue);
-			add_immBlock_pred(elseBlock, projFalse);
-		}
+	std::cout << "visitBoolExpression" << std::endl;
 
-		return NULL; // could return cond node
-	});
+	ir_node* thenBlock = new_immBlock();
+	ir_node* elseBlock = new_immBlock();
+	ir_node* exitBlock = new_immBlock();
+
+	BoolExpressionVisitor condVisitor(thenBlock, elseBlock);
+	expression->accept(condVisitor);
+	ir_node* bools[2];
+
+	mature_immBlock(thenBlock);
+	set_cur_block(thenBlock);
+	bools[0] = FirmInterface::getInstance().createNodeForBooleanConstant(true);
+
+	mature_immBlock(elseBlock);
+	set_cur_block(elseBlock);
+	bools[1] = FirmInterface::getInstance().createNodeForBooleanConstant(false);
+
+	mature_immBlock(exitBlock);
+	set_cur_block(exitBlock);
+
+	resultNode = new_Phi(2, bools, FirmInterface::getInstance().getBooleanMode());
+	resultType = new_type_primitive(FirmInterface::getInstance().getBooleanMode());
 }
 
 // primary expressions
 void ExpressionVisitor::visit(shptr<ast::pe::Bool const> boolExpr)
 {
-	std::cout << "Visiting pe::Bool: then = " << thenBlock << ", else = " << elseBlock << std::endl;
+	std::cout << "Visiting pe::Bool:" << boolExpr->getValue() << std::endl;
 	bool value = boolExpr->getValue();
 	this->resultNode = FirmInterface::getInstance().createNodeForBooleanConstant(value);
-
-	if (thenBlock && elseBlock)
-	{
-		ir_node* cmpNode = new_Cmp(FirmInterface::getInstance().createNodeForBooleanConstant(true), resultNode, ir_relation::ir_relation_equal);
-		ir_node* condNode = new_Cond(cmpNode);
-		ir_node* projTrue = new_Proj(condNode, get_modeX(), pn_Cond_true);
-		ir_node* projFalse = new_Proj(condNode, get_modeX(), pn_Cond_false);
-		add_immBlock_pred(thenBlock, projTrue);
-		add_immBlock_pred(elseBlock, projFalse);
-	}
 }
 void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 {
@@ -75,8 +66,8 @@ void ExpressionVisitor::visit(shptr<ast::pe::Ident const> identExpr)
 
 	if (decl)
 	{
-		ir_node* current_this = get_value(0, mode_P);
-		VariableDeclVisitor vdVisitor(current_this, (do_store && store_value) ? store_value : NULL);
+		//don't get this pointer here, we might be in main
+		VariableDeclVisitor vdVisitor(NULL, (do_store && store_value) ? store_value : NULL);
 		std::cout << "got declaration " << std::endl;
 		decl->accept(vdVisitor);
 		resultNode = vdVisitor.getResultNode();
@@ -152,15 +143,7 @@ void ExpressionVisitor::visit(shptr<ast::ue::Neg const> negExpr)
 
 void ExpressionVisitor::visit(shptr<ast::ue::Not const> notExpr)
 {
-	shptr<ast::Expression> child = notExpr->getChild();
-
-	std::cout << "Before swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
-
-	if (notExpr->getSize() & 1)
-		std::swap(thenBlock, elseBlock);
-
-	std::cout << "After swapping for Not: then = " << thenBlock << ", else = " << elseBlock << std::endl;
-	child->accept(*this);
+	visitBoolExpression(notExpr);
 }
 
 // binary expressions
@@ -185,70 +168,42 @@ void ExpressionVisitor::visit(shptr<ast::be::Eq const> eqExpr)
 
 void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
 {
-	ir_node* originalThenBlock = thenBlock;
-	ir_node* originalElseBlock = elseBlock;
-
-	ir_node* rightExprBlock = new_immBlock();
-	thenBlock = rightExprBlock;
-	andAndExpr->getLeftChild()->accept(*this);
-	mature_immBlock(rightExprBlock);
-
-	thenBlock = originalThenBlock;
-	elseBlock = originalElseBlock;
-
-	set_cur_block(rightExprBlock);
-
-	andAndExpr->getRightChild()->accept(*this);
+	visitBoolExpression(andAndExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::OrOr const> orOrExpr)
 {
-	ir_node* originalThenBlock = thenBlock;
-	ir_node* originalElseBlock = elseBlock;
-
-	ir_node* rightExprBlock = new_immBlock();
-	elseBlock = rightExprBlock; // only change
-	orOrExpr->getLeftChild()->accept(*this);
-	mature_immBlock(rightExprBlock);
-
-	thenBlock = originalThenBlock;
-	elseBlock = originalElseBlock;
-
-	set_cur_block(rightExprBlock);
-
-	orOrExpr->getRightChild()->accept(*this);
+	visitBoolExpression(orOrExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::EqEq const> eqEqExpr)
 {
-	std::cout << "visiting EqEq" << std::endl;
-	visitRelationalExpression(eqEqExpr, ir_relation::ir_relation_equal);
+	visitBoolExpression(eqEqExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::NotEq const> notEqExpr)
 {
-	//see documentation for libFirm: ir_releation_less_greater for integers is "not equal".
-	visitRelationalExpression(notEqExpr, ir_relation::ir_relation_unordered_greater_equal);
+	visitBoolExpression(notEqExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::GreaterThan const> greaterThanExpr)
 {
-	visitRelationalExpression(greaterThanExpr, ir_relation::ir_relation_greater);
+	visitBoolExpression(greaterThanExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::GreaterThanEq const> greaterThanEqExpr)
 {
-	visitRelationalExpression(greaterThanEqExpr, ir_relation::ir_relation_greater_equal);
+	visitBoolExpression(greaterThanEqExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::LessThan const> lessThanExpr)
 {
-	visitRelationalExpression(lessThanExpr, ir_relation::ir_relation_less);
+	visitBoolExpression(lessThanExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::LessThanEq const> lessThanEqExpr)
 {
-	visitRelationalExpression(lessThanEqExpr, ir_relation::ir_relation_less_equal);
+	visitBoolExpression(lessThanEqExpr);
 }
 
 void ExpressionVisitor::visit(shptr<ast::be::Plus const> plusExpr)

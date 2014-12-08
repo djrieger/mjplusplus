@@ -1,4 +1,5 @@
 #include "StatementVisitor.hpp"
+#include "BoolExpressionVisitor.hpp"
 #include "ExpressionVisitor.hpp"
 
 StatementVisitor::StatementVisitor(MemberVisitor& memberVisitor): memberVisitor(memberVisitor)
@@ -13,7 +14,8 @@ void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast
 
 	thenOrElseStmt->accept(*this);
 
-	add_immBlock_pred(exitBlock, new_Jmp());
+	if (get_cur_block())
+		add_immBlock_pred(exitBlock, new_Jmp());
 }
 
 void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
@@ -22,21 +24,41 @@ void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
 	ir_node* elseBlock = new_immBlock();
 	ir_node* exitBlock = new_immBlock();
 
-	ExpressionVisitor condVisitor(ifStatement->getThenStatement() ? thenBlock : exitBlock,
-	                              ifStatement->getElseStatement() ? elseBlock : exitBlock
-	                             );
+	BoolExpressionVisitor condVisitor(ifStatement->getThenStatement() ? thenBlock : exitBlock,
+	                                  ifStatement->getElseStatement() ? elseBlock : exitBlock
+	                                 );
 
 	ifStatement->getCondition()->accept(condVisitor);
 
+	unsigned int returns = 0;
+
 	if (ifStatement->getThenStatement())
+	{
 		visitThenOrElse(thenBlock, ifStatement->getThenStatement(), exitBlock);
 
+		if (!get_cur_block())
+			returns++;
+	}
+
 	if (ifStatement->getElseStatement())
+	{
 		visitThenOrElse(elseBlock, ifStatement->getElseStatement(), exitBlock);
 
-	mature_immBlock(exitBlock);
-	set_cur_block(exitBlock);
-	this->resultNode = exitBlock;
+		if (!get_cur_block())
+			returns++;
+	}
+
+	if (returns == 2)
+	{
+		std::cout << "both branches return" << std::endl;
+		//I could remove the useless exitBlock if I knew how
+		//looks like libFirm doesn't care
+	}
+	else
+	{
+		mature_immBlock(exitBlock);
+		set_cur_block(exitBlock);
+	}
 }
 
 void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
@@ -55,7 +77,7 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 	add_immBlock_pred(whileCondBlock, new_Jmp());
 
 	// create while condition
-	ExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? whileBodyBlock : whileCondBlock, exitBlock);
+	BoolExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? whileBodyBlock : whileCondBlock, exitBlock);
 	set_cur_block(whileCondBlock);
 	whileStmt->getCondition()->accept(condVisitor);
 
@@ -68,7 +90,8 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 		whileStmt->getLoopStatement()->accept(*this);
 
 		// append while body to while condition
-		add_immBlock_pred(whileCondBlock, new_Jmp());
+		if (get_cur_block())
+			add_immBlock_pred(whileCondBlock, new_Jmp());
 	}
 
 	mature_immBlock(whileCondBlock);
@@ -76,7 +99,6 @@ void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
 	// finalize
 	set_cur_block(exitBlock);
 	mature_immBlock(exitBlock);
-	this->resultNode = exitBlock;
 }
 
 void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
@@ -120,7 +142,12 @@ void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
 	auto stmts = blockStmt->getStatements();
 
 	for (auto& stmt : *stmts)
+	{
 		stmt->accept(*this);
+
+		if (!get_cur_block())
+			break;
+	}
 
 	//restore old block; is this even necessary?
 	//set_cur_block(oldBlock);

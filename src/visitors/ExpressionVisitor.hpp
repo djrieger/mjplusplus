@@ -25,19 +25,14 @@ class ExpressionVisitor : public VisitorWithResultNode
 		    shptr<ast::be::BinaryExpression const> binExpr,
 		    std::function<ir_node* (ir_node*, ir_node*)> createResultNode
 		);
-		/**
-		 * Create a new compare node for the given expression andFirmInterface:: ir_relation and set it as this->resultNode
+
+		/*
+		 * Evaluate boolean expression with help of BoolExpressionVisitor
 		 */
-		void visitRelationalExpression(shptr<ast::be::BinaryExpression const> binaryExpression, ir_relation relation);
+		void visitBoolExpression(shptr<ast::Expression const> expression);
 
-
-		ir_node* thenBlock;
-		ir_node* elseBlock;
 	public:
 		ExpressionVisitor();
-		ExpressionVisitor(ir_node* thenBlock, ir_node* elseBlock);
-
-		virtual ir_type* getResultType() const;
 
 		//ExpressionVisitor(StatementVisitor &statementVisitor);
 		// primary expressions
