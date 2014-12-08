@@ -9,9 +9,6 @@ MemberVisitor::MemberVisitor(ClassVisitor& classVisitor): classVisitor(classVisi
 void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 {
 	// create initial basic block for method body
-	/*ir_node* initialBlock = new_Block(0, NULL);
-	add_immBlock_pred(initialBlock, get_irg_start_block(irg));
-	set_cur_block(initialBlock);*/
 	set_cur_block(get_irg_start_block(irg));
 
 	methodDeclaration->createVariablePositions();
@@ -49,6 +46,8 @@ void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaratio
 	}
 
 	irg_finalize_cons(irg);
+	irg_verify(irg);
+	dump_ir_graph(irg, "pre-be");
 }
 
 void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)

@@ -6,6 +6,8 @@ VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this, ir_node* store_v
 
 void VariableDeclVisitor::visit(shptr<ast::FieldDeclaration const> fieldDeclaration)
 {
+	if (!current_this)
+		current_this = get_value(0, mode_P);
 
 	//Our variable was declared as field => Our variable is a fieldaccess.
 	std::cout << "vd visit FieldDecl " << fieldDeclaration->getName() << " to " << (store_value ? "store" : "load") << " (store_value " << store_value << ")" << std::endl;
@@ -53,7 +55,8 @@ void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
 	else
 		resultNode = get_value(pos, FirmInterface::getInstance().getMode(lvdStatement->getDeclType()));
 
-	std::cout << "    done" << std::endl;
+	std::cout << "    done, var num " << pos << " as " << std::flush;
+	ir_printf("%F, node is %F\n", FirmInterface::getInstance().getMode(lvdStatement->getDeclType()), resultNode);
 }
 
 void VariableDeclVisitor::visit(shptr<ast::TypeIdent const> typeIdent)

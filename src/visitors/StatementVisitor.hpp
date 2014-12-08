@@ -1,7 +1,7 @@
 #ifndef STATEMENT_VISITOR_HPP
 #define STATEMENT_VISITOR_HPP
 
-#include "VisitorWithResultNode.hpp"
+#include "FirmVisitor.hpp"
 #include "MemberVisitor.hpp"
 #include "../ast/IfStatement.hpp"
 #include "../ast/WhileStatement.hpp"
@@ -10,7 +10,7 @@
 #include "../ast/ExpressionStatement.hpp"
 #include "../ast/LVDStatement.hpp"
 
-class StatementVisitor : public VisitorWithResultNode
+class StatementVisitor : public FirmVisitor
 {
 	protected:
 		MemberVisitor& memberVisitor;
