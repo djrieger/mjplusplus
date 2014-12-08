@@ -155,9 +155,11 @@ std::string ast::Type::getName() const
 	return descr.str();
 }
 
-bool ast::Type::isSpecialType() const {
+bool ast::Type::isSpecialType() const
+{
 	if (!class_name) return false;
-	return getClassName().substr(0,1) == "$";
+
+	return getClassName().substr(0, 1) == "$";
 }
 
 void ast::Type::accept(ASTVisitor& visitor) const

@@ -89,7 +89,7 @@ int main(int argc, const char** argv)
 		{SUPPRESS_ERRORS, 0, "s", "suppress-errors", option::Arg::None, "  --suppress-errors\tprevents any errors from being printed"},
 		{FIRM, 0, "f", "firm", option::Arg::None, "  --firm\tInitialize libFirm"},
 		{OUT, 0, "o", "out", option::Arg::Required, "  --out FILE\tSet the output for various commands to FILE"},
-		{COMPILE_FIRM, 0, "cf", "compile-firm", option::Arg::None, "  --compile-firm\tRun the semantic analysis, build the FIRM-graph and produce backend-code using FIRM."},
+		{COMPILE_FIRM, 0, "b", "compile-firm", option::Arg::None, "  --compile-firm\tRun the semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc."},
 		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
 		{0, 0, 0, 0, 0, 0}
 	};
