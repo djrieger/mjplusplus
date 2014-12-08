@@ -78,7 +78,7 @@ void PostfixOpsVisitor::visit(shptr<ast::MethodInvocation const> methodInvocatio
 	std::cout << "Visiting MethodInvocation" << std::endl;
 
 	ir_node* caller = expressionVisitor.getResultNode();
-	this->resultNode = FirmInterface::getInstance().createNodeForMethodCall(caller, methodInvocation);
+	std::tie(resultNode, resultType) = FirmInterface::getInstance().createNodeForMethodCall(caller, methodInvocation);
 }
 
 void PostfixOpsVisitor::setStoreValue(ir_node* storeValue)

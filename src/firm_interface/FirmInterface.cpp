@@ -149,7 +149,7 @@ ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDe
 	return ent;
 }
 
-ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
+std::tuple<ir_node*, ir_type*> FirmInterface::createNodeForMethodCall(ir_node* caller,
         shptr<ast::Arguments const> arguments,
         shptr<ast::MethodDeclaration const> methodDeclaration)
 {
@@ -188,6 +188,7 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 	std::cout << "- caller=" << caller << std::endl;
 
 	ir_node* call_node = new_Call(store, callee, argc, in, get_entity_type(method_ent));
+	free(in);
 
 	// update the current store
 	ir_node* new_store = new_Proj(call_node, get_modeM(), pn_Call_M);
@@ -195,21 +196,21 @@ ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller,
 
 	// get the result
 	ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
-	ir_node* result = NULL;
 
 	bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
 
 	if (hasReturnType)
 	{
+		ir_type* resultType = getType(methodDeclaration->getReturnType());
 		ir_mode* result_mode = getMode(methodDeclaration->getReturnType());
-		result = new_Proj(tuple, result_mode, 0);
+		ir_node* resultNode = new_Proj(tuple, result_mode, 0);
+		return std::tuple<ir_node*, ir_type*>(resultNode, resultType);
 	}
 
-	free(in);
-	return result;
+	return std::tuple<ir_node*, ir_type*>(NULL, NULL);
 }
 
-ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
+std::tuple<ir_node*, ir_type*> FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation const> expr)
 {
 	int this_pos = 0;
 	ir_node* caller = get_value(this_pos, mode_P);
@@ -218,7 +219,7 @@ ir_node* FirmInterface::createNodeForMethodCall(shptr<ast::pe::MethodInvocation 
 	return createNodeForMethodCall(caller, arguments, expr->getDeclaration());
 }
 
-ir_node* FirmInterface::createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr)
+std::tuple<ir_node*, ir_type*> FirmInterface::createNodeForMethodCall(ir_node* caller, shptr<ast::MethodInvocation const> expr)
 {
 	auto arguments = expr->getArguments();
 	return createNodeForMethodCall(caller, arguments, expr->getDeclaration());
