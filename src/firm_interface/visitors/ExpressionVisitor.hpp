@@ -77,7 +77,7 @@ namespace firm
 				virtual void visit(shptr<ast::be::Slash const> slashExpr);
 
 				// postfix expression
-				virtual void visit(shptr<ast::PostfixExpression const> postfixExpr);
+				virtual void visit(shptr<ast::po::PostfixExpression const> postfixExpr);
 		};
 	}
 }

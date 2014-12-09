@@ -19,7 +19,7 @@ namespace firm
 				VariableDeclVisitor(ir_node* current_this, ir_node* store_value = NULL);
 
 				virtual void visit(shptr<ast::FieldDeclaration const> fieldDeclaration);
-				virtual void visit(shptr<ast::LVDStatement const> lvdStatement);
+				virtual void visit(shptr<ast::stmt::LVDStatement const> lvdStatement);
 				virtual void visit(shptr<ast::TypeIdent const> typeIdent);
 		};
 	}

@@ -44,7 +44,7 @@ namespace firm
 				virtual void visit(shptr<ast::be::OrOr const> orOrExpr);
 
 				// postfix expression
-				virtual void visit(shptr<ast::PostfixExpression const> postfixExpr);
+				virtual void visit(shptr<ast::po::PostfixExpression const> postfixExpr);
 		};
 	}
 }

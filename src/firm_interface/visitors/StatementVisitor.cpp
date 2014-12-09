@@ -11,7 +11,7 @@ namespace firm
 			setOwner(memberVisitor.getOwner());
 		}
 
-		void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* exitBlock)
+		void StatementVisitor::visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::stmt::Statement> thenOrElseStmt, ir_node* exitBlock)
 		{
 			mature_immBlock(thenOrElseBlock);
 			set_cur_block(thenOrElseBlock);
@@ -22,7 +22,7 @@ namespace firm
 				add_immBlock_pred(exitBlock, new_Jmp());
 		}
 
-		void StatementVisitor::visit(shptr<const ast::IfStatement> ifStatement)
+		void StatementVisitor::visit(shptr<const ast::stmt::IfStatement> ifStatement)
 		{
 			ir_node* thenBlock = new_immBlock();
 			ir_node* elseBlock = new_immBlock();
@@ -61,7 +61,7 @@ namespace firm
 			// else both then and else statement returned: leave current block as NULL, no need to touch exitBlock
 		}
 
-		void StatementVisitor::visit(shptr<const ast::WhileStatement> whileStmt)
+		void StatementVisitor::visit(shptr<const ast::stmt::WhileStatement> whileStmt)
 		{
 			ir_node* whileCondBlock = new_immBlock();
 			ir_node* whileBodyBlock = NULL;
@@ -104,7 +104,7 @@ namespace firm
 			mature_immBlock(exitBlock);
 		}
 
-		void StatementVisitor::visit(shptr<const ast::ReturnStatement> returnStmt)
+		void StatementVisitor::visit(shptr<const ast::stmt::ReturnStatement> returnStmt)
 		{
 			ir_node* ret;
 
@@ -131,7 +131,7 @@ namespace firm
 			set_cur_block(NULL);
 		}
 
-		void StatementVisitor::visit(shptr<const ast::Block> blockStmt)
+		void StatementVisitor::visit(shptr<const ast::stmt::Block> blockStmt)
 		{
 			// iterate over statements in the block and convert them to firm
 			// the statements are responsible to attach themselves to the current block
@@ -146,14 +146,14 @@ namespace firm
 			}
 		}
 
-		void StatementVisitor::visit(shptr<const ast::ExpressionStatement> exprStmt)
+		void StatementVisitor::visit(shptr<const ast::stmt::ExpressionStatement> exprStmt)
 		{
 			// an ExpressionStatement is just an expression that can stand alone, so visit the expression node
 			ExpressionVisitor expr_visitor;
 			exprStmt->getExpression()->accept(expr_visitor);
 		}
 
-		void StatementVisitor::visit(shptr<const ast::LVDStatement> lvdStmt)
+		void StatementVisitor::visit(shptr<const ast::stmt::LVDStatement> lvdStmt)
 		{
 			// get the variable position from the map
 			// evaluate the expression determining the value, if present-

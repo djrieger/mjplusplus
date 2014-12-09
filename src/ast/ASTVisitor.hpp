@@ -7,7 +7,6 @@
 namespace ast
 {
 	class Node;
-	class Node;
 	class Arguments;
 	namespace be
 	{
@@ -28,18 +27,13 @@ namespace ast
 		class Plus;
 		class Slash;
 	}
-	class Block;
 	class ClassDeclaration;
 	class ClassMember;
 	class Expression;
-	class ExpressionStatement;
 	class FieldDeclaration;
 	class Ident;
-	class IfStatement;
-	class LVDStatement;
 	class MainMethodDeclaration;
 	class MethodDeclaration;
-	class PostfixExpression;
 	namespace pe
 	{
 		class PrimaryExpression;
@@ -53,23 +47,31 @@ namespace ast
 	}
 	namespace po
 	{
+		class PostfixExpression;
 		class PostfixOp;
 		class ArrayAccess;
 		class FieldAccess;
 		class MethodInvocation;
 	}
 	class Program;
-	class ReturnStatement;
-	class Statement;
 	class Type;
 	class TypeIdent;
+	namespace stmt
+	{
+		class Statement;
+		class Block;
+		class ExpressionStatement;
+		class IfStatement;
+		class LVDStatement;
+		class ReturnStatement;
+		class WhileStatement;
+	}
 	namespace ue
 	{
 		class UnaryExpression;
 		class Neg;
 		class Not;
 	}
-	class WhileStatement;
 
 	class ASTVisitor
 	{
@@ -92,18 +94,13 @@ namespace ast
 			virtual void visit(shptr<be::OrOr const> node);
 			virtual void visit(shptr<be::Plus const> node);
 			virtual void visit(shptr<be::Slash const> node);
-			virtual void visit(shptr<Block const> node);
 			virtual void visit(shptr<ClassDeclaration const> node);
 			virtual void visit(shptr<ClassMember const> node);
 			virtual void visit(shptr<Expression const> node);
-			virtual void visit(shptr<ExpressionStatement const> node);
 			virtual void visit(shptr<FieldDeclaration const> node);
 			virtual void visit(shptr<Ident const> node);
-			virtual void visit(shptr<IfStatement const> node);
-			virtual void visit(shptr<LVDStatement const> node);
 			virtual void visit(shptr<MainMethodDeclaration const> node);
 			virtual void visit(shptr<MethodDeclaration const> node);
-			virtual void visit(shptr<PostfixExpression const> node);
 			virtual void visit(shptr<pe::PrimaryExpression const> node);
 			virtual void visit(shptr<pe::Bool const> node);
 			virtual void visit(shptr<pe::Ident const> node);
@@ -112,19 +109,24 @@ namespace ast
 			virtual void visit(shptr<pe::NewArrayExpression const> node);
 			virtual void visit(shptr<pe::NewObjectExpression const> node);
 			virtual void visit(shptr<pe::Object const> node);
+			virtual void visit(shptr<po::PostfixExpression const> node);
 			virtual void visit(shptr<po::PostfixOp const> node);
 			virtual void visit(shptr<po::ArrayAccess const> node);
 			virtual void visit(shptr<po::FieldAccess const> node);
 			virtual void visit(shptr<po::MethodInvocation const> node);
 			virtual void visit(shptr<Program const> node);
-			virtual void visit(shptr<ReturnStatement const> node);
-			virtual void visit(shptr<Statement const> node);
+			virtual void visit(shptr<stmt::Statement const> node);
+			virtual void visit(shptr<stmt::Block const> node);
+			virtual void visit(shptr<stmt::ExpressionStatement const> node);
+			virtual void visit(shptr<stmt::IfStatement const> node);
+			virtual void visit(shptr<stmt::LVDStatement const> node);
+			virtual void visit(shptr<stmt::ReturnStatement const> node);
+			virtual void visit(shptr<stmt::WhileStatement const> node);
 			virtual void visit(shptr<Type const> node);
 			virtual void visit(shptr<TypeIdent const> node);
 			virtual void visit(shptr<ue::UnaryExpression const> node);
 			virtual void visit(shptr<ue::Neg const> node);
 			virtual void visit(shptr<ue::Not const> node);
-			virtual void visit(shptr<WhileStatement const> node);
 	};
 }
 

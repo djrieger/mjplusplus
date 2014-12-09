@@ -2,7 +2,7 @@
 #include "MethodDeclaration.hpp"
 #include "../firm_interface/FirmInterface.hpp"
 
-ast::MethodDeclaration::MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Block> block)
+ast::MethodDeclaration::MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<stmt::Block> block)
 	: return_type_and_name(return_type_and_name), parameters(parameters), block(block)
 {
 }
@@ -145,7 +145,7 @@ shptr<ast::Type> ast::MethodDeclaration::getReturnType() const
 	return return_type_and_name->getType();
 }
 
-shptr<ast::Block> ast::MethodDeclaration::getBlock() const
+shptr<ast::stmt::Block> ast::MethodDeclaration::getBlock() const
 {
 	return block;
 }

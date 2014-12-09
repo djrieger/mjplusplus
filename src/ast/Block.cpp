@@ -3,90 +3,93 @@
 
 namespace ast
 {
-	Block::Block(shptr<vec<shptr<Statement>>> block_statements)
-		: block_statements(block_statements)
+	namespace stmt
 	{
-		;
-	}
-	void Block::toString(std::ostream& out, unsigned int indent, bool special) const
-	{
-		unsigned int real_indent = (indent > ~indent ? ~indent : indent);
-
-		if (!special)
-			out << std::string(real_indent, '\t');
-
-		out << "{\n";
-
-		for (auto& stamtement : *block_statements)
-			stamtement->toString(out, real_indent + 1);
-
-		out << std::string(real_indent, '\t') << "}";
-		out << (real_indent != indent ? ' ' : '\n');
-	}
-
-	Statement::Type Block::getType() const
-	{
-		return Type::TYPE_BLOCK;
-	}
-
-	bool Block::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
-	{
-		symbolTable->enterScope();
-
-		bool returns = false;
-
-		//optimization: analyze all code for semantic correctness, then remove unreachable code
-		auto it = block_statements->begin();
-		auto cut_from = block_statements->end();
-
-		for (; it != block_statements->end(); it++)
+		Block::Block(shptr<vec<shptr<Statement>>> block_statements)
+			: block_statements(block_statements)
 		{
-			bool stmt_returns = (*it)->analyze(sa, symbolTable);
+			;
+		}
+		void Block::toString(std::ostream& out, unsigned int indent, bool special) const
+		{
+			unsigned int real_indent = (indent > ~indent ? ~indent : indent);
 
-			if (stmt_returns && !returns)
-			{
-				cut_from = it + 1;
-				returns = true;
-			}
+			if (!special)
+				out << std::string(real_indent, '\t');
+
+			out << "{\n";
+
+			for (auto& stamtement : *block_statements)
+				stamtement->toString(out, real_indent + 1);
+
+			out << std::string(real_indent, '\t') << "}";
+			out << (real_indent != indent ? ' ' : '\n');
 		}
 
-		block_statements->erase(cut_from, block_statements->end());
-		/* unoptimized version
-		for (auto& stmt : *block_statements)
-			returns = stmt->analyze(sa, symbolTable) || returns;
-		*/
+		Statement::Type Block::getType() const
+		{
+			return Type::TYPE_BLOCK;
+		}
 
-		symbolTable->leaveScope();
-		return returns;
-	}
+		bool Block::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		{
+			symbolTable->enterScope();
 
-	shptr<vec<shptr<Statement>>> ast::Block::getStatements() const
-	{
-		return block_statements;
-	}
+			bool returns = false;
 
-	unsigned int ast::Block::countVariableDeclarations() const
-	{
-		// TODO optimize with reduce, fold, lambda or whatever
-		unsigned int variableDeclarations = 0;
+			//optimization: analyze all code for semantic correctness, then remove unreachable code
+			auto it = block_statements->begin();
+			auto cut_from = block_statements->end();
 
-		for (auto& blockStatement : *block_statements)
-			variableDeclarations += blockStatement->countVariableDeclarations();
+			for (; it != block_statements->end(); it++)
+			{
+				bool stmt_returns = (*it)->analyze(sa, symbolTable);
 
-		return variableDeclarations;
-	}
+				if (stmt_returns && !returns)
+				{
+					cut_from = it + 1;
+					returns = true;
+				}
+			}
 
-	int ast::Block::setVariablePositions(int pos) const
-	{
+			block_statements->erase(cut_from, block_statements->end());
+			/* unoptimized version
+			for (auto& stmt : *block_statements)
+				returns = stmt->analyze(sa, symbolTable) || returns;
+			*/
 
-		for (auto& blockStatement : *block_statements)
-			pos = blockStatement->setVariablePositions(pos);
+			symbolTable->leaveScope();
+			return returns;
+		}
 
-		return pos;
-	}
+		shptr<vec<shptr<Statement>>> Block::getStatements() const
+		{
+			return block_statements;
+		}
 
-	void ast::Block::accept(ASTVisitor& visitor) const
-	{
-		visitor.visit(std::static_pointer_cast<Block const>(shared_from_this()));
+		unsigned int Block::countVariableDeclarations() const
+		{
+			// TODO optimize with reduce, fold, lambda or whatever
+			unsigned int variableDeclarations = 0;
+
+			for (auto& blockStatement : *block_statements)
+				variableDeclarations += blockStatement->countVariableDeclarations();
+
+			return variableDeclarations;
+		}
+
+		int Block::setVariablePositions(int pos) const
+		{
+
+			for (auto& blockStatement : *block_statements)
+				pos = blockStatement->setVariablePositions(pos);
+
+			return pos;
+		}
+
+		void Block::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(std::static_pointer_cast<Block const>(shared_from_this()));
+		}
 	}
 }

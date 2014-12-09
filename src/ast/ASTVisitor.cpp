@@ -126,11 +126,6 @@ namespace ast
 		visit(std::static_pointer_cast<be::BinaryExpression const>(node));
 	}
 
-	void ASTVisitor::visit(shptr<Block const> node)
-	{
-		visit(std::static_pointer_cast<Statement const>(node));
-	}
-
 	void ASTVisitor::visit(shptr<ClassDeclaration const> node)
 	{
 		visit(std::static_pointer_cast<Node const>(node));
@@ -146,11 +141,6 @@ namespace ast
 		visit(std::static_pointer_cast<Node const>(node));
 	}
 
-	void ASTVisitor::visit(shptr<ExpressionStatement const> node)
-	{
-		visit(std::static_pointer_cast<Statement const>(node));
-	}
-
 	void ASTVisitor::visit(shptr<FieldDeclaration const> node)
 	{
 		visit(std::static_pointer_cast<ClassMember const>(node));
@@ -161,16 +151,6 @@ namespace ast
 		visit(std::static_pointer_cast<Node const>(node));
 	}
 
-	void ASTVisitor::visit(shptr<IfStatement const> node)
-	{
-		visit(std::static_pointer_cast<Statement const>(node));
-	}
-
-	void ASTVisitor::visit(shptr<LVDStatement const> node)
-	{
-		visit(std::static_pointer_cast<Statement const>(node));
-	}
-
 	void ASTVisitor::visit(shptr<MainMethodDeclaration const> node)
 	{
 		visit(std::static_pointer_cast<MethodDeclaration const>(node));
@@ -179,11 +159,6 @@ namespace ast
 	void ASTVisitor::visit(shptr<MethodDeclaration const> node)
 	{
 		visit(std::static_pointer_cast<ClassMember const>(node));
-	}
-
-	void ASTVisitor::visit(shptr<PostfixExpression const> node)
-	{
-		visit(std::static_pointer_cast<Expression const>(node));
 	}
 
 	void ASTVisitor::visit(shptr<pe::PrimaryExpression const> node)
@@ -226,6 +201,11 @@ namespace ast
 		visit(std::static_pointer_cast<pe::PrimaryExpression const>(node));
 	}
 
+	void ASTVisitor::visit(shptr<po::PostfixExpression const> node)
+	{
+		visit(std::static_pointer_cast<Expression const>(node));
+	}
+
 	void ASTVisitor::visit(shptr<po::PostfixOp const> node)
 	{
 		visit(std::static_pointer_cast<Node const>(node));
@@ -251,14 +231,39 @@ namespace ast
 		visit(std::static_pointer_cast<Node const>(node));
 	}
 
-	void ASTVisitor::visit(shptr<ReturnStatement const> node)
-	{
-		visit(std::static_pointer_cast<Statement const>(node));
-	}
-
-	void ASTVisitor::visit(shptr<Statement const> node)
+	void ASTVisitor::visit(shptr<stmt::Statement const> node)
 	{
 		visit(std::static_pointer_cast<Node const>(node));
+	}
+
+	void ASTVisitor::visit(shptr<stmt::Block const> node)
+	{
+		visit(std::static_pointer_cast<stmt::Statement const>(node));
+	}
+
+	void ASTVisitor::visit(shptr<stmt::ExpressionStatement const> node)
+	{
+		visit(std::static_pointer_cast<stmt::Statement const>(node));
+	}
+
+	void ASTVisitor::visit(shptr<stmt::IfStatement const> node)
+	{
+		visit(std::static_pointer_cast<stmt::Statement const>(node));
+	}
+
+	void ASTVisitor::visit(shptr<stmt::LVDStatement const> node)
+	{
+		visit(std::static_pointer_cast<stmt::Statement const>(node));
+	}
+
+	void ASTVisitor::visit(shptr<stmt::ReturnStatement const> node)
+	{
+		visit(std::static_pointer_cast<stmt::Statement const>(node));
+	}
+
+	void ASTVisitor::visit(shptr<stmt::WhileStatement const> node)
+	{
+		visit(std::static_pointer_cast<stmt::Statement const>(node));
 	}
 
 	void ASTVisitor::visit(shptr<Type const> node)
@@ -284,10 +289,5 @@ namespace ast
 	void ASTVisitor::visit(shptr<ue::Not const> node)
 	{
 		visit(std::static_pointer_cast<ue::UnaryExpression const>(node));
-	}
-
-	void ASTVisitor::visit(shptr<WhileStatement const> node)
-	{
-		visit(std::static_pointer_cast<Statement const>(node));
 	}
 }
