@@ -822,7 +822,7 @@ shptr<ast::Arguments> Parser::parseArguments()
 
 // MethodInvocationOrFieldAccess -> IDENT MethodInvocation | .
 // MethodInvocation -> ( Arguments ) .
-std::shared_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
+std::shared_ptr<ast::po::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 {
 	auto id = std::make_shared<ast::Ident>(current);
 	expect(lexer::Token::Token_type::TOKEN_IDENT);
@@ -832,18 +832,18 @@ std::shared_ptr<ast::PostfixOp> Parser::parseMethodInvocationOrFieldAccess()
 		nextToken();
 		auto args = parseArguments();
 		expect(lexer::Token::Token_type::OPERATOR_RPAREN);
-		return std::make_shared<ast::MethodInvocation>(id, args);
+		return std::make_shared<ast::po::MethodInvocation>(id, args);
 	}
 	else
-		return std::make_shared<ast::FieldAccess>(id);
+		return std::make_shared<ast::po::FieldAccess>(id);
 }
 
 // PostfixOps -> PostfixOp PostfixOps | .
 // PostfixOp -> DOT MethodInvocationOrFieldAccess
 //     | [ Expression ] .
-shptr<vec<shptr<ast::PostfixOp>>> Parser::parsePostfixOps()
+shptr<vec<shptr<ast::po::PostfixOp>>> Parser::parsePostfixOps()
 {
-	auto postfixops = std::make_shared<std::vector<std::shared_ptr<ast::PostfixOp>>>();
+	auto postfixops = std::make_shared<std::vector<std::shared_ptr<ast::po::PostfixOp>>>();
 
 	while (true)
 	{
@@ -855,7 +855,7 @@ shptr<vec<shptr<ast::PostfixOp>>> Parser::parsePostfixOps()
 		else if (current.token_type == lexer::Token::Token_type::OPERATOR_LBRACKET)
 		{
 			nextToken();
-			postfixops->push_back(std::make_shared<ast::ArrayAccess>(parseExpression()));
+			postfixops->push_back(std::make_shared<ast::po::ArrayAccess>(parseExpression()));
 			expect(lexer::Token::Token_type::OPERATOR_RBRACKET);
 		}
 		else

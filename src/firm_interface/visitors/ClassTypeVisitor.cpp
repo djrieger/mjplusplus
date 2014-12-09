@@ -3,7 +3,7 @@
 #include "ClassTypeVisitor.hpp"
 
 
-void ClassTypeVisitor::visit(shptr<const ast::ClassDeclaration> classDeclaration)
+void firm::visitor::ClassTypeVisitor::visit(shptr<const ast::ClassDeclaration> classDeclaration)
 {
 	ir_type* classType = FirmInterface::getInstance()
 	                     .getType(std::make_shared<ast::Type>(classDeclaration->getIdent()));

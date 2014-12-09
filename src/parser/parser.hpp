@@ -117,8 +117,8 @@ class Parser
 		shptr<ast::Expression> parseUnaryExpression();
 
 		shptr<ast::Expression> parsePrimaryExpression();
-		shptr<vec<shptr<ast::PostfixOp>>> parsePostfixOps();
-		shptr<ast::PostfixOp> parseMethodInvocationOrFieldAccess();
+		shptr<vec<shptr<ast::po::PostfixOp>>> parsePostfixOps();
+		shptr<ast::po::PostfixOp> parseMethodInvocationOrFieldAccess();
 
 		shptr<ast::Expression> parseNewObjectExpression();
 		shptr<ast::Expression> parseNewObjectOrNewArrayExpression();

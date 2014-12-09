@@ -99,6 +99,6 @@ unsigned int ast::LVDStatement::countVariableDeclarations() const
 
 int ast::LVDStatement::setVariablePositions(int pos) const
 {
-	(*FirmInterface::getInstance().getVarMap())[this->type_ident->getName()] = pos++;
+	(*firm::FirmInterface::getInstance().getVarMap())[this->type_ident->getName()] = pos++;
 	return pos;
 }

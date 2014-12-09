@@ -1,6 +1,9 @@
 #include "ProgramVisitor.hpp"
+#include "ClassVisitor.hpp"
+#include "ProtoClassVisitor.hpp"
+#include "ClassTypeVisitor.hpp"
 
-void ProgramVisitor::visit(shptr<const ast::Program> program)
+void firm::visitor::ProgramVisitor::visit(shptr<const ast::Program> program)
 {
 	auto classes = program->getClasses();
 

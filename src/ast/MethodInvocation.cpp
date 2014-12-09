@@ -1,20 +1,20 @@
 #include "../globals.hpp"
 #include "MethodInvocation.hpp"
 
-ast::MethodInvocation::MethodInvocation(shptr<ast::Ident> method_name, shptr<ast::Arguments> arguments)
+ast::po::MethodInvocation::MethodInvocation(shptr<ast::Ident> method_name, shptr<ast::Arguments> arguments)
 	: MethodInvocationBase(method_name, arguments)
 {
 
 }
 
-void ast::MethodInvocation::toString(std::ostream& out, unsigned int indent, bool) const
+void ast::po::MethodInvocation::toString(std::ostream& out, unsigned int indent, bool) const
 {
 	out << '.';
 	method_name->toString(out, indent);
 	arguments->toString(out, indent);
 }
 
-shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<ast::Type> callingType)
+shptr<ast::Type> ast::po::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<ast::Type> callingType)
 {
 	if (callingType->isClassType())
 	{
@@ -42,12 +42,12 @@ shptr<ast::Type> ast::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<Sym
 	return shptr<ast::Type>();
 }
 
-bool ast::MethodInvocation::lValueHelp() const
+bool ast::po::MethodInvocation::lValueHelp() const
 {
 	return false;
 }
 
-void ast::MethodInvocation::accept(ASTVisitor& visitor) const
+void ast::po::MethodInvocation::accept(ASTVisitor& visitor) const
 {
 	visitor.visit(std::static_pointer_cast<MethodInvocation const>(shared_from_this()));
 }

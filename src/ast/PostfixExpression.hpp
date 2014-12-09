@@ -11,10 +11,10 @@ namespace ast
 	{
 		private:
 			shptr<Expression> child;
-			shptr<vec<shptr<PostfixOp>>> postfix_op;
+			shptr<vec<shptr<po::PostfixOp>>> postfix_op;
 
 		public:
-			PostfixExpression(shptr<Expression> child, shptr<vec<shptr<PostfixOp> > > postfix_op);
+			PostfixExpression(shptr<Expression> child, shptr<vec<shptr<po::PostfixOp> > > postfix_op);
 			virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual bool isLValue() const;
@@ -23,7 +23,7 @@ namespace ast
 			virtual void accept(ASTVisitor& visitor) const;
 
 			shptr<Expression> getChild() const;
-			shptr<vec<shptr<PostfixOp>>> getPostfixOps() const;
+			shptr<vec<shptr<po::PostfixOp>>> getPostfixOps() const;
 	};
 }
 #endif // POSTFIXEXPRESSION_HPP

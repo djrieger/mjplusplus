@@ -1,7 +1,7 @@
 #include "../globals.hpp"
 #include "PostfixExpression.hpp"
 
-ast::PostfixExpression::PostfixExpression(shptr<Expression> child, shptr<vec<shptr<PostfixOp>>> postfix_op) : Expression(child->getPosition()), child(child), postfix_op(postfix_op)
+ast::PostfixExpression::PostfixExpression(shptr<Expression> child, shptr<vec<shptr<po::PostfixOp>>> postfix_op) : Expression(child->getPosition()), child(child), postfix_op(postfix_op)
 {
 
 }
@@ -75,7 +75,7 @@ shptr<ast::Expression> ast::PostfixExpression::getChild() const
 	return this->child;
 }
 
-shptr<vec<shptr<ast::PostfixOp>>> ast::PostfixExpression::getPostfixOps() const
+shptr<vec<shptr<ast::po::PostfixOp>>> ast::PostfixExpression::getPostfixOps() const
 {
 	return this->postfix_op;
 }

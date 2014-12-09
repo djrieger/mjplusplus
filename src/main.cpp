@@ -58,12 +58,12 @@ bool runSemanticAnalysis(shptr<ast::Program> root, shptr<ErrorReporter> errorRep
 
 void runFirm(std::string file_name, std::string out_name, shptr<ast::Program> root)
 {
-	FirmInterface::getInstance().setInput(file_name);
-	FirmInterface::getInstance().setOutput(out_name);
+	firm::FirmInterface::getInstance().setInput(file_name);
+	firm::FirmInterface::getInstance().setOutput(out_name);
 	// TODO
 	// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
 
-	FirmInterface::getInstance().convert(root);
+	firm::FirmInterface::getInstance().convert(root);
 }
 
 int compileAssembly(std::string out_name_assembly)
