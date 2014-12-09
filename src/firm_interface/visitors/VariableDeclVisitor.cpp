@@ -38,7 +38,7 @@ namespace firm
 			resultType = field_type;
 		}
 
-		void VariableDeclVisitor::visit(shptr<ast::LVDStatement const> lvdStatement)
+		void VariableDeclVisitor::visit(shptr<ast::stmt::LVDStatement const> lvdStatement)
 		{
 			//Our variable was declared as LV => Our variable is a LV.
 			visitLVDStatementOrTypeIdent(lvdStatement, lvdStatement->getIdent()->getName());

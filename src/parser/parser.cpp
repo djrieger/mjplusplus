@@ -345,7 +345,7 @@ shptr<vec<shptr<ast::TypeIdent>>> Parser::parseOptionalParameters()
 
 // Statement -> Block | EmptyStatement | if IfStatement | Expression ; | while WhileStatement | return ReturnStatement .
 // EmptyStatement -> ; .
-shptr<ast::Statement> Parser::parseStatement()
+shptr<ast::stmt::Statement> Parser::parseStatement()
 {
 	switch (current.token_type)
 	{
@@ -356,7 +356,7 @@ shptr<ast::Statement> Parser::parseStatement()
 		case lexer::Token::Token_type::OPERATOR_SEMICOLON:
 		{
 			nextToken();
-			shptr<ast::Statement> stmt;
+			shptr<ast::stmt::Statement> stmt;
 			return stmt;
 			break;
 		}
@@ -393,7 +393,7 @@ shptr<ast::Statement> Parser::parseStatement()
 		{
 			auto expr = parseExpression();
 			expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
-			return std::make_shared<ast::ExpressionStatement>(expr);
+			return std::make_shared<ast::stmt::ExpressionStatement>(expr);
 			break;
 		}
 
@@ -404,11 +404,11 @@ shptr<ast::Statement> Parser::parseStatement()
 
 // Block -> { BlockStatements } .
 // BlockStatements -> BlockStatement BlockStatements | .
-shptr<ast::Block> Parser::parseBlock()
+shptr<ast::stmt::Block> Parser::parseBlock()
 {
 	expect(lexer::Token::Token_type::OPERATOR_LBRACE);
 
-	auto statements = std::make_shared<vec<shptr<ast::Statement>>>();
+	auto statements = std::make_shared<vec<shptr<ast::stmt::Statement>>>();
 
 	while (current.token_type != lexer::Token::Token_type::OPERATOR_RBRACE)
 	{
@@ -423,16 +423,16 @@ shptr<ast::Block> Parser::parseBlock()
 
 	//If there are no block_statements we can skip the block.
 	if (!statements->empty())
-		return std::make_shared<ast::Block>(statements);
+		return std::make_shared<ast::stmt::Block>(statements);
 	else
 	{
-		shptr<ast::Block> block;
+		shptr<ast::stmt::Block> block;
 		return block;
 	}
 }
 
 // BlockStatement -> Statement | LocalVariableDeclarationStatement .
-shptr<ast::Statement> Parser::parseBlockStatement()
+shptr<ast::stmt::Statement> Parser::parseBlockStatement()
 {
 	// Statement first = IDENT, {, (, ;, while, if, return, -, !, null, false, true, INTEGER_LITERAL, this, new
 	// LVDS first =      IDENT, void, int, boolean
@@ -508,18 +508,18 @@ shptr<ast::Statement> Parser::parseBlockStatement()
 // LocalVariableDeclarationStatement -> TypeIdent OptionalLVDSExpression ; .
 // OptionalLVDSExpression -> = Expression
 //	| .
-shptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
+shptr<ast::stmt::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 {
 	auto type_ident = parseTypeIdent();
-	shptr<ast::LVDStatement> lvdStatement;
+	shptr<ast::stmt::LVDStatement> lvdStatement;
 
 	if (current.token_type == lexer::Token::Token_type::OPERATOR_EQ)
 	{
 		nextToken();
-		lvdStatement = std::make_shared<ast::LVDStatement>(type_ident, parseExpression());
+		lvdStatement = std::make_shared<ast::stmt::LVDStatement>(type_ident, parseExpression());
 	}
 	else
-		lvdStatement = std::make_shared<ast::LVDStatement>(type_ident);
+		lvdStatement = std::make_shared<ast::stmt::LVDStatement>(type_ident);
 
 	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
 	return lvdStatement;
@@ -528,7 +528,7 @@ shptr<ast::LVDStatement> Parser::parseLocalVariableDeclarationStatement()
 // IfStatement -> ( Expression ) Statement OptionalElseStatement .
 // OptionalElseStatement -> else Statement
 // 	| .
-shptr<ast::IfStatement> Parser::parseIfStatement()
+shptr<ast::stmt::IfStatement> Parser::parseIfStatement()
 {
 	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
@@ -538,35 +538,35 @@ shptr<ast::IfStatement> Parser::parseIfStatement()
 	if (current.token_type == lexer::Token::Token_type::KEYWORD_ELSE)
 	{
 		nextToken();
-		return std::make_shared<ast::IfStatement>(cond, then, parseStatement());
+		return std::make_shared<ast::stmt::IfStatement>(cond, then, parseStatement());
 	}
 	else
-		return std::make_shared<ast::IfStatement>(cond, then);
+		return std::make_shared<ast::stmt::IfStatement>(cond, then);
 }
 
 // WhileStatement -> ( Expression ) Statement .
-shptr<ast::WhileStatement> Parser::parseWhileStatement()
+shptr<ast::stmt::WhileStatement> Parser::parseWhileStatement()
 {
 	expect(lexer::Token::Token_type::OPERATOR_LPAREN);
 	auto cond = parseExpression();
 	expect(lexer::Token::Token_type::OPERATOR_RPAREN);
-	return std::make_shared<ast::WhileStatement>(cond, parseStatement());
+	return std::make_shared<ast::stmt::WhileStatement>(cond, parseStatement());
 }
 
 // ReturnStatement -> OptionalExpression ; .
 // OptionalExpression -> Expression
 //  	| .
-shptr<ast::ReturnStatement> Parser::parseReturnStatement(source_position_t returnKeywordPosition)
+shptr<ast::stmt::ReturnStatement> Parser::parseReturnStatement(source_position_t returnKeywordPosition)
 {
 	if (current.token_type != lexer::Token::Token_type::OPERATOR_SEMICOLON)
 	{
 		auto expr = parseExpression();
 		expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
-		return std::make_shared<ast::ReturnStatement>(expr);
+		return std::make_shared<ast::stmt::ReturnStatement>(expr);
 	}
 
 	expect(lexer::Token::Token_type::OPERATOR_SEMICOLON);
-	return std::make_shared<ast::ReturnStatement>(returnKeywordPosition);
+	return std::make_shared<ast::stmt::ReturnStatement>(returnKeywordPosition);
 }
 
 /*
@@ -649,7 +649,7 @@ shptr<ast::Expression> Parser::parseUnaryExpression()
 	if (postfix_ops->empty())
 		postfixExpr = primaryExpr;
 	else
-		postfixExpr = std::make_shared<ast::PostfixExpression>(primaryExpr, postfix_ops);
+		postfixExpr = std::make_shared<ast::po::PostfixExpression>(primaryExpr, postfix_ops);
 
 	//dito for unary expressions
 	if (unary_operators->empty())

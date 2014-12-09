@@ -17,10 +17,10 @@ namespace ast
 		protected:
 			shptr<TypeIdent> return_type_and_name;
 			shptr<vec<shptr<TypeIdent>>> parameters;
-			shptr<Block> block;
+			shptr<stmt::Block> block;
 
 		public:
-			MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<Block> block);
+			MethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent>>> parameters, shptr<stmt::Block> block);
 
 			/*
 			 * Prints this method including an optional "static" modifier (depending on isStatic)
@@ -31,9 +31,9 @@ namespace ast
 			shptr<vec<shptr<TypeIdent>>> getParameters() const;
 			shptr<Type> getReturnType() const;
 			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const;
-			virtual shptr<vec<shptr<ast::Type>>> collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			virtual shptr<vec<shptr<Type>>> collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
 			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-			shptr<Block> getBlock() const;
+			shptr<stmt::Block> getBlock() const;
 			virtual unsigned int countVariableDeclarations() const;
 			virtual void createVariablePositions() const;
 			/**

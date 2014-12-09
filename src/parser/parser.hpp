@@ -104,13 +104,13 @@ class Parser
 		shptr<vec<shptr<ast::TypeIdent>>> parseOptionalParameters();
 		shptr<ast::Arguments> parseArguments();
 
-		shptr<ast::Statement> parseStatement();
-		shptr<ast::Block> parseBlock();
-		shptr<ast::Statement> parseBlockStatement();
-		shptr<ast::LVDStatement> parseLocalVariableDeclarationStatement();
-		shptr<ast::IfStatement> parseIfStatement();
-		shptr<ast::WhileStatement> parseWhileStatement();
-		shptr<ast::ReturnStatement> parseReturnStatement(source_position_t position);
+		shptr<ast::stmt::Statement> parseStatement();
+		shptr<ast::stmt::Block> parseBlock();
+		shptr<ast::stmt::Statement> parseBlockStatement();
+		shptr<ast::stmt::LVDStatement> parseLocalVariableDeclarationStatement();
+		shptr<ast::stmt::IfStatement> parseIfStatement();
+		shptr<ast::stmt::WhileStatement> parseWhileStatement();
+		shptr<ast::stmt::ReturnStatement> parseReturnStatement(source_position_t position);
 
 		shptr<ast::Expression> parseExpression();
 		shptr<ast::Expression> precedenceClimb(int minPrec);

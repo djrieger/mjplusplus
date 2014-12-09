@@ -146,7 +146,7 @@ namespace firm
 		}
 
 		// postfix expression
-		void BoolExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpression)
+		void BoolExpressionVisitor::visit(shptr<ast::po::PostfixExpression const> postfixExpression)
 		{
 			boolFromExpression(postfixExpression);
 		}

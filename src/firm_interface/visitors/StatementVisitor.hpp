@@ -25,16 +25,16 @@ namespace firm
 				 * @param precedingProjection	The Firm projection node to use as predecessor for the then/else block
 				 * @param exitBlock	The exitBlock to use as successor for the Jump node
 				 */
-				void visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::Statement> thenOrElseStmt, ir_node* exitBlock);
+				void visitThenOrElse(ir_node* thenOrElseBlock, shptr<const ast::stmt::Statement> thenOrElseStmt, ir_node* exitBlock);
 			public:
 				StatementVisitor(MemberVisitor& memberVisitor);
 
-				virtual void visit(shptr<const ast::Block> blockStmt);
-				virtual void visit(shptr<const ast::IfStatement> ifStatement);
-				virtual void visit(shptr<const ast::WhileStatement> whileStmt);
-				virtual void visit(shptr<const ast::ReturnStatement> returnStmt);
-				virtual void visit(shptr<const ast::ExpressionStatement> exprStmt);
-				virtual void visit(shptr<const ast::LVDStatement> lvdStmt);
+				virtual void visit(shptr<const ast::stmt::Block> blockStmt);
+				virtual void visit(shptr<const ast::stmt::IfStatement> ifStatement);
+				virtual void visit(shptr<const ast::stmt::WhileStatement> whileStmt);
+				virtual void visit(shptr<const ast::stmt::ReturnStatement> returnStmt);
+				virtual void visit(shptr<const ast::stmt::ExpressionStatement> exprStmt);
+				virtual void visit(shptr<const ast::stmt::LVDStatement> lvdStmt);
 		};
 	}
 }

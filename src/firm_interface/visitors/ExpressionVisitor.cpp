@@ -256,7 +256,7 @@ namespace firm
 		}
 
 		// postfix expression
-		void ExpressionVisitor::visit(shptr<ast::PostfixExpression const> postfixExpression)
+		void ExpressionVisitor::visit(shptr<ast::po::PostfixExpression const> postfixExpression)
 		{
 			bool old_do_store = do_store;
 			// only the last PostfixOp does the store - or the PrimaryExpression if there are no PostfixOps

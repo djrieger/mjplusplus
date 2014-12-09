@@ -57,19 +57,19 @@ void ast::Program::addPseudoClasses()
 	// insert fake classes for void System.out.println(int)
 
 	// void println
-	auto prt = std::make_shared<Type>(ast::Type::Primitive_type::VOID);
+	auto prt = std::make_shared<Type>(Type::Primitive_type::VOID);
 	lexer::Token prit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("println"), { -1, 0}};
 	auto pri = std::make_shared<Ident>(prit);
 	auto pr = std::make_shared<TypeIdent>(prt, pri);
 	// int i
-	auto pat = std::make_shared<Type>(ast::Type::Primitive_type::INT);
+	auto pat = std::make_shared<Type>(Type::Primitive_type::INT);
 	lexer::Token pait {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("i"), { -1, 0}};
 	auto pai = std::make_shared<Ident>(pait);
 	auto pa = std::make_shared<std::vector<shptr<TypeIdent>>>();
 	pa->push_back(std::make_shared<TypeIdent>(pat, pai));
 	// void println(int i)
 	auto p = std::make_shared<std::vector<shptr<ClassMember>>>();
-	p->push_back(std::make_shared<MethodDeclaration>(pr, pa, shptr<ast::Block>()));
+	p->push_back(std::make_shared<MethodDeclaration>(pr, pa, shptr<stmt::Block>()));
 
 	// class $Out
 	lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Out"), { -1, 0}};

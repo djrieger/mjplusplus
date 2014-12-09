@@ -4,7 +4,7 @@
 #include "../firm_interface/FirmInterface.hpp"
 
 
-ast::MainMethodDeclaration::MainMethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent> > > parameters, shptr<Block> block)
+ast::MainMethodDeclaration::MainMethodDeclaration(shptr<TypeIdent> return_type_and_name, shptr<vec<shptr<TypeIdent> > > parameters, shptr<stmt::Block> block)
 	: MethodDeclaration(return_type_and_name, parameters, block)
 {
 	;
