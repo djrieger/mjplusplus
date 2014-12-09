@@ -3,7 +3,6 @@
 
 #include "Node.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
-#include "../visitors/ASTVisitor.hpp"
 
 namespace ast
 {

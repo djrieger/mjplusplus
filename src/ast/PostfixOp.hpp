@@ -7,12 +7,15 @@
 
 namespace ast
 {
-	class PostfixOp : public Node
+	namespace po
 	{
+		class PostfixOp : public Node
+		{
 
-		public:
-			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) = 0;
-			virtual bool lValueHelp() const = 0;
-	};
+			public:
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) = 0;
+				virtual bool lValueHelp() const = 0;
+		};
+	}
 }
 #endif // POSTFIXOP_HPP

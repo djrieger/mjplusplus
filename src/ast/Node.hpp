@@ -5,7 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include "../visitors/ASTVisitor.hpp"
+#include "ASTVisitor.hpp"
 
 namespace ast
 {

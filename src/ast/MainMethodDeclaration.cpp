@@ -128,7 +128,7 @@ unsigned int ast::MainMethodDeclaration::countVariableDeclarations() const
 void ast::MainMethodDeclaration::createVariablePositions() const
 {
 	auto var2pos = std::make_shared<std::map<std::string, int>>();
-	FirmInterface::getInstance().setVarMap(var2pos);
+	firm::FirmInterface::getInstance().setVarMap(var2pos);
 	int pos = 0;
 
 	if (block)

@@ -3,63 +3,66 @@
 
 namespace ast
 {
-	FieldAccess::FieldAccess(shptr<Ident> field_name) : field_name(field_name)
+	namespace po
 	{
-		;
-	}
-
-	void FieldAccess::toString(std::ostream& out, unsigned int indent, bool) const
-	{
-		out << '.';
-		field_name->toString(out, indent);
-	}
-
-	shptr<Ident> FieldAccess::getFieldName() const
-	{
-		return field_name;
-	}
-
-	shptr<Type> FieldAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable>, shptr<Type> callingType)
-	{
-		if (callingType->isClassType())
+		FieldAccess::FieldAccess(shptr<Ident> field_name) : field_name(field_name)
 		{
-			auto class_table = sa.getClassTable();
-			auto class_it = class_table.find(callingType->getClassName());
+			;
+		}
 
-			if (class_it != class_table.end())
+		void FieldAccess::toString(std::ostream& out, unsigned int indent, bool) const
+		{
+			out << '.';
+			field_name->toString(out, indent);
+		}
+
+		shptr<Ident> FieldAccess::getFieldName() const
+		{
+			return field_name;
+		}
+
+		shptr<Type> FieldAccess::get_type(SemanticAnalysis& sa, shptr<SymbolTable>, shptr<Type> callingType)
+		{
+			if (callingType->isClassType())
 			{
-				auto& class_item = class_it->second;
-				auto field_table = class_item.fieldTable->getFieldTable();
-				auto field_it = field_table.find(field_name->getName());
+				auto class_table = sa.getClassTable();
+				auto class_it = class_table.find(callingType->getClassName());
 
-				if (field_it != field_table.end())
+				if (class_it != class_table.end())
 				{
-					auto field_item = field_it->second;
-					declaration = field_item.fieldNode;
-					return field_item.type;
+					auto& class_item = class_it->second;
+					auto field_table = class_item.fieldTable->getFieldTable();
+					auto field_it = field_table.find(field_name->getName());
+
+					if (field_it != field_table.end())
+					{
+						auto field_item = field_it->second;
+						declaration = field_item.fieldNode;
+						return field_item.type;
+					}
+					else
+					{
+						sa.reportError("$type{" + callingType->getName() + "} has no field with the name $ident{" + field_name->getName() + "}",
+						               field_name);
+					}
 				}
 				else
-				{
-					sa.reportError("$type{" + callingType->getName() + "} has no field with the name $ident{" + field_name->getName() + "}",
-					               field_name);
-				}
+					sa.reportError("No such class: $type{" + callingType->getClassName() + "}", field_name);
 			}
 			else
-				sa.reportError("No such class: $type{" + callingType->getClassName() + "}", field_name);
+				sa.reportError("Cannot access a field on a primitive or array type.", field_name);
+
+			return shptr<ast::Type>();
 		}
-		else
-			sa.reportError("Cannot access a field on a primitive or array type.", field_name);
 
-		return shptr<ast::Type>();
-	}
+		bool FieldAccess::lValueHelp() const
+		{
+			return true;
+		}
 
-	bool FieldAccess::lValueHelp() const
-	{
-		return true;
-	}
-
-	void FieldAccess::accept(ASTVisitor& visitor) const
-	{
-		visitor.visit(std::static_pointer_cast<FieldAccess const>(shared_from_this()));
+		void FieldAccess::accept(ASTVisitor& visitor) const
+		{
+			visitor.visit(std::static_pointer_cast<FieldAccess const>(shared_from_this()));
+		}
 	}
 }

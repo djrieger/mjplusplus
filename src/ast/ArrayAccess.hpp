@@ -6,19 +6,22 @@
 
 namespace ast
 {
-	class ArrayAccess : public PostfixOp
+	namespace po
 	{
-		private:
-			shptr<Expression> access_offset;
+		class ArrayAccess : public PostfixOp
+		{
+			private:
+				shptr<Expression> access_offset;
 
-		public:
-			ArrayAccess(shptr<Expression> access_offset);
-			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) ;
-			virtual bool lValueHelp() const;
-			virtual void accept(ASTVisitor& visitor) const;
-			shptr<Expression> getAccessOffset() const;
-	};
+			public:
+				ArrayAccess(shptr<Expression> access_offset);
+				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) ;
+				virtual bool lValueHelp() const;
+				virtual void accept(ASTVisitor& visitor) const;
+				shptr<Expression> getAccessOffset() const;
+		};
+	}
 }
 
 #endif

@@ -164,7 +164,7 @@ void ast::MethodDeclaration::createVariablePositions() const
 	// MainMethodDeclaration::createVariablePositions(), too!
 
 	auto var2pos = std::make_shared<std::map<std::string, int>>();
-	FirmInterface::getInstance().setVarMap(var2pos);
+	firm::FirmInterface::getInstance().setVarMap(var2pos);
 	int pos = 0;
 
 	(*var2pos)["this"] = pos++;

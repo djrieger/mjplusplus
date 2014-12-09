@@ -7,19 +7,22 @@
 
 namespace ast
 {
-	class FieldAccess : public PostfixOp, public IdentBase
+	namespace po
 	{
-		private:
-			shptr<Ident> field_name;
+		class FieldAccess : public PostfixOp, public IdentBase
+		{
+			private:
+				shptr<Ident> field_name;
 
-		public:
-			FieldAccess(shptr<Ident> field_name);
-			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType);
-			virtual bool lValueHelp() const;
-			virtual void accept(ASTVisitor& visitor) const;
-			shptr<Ident> getFieldName() const;
-	};
+			public:
+				FieldAccess(shptr<Ident> field_name);
+				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
+				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType);
+				virtual bool lValueHelp() const;
+				virtual void accept(ASTVisitor& visitor) const;
+				shptr<Ident> getFieldName() const;
+		};
+	}
 }
 
 #endif

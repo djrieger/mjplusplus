@@ -2,7 +2,7 @@
 #define VARIABLEDECLARATION_HPP
 
 #include "../globals.hpp"
-#include "../visitors/ASTVisitor.hpp"
+#include "ASTVisitor.hpp"
 
 namespace ast
 {
