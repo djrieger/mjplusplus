@@ -1,0 +1,27 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(true);
+	}
+	
+	public void q(boolean b) {
+		int x = 0;
+		while (x == 0) x=1;
+		boolean c = false;
+		print(!b == c); /* @old "!b == c" @opt "b != c" */
+		print(!b != c); /* @old "!b != c" @opt "b == c" */
+		print(impure() == !c); /* @old "impure() == !c" @opt "impure() != c" */
+		print(b != !c); /* @old "b != !c" @opt "b == c" */
+		print(!(impure() == c)); /* @old "!(impure() == c)" @opt "impure() != c" */
+		print(!(b != c)); /* @old "!(b != c)" @opt "b == c" */
+	}
+	
+	public void print(boolean b) {
+		if (b) System.out.println(1); 
+		else System.out.println(0);
+	}
+	
+	public boolean impure() {
+		System.out.println(4);
+		return true;
+	}	
+}

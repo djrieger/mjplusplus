@@ -1,0 +1,25 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(4);
+	}
+	
+	public void q(int b) {
+		int x = 0;
+		while (x == 0) x=1;
+		int c;
+		System.out.println(- -impure(b)); /* @old "- -impure(b)" @opt "impure(b)" */
+		System.out.println(- - (-impure(b))); /* @old "- - (-impure(b))" @opt "-impure(b)" */
+		System.out.println(- - -(-impure(b))); /* @old "- - -(-impure(b))" @opt "impure(b)" */
+		c = 0 + impure(b); /* @old "0 + impure(b)" @opt "impure(b)" */
+		System.out.println(c);
+		c = 0 - impure(b); /* @old "0 - impure(b)" @opt "-impure(b)" */
+		System.out.println(c);
+		c = impure(b) - 0; /* @old "impure(b) - 0" @opt "impure(b)" */
+		System.out.println(c);
+	}
+	
+	public int impure(int b) {
+		System.out.println(3);
+		return b;
+	}		
+}
