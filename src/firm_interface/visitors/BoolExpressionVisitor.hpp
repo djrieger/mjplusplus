@@ -22,7 +22,7 @@ namespace firm
 				 * Visits the given Expression using an ExpressionVisitor and adds the necessary blocks
 				 * using Cmp, Cond, Proj nodes and this visitor's then- and elseBlocks.
 				 * This method is used in various visit-methods.
-				 * @param expression the given Expression
+				 * @param expression the visited Expression
 				 * @see ExpressionVisitor
 				 */
 				void boolFromExpression(shptr<ast::Expression const> expression);
@@ -32,7 +32,7 @@ namespace firm
 				 * an ExpressionVisitor and adds the necessary blocks
 				 * using Cmp, Cond, Proj nodes and this visitor's then- and elseBlocks.
 				 * This method is used in various relational visit-methods.
-				 * @param binaryExpression the given BinaryExpression
+				 * @param binaryExpression the visited BinaryExpression
 				 * @param relation         the ir_relation
 				 * @see ExpressionVisitor
 				 */

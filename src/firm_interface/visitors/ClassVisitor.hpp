@@ -16,7 +16,7 @@ namespace firm
 				 * Visits a ClassDeclaration. Sets its owner to the the class type that's retrieved
 				 * from the declaration's ident with the help of FirmInterface.
 				 * Then uses a MemberVisitor to visit the declaration's members.
-				 * @param classDeclaration the given classDeclaration
+				 * @param classDeclaration the visited classDeclaration
 				 * @see MemberVisitor
 				 * @see FirmInterface
 				 */
