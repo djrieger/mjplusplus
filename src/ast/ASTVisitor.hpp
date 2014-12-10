@@ -3,7 +3,6 @@
 
 #include "../globals.hpp"
 
-// visitors and inheritance don't mix that well in C++
 namespace ast
 {
 	class Node;
