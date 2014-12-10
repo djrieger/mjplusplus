@@ -89,11 +89,15 @@ void ErrorReporter::printErrors() const
 			markerline += '^';
 
 			std::cerr << " at line " << error.first.first << ", column " << error.first.second << ": " << error.second.second << std::endl;
+
 			// output input line where error occurred and markerline
-			auto minPos = lineOfCode.length() >= 100U && error.first.second > 50U ? error.first.second - 50U : 0U;
-			auto length = std::min<size_t>(100U, lineOfCode.length());
-			std::cerr << (minPos ? "... " : "") << lineOfCode.substr(minPos, length) << (length == 100U ? " ..." : "") << std::endl;
-			std::cerr << (minPos ? "    " : "") << markerline.substr(minPos, length) << std::endl;
+			if (!lineOfCode.empty())
+			{
+				auto minPos = lineOfCode.length() >= 100U && error.first.second > 50U ? error.first.second - 50U : 0U;
+				auto length = std::min<size_t>(100U, lineOfCode.length());
+				std::cerr << (minPos ? "... " : "") << lineOfCode.substr(minPos, length) << (length == 100U ? " ..." : "") << std::endl;
+				std::cerr << (minPos ? "    " : "") << markerline.substr(minPos, length) << std::endl;
+			}
 		}
 	}
 

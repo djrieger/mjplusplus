@@ -176,7 +176,10 @@ int main(int argc, const char** argv)
 		}
 
 		if (!valid)
+		{
+			errorReporter->printErrors();
 			return EXIT_FAILURE;
+		}
 
 		return EXIT_SUCCESS;
 	}
