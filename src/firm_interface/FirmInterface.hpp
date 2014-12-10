@@ -111,10 +111,10 @@ namespace firm
 
 			shptr<std::map<std::string, int>> getVarMap();
 			void setVarMap(shptr<std::map<std::string, int>> newVar2pos);
-			std::queue<ir_node*> getWorklist();
 
-			template<typename Visitor>
-			void runWorklistAlgorithm();
+			void foo();
+
+			std::queue<ir_node*> getWorklist();
 	};
 }
 
