@@ -2,6 +2,7 @@
 #define FIRM_INTERFACE_HPP
 
 #include <unordered_map>
+#include <queue>
 
 #include <libfirm/firm.h>
 #include <libfirm/irdump.h>
@@ -110,6 +111,11 @@ namespace firm
 
 			shptr<std::map<std::string, int>> getVarMap();
 			void setVarMap(shptr<std::map<std::string, int>> newVar2pos);
+
+			void foo();
+
+			std::queue<ir_node*> getWorklist();
+
 	};
 }
 
