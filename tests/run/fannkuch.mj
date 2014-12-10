@@ -19,7 +19,8 @@ class fannkuchredux
       {int i=0; while(i<n) { perm1[i] = i; i=i+1; }}
       int r = n;
 
-      while (true) {
+      boolean b = true;
+      while (b) {
 
          while (r != 1){ count[r-1] = r; r=r-1; }
 
