@@ -113,7 +113,7 @@ void ast::MainMethodDeclaration::accept(ASTVisitor& visitor) const
 	visitor.visit(std::static_pointer_cast<MainMethodDeclaration const>(shared_from_this()));
 }
 
-std::string ast::MainMethodDeclaration::mangle(std::string) const
+std::string ast::MainMethodDeclaration::mangle() const
 {
 	return "main";
 }
