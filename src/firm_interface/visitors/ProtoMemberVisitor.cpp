@@ -5,7 +5,7 @@ namespace firm
 {
 	namespace visitor
 	{
-		ProtoMemberVisitor::ProtoMemberVisitor(ClassTypeVisitor& classVisitor): classVisitor(classVisitor)
+		ProtoMemberVisitor::ProtoMemberVisitor(ProtoClassVisitor& classVisitor): classVisitor(classVisitor)
 		{
 			setOwner(classVisitor.getOwner());
 		}
