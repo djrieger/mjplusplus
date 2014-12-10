@@ -25,14 +25,51 @@ namespace firm
 			{
 				ir_node* node = worklist.front();
 
-				if (is_Add(node) || is_Mul(node))
+				ir_printf("%F\n", node);
+				if (is_Add(node) || is_Mul(node) || is_Sub(node))
 				{
 					ir_tarval* tarVal = computed_value(node);
+					ir_printf("%F mode: %F\n", node, get_tarval_mode(tarVal));
 
 					if (get_tarval_mode(tarVal) == mode_Is)
 						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
 				}
+				else if (is_Proj(node))
+				{
+					// Get first child of proj node
+					ir_node* divNode = get_irn_n(node, 0);
 
+					if (is_Div(divNode)) {
+						// Get children of div node (operands)
+						ir_node *dividend = get_irn_n(divNode, 1);
+						ir_node *divisor = get_irn_n(divNode, 2);
+						if (is_Const(dividend) && is_Const(divisor)) 
+						{
+							long divisorValue = get_tarval_long(computed_value(divisor));
+							// Optimize if not dividing by zero, otherwise simply leave the original Div node alone
+							if (divisorValue != 0) {
+								long division = get_tarval_long(computed_value(dividend)) / divisorValue;
+								exchange(node, new_Const_long(mode_Is, division));
+							}
+						}
+					}
+				}
+				// not working yet:
+				else if (is_Cmp(node))
+				{
+					ir_tarval* tarVal = computed_value(node);
+					//ir_printf("%F\n", get_tarval_mode(tarVal));
+
+					if (get_tarval_mode(tarVal) == mode_b)
+					{
+						// computed value == true?
+						if (tarVal == get_tarval_b_true()) 
+						{
+							//exchange(node, new_Cmp(NULL, NULL, ir_relation::ir_relation_true));
+						}
+					}
+				}
+				// asd
 				worklist.pop();
 			}
 
