@@ -16,7 +16,7 @@ namespace firm
 				void visitLVDStatementOrTypeIdent(shptr<ast::VariableDeclaration const> variableDeclaration, std::string varName);
 
 			public:
-				VariableDeclVisitor(ir_node* current_this, ir_node* store_value = NULL);
+				VariableDeclVisitor(ir_node* current_this);
 
 				virtual void visit(shptr<ast::FieldDeclaration const> fieldDeclaration);
 				virtual void visit(shptr<ast::stmt::LVDStatement const> lvdStatement);

@@ -9,7 +9,10 @@ namespace firm
 {
 	namespace visitor
 	{
-		ExpressionVisitor::ExpressionVisitor() : store_value(NULL), do_store(false) {}
+		ExpressionVisitor::ExpressionVisitor()
+		{
+			;
+		}
 
 		void ExpressionVisitor::visitBinaryExpression(
 		    shptr<ast::be::BinaryExpression const> binExpr,
@@ -72,10 +75,12 @@ namespace firm
 			if (decl)
 			{
 				//don't get this pointer here, we might be in main
-				VariableDeclVisitor vdVisitor(NULL, (do_store && store_value) ? store_value : NULL);
+				VariableDeclVisitor vdVisitor(NULL);
+				vdVisitor.setDoStore(doStore);
 				decl->accept(vdVisitor);
 				resultNode = vdVisitor.getResultNode();
 				resultType = vdVisitor.getResultType();
+				varNum = vdVisitor.getVarNum();
 			}
 			else
 			{
@@ -159,14 +164,23 @@ namespace firm
 		{
 			// Assignment
 
-			eqExpr->getRightChild()->accept(*this);
-			store_value = resultNode;
-			ir_node* rhs = resultNode;
-
-			do_store = true;
+			doStore = true;
 			eqExpr->getLeftChild()->accept(*this);
-			do_store = false;
-			resultNode = rhs;
+			doStore = false;
+
+			ir_node* storeNode = resultNode;
+			ir_type* storeType = resultType;
+			int storeVarNum = varNum;
+
+			eqExpr->getRightChild()->accept(*this);
+
+			if (storeNode)
+			{
+				ir_node* store = new_Store(get_store(), storeNode, resultNode, storeType, cons_none);
+				set_store(new_Proj(store, mode_M, pn_Store_M));
+			}
+			else
+				set_value(storeVarNum, resultNode);
 		}
 
 		void ExpressionVisitor::visit(shptr<ast::be::AndAnd const> andAndExpr)
@@ -258,9 +272,9 @@ namespace firm
 		// postfix expression
 		void ExpressionVisitor::visit(shptr<ast::po::PostfixExpression const> postfixExpression)
 		{
-			bool old_do_store = do_store;
+			bool old_do_store = doStore;
 			// only the last PostfixOp does the store - or the PrimaryExpression if there are no PostfixOps
-			do_store &= postfixExpression->getPostfixOps()->empty();
+			doStore &= postfixExpression->getPostfixOps()->empty();
 
 			postfixExpression->getChild()->accept(*this);
 			auto pops = postfixExpression->getPostfixOps();
@@ -277,14 +291,15 @@ namespace firm
 				}
 
 				// last PostfixOp may store
-				do_store = old_do_store;
+				doStore = old_do_store;
 
-				if (do_store)
-					popsVisitor.setStoreValue(store_value);
+				if (doStore)
+					popsVisitor.setDoStore(true);
 
 				pops->back()->accept(popsVisitor);
 				resultNode = popsVisitor.getResultNode();
 				resultType = popsVisitor.getResultType();
+				varNum = popsVisitor.getVarNum();
 			}
 		}
 	}
