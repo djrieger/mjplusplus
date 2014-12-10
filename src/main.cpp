@@ -137,7 +137,6 @@ int main(int argc, const char** argv)
 		auto errorReporter = std::make_shared<ErrorReporter>(file_name, !options[SUPPRESS_ERRORS]);
 		lexer::Lexer lexer(file_name.c_str(), stateomat, errorReporter);
 
-
 		if (options[LEXTEST])
 			return lexTest(lexer);
 
@@ -174,7 +173,10 @@ int main(int argc, const char** argv)
 		}
 
 		if (!valid)
+		{
+			errorReporter->printErrors();
 			return EXIT_FAILURE;
+		}
 
 		return EXIT_SUCCESS;
 	}
