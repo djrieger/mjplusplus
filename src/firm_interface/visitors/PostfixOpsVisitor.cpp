@@ -7,7 +7,7 @@ namespace firm
 {
 	namespace visitor
 	{
-		PostfixOpsVisitor::PostfixOpsVisitor(ExpressionVisitor& expressionVisitor): storeValue(NULL), expressionVisitor(expressionVisitor)
+		PostfixOpsVisitor::PostfixOpsVisitor(ExpressionVisitor& expressionVisitor): expressionVisitor(expressionVisitor)
 		{
 		}
 
@@ -15,7 +15,8 @@ namespace firm
 		{
 			// Member
 			ir_node* current_this = expressionVisitor.getResultNode();
-			VariableDeclVisitor vdVisitor(current_this, storeValue);
+			VariableDeclVisitor vdVisitor(current_this);
+			vdVisitor.setDoStore(doStore);
 			auto decl = fieldAccess->getDeclaration();
 
 			if (decl)
@@ -23,6 +24,7 @@ namespace firm
 				decl->accept(vdVisitor);
 				resultNode = vdVisitor.getResultNode();
 				resultType = vdVisitor.getResultType();
+				varNum = vdVisitor.getVarNum();
 			}
 
 			// else: got System in FieldAccess
@@ -49,24 +51,19 @@ namespace firm
 			offset_node = new_Mul(offset_node, new_Conv(accessOffset, addr_mode), addr_mode);
 			ir_node* elementAddress = new_Conv(new_Add(new_Conv(arrayAddress, addr_mode), offset_node, addr_mode), mode_P);
 
-			ir_node* mem = get_store();
-
-			if (storeValue)
+			if (doStore)
 			{
-				// We are setting an array element.
-				ir_node* store = new_Store(mem, elementAddress, storeValue, elementType, cons_none);
-				set_store(new_Proj(store, mode_M, pn_Store_M));
-				resultNode = storeValue;
+				resultNode = elementAddress;
+				resultType = elementType;
 			}
 			else
 			{
 				// We are retrieving an array element.
-				ir_node* load = new_Load(mem, elementAddress, get_type_mode(elementType), elementType, cons_none);
+				ir_node* load = new_Load(get_store(), elementAddress, get_type_mode(elementType), elementType, cons_none);
 				set_store(new_Proj(load, mode_M, pn_Load_M));
 				resultNode = new_Proj(load, get_type_mode(elementType), pn_Load_res);
+				resultType = elementType;
 			}
-
-			resultType = elementType;
 		}
 
 
@@ -74,11 +71,6 @@ namespace firm
 		{
 			ir_node* caller = expressionVisitor.getResultNode();
 			std::tie(resultNode, resultType) = FirmInterface::getInstance().createNodeForMethodCall(caller, methodInvocation);
-		}
-
-		void PostfixOpsVisitor::setStoreValue(ir_node* storeValue)
-		{
-			this->storeValue = storeValue;
 		}
 	}
 }

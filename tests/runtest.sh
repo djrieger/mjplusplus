@@ -43,7 +43,7 @@ for i in run/*.mj ; do
 		segfaults=$((segfaults + 1))
 	fi
 done
-rm *.vcg
+rm -f *.vcg
 
 total=$((succeeded + failed+segfaults+asmerrors+compfailed))
 echo "ran" $total "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults,\033[1;31m" $compfailed "\033[0mcompilation errors and\033[1;31m" $asmerrors "\033[0massembler errors."

@@ -128,3 +128,13 @@ Simon_127: binomial coefficients (dynamic programming version)
 Simon_128: Ackermann function
 Simon_129: horner's method
 Simon_130: "ping pong" (mutual recursive calls)
+Simon_131: don't optimize 0*X for impure method calls
+Simon_132: don't optimize X==X for impure method calls
+Simon_133: don't optimize X-X for impure method calls
+Simon_134: don't optimize X || X for impure method calls
+Simon_135: don't optimize X || X for assignments in X
+Simon_136: don't optimize X || X for printing X
+Simon_137: don't optimize 0 < X || 0 >= X for impure X
+Simon_138: don't optimize X=X for impure X
+Simon_139: don't optimize 2*X to X+X for impure X
+Simon_140: don't optimize X && false for impure X

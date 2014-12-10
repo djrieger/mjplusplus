@@ -1,0 +1,21 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(2);
+	}
+	
+	public void q(int b) {
+		int x = 0;
+		while (x == 0) x=1;
+		int c;
+		c = b - b; /* @old "b - b" @opt "0" */
+		System.out.println(c);
+		c = b * 0; /* @old "b * 0" @opt "0" */
+		System.out.println(c);
+		c = 0 / x; /* @old "0 / x" @opt "0" */
+		System.out.println(c);
+		c = b % 1; /* @old "b % 1" @opt "0" */
+		System.out.println(c);
+		c = b % (-1); /* @old "b % (-1)" @opt "0" */
+		System.out.println(c);
+	}	
+}

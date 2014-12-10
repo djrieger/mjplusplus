@@ -89,7 +89,7 @@ void __attribute__ ((noinline)) Parser::nextToken()
 void Parser::reportError(std::string const& error_msg)
 {
 	errorReporter->recordError(ErrorReporter::ErrorType::PARSER,
-	                           "parsing \"" + *current.string_value + '"' + (error_msg.empty() ? "" : ": " + error_msg),
+	                           (current.token_type != lexer::Token::Token_type::TOKEN_EOF ? "parsed \"" + *current.string_value + '"' : "reached end of file") + (error_msg.empty() ? "" : ", " + error_msg),
 	                           current.position);
 }
 
@@ -109,7 +109,7 @@ void Parser::expect(lexer::Token::Token_type const& tokenType)
 		// skip until token found
 		do
 		{
-			if (current.token_type != lexer::Token::Token_type::TOKEN_EOF)
+			if (current.token_type == lexer::Token::Token_type::TOKEN_EOF)
 				return;
 
 			nextToken();
@@ -140,7 +140,7 @@ void Parser::expect(lexer::Token::Token_type const& tokenType, std::string const
 		// skip until token found
 		do
 		{
-			if (current.token_type != lexer::Token::Token_type::TOKEN_EOF)
+			if (current.token_type == lexer::Token::Token_type::TOKEN_EOF)
 				return;
 
 			nextToken();

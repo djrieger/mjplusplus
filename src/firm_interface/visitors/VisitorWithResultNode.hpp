@@ -12,10 +12,16 @@ namespace firm
 			protected:
 				ir_node* resultNode;
 				ir_type* resultType;
+				bool doStore;
+				int varNum;
 
 			public:
-				virtual ir_node* getResultNode() const;
-				virtual ir_type* getResultType() const;
+				VisitorWithResultNode();
+
+				ir_node* getResultNode() const;
+				ir_type* getResultType() const;
+				void setDoStore(bool s);
+				int getVarNum() const;
 		};
 	}
 }

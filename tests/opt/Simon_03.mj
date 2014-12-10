@@ -1,0 +1,26 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(42);
+	}
+	
+	public void q(int x) {
+		int n = 0;
+		while (n == 0) n=1;
+		boolean c;
+		c = x < x; /* @old "x < x" @opt "false" */
+		print(c);
+		c = x > x; /* @old "x > x" @opt "false" */
+		print(c);
+		c = x <= x; /* @old "x <= x" @opt "true" */
+		print(c);
+		c = x >= x; /* @old "x >= true" @opt "true" */
+		print(c);
+	}
+	
+	public void print(boolean b) {
+		int x = 0;
+		while (x==0) x=1;
+		if (b) System.out.println(1); 
+		else System.out.println(0);
+	}		
+}

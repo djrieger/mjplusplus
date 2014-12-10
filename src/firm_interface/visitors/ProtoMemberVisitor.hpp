@@ -2,7 +2,7 @@
 #define PROTO_MEMBER_VISITOR_HPP
 
 #include "FirmVisitor.hpp"
-#include "ClassTypeVisitor.hpp"
+#include "ProtoClassVisitor.hpp"
 #include "../../ast/MainMethodDeclaration.hpp"
 #include "../../ast/FieldDeclaration.hpp"
 
@@ -14,10 +14,10 @@ namespace firm
 		{
 			protected:
 				ir_graph* function_graph;
-				ClassTypeVisitor& classVisitor;
+				ProtoClassVisitor& classVisitor;
 
 			public:
-				ProtoMemberVisitor(ClassTypeVisitor& classVisitor);
+				ProtoMemberVisitor(ProtoClassVisitor& classVisitor);
 				virtual void visit(shptr<const ast::MethodDeclaration> node);
 				virtual void visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl);
 				virtual void visit(shptr<const ast::FieldDeclaration> fieldDeclaration);

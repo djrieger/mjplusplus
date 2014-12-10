@@ -1,0 +1,44 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(true);
+	}
+	
+	public void q(boolean b) {
+		int x = 0;
+		while (x == 0) x=1;
+		boolean c;
+		print(!!impure(b)); /* @old "!!impure(b)" @opt "impure(b)" */
+		print(!!!impure(b)); /* @old "!!!impure(b)" @opt "!impure(b)" */
+		print(!!!!impure(b)); /* @old "!!!!impure(b)" @opt "impure(b)" */
+		c = true || impure(b); /* @old "true || impure(b)" @opt "true" */
+		print(c);
+		c = false && impure(b); /* @old "false && impure(b)" @opt "false" */
+		print(c);
+		c = false || impure(b); /* @old "false || impure(b)" @opt "impure(b)" */
+		print(c);
+		c = true && impure(b); /* @old "true && impure(b)" @opt "impure(b)" */
+		print(c);
+		c = impure(b) && true; /* @old "impure(b) && true" @opt "impure(b)" */
+		print(c);
+		c = impure(b) || false; /* @old "impure(b) || false" @opt "impure(b)" */
+		print(c);
+		c = impure(b) == false; /* @old "impure(b) == false" @opt "!impure(b)" */
+		print(c);
+		c = impure(b) == true; /* @old "impure(b) == true" @opt "impure(b)" */
+		print(c);
+		c = impure(b) != true; /* @old "impure(b) != true" @opt "!impure(b)" */
+		print(c);
+		c = impure(b) != false; /* @old "impure(b) != false" @opt "impure(b)" */
+		print(c);
+	}
+	
+	public void print(boolean b) {
+		if (b) System.out.println(1); 
+		else System.out.println(0);
+	}
+	
+	public boolean impure(boolean b) {
+		System.out.println(3);
+		return b;
+	}		
+}

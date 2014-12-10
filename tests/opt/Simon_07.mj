@@ -1,0 +1,27 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(true);
+	}
+	
+	public void q(boolean b) {
+		int x = 0;
+		while (x == 0) x=1;
+		boolean c;
+		c = b && x==(0*x); /* @old "0*x" @opt "0" */
+		print(c);
+		x = x * (0 + impure(x)); /* @old "0 + impure(x)" @opt "impure(x)" */
+		print(c);
+		c = b && x < (1 * impure(x)) + 2 ; /* @old "1 * impure(x)" @opt "impure(x)" */
+		print(c);
+	}
+	
+	public void print(boolean b) {
+		if (b) System.out.println(1); 
+		else System.out.println(0);
+	}
+	
+	public int impure(int x) {
+		System.out.println(3);
+		return x;
+	}		
+}

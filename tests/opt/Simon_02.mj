@@ -1,0 +1,27 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(true);
+	}
+	
+	public void q(boolean b) {
+		int x = 0;
+		while (x == 0) x=1;
+		boolean c;
+		print(b || b); /* @old "b || b" @opt "b" */
+		c = b && b; /* @old "b && b" @opt "b" */
+		print(c);
+		c = b == b; /* @old "b == b" @opt "true" */
+		print(c);
+		c = b != b; /* @old "b != b" @opt "false" */
+		print(c);
+		c = b || true; /* @old "b || true" @opt "true" */
+		print(c);
+		c = b && false; /* @old "b && false" @opt "false" */
+		print(c);
+	}
+	
+	public void print(boolean b) {
+		if (b) System.out.println(1); 
+		else System.out.println(0);
+	}		
+}
