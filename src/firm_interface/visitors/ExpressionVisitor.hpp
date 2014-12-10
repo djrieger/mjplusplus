@@ -18,12 +18,12 @@ namespace firm
 			private:
 
 				/**
-				 * Create an ir_node for the given BinaryExpression by calling the given function.
+				 * Create an ir_node for the visited BinaryExpression by calling the visited function.
 				 * The function gets the nodes left and right as parameters, obtained by visiting the
 				 * leftChild and rightChild of the BinaryExpression, respectively.
 				 * It has to return a new ir_node which is then set as this->resultNode.
-				 * @param binExpr the given BinaryExpression
-				 * @param createResultNode the given function
+				 * @param binExpr the visited BinaryExpression
+				 * @param createResultNode the visited function
 				 */
 				void visitBinaryExpression(
 				    shptr<ast::be::BinaryExpression const> binExpr,
@@ -52,75 +52,75 @@ namespace firm
 				// primary expressions
 
 				/**
-				 * Reads the bool-value of the given Bool-expression,
+				 * Reads the bool-value of the visited Bool-expression,
 				 * creates a boolean constant node and sets that to this visitor's resultNode.
-				 * @param boolExpr the given Bool-expression
+				 * @param boolExpr the visited Bool-expression
 				 */
 				virtual void visit(shptr<ast::pe::Bool const> boolExpr);
 
 				/**
-				 * Checks the declaration of the given Ident-expression.
+				 * Checks the declaration of the visited Ident-expression.
 				 * If it has a declaration, it is evaluated with a VariableDeclVisitor.
 				 * The resultNode and -Type are set the evaluated values.
 				 * If it has no declaration we got a System (from System.out.println(x)) and
 				 * the appropriate nodes are created.
-				 * @param identExpr the given Ident-expression
+				 * @param identExpr the visited Ident-expression
 				 */
 				virtual void visit(shptr<ast::pe::Ident const> identExpr);
 
 				/**
-				 * Reads the integer-value of the given Integer-expression,
+				 * Reads the integer-value of the visited Integer-expression,
 				 * creates an integer constant node and sets that to this visitor's resultNode.
-				 * @param integerExpr the given Integer-expression
+				 * @param integerExpr the visited Integer-expression
 				 */
 				virtual void visit(shptr<ast::pe::Integer const> integerExpr);
 
 				/**
 				 * Creates a node for the method call with the help of FirmInterface.
 				 * Sets the resultNode and -Type to node and type of the call.
-				 * @param methodInvocationExpr the given primary MethodInvocation
+				 * @param methodInvocationExpr the visited primary MethodInvocation
 				 * @see FirmInterface
 				 */
 				virtual void visit(shptr<ast::pe::MethodInvocation const> methodInvocationExpr);
 
 				/**
-				 * Evaluates the size expression of the given NewArrayExpression. Then creates
+				 * Evaluates the size expression of the visited NewArrayExpression. Then creates
 				 * an appropriate node with the correct size and uses that to set this visitor's
 				 * resultNode and -Type. Uses FirmInterfaces calloc-call method.
-				 * @param newArrayExpr the given NewArrayExpression
+				 * @param newArrayExpr the visited NewArrayExpression
 				 * @see FirmInterface
 				 */
 				virtual void visit(shptr<ast::pe::NewArrayExpression const> newArrayExpr);
 
 				/**
-				 * Creates a node with the appropriate type (based on the given
+				 * Creates a node with the appropriate type (based on the visited
 				 * NewObjectExpression's type) and uses that to set this visitor's
 				 * resultNode and -Type. Uses FirmInterfaces calloc-call method.
-				 * @param newObjectExpr the given NewObjectExpression
+				 * @param newObjectExpr the visited NewObjectExpression
 				 * @see FirmInterface
 				 */
 				virtual void visit(shptr<ast::pe::NewObjectExpression const> newObjectExpr);
 
 				/**
-				 * If the given Object expression is a 'this', then this visitor's
+				 * If the visited Object expression is a 'this', then this visitor's
 				 * resultNode is set to the node currently stored at pos 0.
 				 * If it is a 'null', then the resultNode is set to a created NullPointerNode.
-				 * @param objectExpr the given Object expression
+				 * @param objectExpr the visited Object expression
 				 */
 				virtual void visit(shptr<ast::pe::Object const> objectExpr);
 
 				// unary expressions
 
 				/**
-				 * Evaluates the child of the given Neg expression and then creates a Minus node
+				 * Evaluates the child of the visited Neg expression and then creates a Minus node
 				 * with the node of the child, if the size of the Neg is uneven.
-				 * @param negExpr the given Neg expression
+				 * @param negExpr the visited Neg expression
 				 */
 				virtual void visit(shptr<ast::ue::Neg const> negExpr);
 
 				/**
-				 * Evaluates the given Not expression with the help of a BoolExpressionVisitor.
-				 * @param notExpr the given Not expression
+				 * Evaluates the visited Not expression with the help of a BoolExpressionVisitor.
+				 * @param notExpr the visited Not expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::ue::Not const> notExpr);
@@ -134,93 +134,93 @@ namespace firm
 				virtual void visit(shptr<ast::be::Eq const> eqExpr);
 
 				/**
-				 * Evaluates the given AndAnd expression with the help of a BoolExpressionVisitor.
-				 * @param andAndExpr the given AndAnd expression
+				 * Evaluates the visited AndAnd expression with the help of a BoolExpressionVisitor.
+				 * @param andAndExpr the visited AndAnd expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::AndAnd const> andAndExpr);
 
 				/**
-				 * Evaluates the given OrOr expression with the help of a BoolExpressionVisitor.
-				 * @param orOrExpr the given OrOr expression
+				 * Evaluates the visited OrOr expression with the help of a BoolExpressionVisitor.
+				 * @param orOrExpr the visited OrOr expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::OrOr const> orOrExpr);
 
 				/**
-				 * Evaluates the given EqEq expression with the help of a BoolExpressionVisitor.
-				 * @param eqEqExpr the given EqEq expression
+				 * Evaluates the visited EqEq expression with the help of a BoolExpressionVisitor.
+				 * @param eqEqExpr the visited EqEq expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::EqEq const> eqEqExpr);
 
 				/**
-				 * Evaluates the given NotEq expression with the help of a BoolExpressionVisitor.
-				 * @param notEqExpr the given NotEq expression
+				 * Evaluates the visited NotEq expression with the help of a BoolExpressionVisitor.
+				 * @param notEqExpr the visited NotEq expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::NotEq const> notEqExpr);
 
 				/**
-				 * Evaluates the given GreaterThan expression with the help of a BoolExpressionVisitor.
-				 * @param greaterThanExpr the given GreaterThan expression
+				 * Evaluates the visited GreaterThan expression with the help of a BoolExpressionVisitor.
+				 * @param greaterThanExpr the visited GreaterThan expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::GreaterThan const> greaterThanExpr);
 
 				/**
-				 * Evaluates the given GreaterThanEq expression with the help of a BoolExpressionVisitor.
-				 * @param greaterThanEqExpr the given GreaterThanEq expression
+				 * Evaluates the visited GreaterThanEq expression with the help of a BoolExpressionVisitor.
+				 * @param greaterThanEqExpr the visited GreaterThanEq expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::GreaterThanEq const> greaterThanEqExpr);
 
 				/**
-				 * Evaluates the given LessThan expression with the help of a BoolExpressionVisitor.
-				 * @param lessThanExpr the given LessThan expression
+				 * Evaluates the visited LessThan expression with the help of a BoolExpressionVisitor.
+				 * @param lessThanExpr the visited LessThan expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::LessThan const> lessThanExpr);
 
 				/**
-				 * Evaluates the given AndAnd expression with the help of a BoolExpressionVisitor.
-				 * @param andAndExpr the given AndAnd expression
+				 * Evaluates the visited AndAnd expression with the help of a BoolExpressionVisitor.
+				 * @param andAndExpr the visited AndAnd expression
 				 * @see BoolExpressionVisitor
 				 */
 				virtual void visit(shptr<ast::be::LessThanEq const> lessThanEqExpr);
 
 				/**
-				 * Evaluates the children of the given Plus expression and creates a new Add-node
+				 * Evaluates the children of the visited Plus expression and creates a new Add-node
 				 * with the evaluated nodes and sets this visitor's resultNode to that.
-				 * @param plusExpr the given Plus expression
+				 * @param plusExpr the visited Plus expression
 				 */
 				virtual void visit(shptr<ast::be::Plus const> plusExpr);
 
 				/**
-				 * Evaluates the children of the given Minus expression and creates a new Sub-node
+				 * Evaluates the children of the visited Minus expression and creates a new Sub-node
 				 * with the evaluated nodes and sets this visitor's resultNode to that.
-				 * @param minusExpr the given Minus expression
+				 * @param minusExpr the visited Minus expression
 				 */
 				virtual void visit(shptr<ast::be::Minus const> minusExpr);
 
 				/**
-				 * Evaluates the children of the given Mod expression and creates a new Mod-node
+				 * Evaluates the children of the visited Mod expression and creates a new Mod-node
 				 * with the evaluated nodes and sets this visitor's resultNode to that.
-				 * @param modExpr the given Mod expression
+				 * @param modExpr the visited Mod expression
 				 */
 				virtual void visit(shptr<ast::be::Mod const> modExpr);
 
 				/**
-				 * Evaluates the children of the given Mult expression and creates a new Mul-node
+				 * Evaluates the children of the visited Mult expression and creates a new Mul-node
 				 * with the evaluated nodes and sets this visitor's resultNode to that.
-				 * @param multExpr the given Mult expression
+				 * @param multExpr the visited Mult expression
 				 */
 				virtual void visit(shptr<ast::be::Mult const> multExpr);
 
 				/**
-				 * Evaluates the children of the given Slash expression and creates a new DivRL-node
+				 * Evaluates the children of the visited Slash expression and creates a new DivRL-node
 				 * with the evaluated nodes and sets this visitor's resultNode to that.
-				 * @param slashExpr the given Slash expression
+				 * @param slashExpr the visited Slash expression
 				 */
 				virtual void visit(shptr<ast::be::Slash const> slashExpr);
 
@@ -235,9 +235,9 @@ namespace firm
 				// postfix expression
 
 				/**
-				 * Evaluates the child of the given PostfixExpression and then uses a
+				 * Evaluates the child of the visited PostfixExpression and then uses a
 				 * PostfixOpsVisitor to also evalute its PostfixOps.
-				 * @param postfixExpr the given PostfixExpression
+				 * @param postfixExpr the visited PostfixExpression
 				 * @see PostfixOpsVisitor
 				 */
 				virtual void visit(shptr<ast::po::PostfixExpression const> postfixExpr);

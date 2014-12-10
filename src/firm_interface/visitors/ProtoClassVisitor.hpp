@@ -11,6 +11,13 @@ namespace firm
 		class ProtoClassVisitor : public FirmVisitor
 		{
 			public:
+
+				/**
+				 * Creates a new class type for the visited ClassDeclaration
+				 * and then uses a ProtoMemberVisitor to evaluate its members.
+				 * @param classDeclaration the visited ClassDeclaration
+				 * @see ProtoMemberVisitor
+				 */
 				virtual void visit(shptr<const ast::ClassDeclaration> classDeclaration);
 		};
 	}
