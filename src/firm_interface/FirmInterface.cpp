@@ -43,7 +43,6 @@ namespace firm
 		try
 		{
 			program->accept(v);
-			//dump_all_ir_graphs("testsuffix");
 		}
 		catch (char const* e)
 		{
@@ -457,7 +456,6 @@ namespace firm
 		irg_walk_blkwise_dom_top_down(get_current_ir_graph(), NULL, addToWorklist, (void*)pWorklist);
 		return std::move(*pWorklist);
 	}
-
 
 	void FirmInterface::foo()
 	{

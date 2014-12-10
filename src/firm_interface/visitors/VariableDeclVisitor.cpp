@@ -4,7 +4,7 @@ namespace firm
 {
 	namespace visitor
 	{
-		VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this, ir_node* store_value): current_this(current_this), store_value(store_value)
+		VariableDeclVisitor::VariableDeclVisitor(ir_node* current_this): current_this(current_this)
 		{
 		}
 
@@ -22,12 +22,8 @@ namespace firm
 			ir_node* addr = new_Conv(new_Add(new_Conv(current_this, addr_mode), offset_node, addr_mode), mode_P);
 			ir_type* field_type = get_entity_type(field);
 
-			if (store_value)
-			{
-				ir_node* store = new_Store(mem, addr, store_value, field_type, cons_none);
-				set_store(new_Proj(store, mode_M, pn_Store_M));
-				resultNode = store_value;
-			}
+			if (doStore)
+				resultNode = addr;
 			else
 			{
 				ir_node* load = new_Load(mem, addr, get_type_mode(field_type), field_type, cons_none);
@@ -57,10 +53,10 @@ namespace firm
 			int pos = (*varMap)[varName];
 			resultType = FirmInterface::getInstance().getType(variableDeclaration->getDeclType());
 
-			if (store_value)
+			if (doStore)
 			{
-				set_value(pos, store_value);
-				resultNode = store_value;
+				resultNode = NULL;
+				varNum = pos;
 			}
 			else
 				resultNode = get_value(pos, FirmInterface::getInstance().getMode(variableDeclaration->getDeclType()));

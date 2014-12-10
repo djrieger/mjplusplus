@@ -115,7 +115,6 @@ namespace firm
 			void foo();
 
 			std::queue<ir_node*> getWorklist();
-
 	};
 }
 
