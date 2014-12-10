@@ -43,7 +43,7 @@ namespace firm
 		try
 		{
 			program->accept(v);
-			//dump_all_ir_graphs("testsuffix");
+			//dump_all_ir_graphs("");
 		}
 		catch (char const* e)
 		{
