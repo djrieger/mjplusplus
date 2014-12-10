@@ -13,6 +13,7 @@
 #include "visitors/ProgramVisitor.hpp"
 #include "visitors/MemberVisitor.hpp"
 #include "visitors/ExpressionVisitor.hpp"
+#include "visitors/FirmNodeVisitor.hpp"
 
 namespace firm
 {
@@ -459,4 +460,25 @@ namespace firm
 		//std::cout << "size of worklist\t" << pWorklist->size() << std::endl;
 		return std::move(*pWorklist);
 	}
+
+	template<typename Visitor>
+	void FirmInterface::runWorklistAlgorithm()
+	{
+		Visitor vis;
+		auto worklist = getWorklist();
+		std::cout << "starting worklist algorithm on a queue with\t" << worklist.size() << " elements" << std::endl;
+
+		while (!worklist.empty())
+		{
+			ir_node* node = worklist.front();
+			vis.visit(node);
+			worklist.pop();
+			// TODO: if the node's tarval(?) changes, add all affected/using nodes to the queue again
+			//for (n : vis.affectesNodes()) {
+			//	worklist.push(n);
+			//}
+		}
+	}
+
+	template void FirmInterface::runWorklistAlgorithm<FirmNodeVisitor>();
 }
