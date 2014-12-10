@@ -335,7 +335,6 @@ namespace firm
 		}
 		else
 		{
-			ast_type->toString(std::cerr, 0);
 			ir_type* int_type = getType(std::make_shared<ast::Type>(ast::Type::Primitive_type::INT));
 			r = new_type_pointer(int_type);
 		}
