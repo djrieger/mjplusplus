@@ -12,6 +12,10 @@ namespace firm
 	{
 		class ProtoMemberVisitor : public FirmVisitor
 		{
+			private:
+				ssize_t byte_pos;
+				ssize_t int_pos;
+
 			protected:
 
 				/**
