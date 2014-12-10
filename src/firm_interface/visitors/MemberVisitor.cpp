@@ -81,7 +81,7 @@ namespace firm
 			visitMethodBodyAndFinalize(mainMethodDecl, irg);
 		}
 
-		void MemberVisitor::visit(shptr<const ast::FieldDeclaration> fieldDeclaration)
+		void MemberVisitor::visit(shptr<const ast::FieldDeclaration>)
 		{
 			;
 		}

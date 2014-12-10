@@ -25,7 +25,7 @@ namespace firm
 				MemberVisitor(ClassVisitor& classVisitor);
 				virtual void visit(shptr<const ast::MethodDeclaration> node);
 				virtual void visit(shptr<const ast::MainMethodDeclaration> mainMethodDecl);
-				virtual void visit(shptr<const ast::FieldDeclaration> fieldDeclaration);
+				virtual void visit(shptr<const ast::FieldDeclaration>);
 				ir_graph* getGraph() const;
 		};
 	}

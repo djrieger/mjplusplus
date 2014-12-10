@@ -17,6 +17,11 @@
 
 namespace std
 {
+	/**
+	 * We need a hash for std::pair<ir_type*, std::string> for maps
+	 * such as firm::FirmInterface::classMethodEntities and
+	 * firm::FirmInterface::classFieldEntities
+	 */
 	template<>
 	struct hash<pair<ir_type*, string>>
 	{

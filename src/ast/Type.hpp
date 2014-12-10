@@ -14,7 +14,7 @@ namespace ast
 
 	class Type : public Node
 	{
-			friend class std::hash<shptr<Type>>;
+			friend struct std::hash<shptr<Type>>;
 		public:
 			enum Primitive_type
 			{
