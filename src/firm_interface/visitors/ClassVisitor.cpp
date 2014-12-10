@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include "ClassVisitor.hpp"
 #include "MemberVisitor.hpp"
 
