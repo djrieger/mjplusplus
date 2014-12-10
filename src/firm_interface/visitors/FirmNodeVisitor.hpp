@@ -3,7 +3,8 @@
 
 #include <libfirm/firm.h>
 
-class FirmNodeVisitor {
+class FirmNodeVisitor
+{
 	protected:
 		virtual void visitConstNode(ir_node* node);
 		virtual void visitAddNode(ir_node* node);
