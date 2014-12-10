@@ -1,0 +1,16 @@
+class a {
+	public static void main(String[] args) {
+		new a().q();
+	}
+	
+	public void q() {
+		int y = -1;
+		print(0 < (y=y+1) || 0 >= (y=y+1));
+		System.out.println(y);
+	}
+	
+	public void print(boolean b) {
+		if (b) System.out.println(3); 
+		else System.out.println(4);
+	}
+}

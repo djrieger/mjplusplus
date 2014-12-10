@@ -12,7 +12,6 @@
 #include "util/ErrorReporter.hpp"
 
 #include "firm_interface/FirmInterface.hpp"
-#include "firm_interface/visitors/FirmNodeVisitor.hpp"
 
 
 int dumpLexGraph(lexer::Stateomat stateomat, std::string out_name)
@@ -65,7 +64,6 @@ void runFirm(std::string file_name, std::string out_name, shptr<ast::Program> ro
 	// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
 
 	firm::FirmInterface::getInstance().convert(root);
-	firm::FirmInterface::getInstance().runWorklistAlgorithm<FirmNodeVisitor>();
 }
 
 int compileAssembly(std::string out_name_assembly)
@@ -176,10 +174,7 @@ int main(int argc, const char** argv)
 		}
 
 		if (!valid)
-		{
-			errorReporter->printErrors();
 			return EXIT_FAILURE;
-		}
 
 		return EXIT_SUCCESS;
 	}

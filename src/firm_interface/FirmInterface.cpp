@@ -13,7 +13,6 @@
 #include "visitors/ProgramVisitor.hpp"
 #include "visitors/MemberVisitor.hpp"
 #include "visitors/ExpressionVisitor.hpp"
-#include "visitors/FirmNodeVisitor.hpp"
 
 namespace firm
 {
@@ -44,7 +43,6 @@ namespace firm
 		try
 		{
 			program->accept(v);
-			//dump_all_ir_graphs("");
 		}
 		catch (char const* e)
 		{
@@ -452,33 +450,14 @@ namespace firm
 		ir_func addToWorklist = [](ir_node * node, void* env)
 		{
 			auto pWorklist = (std::queue<ir_node*>*)env;
-			//std::cout << node << std::endl;
 			pWorklist->push(node);
 		};
-		// do want a pre or post ordering?
-		irg_walk_blkwise_dom_top_down(get_current_ir_graph(), addToWorklist, NULL, (void*)pWorklist);
-		//std::cout << "size of worklist\t" << pWorklist->size() << std::endl;
+		// post ordering
+		irg_walk_blkwise_dom_top_down(get_current_ir_graph(), NULL, addToWorklist, (void*)pWorklist);
 		return std::move(*pWorklist);
 	}
 
-	template<typename Visitor>
-	void FirmInterface::runWorklistAlgorithm()
+	void FirmInterface::foo()
 	{
-		Visitor vis;
-		auto worklist = getWorklist();
-		std::cout << "starting worklist algorithm on a queue with\t" << worklist.size() << " elements" << std::endl;
-
-		while (!worklist.empty())
-		{
-			ir_node* node = worklist.front();
-			vis.visit(node);
-			worklist.pop();
-			// TODO: if the node's tarval(?) changes, add all affected/using nodes to the queue again
-			//for (n : vis.affectesNodes()) {
-			//	worklist.push(n);
-			//}
-		}
 	}
-
-	template void FirmInterface::runWorklistAlgorithm<FirmNodeVisitor>();
 }

@@ -21,6 +21,7 @@ namespace firm
 				 * a trailing return statement if necessary
 				 */
 				void visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg);
+				void foldConstants(ir_graph* irg);
 			public:
 				MemberVisitor(ClassVisitor& classVisitor);
 				virtual void visit(shptr<const ast::MethodDeclaration> node);
