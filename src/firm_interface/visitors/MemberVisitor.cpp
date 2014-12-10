@@ -10,6 +10,35 @@ namespace firm
 			setOwner(classVisitor.getOwner());
 		}
 
+		void MemberVisitor::foldConstants(ir_graph* irg)
+		{
+			dump_ir_graph(irg, "pre-optimize");
+
+			// IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE property is necessary for walking the graph
+			add_irg_properties(irg, IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE);
+
+			//irg_finalize_cons(irg); not working, aborts with Assertion failed: (irg_is_constrained(irg, IR_GRAPH_CONSTRAINT_CONSTRUCTION)), function set_r_cur_block, file ir/ir/ircons.c, line 435.
+
+			auto worklist = FirmInterface::getInstance().getWorklist();
+
+			while (!worklist.empty())
+			{
+				ir_node* node = worklist.front();
+
+				if (is_Add(node) || is_Mul(node))
+				{
+					ir_tarval* tarVal = computed_value(node);
+
+					if (get_tarval_mode(tarVal) == mode_Is)
+						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
+				}
+
+				worklist.pop();
+			}
+
+			dump_ir_graph(irg, "post-optimize");
+		}
+
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 		{
 			// set method start block as current block
@@ -44,6 +73,12 @@ namespace firm
 				ir_node* x = new_Return(currentMemState, 0, NULL);
 				add_immBlock_pred(get_irg_end_block(irg), x);
 			}
+
+			// mature end block as method body is fully converted to Firm nodes
+			mature_immBlock(get_irg_end_block(irg));
+
+			// optimize Firm graph
+			foldConstants(irg);
 
 			irg_finalize_cons(irg);
 			irg_verify(irg);
