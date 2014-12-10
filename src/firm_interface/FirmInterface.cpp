@@ -443,4 +443,20 @@ namespace firm
 	{
 		var2pos = newVar2pos;
 	}
+
+	std::queue<ir_node*> FirmInterface::getWorklist()
+	{
+		typedef void (*ir_func)(ir_node*, void*);
+		auto pWorklist = new std::queue<ir_node*>();
+		ir_func addToWorklist = [](ir_node * node, void* env)
+		{
+			auto pWorklist = (std::queue<ir_node*>*)env;
+			//std::cout << node << std::endl;
+			pWorklist->push(node);
+		};
+		// do want a pre or post ordering?
+		irg_walk_blkwise_dom_top_down(get_current_ir_graph(), addToWorklist, NULL, (void*)pWorklist);
+		//std::cout << "size of worklist\t" << pWorklist->size() << std::endl;
+		return std::move(*pWorklist);
+	}
 }
