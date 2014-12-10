@@ -19,6 +19,7 @@ namespace firm
 	FirmInterface::FirmInterface()
 	{
 		ir_init();
+		all_optimizations_off();
 		printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
 		be_parse_arg("isa=amd64");
 		ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
