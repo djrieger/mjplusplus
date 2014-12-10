@@ -54,6 +54,7 @@ namespace firm
 						}
 					}
 				}
+				// TODO: a +/- 0 -> a
 				// not working yet:
 				else if (is_Cmp(node))
 				{
