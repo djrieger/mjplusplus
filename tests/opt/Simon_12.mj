@@ -1,0 +1,20 @@
+class a {
+	public static void main(String[] args) {
+		new a().q();
+	}
+	
+	public void q() {
+		int i = (2+3)*4+5; /* @old "(2+3)*4+5" @opt "25" */
+		System.out.println(i);
+		i = (-8+3*5)%3; /* @old "(-8+3*5)%3" @opt "1" */
+		System.out.println(i);
+		i = 9/3/3; /* @old "9/3/3" @opt "1" */
+		System.out.println(i);
+		i = -2147483648-1; /* @old "-2147483648-1" @opt "2147483647" */
+		System.out.println(i);
+		i = - -2147483648; /* @old "- -2147483648" @opt "-2147483648" */
+		System.out.println(i);
+		i = 7*(3+4-1); /* @old "7*(3+4-1)" @opt "42" */
+		System.out.println(i);
+	}
+}

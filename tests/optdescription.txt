@@ -8,3 +8,8 @@ Simon_07: local optimization of simple expressions within expressions
 Simon_08: local optimization of bigger expressions
 Simon_09: local optimization of putting ! into equality test
 Simon_10: local optimization of simple pure assignments
+Simon_11: simple constant folding (ints)
+Simon_12: recursive constant folding (ints)
+Simon_13: simple constant folding (bools without control flow, null)
+Simon_14: constant folding within expressions
+Simon_15: linear constant propagation

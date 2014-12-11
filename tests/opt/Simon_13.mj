@@ -1,0 +1,23 @@
+class a {
+	public static void main(String[] args) {
+		new a().q();
+	}
+	
+	public void q() {
+		boolean b = true == false; /* @old "true == false" @opt "false" */
+		print(b);
+		b = true != false; /* @old "true != false" @opt "true" */
+		print(b);
+		b = true == true; /* @old "true == true" @opt "true" */
+		print(b);
+		b = null == null; /* @old "null == null" @opt "true" */
+		print(b);
+		b = null != null; /* @old "null != null" @opt "false" */
+		print(b);
+	}
+	
+	public void print(boolean b) {
+		if (b) System.out.println(1); 
+		else System.out.println(0);
+	}
+}

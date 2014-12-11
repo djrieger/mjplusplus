@@ -1,0 +1,30 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(5);
+	}
+	
+	public void q(int j) {
+		int k = 0;
+		while (k==0) {
+			k = 1;
+			j = j+1;
+		}
+		int i = (2+3)*j+5; /* @old "(2+3)" @opt "5" */
+		System.out.println(i);
+		i = (-8+3*5)%i; /* @old "(-8+3*5)" @opt "7" */
+		System.out.println(i);
+		System.out.println(5+2); /* @old "5+2" @opt "7" */
+		int[] q = new int[5+2]; /* @old "5+2" @opt "7" */
+		System.out.println(q[5+2]); /* @old "5+2" @opt "7" */
+		while (j == 5+2) { /* @old "5+2" @opt "7" */
+			j = j+1;
+		}
+		System.out.println(j);
+		i = seven(5+2); /* @old "5+2" @opt "7" */
+		System.out.println(i*(5+2)+j*(1-2)); /* @old "5+2" @opt "7" & @old "1-2" @opt "-1" */
+	}
+	
+	public int seven(int ignored) {
+		return 5+2; /* @old "5+2" @opt "7" */
+	}
+}
