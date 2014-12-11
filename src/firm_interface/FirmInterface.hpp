@@ -114,7 +114,7 @@ namespace firm
 
 			void foo();
 
-			std::queue<ir_node*> getWorklist();
+			std::queue<ir_node*> getWorklist(ir_graph* irg);
 			std::vector<std::pair<ir_node*, unsigned int>> getOuts(ir_node const* n);
 	};
 }
