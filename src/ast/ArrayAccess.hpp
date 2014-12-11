@@ -16,7 +16,7 @@ namespace ast
 			public:
 				ArrayAccess(shptr<Expression> access_offset);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<Type> callingType) ;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable, shptr<Type> callingType) ;
 				virtual bool lValueHelp() const;
 				virtual void accept(ASTVisitor& visitor) const;
 				shptr<Expression> getAccessOffset() const;

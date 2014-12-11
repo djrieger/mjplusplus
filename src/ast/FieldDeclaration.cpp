@@ -31,9 +31,9 @@ std::string ast::FieldDeclaration::getName() const
 	return type_and_name->getName();
 }
 
-void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const
+void ast::FieldDeclaration::collectDefinition(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable, std::string const& class_name) const
 {
-	auto symbol = Symbol::makeSymbol(this->getNameForSort(), shptr<Scope>());
+	auto symbol = semantic::symbol::Symbol::makeSymbol(this->getNameForSort(), shptr<semantic::symbol::Scope>());
 
 	// check if a method with the same name already exists
 	if (symbolTable->definedInCurrentScope(symbol))
@@ -50,7 +50,7 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 		sa.reportError("Cannot have a field with void as base type.", type_and_name->getIdent());
 
 	// insert this field into symbol table of this class
-	auto definition = std::make_shared<Definition>(symbol, std::static_pointer_cast<FieldDeclaration const>(shared_from_this()));
+	auto definition = std::make_shared<semantic::symbol::Definition>(symbol, std::static_pointer_cast<FieldDeclaration const>(shared_from_this()));
 	symbolTable->insert(symbol, definition);
 
 	// insert this field into the method table in the class table
@@ -60,7 +60,7 @@ void ast::FieldDeclaration::collectDefinition(SemanticAnalysis& sa, shptr<Symbol
 	ct[class_name].fieldTable->insertField(type_and_name->getName(), fd_node, type);
 }
 
-void ast::FieldDeclaration::analyze(SemanticAnalysis&, shptr<SymbolTable>) const
+void ast::FieldDeclaration::analyze(semantic::SemanticAnalysis&, shptr<semantic::symbol::SymbolTable>) const
 {
 	/* does nothing */
 }

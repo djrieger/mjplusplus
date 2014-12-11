@@ -47,10 +47,10 @@ namespace ast
 			out << ";\n";
 		}
 
-		bool LVDStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		bool LVDStatement::analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			//Test if symbol is in table
-			auto s = Symbol::makeSymbol(type_ident->getName());
+			auto s = semantic::symbol::Symbol::makeSymbol(type_ident->getName());
 
 			if (symbolTable->definedInCurrentScope(s) ||
 			        (s->getCurrentDefinition() && s->getCurrentDefinition()->getType()->getName() != "$System"))
@@ -68,7 +68,7 @@ namespace ast
 				return false;
 			}
 
-			auto d = std::make_shared<Definition>(s, std::static_pointer_cast<LVDStatement const>(shared_from_this()));
+			auto d = std::make_shared<semantic::symbol::Definition>(s, std::static_pointer_cast<LVDStatement const>(shared_from_this()));
 			symbolTable->insert(s, d);
 
 			if (init_expr)

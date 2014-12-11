@@ -6,6 +6,7 @@
 #include "Statement.hpp"
 #include "TypeIdent.hpp"
 #include "VariableDeclaration.hpp"
+#include "../semantic_analysis/SemanticAnalysis.hpp"
 
 namespace ast
 {
@@ -21,7 +22,7 @@ namespace ast
 				LVDStatement(shptr<TypeIdent> type_ident);
 				LVDStatement(shptr<TypeIdent> type_ident, shptr<Expression> init_expr);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 
 				shptr<Ident> getIdent() const;
 				virtual unsigned int countVariableDeclarations() const;

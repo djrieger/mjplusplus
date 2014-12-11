@@ -97,7 +97,7 @@ namespace ast
 			;
 		}
 
-		shptr<Type> Not::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<Type> Not::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			shptr<Type> child_type = child->get_type(sa, symbolTable);
 
@@ -138,7 +138,7 @@ namespace ast
 			;
 		}
 
-		shptr<Type> Neg::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<Type> Neg::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			shptr<Type> child_type = child->get_type(sa, symbolTable);
 

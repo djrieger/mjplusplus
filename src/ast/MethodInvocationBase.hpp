@@ -2,9 +2,9 @@
 #define METHOD_INVOCATION_BASE_HPP
 
 #include "../globals.hpp"
-#include "../util/MethodTable.hpp"
+#include "../semantic_analysis/MethodTable.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
-#include "../util/symbol_table/symbol_table.hpp"
+#include "../semantic_analysis/symbol_table/symbol_table.hpp"
 
 namespace ast
 {
@@ -21,7 +21,7 @@ namespace ast
 			shptr<Arguments> arguments;
 			MethodInvocationBase(shptr<Ident> method_name, shptr<Arguments> arguments);
 		public:
-			shptr<ast::Type> performTypeChecks(shptr<ast::Ident> method_ident, MethodTable::MethodTableItem const& method_item, SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			shptr<ast::Type> performTypeChecks(shptr<ast::Ident> method_ident, semantic::MethodTable::MethodTableItem const& method_item, semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 			shptr<MethodDeclaration const> getDeclaration() const;
 			virtual std::string const& getIdentifier() const;
 			virtual shptr<Arguments const> getArguments() const;

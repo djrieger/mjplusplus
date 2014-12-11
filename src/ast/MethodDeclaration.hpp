@@ -30,9 +30,9 @@ namespace ast
 			virtual std::string getNameForSort() const;
 			shptr<vec<shptr<TypeIdent>>> getParameters() const;
 			shptr<Type> getReturnType() const;
-			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const;
-			virtual shptr<vec<shptr<Type>>> collectParameters(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			virtual void collectDefinition(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable, std::string const& class_name) const;
+			virtual shptr<vec<shptr<Type>>> collectParameters(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
+			virtual void analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 			shptr<stmt::Block> getBlock() const;
 			virtual unsigned int countVariableDeclarations() const;
 			virtual void createVariablePositions() const;

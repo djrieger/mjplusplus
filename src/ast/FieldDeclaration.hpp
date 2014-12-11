@@ -17,8 +17,8 @@ namespace ast
 			FieldDeclaration(shptr<TypeIdent> type_and_name);
 
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const;
-			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+			virtual void collectDefinition(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable, std::string const& class_name) const;
+			virtual void analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 			virtual std::string getName() const;
 			virtual std::string getNameForSort() const;
 			virtual void accept(ASTVisitor& visitor) const;

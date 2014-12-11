@@ -28,7 +28,7 @@ namespace ast
 			;
 		}
 
-		shptr<Type> Bool::get_type(SemanticAnalysis&, shptr<SymbolTable>) const
+		shptr<Type> Bool::get_type(semantic::SemanticAnalysis&, shptr<semantic::symbol::SymbolTable>) const
 		{
 			//TODO: is there a better way than to create a new shared pointer for every boolean or int?
 			return std::make_shared<Type>(Type::BOOLEAN);
@@ -70,15 +70,15 @@ namespace ast
 			identifier->toString(out, ident);
 		}
 
-		shptr<Type> Ident::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
+		shptr<Type> Ident::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable>) const
 		{
 			// lookup in (local) symbol table
 			auto system_type = std::shared_ptr<Type>();
-			auto ident_symbol = Symbol::makeSymbol(identifier->getName());
+			auto ident_symbol = semantic::symbol::Symbol::makeSymbol(identifier->getName());
 
 			if (ident_symbol)
 			{
-				shptr<Definition> ident_def = ident_symbol->getCurrentDefinition();
+				shptr<semantic::symbol::Definition> ident_def = ident_symbol->getCurrentDefinition();
 
 				if (ident_def)
 				{
@@ -101,7 +101,7 @@ namespace ast
 
 			// lookup in field table
 			auto class_table = sa.getClassTable();
-			auto this_symbol = Symbol::makeSymbol("this");
+			auto this_symbol = semantic::symbol::Symbol::makeSymbol("this");
 			auto definition = this_symbol->getCurrentDefinition();
 
 			if (!definition)
@@ -164,15 +164,15 @@ namespace ast
 			out << ((object_type == Object_Type::THIS_OBJECT) ? "this" : "null");
 		}
 
-		shptr<Type> Object::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
+		shptr<Type> Object::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable>) const
 		{
 			if (object_type == Object_Type::THIS_OBJECT)
 			{
-				shptr<Symbol> this_symbol = Symbol::makeSymbol("this");
+				shptr<semantic::symbol::Symbol> this_symbol = semantic::symbol::Symbol::makeSymbol("this");
 
 				if (this_symbol)
 				{
-					shptr<Definition> this_def = this_symbol->getCurrentDefinition();
+					shptr<semantic::symbol::Definition> this_def = this_symbol->getCurrentDefinition();
 
 					if (this_def)
 					{
@@ -210,7 +210,7 @@ namespace ast
 
 		}
 
-		shptr<Type>Integer::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
+		shptr<Type>Integer::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable>) const
 		{
 			unsigned long long value;
 
@@ -262,7 +262,7 @@ namespace ast
 
 		}
 
-		shptr<Type>NewArrayExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<Type>NewArrayExpression::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			shptr<Type> child_type = expr->get_type(sa, symbolTable);
 
@@ -323,7 +323,7 @@ namespace ast
 			out << "())";
 		}
 
-		shptr<Type> NewObjectExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable>) const
+		shptr<Type> NewObjectExpression::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable>) const
 		{
 			shptr<Type> type = std::make_shared<Type>(identifier);
 
@@ -369,11 +369,11 @@ namespace ast
 			arguments->toString(out, indent);
 		}
 
-		shptr<Type> MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<Type> MethodInvocation::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 
 			auto class_table = sa.getClassTable();
-			auto this_symbol = Symbol::makeSymbol("this");
+			auto this_symbol = semantic::symbol::Symbol::makeSymbol("this");
 			auto definition = this_symbol->getCurrentDefinition();
 
 			if (!definition)

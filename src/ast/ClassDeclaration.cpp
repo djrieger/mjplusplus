@@ -6,7 +6,7 @@
 #include "MethodDeclaration.hpp"
 #include "MainMethodDeclaration.hpp"
 #include "Type.hpp"
-#include "../util/symbol_table/Symbol.hpp"
+#include "../semantic_analysis/symbol_table/Symbol.hpp"
 
 namespace ast
 {
@@ -40,7 +40,7 @@ namespace ast
 		return class_name->getName();
 	}
 
-	bool ClassDeclaration::collectDefinitions(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+	bool ClassDeclaration::collectDefinitions(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 	{
 		bool containsMainMethod = false;
 
@@ -57,9 +57,9 @@ namespace ast
 		return containsMainMethod;
 	}
 
-	void ClassDeclaration::analyze(SemanticAnalysis& sa) const
+	void ClassDeclaration::analyze(semantic::SemanticAnalysis& sa) const
 	{
-		auto symbolTable = std::make_shared<SymbolTable>();
+		auto symbolTable = std::make_shared<semantic::symbol::SymbolTable>();
 		symbolTable->enterScope();
 
 		for (auto& classMemberNode : *members)

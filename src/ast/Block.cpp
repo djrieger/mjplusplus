@@ -31,7 +31,7 @@ namespace ast
 			return Type::TYPE_BLOCK;
 		}
 
-		bool Block::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		bool Block::analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			symbolTable->enterScope();
 

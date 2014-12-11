@@ -6,8 +6,6 @@
 #include "Node.hpp"
 #include "ClassDeclaration.hpp"
 
-class SemanticAnalysis;
-
 namespace ast
 {
 	class ClassDeclaration;
@@ -20,8 +18,8 @@ namespace ast
 		public:
 			Program(shptr<vec<shptr<ClassDeclaration>>> classes);
 			virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-			virtual void collectDefinitions(SemanticAnalysis& sa) const;
-			virtual void analyze(SemanticAnalysis& sa) const;
+			virtual void collectDefinitions(semantic::SemanticAnalysis& sa) const;
+			virtual void analyze(semantic::SemanticAnalysis& sa) const;
 			void addPseudoClasses();
 			virtual void accept(ASTVisitor& visitor) const;
 			shptr<vec<shptr<ClassDeclaration>>> const getClasses() const;

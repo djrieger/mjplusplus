@@ -19,7 +19,7 @@ namespace ast
 				ReturnStatement(source_position_t position);
 				ReturnStatement(shptr<Expression> expression);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 				shptr<Expression> getExpression() const;
 		};

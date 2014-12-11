@@ -35,7 +35,7 @@ namespace ast
 			public:
 				NotEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual std::pair<bool, bool> constBool() const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
@@ -47,7 +47,7 @@ namespace ast
 			public:
 				Mult(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -58,7 +58,7 @@ namespace ast
 			public:
 				Plus(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -69,7 +69,7 @@ namespace ast
 			public:
 				Minus(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -80,7 +80,7 @@ namespace ast
 			public:
 				Slash(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -91,7 +91,7 @@ namespace ast
 			public:
 				LessThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -102,7 +102,7 @@ namespace ast
 			public:
 				LessThan(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -113,7 +113,7 @@ namespace ast
 			public:
 				EqEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual std::pair<bool, bool> constBool() const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
@@ -125,7 +125,7 @@ namespace ast
 			public:
 				Eq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
@@ -137,7 +137,7 @@ namespace ast
 			public:
 				GreaterThanEq(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -148,7 +148,7 @@ namespace ast
 			public:
 				GreaterThan(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -159,7 +159,7 @@ namespace ast
 			public:
 				Mod(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
@@ -170,7 +170,7 @@ namespace ast
 			public:
 				AndAnd(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual std::pair<bool, bool> constBool() const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
@@ -182,7 +182,7 @@ namespace ast
 			public:
 				OrOr(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual std::pair<bool, bool> constBool() const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
@@ -194,7 +194,7 @@ namespace ast
 			public:
 				Invalid(shptr<Expression> leftChild, shptr<Expression> rightChild);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 
