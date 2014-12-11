@@ -37,22 +37,17 @@ namespace firm
 				else if (is_Add(node))
 				{
 
-					printf("Got Add node...");
 					ir_node* left = get_irn_n(node, 0);
 					ir_node* right = get_irn_n(node, 1);
 
 					// Both arguments are constants.
 					if (is_Const(left) && is_Const(right))
-					{
 						exchange(node, new_Const_long(mode_Is,
 						                              get_tarval_long(computed_value(left)) + get_tarval_long(computed_value(right))));
-						printf(" and both children are const nodes!");
-					}
 					else
 					{
 						// Check whether at least one argument is 0, and if so,
 						// apply the rule x + 0 = x (or 0 + x = x).
-						printf(" and one child is a const node!");
 
 						if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
 							exchange(node, right);
@@ -61,7 +56,6 @@ namespace firm
 							exchange(node, left);
 					}
 
-					printf("\n");
 				}
 				else if (is_Sub(node))
 				{
@@ -85,14 +79,10 @@ namespace firm
 				}
 				else if (is_Mul(node))
 				{
-					printf("Got Mul node...");
 					ir_tarval* tarVal = computed_value(node);
 
 					if (get_tarval_mode(tarVal) == mode_Is)
-					{
 						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
-						printf(" and both children are consts!");
-					}
 					else
 					{
 						ir_node* left = get_irn_n(node, 0);
@@ -112,8 +102,6 @@ namespace firm
 								exchange(node, new_Const_long(mode_Is, 0));
 							else if (value == 1)
 								exchange(node, right);
-
-							printf(" and the left child is const!");
 						}
 
 						// See above...
@@ -127,12 +115,9 @@ namespace firm
 								exchange(node, new_Const_long(mode_Is, 0));
 							else if (value == 1)
 								exchange(node, left);
-
-							printf(" and the right child is const!");
 						}
 					}
 
-					printf("\n");
 				}
 				else if (is_Div(node) || is_Mod(node))
 				{
