@@ -30,7 +30,7 @@ namespace ast
 			public:
 				Bool(bool value, source_position_t position);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual std::pair<bool, bool> constBool() const;
 				virtual bool getValue() const;
@@ -42,7 +42,7 @@ namespace ast
 			public:
 				Ident(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int ident, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual void accept(ASTVisitor& visitor) const;
 				virtual std::string const& getIdentifier() const;
@@ -61,7 +61,7 @@ namespace ast
 
 				Object(Object_Type object_type, source_position_t position);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual void accept(ASTVisitor& visitor) const;
 				virtual Object_Type getObjectType() const;
@@ -76,7 +76,7 @@ namespace ast
 			public:
 				Integer(std::string const& string_value, source_position_t position);
 				virtual void toString(std::ostream& out, unsigned int, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual std::string const& getStringValue() const;
 				virtual void accept(ASTVisitor& visitor) const;
@@ -87,7 +87,7 @@ namespace ast
 			public:
 				NewArrayExpression(shptr<Type> type, shptr<Expression> expr);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual void accept(ASTVisitor& visitor) const;
 				shptr<Type> getType() const;
@@ -102,7 +102,7 @@ namespace ast
 			public:
 				NewObjectExpression(shptr<ast::Ident> identifier);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;
@@ -116,7 +116,7 @@ namespace ast
 			public:
 				MethodInvocation(shptr<ast::Ident> method_name, shptr<Arguments> arguments);
 				virtual void toString(std::ostream& out, unsigned int indent, bool = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual bool isLValue() const;
 				virtual bool standalone() const;
 				virtual void accept(ASTVisitor& visitor) const;

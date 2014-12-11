@@ -8,8 +8,6 @@
 #include "Node.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
 
-class SemanticAnalysis;
-
 namespace ast
 {
 	class ClassMember;
@@ -26,8 +24,8 @@ namespace ast
 			/*
 			 * @return whether this class contains a main method
 			 */
-			bool collectDefinitions(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
-			void analyze(SemanticAnalysis& sa) const;
+			bool collectDefinitions(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
+			void analyze(semantic::SemanticAnalysis& sa) const;
 			std::string getName() const;
 			shptr<Ident> getIdent() const;
 			virtual void accept(ASTVisitor& visitor) const;

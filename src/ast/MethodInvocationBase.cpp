@@ -23,7 +23,7 @@ shptr<ast::MethodDeclaration const> ast::MethodInvocationBase::getDeclaration() 
 	return declaration;
 }
 
-shptr<ast::Type> ast::MethodInvocationBase::performTypeChecks(shptr<ast::Ident> method_ident, MethodTable::MethodTableItem const& method_item, SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+shptr<ast::Type> ast::MethodInvocationBase::performTypeChecks(shptr<ast::Ident> method_ident, semantic::MethodTable::MethodTableItem const& method_item, semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 {
 	declaration = method_item.methodNode;
 	shptr<vec<shptr<ast::Type>>> declarationTypes = method_item.parameterTypes;

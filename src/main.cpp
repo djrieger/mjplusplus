@@ -50,7 +50,7 @@ int lexTest(lexer::Lexer lexer)
 
 bool runSemanticAnalysis(shptr<ast::Program> root, shptr<ErrorReporter> errorReporter)
 {
-	SemanticAnalysis sa(root, errorReporter);
+	semantic::SemanticAnalysis sa(root, errorReporter);
 	bool valid = sa.start();
 	errorReporter->printErrors();
 	return valid;

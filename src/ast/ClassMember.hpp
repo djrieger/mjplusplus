@@ -2,9 +2,12 @@
 #define CLASSMEMBER_HPP
 
 #include "Node.hpp"
-#include "../semantic_analysis/SemanticAnalysis.hpp"
+#include "../semantic_analysis/symbol_table/symbol_table.hpp"
 
-class SemanticAnalysis;
+namespace semantic
+{
+	class SemanticAnalysis;
+}
 
 namespace ast
 {
@@ -15,8 +18,8 @@ namespace ast
 		public:
 			virtual std::string getNameForSort() const = 0;
 			virtual std::string getName() const = 0;
-			virtual void collectDefinition(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, std::string const& class_name) const = 0;
-			virtual void analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const = 0;
+			virtual void collectDefinition(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable, std::string const& class_name) const = 0;
+			virtual void analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const = 0;
 			void setDeclaration(shptr<ClassDeclaration const> decl);
 			shptr<ClassDeclaration const> getDeclaration() const;
 			/**

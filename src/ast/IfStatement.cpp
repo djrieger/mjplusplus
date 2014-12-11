@@ -62,7 +62,7 @@ namespace ast
 			return Type::TYPE_IF;
 		}
 
-		bool IfStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		bool IfStatement::analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			// TODO: if we can determine the condition at compile time, one statement doesn't matter for definite return analysis
 			// still perform semantic analysis though

@@ -20,7 +20,7 @@ namespace ast
 				IfStatement(shptr<Expression> condition, shptr<Statement> thenStatement, shptr<Statement> elseStatement);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 				virtual Statement::Type getType() const;
-				virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual unsigned int countVariableDeclarations() const;
 				virtual int setVariablePositions(int) const;
 				virtual void accept(ASTVisitor& visitor) const;

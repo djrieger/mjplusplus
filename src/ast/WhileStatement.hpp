@@ -18,7 +18,7 @@ namespace ast
 			public:
 				WhileStatement(shptr<Expression> condition, shptr<Statement> statement);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
-				virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symboltable) const;
+				virtual bool analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symboltable) const;
 
 				virtual unsigned int countVariableDeclarations() const;
 				virtual int setVariablePositions(int) const;

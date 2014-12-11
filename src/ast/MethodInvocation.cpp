@@ -14,7 +14,7 @@ void ast::po::MethodInvocation::toString(std::ostream& out, unsigned int indent,
 	arguments->toString(out, indent);
 }
 
-shptr<ast::Type> ast::po::MethodInvocation::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable, shptr<ast::Type> callingType)
+shptr<ast::Type> ast::po::MethodInvocation::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable, shptr<ast::Type> callingType)
 {
 	if (callingType->isClassType())
 	{

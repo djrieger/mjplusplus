@@ -17,7 +17,7 @@ namespace ast
 			out << ";\n";
 		}
 
-		bool ExpressionStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		bool ExpressionStatement::analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			expression->get_type(sa, symbolTable);
 

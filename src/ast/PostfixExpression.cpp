@@ -32,7 +32,7 @@ namespace ast
 				out << ')';
 		}
 
-		shptr<ast::Type> PostfixExpression::get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		shptr<ast::Type> PostfixExpression::get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			auto callingType = child->get_type(sa, symbolTable);
 

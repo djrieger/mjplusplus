@@ -1,9 +1,11 @@
 #ifndef BLOCK_HPP
 #define BLOCK_HPP
 
+#include <vector>
+
 #include "../globals.hpp"
 #include "Statement.hpp"
-#include <vector>
+#include "../semantic_analysis/SemanticAnalysis.hpp"
 
 namespace ast
 {
@@ -18,7 +20,7 @@ namespace ast
 				Block(shptr<vec<shptr<Statement> > > block_statements);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
 				virtual Statement::Type getType() const;
-				virtual bool analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual bool analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				shptr<vec<shptr<Statement>>> getStatements() const;
 
 				virtual unsigned int countVariableDeclarations() const;

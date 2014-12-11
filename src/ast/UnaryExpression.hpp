@@ -51,7 +51,7 @@ namespace ast
 			public:
 				Not(shptr<Expression> child, int size);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual std::pair<bool, bool> constBool() const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
@@ -61,7 +61,7 @@ namespace ast
 			public:
 				Neg(shptr<Expression> child, int size);
 				virtual void toString(std::ostream& out, unsigned int indent, bool special = false) const;
-				virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const;
+				virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const;
 				virtual void accept(ASTVisitor& visitor) const;
 		};
 

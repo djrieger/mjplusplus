@@ -4,7 +4,7 @@
 #include "Node.hpp"
 #include "Type.hpp"
 #include "PositionAwareNode.hpp"
-#include "../util/symbol_table/symbol_table.hpp"
+#include "../semantic_analysis/symbol_table/symbol_table.hpp"
 #include "../semantic_analysis/SemanticAnalysis.hpp"
 
 namespace ast
@@ -20,7 +20,7 @@ namespace ast
 			* it's type. If something is invalid, an error is printed in the Expression
 			* that is invalid and an empty pointer is returned.
 			*/
-			virtual shptr<Type> get_type(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const = 0;
+			virtual shptr<Type> get_type(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const = 0;
 			virtual bool isLValue() const = 0;
 			virtual bool standalone() const = 0;
 			/**

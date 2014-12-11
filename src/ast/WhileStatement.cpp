@@ -44,7 +44,7 @@ namespace ast
 			return statement;
 		}
 
-		bool WhileStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		bool WhileStatement::analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
 			auto cond = condition->get_type(sa, symbolTable);
 

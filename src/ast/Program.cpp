@@ -28,7 +28,7 @@ void ast::Program::toString(std::ostream& out, unsigned int indent, bool) const
 		c->toString(out, indent);
 }
 
-void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
+void ast::Program::collectDefinitions(semantic::SemanticAnalysis& sa) const
 {
 	for (auto& classDeclNode : *classes)
 	{
@@ -46,7 +46,7 @@ void ast::Program::collectDefinitions(SemanticAnalysis& sa) const
 		sa.reportError(std::to_string(mainMethodCount) + " main methods defined.");
 }
 
-void ast::Program::analyze(SemanticAnalysis& sa) const
+void ast::Program::analyze(semantic::SemanticAnalysis& sa) const
 {
 	for (auto& item : sa.getClassTable())
 		item.second.classNode->analyze(sa);

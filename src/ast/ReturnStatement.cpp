@@ -34,9 +34,9 @@ namespace ast
 			return expression;
 		}
 
-		bool ReturnStatement::analyze(SemanticAnalysis& sa, shptr<SymbolTable> symbolTable) const
+		bool ReturnStatement::analyze(semantic::SemanticAnalysis& sa, shptr<semantic::symbol::SymbolTable> symbolTable) const
 		{
-			auto ret_type = Symbol::makeSymbol("return", symbolTable->getCurrentScope())->getCurrentDefinition()->getType();
+			auto ret_type = semantic::symbol::Symbol::makeSymbol("return", symbolTable->getCurrentScope())->getCurrentDefinition()->getType();
 			auto expr_type = std::make_shared<ast::Type>(ast::Type::Primitive_type::VOID);
 
 			if (expression)
