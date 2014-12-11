@@ -10,29 +10,140 @@ namespace firm
 			setOwner(classVisitor.getOwner());
 		}
 
+		void optimizePhi(ir_node* node) 
+		{
+			int predCount = get_irn_arity(node);
+			int i = 0;
+			bool onlyUnknowns = true;
+			bool isSingleValue = true;
+
+			int numFoundAt = -1;
+			int numFound = -1;
+
+			bool valueDetermined = false;
+
+			std::cout << "phi has " << predCount << " predecessors" << std::endl;
+			while (i < predCount)
+			{
+				ir_node* pred = get_irn_n(node, i);
+				ir_tarval* curTarval = (ir_tarval*)get_irn_link(pred);
+
+				if (curTarval == tarval_bad || 
+					// number with different value found
+					(numFoundAt >= 0 && 
+						get_tarval_mode(curTarval) == mode_Is && 
+						numFound != get_tarval_long(curTarval)))
+				{
+					std::cout << "case 1" << std::endl;
+					// set tarval of phi to bad
+					set_irn_link(node, (void*)tarval_bad);
+					valueDetermined = true;
+
+					if (numFound != get_tarval_long(curTarval))
+						isSingleValue = false;
+					break;
+				}
+				// handle only unknown values
+				else if (curTarval != tarval_unknown) {
+					onlyUnknowns = false;
+				}
+
+				// if current predecessor is a number, store index of predecessor and 
+				if (get_tarval_mode(curTarval) == mode_Is) {					
+					numFoundAt = i;
+					numFound = get_tarval_long(curTarval);
+					std::cout << "num found: " << numFound << std::endl;
+					std::cout << "phi predecessor: ";
+					ir_printf("%F\n", pred);
+				}
+				i++;
+			} 
+
+			if (!valueDetermined) {
+				// only unknown values found
+				if (onlyUnknowns) {
+					std::cout << "case 4" << std::endl;
+					set_irn_link(node, (void*)tarval_unknown);
+				}
+				// n times same number found
+				 else if (isSingleValue && numFoundAt >= 0) 
+			 	{
+			 		std::cout << "case 3" << std::endl;
+			 		ir_node* newConstNode = new_r_Const_long(get_irn_irg(node), mode_Is, numFound);
+			 		set_irn_link(newConstNode, (void*)new_tarval_from_long(numFound, mode_Is));
+			 		exchange(node, newConstNode);
+			 	}	
+			 	else
+			 	// n - 1 unknown values and 1 number found
+				 {
+				 	std::cout << "case 2" << std::endl;
+					set_irn_link(node, (ir_tarval*)new_tarval_from_long(numFound, mode_Is));
+				} 
+									
+			}
+		}
+
+		void updateTarvalForArithmeticNode(std::queue<ir_node*> &worklist, ir_node* node)
+		{
+			ir_node* child1 = get_irn_n(node, 0);
+			ir_node* child2 = get_irn_n(node, 1);
+			ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);
+			ir_tarval* tarval2 = (ir_tarval*)get_irn_link(child2);
+			if (get_tarval_mode(tarval1) == mode_Is && get_tarval_mode(tarval2) == mode_Is)
+			{
+				ir_tarval* resultVal;
+				if (is_Add(node)) resultVal = tarval_add(tarval1, tarval2);
+				else if (is_Sub(node)) resultVal = tarval_sub(tarval1, tarval2, NULL);
+				else if (is_Mul(node)) resultVal = tarval_mul(tarval1, tarval2);
+				//else if (is_Div(node)) resultVal = tarval_div(tarval1, tarval2);
+				else
+					throw "updateTarvalForArithmeticNode called on illegal node";
+					
+				set_irn_link(node, (void*) resultVal);
+				ir_edge_t* edge = NULL;
+				std::cout << "worklist size before " << worklist.size() << std::endl;
+				foreach_out_edge(node, edge)
+				{
+					ir_node* srcNode = get_edge_src_irn(edge);
+					ir_printf("srcNode= %F\n", srcNode);
+					worklist.push(srcNode);
+				}
+				std::cout << "worklist size after " << worklist.size() << std::endl;
+			}
+		}
+
+		void updateTarvalAndExchange(std::queue<ir_node*> &worklist, ir_node* oldNode, ir_node* newNode)
+		{
+			updateTarvalForArithmeticNode(worklist, oldNode);
+			exchange(oldNode, newNode);
+		}
+
 		void MemberVisitor::foldConstants(ir_graph* irg)
 		{
+			// TODO @Max probably need to replace new_Minus with new_r_Minus
+
 			dump_ir_graph(irg, "pre-optimize");
 
-			// IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE property is necessary for walking the graph
-			add_irg_properties(irg, IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE);
+			auto worklist = FirmInterface::getInstance().getWorklist(irg);
 
-			//irg_finalize_cons(irg); not working, aborts with Assertion failed: (irg_is_constrained(irg, IR_GRAPH_CONSTRAINT_CONSTRUCTION)), function set_r_cur_block, file ir/ir/ircons.c, line 435.
-
-			auto worklist = FirmInterface::getInstance().getWorklist();
+			edges_activate(irg);
 
 			while (!worklist.empty())
 			{
 				ir_node* node = worklist.front();
 
-				ir_printf("%F\n", node);
-
-				if (is_Minus(node))
+				if (is_Const(node)) {
+					// set tarval of this const node as its irn_link value
+					set_irn_link(node, (void*)get_Const_tarval(node));
+				} else if (is_Phi(node)) {
+					optimizePhi(node);
+				}
+				else if (is_Minus(node))
 				{
 					ir_node* child = get_irn_n(node, 0);
 
 					if (is_Const(child))
-						exchange(node, new_Const_long(mode_Is, -get_tarval_long(computed_value(child))));
+						exchange(node, new_r_Const_long(irg, mode_Is, -get_tarval_long(computed_value(child))));
 				}
 				else if (is_Add(node))
 				{
@@ -41,19 +152,20 @@ namespace firm
 					ir_node* right = get_irn_n(node, 1);
 
 					// Both arguments are constants.
-					if (is_Const(left) && is_Const(right))
-						exchange(node, new_Const_long(mode_Is,
+					if (is_Const(left) && is_Const(right)) {
+						updateTarvalAndExchange(worklist, node, new_r_Const_long(irg, mode_Is,
 						                              get_tarval_long(computed_value(left)) + get_tarval_long(computed_value(right))));
+					}
 					else
 					{
 						// Check whether at least one argument is 0, and if so,
 						// apply the rule x + 0 = x (or 0 + x = x).
 
 						if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
-							exchange(node, right);
+							updateTarvalAndExchange(worklist, node, right);
 
 						if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
-							exchange(node, left);
+							updateTarvalAndExchange(worklist, node, left);
 					}
 
 				}
@@ -61,8 +173,9 @@ namespace firm
 				{
 					ir_tarval* tarVal = computed_value(node);
 
-					if (get_tarval_mode(tarVal) == mode_Is)
-						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
+					if (get_tarval_mode(tarVal) == mode_Is){
+						updateTarvalAndExchange(worklist, node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
+					}
 					else
 					{
 						// Check whether at least one argument is 0, and if so,
@@ -70,11 +183,13 @@ namespace firm
 						ir_node* left = get_irn_n(node, 0);
 						ir_node* right = get_irn_n(node, 1);
 
-						if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
-							exchange(node, new_Minus(right, mode_Is));
+						if (is_Const(left) && get_tarval_long(computed_value(left)) == 0) {
+							updateTarvalAndExchange(worklist, node, new_Minus(right, mode_Is));
+						}
 
-						if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
-							exchange(node, left);
+						if (is_Const(right) && get_tarval_long(computed_value(right)) == 0) {
+							updateTarvalAndExchange(worklist, node, left);
+						}
 					}
 				}
 				else if (is_Mul(node))
@@ -82,7 +197,7 @@ namespace firm
 					ir_tarval* tarVal = computed_value(node);
 
 					if (get_tarval_mode(tarVal) == mode_Is)
-						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
+						updateTarvalAndExchange(worklist, node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
 					else
 					{
 						ir_node* left = get_irn_n(node, 0);
@@ -97,11 +212,11 @@ namespace firm
 							long value = get_tarval_long(computed_value(left));
 
 							if (value == -1)
-								exchange(node, new_Minus(right, mode_Is));
+								updateTarvalAndExchange(worklist, node, new_Minus(right, mode_Is));
 							else if (value == 0)
-								exchange(node, new_Const_long(mode_Is, 0));
+								updateTarvalAndExchange(worklist, node, new_r_Const_long(irg, mode_Is, 0));
 							else if (value == 1)
-								exchange(node, right);
+								updateTarvalAndExchange(worklist, node, right);
 						}
 
 						// See above...
@@ -110,11 +225,11 @@ namespace firm
 							long value = get_tarval_long(computed_value(right));
 
 							if (value == -1)
-								exchange(node, new_Minus(left, mode_Is));
+								updateTarvalAndExchange(worklist, node, new_Minus(left, mode_Is));
 							else if (value == 0)
-								exchange(node, new_Const_long(mode_Is, 0));
+								updateTarvalAndExchange(worklist, node, new_r_Const_long(irg, mode_Is, 0));
 							else if (value == 1)
-								exchange(node, left);
+								updateTarvalAndExchange(worklist, node, left);
 						}
 					}
 
@@ -132,11 +247,6 @@ namespace firm
 						// Optimize if not dividing by zero, otherwise simply leave the original Div node alone
 						if (divisorValue != 0)
 						{
-							/* TODO: fix memory chain
-							 * get Child Proj M -> get All Children -> set Parent to Div Parent 0
-							 */
-							edges_activate(current_ir_graph);
-
 							for (auto& ne : FirmInterface::getInstance().getOuts(node))
 							{
 								ir_node* o = ne.first;
@@ -150,11 +260,10 @@ namespace firm
 								{
 									long dividendValue = get_tarval_long(computed_value(dividend));
 									int32_t tarVal = is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue;
-									exchange(o, new_Const_long(mode_Is, tarVal));
+									// TODO @Max Make div/mod and updateTarvalAndExchange work together
+									exchange(o, new_r_Const_long(irg, mode_Is, tarVal));
 								}
 							}
-
-							edges_deactivate(current_ir_graph);
 						}
 					}
 				}
@@ -183,9 +292,10 @@ namespace firm
 
 							// Exchange Proj nodes leading to dead blocks with bad blocks.
 							// TODO: Remove bad nodes.
-							exchange(node, new_Bad(get_modeX()));
+							exchange(node, new_r_Bad(irg, get_modeX()));
 						}
 					}
+
 				}
 				else if (is_Cmp(node))
 				{
@@ -223,9 +333,10 @@ namespace firm
 					} // if (is_Const ...
 				} // else if (is_Cmp ...
 
-				// asd
 				worklist.pop();
 			}
+
+			edges_deactivate(irg);
 
 			dump_ir_graph(irg, "post-optimize");
 		}
@@ -268,10 +379,12 @@ namespace firm
 			// mature end block as method body is fully converted to Firm nodes
 			mature_immBlock(get_irg_end_block(irg));
 
+			irg_finalize_cons(irg);
+
 			// optimize Firm graph
 			foldConstants(irg);
 
-			irg_finalize_cons(irg);
+			
 			irg_verify(irg);
 		}
 

@@ -441,7 +441,7 @@ namespace firm
 		var2pos = newVar2pos;
 	}
 
-	std::queue<ir_node*> FirmInterface::getWorklist()
+	std::queue<ir_node*> FirmInterface::getWorklist(ir_graph* irg)
 	{
 		typedef void (*ir_func)(ir_node*, void*);
 		//auto pWorklist = new std::queue<ir_node*>();
@@ -449,10 +449,13 @@ namespace firm
 		ir_func addToWorklist = [](ir_node * node, void* env)
 		{
 			auto pWorklist = (std::queue<ir_node*>*)env;
+			set_irn_link(node, (void*)tarval_unknown);
 			pWorklist->push(node);
 		};
+
 		// post ordering
-		irg_walk_blkwise_dom_top_down(get_current_ir_graph(), NULL, addToWorklist, (void*)&pWorklist);
+		assure_irg_properties(irg, IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE);
+		irg_walk_blkwise_dom_top_down(irg, NULL, addToWorklist, (void*)&pWorklist);
 		return std::move(pWorklist);
 	}
 
