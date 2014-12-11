@@ -309,41 +309,37 @@ namespace firm
 						long left_value = get_tarval_long(computed_value(left));
 						long right_value = get_tarval_long(computed_value(right));
 
+#define SET_RELATION(R) \
+ 		do { \
+ 			set_Cmp_relation(node, left_value R right_value ? ir_relation::ir_relation_true : ir_relation::ir_relation_false); \
+ 		} while (0); \
+ 		break
+
 						switch (get_Cmp_relation(node))
 						{
 							case ir_relation::ir_relation_equal:
-								set_Cmp_relation(node, left_value == right_value ?
-								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
-								break;
+								SET_RELATION( == );
 
 							case ir_relation::ir_relation_greater:
-								set_Cmp_relation(node, left_value > right_value ?
-								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
-								break;
+								SET_RELATION( > );
 
 							case ir_relation::ir_relation_greater_equal:
-								set_Cmp_relation(node, left_value >= right_value ?
-								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
-								break;
+								SET_RELATION( >= );
 
 							case ir_relation::ir_relation_less:
-								set_Cmp_relation(node, left_value < right_value ?
-								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
-								break;
+								SET_RELATION( < );
 
 							case ir_relation::ir_relation_less_equal:
-								set_Cmp_relation(node, left_value <= right_value ?
-								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
-								break;
+								SET_RELATION( <= );
 
 							case ir_relation::ir_relation_unordered_less_greater:
-								set_Cmp_relation(node, left_value != right_value ?
-								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
-								break;
+								SET_RELATION( != );
 
 							default:
 								break;
 						} // switch
+
+#undef SET_RELATION
 					} // if (is_Const ...
 				} // else if (is_Cmp ...
 
