@@ -262,18 +262,17 @@ namespace firm
 	{
 		ir_node* memory = get_store();
 		ir_node* res = new_Mod(memory, left, right, getIntegerMode(), op_pin_state_pinned);
+		set_store(new_Proj(res, mode_M, pn_Mod_M));
 		return new_Proj(res, getIntegerMode(), pn_Mod_res);
-		// maybe set_store()
 	}
 
 	ir_node* FirmInterface::createDivOperation(ir_node* left, ir_node* right)
 	{
 		ir_node* memory = get_store();
 		ir_node* res = new_DivRL(memory, left, right, getIntegerMode(), op_pin_state_pinned); //op_pin_state_floats??
+		set_store(new_Proj(res, mode_M, pn_Div_M));
 		return new_Proj(res, getIntegerMode(), pn_Div_res);
-		// maybe set_store()
 	}
-
 
 	ir_node* FirmInterface::createNullPointerNode()
 	{
@@ -445,7 +444,8 @@ namespace firm
 	std::queue<ir_node*> FirmInterface::getWorklist(ir_graph* irg)
 	{
 		typedef void (*ir_func)(ir_node*, void*);
-		auto pWorklist = new std::queue<ir_node*>();
+		//auto pWorklist = new std::queue<ir_node*>();
+		std::queue<ir_node*> pWorklist;
 		ir_func addToWorklist = [](ir_node * node, void* env)
 		{
 			auto pWorklist = (std::queue<ir_node*>*)env;
@@ -455,8 +455,18 @@ namespace firm
 
 		// post ordering
 		assure_irg_properties(irg, IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE);
-		irg_walk_blkwise_dom_top_down(irg, NULL, addToWorklist, (void*)pWorklist);
-		return std::move(*pWorklist);
+		irg_walk_blkwise_dom_top_down(irg, NULL, addToWorklist, (void*)&pWorklist);
+		return std::move(pWorklist);
+	}
+
+	std::vector<std::pair<ir_node*, unsigned int> > FirmInterface::getOuts(ir_node const* n)
+	{
+		std::vector<std::pair<ir_node*, unsigned int>> outs;
+
+		for (ir_edge_t const* oe = get_irn_out_edge_first(n); oe; oe = get_irn_out_edge_next(n, oe, EDGE_KIND_NORMAL))
+			outs.emplace_back(get_edge_src_irn(oe), get_edge_src_pos(oe));
+
+		return outs;
 	}
 
 	void FirmInterface::foo()

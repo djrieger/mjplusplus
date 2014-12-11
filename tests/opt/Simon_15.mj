@@ -1,0 +1,23 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6);
+	}
+	
+	public void q(int z) {
+		int k = 1;
+		int j = k; /* @old "k" @opt "1" */
+		int i = 4+k; /* @old "4+k" @opt "4+1" | @opt "5" */
+		System.out.println(i); /* @old "i" @opt "1" */
+		System.out.println(j); /* @old "j" @none | @opt "5" */
+		System.out.println(k); /* @old "k" @opt "1" */
+		while (z == j) { /* @old "j" @opt "1" */
+			z = z+1;
+		}
+		k = k+1; /* @old "k" @opt "1+1" | @opt "2"  */
+		j = k; /* @old "k" @none | @opt "2" */
+		k = 2;
+		i = 3;
+		System.out.println(k+i); /* @old "k+i" @opt "2+3" | @opt "5" */
+		System.out.println(z+i*k); /* @old "i*k" @opt "3*2" | @opt "6" */
+	}
+}
