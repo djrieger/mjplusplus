@@ -117,27 +117,42 @@ namespace firm
 						}
 					}
 				}
-				else if (is_Proj(node))
+				else if (is_Div(node) || is_Mod(node))
 				{
-					// Get first child of proj node
-					ir_node* divNode = get_irn_n(node, 0);
+					// Get children of div node (operands)
+					ir_node* dividend = get_irn_n(node, 1);
+					ir_node* divisor = get_irn_n(node, 2);
 
-					if (is_Div(divNode))
+					if (is_Const(dividend) && is_Const(divisor))
 					{
-						// Get children of div node (operands)
-						ir_node* dividend = get_irn_n(divNode, 1);
-						ir_node* divisor = get_irn_n(divNode, 2);
+						long divisorValue = get_tarval_long(computed_value(divisor));
 
-						if (is_Const(dividend) && is_Const(divisor))
+						// Optimize if not dividing by zero, otherwise simply leave the original Div node alone
+						if (divisorValue != 0)
 						{
-							long divisorValue = get_tarval_long(computed_value(divisor));
+							/* TODO: fix memory chain
+							 * get Child Proj M -> get All Children -> set Parent to Div Parent 0
+							 */
+							edges_activate(current_ir_graph);
 
-							// Optimize if not dividing by zero, otherwise simply leave the original Div node alone
-							if (divisorValue != 0)
+							for (auto& ne : FirmInterface::getInstance().getOuts(node))
 							{
-								long division = get_tarval_long(computed_value(dividend)) / divisorValue;
-								exchange(node, new_Const_long(mode_Is, division));
+								ir_node* o = ne.first;
+
+								if (get_irn_mode(o) == mode_M)
+								{
+									for (auto& e : FirmInterface::getInstance().getOuts(o))
+										set_irn_n(e.first, e.second, get_irn_n(node, 0));
+								}
+								else
+								{
+									long dividendValue = get_tarval_long(computed_value(dividend));
+									int32_t tarVal = is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue;
+									exchange(o, new_Const_long(mode_Is, tarVal));
+								}
 							}
+
+							edges_deactivate(current_ir_graph);
 						}
 					}
 				}
