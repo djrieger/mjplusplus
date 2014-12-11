@@ -3,22 +3,24 @@ mjplusplus
 
 mjplusplus is a compiler for the MiniJava language, a Java subset. MiniJava code is compiled to 64 bit x86 assembler. It is being developed by a group of students from Karlsruhe Institute of Technology (Group 5).
 
+The code's documentation can be found here: http://djrieger.github.io/mjplusplus/doc/doxygen/html/ 
+
 Compile by running `make` (debug version) or `make release` (release version) in the mjplusplus directory. This will create an `mj++` binary.
 
 Run the compiler like this:
 
 `./mj++ [--dumplexgraph|--lextest|--print-ast|--check [--firm]|--compile-firm] FILE`
 
-`--dumlexgraph`: Dump the automaton that is used by the lexer to a file. (Format: GML)
+- `--dumlexgraph`: Dump the automaton that is used by the lexer to a file. (Format: GML)
 
-`--lextest`: Run a test on the compiler's lexer on the given `FILE`
+- `--lextest`: Run a test on the compiler's lexer on the given `FILE`
 
-`--print-ast`: Pretty print the parsed file.
+- `--print-ast`: Pretty print the parsed file.
 
-`--check`: Run the semantic analysis on the given `FILE`.
+- `--check`: Run the semantic analysis on the given `FILE`.
 
- `--firm` : Build the graphs and create an assembly file. Only works with `--check`.
+- `--firm` : Build the graphs and create an assembly file. Only works with `--check`.
 
- `--compile-firm` : Run the semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc.
+- `--compile-firm` : Run semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc.
 
 If the compiler is started without an option, the given `FILE` will be parsed and the return signal indicates, if it is correct.
