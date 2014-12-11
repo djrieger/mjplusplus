@@ -199,31 +199,21 @@ namespace firm
 						long left_value = get_tarval_long(computed_value(left));
 						long right_value = get_tarval_long(computed_value(right));
 
-#define SET_RELATION(R) \
+#define SET_RELATION(A, B) \
+        case ir_relation::ir_relation_ ## A : \
  		do { \
- 			set_Cmp_relation(node, left_value R right_value ? ir_relation::ir_relation_true : ir_relation::ir_relation_false); \
+ 			set_Cmp_relation(node, left_value B right_value ? ir_relation::ir_relation_true : ir_relation::ir_relation_false); \
  		} while (0); \
- 		break
+ 		break;
 
 						switch (get_Cmp_relation(node))
 						{
-							case ir_relation::ir_relation_equal:
-								SET_RELATION( == );
-
-							case ir_relation::ir_relation_greater:
-								SET_RELATION( > );
-
-							case ir_relation::ir_relation_greater_equal:
-								SET_RELATION( >= );
-
-							case ir_relation::ir_relation_less:
-								SET_RELATION( < );
-
-							case ir_relation::ir_relation_less_equal:
-								SET_RELATION( <= );
-
-							case ir_relation::ir_relation_unordered_less_greater:
-								SET_RELATION( != );
+								SET_RELATION(equal, == )
+								SET_RELATION(greater, > )
+								SET_RELATION(greater_equal, >= )
+								SET_RELATION(less, < )
+								SET_RELATION(less_equal, <= )
+								SET_RELATION(unordered_less_greater, != )
 
 							default:
 								break;
