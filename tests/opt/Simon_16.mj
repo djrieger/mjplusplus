@@ -1,0 +1,23 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6);
+	}
+	
+	public void q(int z) {
+		int k = 1;
+		int f = 0;
+		if (z == 0) {
+			f = k;
+		} else {
+			f = 1;
+		}
+		k = f; /* @old "f" @opt "1" */
+		int d = 7;
+		f = 7;
+		if (z == 0) {
+			f = d; /* @old "d" @opt "7" */
+		}
+		System.out.println(k); /* @old "k" @opt "1" */
+		System.out.println(f); /* @old "f" @opt "7" */
+	}
+}

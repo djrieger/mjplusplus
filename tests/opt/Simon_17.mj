@@ -1,0 +1,16 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6);
+	}
+	
+	public void q(int z) {
+		int k = 1;
+		int f = 1;
+		while (z == 0) {
+			f = k;
+			z = 2;
+		}
+		k = f; /* @old "f" @opt "1" */
+		System.out.println(f); /* @old "f" @opt "1" */
+	}
+}

@@ -17,7 +17,7 @@ class a {
 		j = k; /* @old "k" @none | @opt "2" */
 		k = 2;
 		i = 3;
-		System.out.println(k+i); /* @old "k+i" @opt "5" */
-		System.out.println(z+i*k); /* @old "i*k" @opt "6" */
+		System.out.println(k+i); /* @old "k+i" @opt "2+3" | @opt "5" */
+		System.out.println(z+i*k); /* @old "i*k" @opt "3*2" | @opt "6" */
 	}
 }

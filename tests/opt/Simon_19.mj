@@ -1,0 +1,14 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6);
+	}
+	
+	public void q(int z) {
+		int k = 3+(3-4*4/5)*(z+1); /* @old "3+(3-4*4/5)*(z+1)" @opt "3" */
+		System.out.println(k);
+		k = (z+1)-(1+(z-z))*(z+1); /* @old "(z+1)-(1+(z-z))*(z+1)" @opt "0" */
+		System.out.println(k);
+		k = (z-(((4+5-9)*z+1)*z))*z+6; /* @old "(z-(((4+5-9)*z+1)*z))*z+6" @opt "6" */
+		System.out.println(k);
+	}
+}
