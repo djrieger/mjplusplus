@@ -1,8 +1,8 @@
 #include "Worklist.hpp"
-/*
+
 namespace firm
 {
-	Worklist::Worklist(ir_graph* functionGraph): functionGraph(functionGraph)
+	Worklist::Worklist(ir_graph* functionGraph, FirmNodeHandler& handler): functionGraph(functionGraph), handler(handler)
 	{
 		typedef void (*ir_func)(ir_node*, void*);
 		ir_func addToWorklist = [](ir_node * node, void* env)
@@ -14,16 +14,20 @@ namespace firm
 
 		// post ordering
 		assure_irg_properties(functionGraph, IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE);
-		irg_walk_blkwise_dom_top_down(functionGraph, NULL, addToWorklist, (void*)this->worklist);
+		irg_walk_blkwise_dom_top_down(functionGraph, NULL, addToWorklist, (void*)&this->worklist);
 	}
 
-	void Worklist::run(std::function<void (ir_node*)> handleFunction);
+	void Worklist::run()
 	{
 		while (!worklist.empty())
 		{
 			ir_node* node = worklist.front();
-			handleFunction(node);
+			auto newNodes = handler.handle(node);
+
+			for (auto& newNode : *newNodes)
+				worklist.push(newNode);
+
 			worklist.pop();
 		}
 	}
-}*/
+}
