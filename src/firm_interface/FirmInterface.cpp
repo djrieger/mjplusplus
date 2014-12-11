@@ -274,7 +274,6 @@ namespace firm
 		return new_Proj(res, getIntegerMode(), pn_Div_res);
 	}
 
-
 	ir_node* FirmInterface::createNullPointerNode()
 	{
 		return new_Const_long(mode_P, 0);
@@ -455,6 +454,16 @@ namespace firm
 		// post ordering
 		irg_walk_blkwise_dom_top_down(get_current_ir_graph(), NULL, addToWorklist, (void*)&pWorklist);
 		return std::move(pWorklist);
+	}
+
+	std::vector<std::pair<ir_node*, unsigned int> > FirmInterface::getOuts(ir_node const* n)
+	{
+		std::vector<std::pair<ir_node*, unsigned int>> outs;
+
+		for (ir_edge_t const* oe = get_irn_out_edge_first(n); oe; oe = get_irn_out_edge_next(n, oe, EDGE_KIND_NORMAL))
+			outs.emplace_back(get_edge_src_irn(oe), get_edge_src_pos(oe));
+
+		return outs;
 	}
 
 	void FirmInterface::foo()
