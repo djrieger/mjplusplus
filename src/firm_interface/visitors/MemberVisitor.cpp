@@ -156,21 +156,84 @@ namespace firm
 						}
 					}
 				}
-				// not working yet:
-				else if (is_Cmp(node))
+				else if (is_Proj(node))
 				{
-					ir_tarval* tarVal = computed_value(node);
-					//ir_printf("%F\n", get_tarval_mode(tarVal));
+					// Get first child of proj node
+					ir_node* child_node = get_irn_n(node, 0);
 
-					if (get_tarval_mode(tarVal) == mode_b)
+					if (is_Cond(child_node))
 					{
-						// computed value == true?
-						if (tarVal == get_tarval_b_true())
+						unsigned proj_num = get_Proj_num(node);
+						ir_node* cmp_node = get_irn_n(child_node, 0);
+						ir_relation relation = get_Cmp_relation(cmp_node);
+
+						if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
+						        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
 						{
-							//exchange(node, new_Cmp(NULL, NULL, ir_relation::ir_relation_true));
+
+							// Exchange the Proj with an unconditional jump.
+							exchange(node, new_r_Jmp(get_nodes_block(child_node)));
+						}
+
+						if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
+						        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
+						{
+
+							// Exchange Proj nodes leading to dead blocks with bad blocks.
+							// TODO: Remove bad nodes.
+							exchange(node, new_Bad(get_modeX()));
 						}
 					}
 				}
+				else if (is_Cmp(node))
+				{
+
+					ir_node* left = get_irn_n(node, 0);
+					ir_node* right = get_irn_n(node, 1);
+
+					if (is_Const(left) && is_Const(right))
+					{
+
+						long left_value = get_tarval_long(computed_value(left));
+						long right_value = get_tarval_long(computed_value(right));
+
+						switch (get_Cmp_relation(node))
+						{
+							case ir_relation::ir_relation_equal:
+								set_Cmp_relation(node, left_value == right_value ?
+								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
+								break;
+
+							case ir_relation::ir_relation_greater:
+								set_Cmp_relation(node, left_value > right_value ?
+								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
+								break;
+
+							case ir_relation::ir_relation_greater_equal:
+								set_Cmp_relation(node, left_value >= right_value ?
+								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
+								break;
+
+							case ir_relation::ir_relation_less:
+								set_Cmp_relation(node, left_value < right_value ?
+								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
+								break;
+
+							case ir_relation::ir_relation_less_equal:
+								set_Cmp_relation(node, left_value <= right_value ?
+								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
+								break;
+
+							case ir_relation::ir_relation_unordered_less_greater:
+								set_Cmp_relation(node, left_value != right_value ?
+								                 ir_relation::ir_relation_true : ir_relation::ir_relation_false);
+								break;
+
+							default:
+								break;
+						} // switch
+					} // if (is_Const ...
+				} // else if (is_Cmp ...
 
 				// asd
 				worklist.pop();
