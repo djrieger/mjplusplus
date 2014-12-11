@@ -27,13 +27,98 @@ namespace firm
 
 				ir_printf("%F\n", node);
 
-				if (is_Add(node) || is_Mul(node) || is_Sub(node))
+				if (is_Minus(node))
+				{
+					ir_node* child = get_irn_n(node, 0);
+
+					if (is_Const(child))
+						exchange(node, new_Const_long(mode_Is, get_tarval_long(computed_value(node))));
+				}
+
+				if (is_Add(node))
+				{
+					ir_tarval* tarVal = computed_value(node);
+					ir_printf("%F mode: %F\n", node, get_tarval_mode(tarVal));
+
+					// Both arguments are constants.
+					if (get_tarval_mode(tarVal) == mode_Is)
+						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
+					else
+					{
+						// Check whether at least one argument is 0, and if so,
+						// apply the rule x + 0 = x (or 0 + x = x).
+						ir_node* left = get_irn_n(node, 0);
+						ir_node* right = get_irn_n(node, 1);
+
+						if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
+							exchange(node, right);
+
+						if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
+							exchange(node, left);
+					}
+				}
+				else if (is_Sub(node))
 				{
 					ir_tarval* tarVal = computed_value(node);
 					ir_printf("%F mode: %F\n", node, get_tarval_mode(tarVal));
 
 					if (get_tarval_mode(tarVal) == mode_Is)
 						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
+					else
+					{
+						// Check whether at least one argument is 0, and if so,
+						// apply the rule x - 0 = x (or 0 - x = -x).
+						ir_node* left = get_irn_n(node, 0);
+						ir_node* right = get_irn_n(node, 1);
+
+						if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
+							exchange(node, new_Minus(right, mode_Is));
+
+						if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
+							exchange(node, left);
+					}
+				}
+				else if (is_Mul(node))
+				{
+					ir_tarval* tarVal = computed_value(node);
+					ir_printf("%F mode: %F\n", node, get_tarval_mode(tarVal));
+
+					if (get_tarval_mode(tarVal) == mode_Is)
+						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
+					else
+					{
+						ir_node* left = get_irn_n(node, 0);
+						ir_node* right = get_irn_n(node, 1);
+
+						// If possible, apply the rules:
+						//     x * (-1) = -x
+						//     x * 1 = x
+						//     x * 0 = 0
+						if (is_Const(left))
+						{
+							long value = get_tarval_long(computed_value(left));
+
+							if (value == -1)
+								exchange(node, new_Minus(right, mode_Is));
+							else if (value == 0)
+								exchange(node, new_Const_long(mode_Is, 0));
+							else if (value == 1)
+								exchange(node, right);
+						}
+
+						// See above...
+						if (is_Const(right))
+						{
+							long value = get_tarval_long(computed_value(right));
+
+							if (value == -1)
+								exchange(node, new_Minus(left, mode_Is));
+							else if (value == 0)
+								exchange(node, new_Const_long(mode_Is, 0));
+							else if (value == 1)
+								exchange(node, left);
+						}
+					}
 				}
 				else if (is_Proj(node))
 				{
