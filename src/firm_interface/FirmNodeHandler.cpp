@@ -118,7 +118,8 @@ namespace firm
 
 	void FirmNodeHandler::updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode)
 	{
-		updateTarvalForArithmeticNode(oldNode);
+		//TODO: Fix segfaults 
+		// updateTarvalForArithmeticNode(oldNode);
 		exchange(oldNode, newNode);
 	}
 
@@ -132,8 +133,9 @@ namespace firm
 			// set tarval of this const node as its irn_link value
 			set_irn_link(node, (void*)get_Const_tarval(node));
 		}
-		else if (is_Phi(node))
-			optimizePhi(node);
+		// TODO: Fix segfaults 
+		/* else if (is_Phi(node))
+			optimizePhi(node); */
 		else if (is_Minus(node))
 		{
 			ir_node* child = get_irn_n(node, 0);
