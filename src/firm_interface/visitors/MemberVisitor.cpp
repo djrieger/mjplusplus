@@ -32,13 +32,12 @@ namespace firm
 					ir_node* child = get_irn_n(node, 0);
 
 					if (is_Const(child))
-						exchange(node, new_Const_long(mode_Is, get_tarval_long(computed_value(node))));
+						exchange(node, new_Const_long(mode_Is, get_tarval_long(computed_value(child))));
 				}
-
-				if (is_Add(node))
+				else if (is_Add(node))
 				{
+
 					ir_tarval* tarVal = computed_value(node);
-					ir_printf("%F mode: %F\n", node, get_tarval_mode(tarVal));
 
 					// Both arguments are constants.
 					if (get_tarval_mode(tarVal) == mode_Is)
@@ -60,7 +59,6 @@ namespace firm
 				else if (is_Sub(node))
 				{
 					ir_tarval* tarVal = computed_value(node);
-					ir_printf("%F mode: %F\n", node, get_tarval_mode(tarVal));
 
 					if (get_tarval_mode(tarVal) == mode_Is)
 						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
@@ -81,7 +79,6 @@ namespace firm
 				else if (is_Mul(node))
 				{
 					ir_tarval* tarVal = computed_value(node);
-					ir_printf("%F mode: %F\n", node, get_tarval_mode(tarVal));
 
 					if (get_tarval_mode(tarVal) == mode_Is)
 						exchange(node, new_Const_long(mode_Is, get_tarval_long(tarVal)));
@@ -144,7 +141,6 @@ namespace firm
 						}
 					}
 				}
-				// TODO: a +/- 0 -> a
 				// not working yet:
 				else if (is_Cmp(node))
 				{
