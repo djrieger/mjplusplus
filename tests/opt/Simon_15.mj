@@ -7,8 +7,8 @@ class a {
 		int k = 1;
 		int j = k; /* @old "k" @opt "1" */
 		int i = 4+k; /* @old "4+k" @opt "4+1" | @opt "5" */
-		System.out.println(i); /* @old "i" @opt "1" */
-		System.out.println(j); /* @old "j" @none | @opt "5" */
+		System.out.println(i); /* @old "i" @none | @opt "5" */
+		System.out.println(j); /* @old "j" @opt "1" */
 		System.out.println(k); /* @old "k" @opt "1" */
 		while (z == j) { /* @old "j" @opt "1" */
 			z = z+1;
