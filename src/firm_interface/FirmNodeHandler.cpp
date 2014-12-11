@@ -118,7 +118,7 @@ namespace firm
 
 	void FirmNodeHandler::updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode)
 	{
-		//TODO: Fix segfaults 
+		//TODO: Fix segfaults
 		// updateTarvalForArithmeticNode(oldNode);
 		exchange(oldNode, newNode);
 	}
@@ -133,7 +133,7 @@ namespace firm
 			// set tarval of this const node as its irn_link value
 			set_irn_link(node, (void*)get_Const_tarval(node));
 		}
-		// TODO: Fix segfaults 
+		// TODO: Fix segfaults
 		/* else if (is_Phi(node))
 			optimizePhi(node); */
 		else if (is_Minus(node))
@@ -328,6 +328,21 @@ namespace firm
 #undef SET_RELATION
 			} // if (is_Const ...
 		} // else if (is_Cmp ...
+		else if (is_Conv(node))
+		{
+			// This removes *some* unnecessary conversions, notably those
+			// occuring during calls to System.out.println, but this should
+			// probably be extended for more general useless conversions.
+			ir_node* child = get_irn_n(node, 0);
+
+			if (is_Conv(child))
+			{
+				ir_node* grand_child = get_irn_n(child, 0);
+
+				if (get_irn_mode(node) == get_irn_mode(grand_child))
+					exchange(node, grand_child);
+			}
+		}
 
 
 		return newNodes;
