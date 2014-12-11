@@ -13,3 +13,8 @@ Simon_12: recursive constant folding (ints)
 Simon_13: simple constant folding (bools without control flow, null)
 Simon_14: constant folding within expressions
 Simon_15: linear constant propagation
+Simon_16: constant propagation with branching
+Simon_17: constant propagation with loops
+Simon_18: combination of constant folding and propagation
+Simon_19: combination of arithmetic identities constant folding
+Simon_20: elimination of unreachable control flow (constant conditions)

@@ -1,0 +1,53 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6);
+	}
+	
+	public void q(int r) {
+		if (true) {if (false) System.out.println(5);
+		else System.out.println(6);}
+		else System.out.println(7);
+		/* @old
+			"if (true) {if (false) System.out.println(5);
+			else System.out.println(6);}
+			else System.out.println(7);"
+		@opt "System.out.println(6); */
+		
+		while (false) {System.out.println(6);}
+		/* @old "while (false) {System.out.println(6);}" @opt "" */
+		
+		if (false) System.out.println(6);
+		/* @old "if (false) System.out.println(6);" @opt "" */
+		
+		if (r == 4) {
+			infinite_loop();
+		} else if (r == 7) {
+			loop2();
+		}
+		
+		r = statements_after_return(r);
+	}
+	
+	public void infinite_loop() {
+		int e = 3;
+		while (true) {e=e+3;e=2-1;}
+		/* @old "while (true) {e=e+3;e=2-1;}"
+		@opt "while (true);" */
+		e=2;System.out.println(4); /* @old "e=2;System.out.println(4);" @opt "" */
+	}
+	
+	public void loop2() {
+		int e = 3;
+		while (true) {System.out.println(4);} /* @non-opt */
+	}
+	
+	public int statements_after_return(int q) {
+		int e = 3;
+		if (q==3) {
+			return 7;
+			e=7; /* @old "e=7" @opt "" */
+		}
+		return 4;
+		e=2;System.out.println(4); /* @old "e=2;System.out.println(4);" @opt "" */
+	}
+}

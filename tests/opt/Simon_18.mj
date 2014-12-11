@@ -1,0 +1,14 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6);
+	}
+	
+	public void q(int z) {
+		int x = 2;
+		while (z == 0) {
+			x = 4 - x; /* @old "4 - x;" @opt "2;" */
+			z = z - 1;
+		}
+		System.out.println(x); /* @old "x" @opt "4" */
+	}
+}
