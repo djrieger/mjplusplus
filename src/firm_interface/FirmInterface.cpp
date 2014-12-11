@@ -262,16 +262,16 @@ namespace firm
 	{
 		ir_node* memory = get_store();
 		ir_node* res = new_Mod(memory, left, right, getIntegerMode(), op_pin_state_pinned);
+		set_store(new_Proj(res, mode_M, pn_Mod_M));
 		return new_Proj(res, getIntegerMode(), pn_Mod_res);
-		// maybe set_store()
 	}
 
 	ir_node* FirmInterface::createDivOperation(ir_node* left, ir_node* right)
 	{
 		ir_node* memory = get_store();
 		ir_node* res = new_DivRL(memory, left, right, getIntegerMode(), op_pin_state_pinned); //op_pin_state_floats??
+		set_store(new_Proj(res, mode_M, pn_Div_M));
 		return new_Proj(res, getIntegerMode(), pn_Div_res);
-		// maybe set_store()
 	}
 
 
