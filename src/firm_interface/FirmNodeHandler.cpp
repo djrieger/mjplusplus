@@ -180,7 +180,7 @@ namespace firm
 			ir_node* right = get_irn_n(node, 1);
 
 			if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
-				updateTarvalAndExchange(node, new_Minus(right, mode_Is));
+				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, mode_Is));
 
 			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
 				updateTarvalAndExchange(node, left);
@@ -207,7 +207,7 @@ namespace firm
 				long value = get_tarval_long(computed_value(left));
 
 				if (value == -1)
-					updateTarvalAndExchange(node, new_Minus(right, mode_Is));
+					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, mode_Is));
 				else if (value == 0)
 					updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
 				else if (value == 1)
@@ -220,7 +220,7 @@ namespace firm
 				long value = get_tarval_long(computed_value(right));
 
 				if (value == -1)
-					updateTarvalAndExchange(node, new_Minus(left, mode_Is));
+					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, mode_Is));
 				else if (value == 0)
 					updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
 				else if (value == 1)

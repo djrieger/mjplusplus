@@ -61,7 +61,6 @@ namespace firm
 		{
 			ir_node* node = worklist.front();
 			handler.handle(node);
-			ir_printf("%F \n", node);
 
 			for (auto& newNode : *handler.getNewNodes())
 				worklist.push(newNode);
