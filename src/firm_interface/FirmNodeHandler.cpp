@@ -11,7 +11,7 @@ namespace firm
 	void FirmNodeHandler::optimizePhi(ir_node* node)
 	{
 		int predCount = get_irn_arity(node);
-		
+
 		bool onlyUnknowns = true;
 
 		bool numWasFound = false;
@@ -50,7 +50,7 @@ namespace firm
 				ir_printf("%F\n", pred);
 			}
 		}
-		
+
 		// only unknown values found
 		if (onlyUnknowns)
 		{
@@ -77,9 +77,15 @@ namespace firm
 	void FirmNodeHandler::updateTarvalForArithmeticNode(ir_node* node)
 	{
 		ir_node* child1 = get_irn_n(node, 0);
-		ir_node* child2 = get_irn_n(node, 1);
 		ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);
-		ir_tarval* tarval2 = (ir_tarval*)get_irn_link(child2);
+		ir_node* child2 = NULL;
+		ir_tarval* tarval2 = NULL;
+
+		if (get_irn_arity(node) > 1)
+		{
+			child2 = get_irn_n(node, 1);
+			tarval2 = (ir_tarval*)get_irn_link(child2);
+		}
 
 		if (get_tarval_mode(tarval1) == mode_Is && get_tarval_mode(tarval2) == mode_Is)
 		{
@@ -88,6 +94,7 @@ namespace firm
 			if (is_Add(node)) resultVal = tarval_add(tarval1, tarval2);
 			else if (is_Sub(node)) resultVal = tarval_sub(tarval1, tarval2, NULL);
 			else if (is_Mul(node)) resultVal = tarval_mul(tarval1, tarval2);
+			else if (is_Minus(node)) resultVal = tarval_neg(tarval1);
 			//else if (is_Div(node)) resultVal = tarval_div(tarval1, tarval2);
 			else
 				throw "updateTarvalForArithmeticNode called on illegal node";
@@ -132,7 +139,7 @@ namespace firm
 		ir_node* child = get_irn_n(node, 0);
 
 		if (is_Const(child))
-			exchange(node, new_r_Const_long(irg, mode_Is, -get_tarval_long(computed_value(child))));
+			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, -get_tarval_long(computed_value(child))));
 	}
 
 	void FirmNodeHandler::handleAdd(ir_node* node)
@@ -214,9 +221,9 @@ namespace firm
 
 				if (value == -1)
 					updateTarvalAndExchange(node, new_Minus(left, mode_Is));
-				else if(value == 0)
+				else if (value == 0)
 					updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
-				else if(value == 1)
+				else if (value == 1)
 					updateTarvalAndExchange(node, left);
 			}
 		}
