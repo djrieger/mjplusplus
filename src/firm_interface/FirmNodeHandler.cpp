@@ -11,37 +11,30 @@ namespace firm
 	void FirmNodeHandler::optimizePhi(ir_node* node)
 	{
 		int predCount = get_irn_arity(node);
-		int i = 0;
+		
 		bool onlyUnknowns = true;
-		bool isSingleValue = true;
 
-		int numFoundAt = -1;
+		bool numWasFound = false;
 		int numFound = -1;
-
-		bool valueDetermined = false;
 
 		std::cout << "phi has " << predCount << " predecessors" << std::endl;
 
-		while (i < predCount)
+		for (int i = 0; i < predCount; i++)
 		{
 			ir_node* pred = get_irn_n(node, i);
 			ir_tarval* curTarval = (ir_tarval*)get_irn_link(pred);
 
 			if (curTarval == tarval_bad ||
 			        // number with different value found
-			        (numFoundAt >= 0 &&
+			        (numWasFound &&
 			         get_tarval_mode(curTarval) == mode_Is &&
 			         numFound != get_tarval_long(curTarval)))
 			{
 				std::cout << "case 1" << std::endl;
 				// set tarval of phi to bad
 				set_irn_link(node, (void*)tarval_bad);
-				valueDetermined = true;
 
-				if (numFound != get_tarval_long(curTarval))
-					isSingleValue = false;
-
-				break;
+				return;
 			}
 			// handle only unknown values
 			else if (curTarval != tarval_unknown)
@@ -50,39 +43,34 @@ namespace firm
 			// if current predecessor is a number, store index of predecessor and
 			if (get_tarval_mode(curTarval) == mode_Is)
 			{
-				numFoundAt = i;
+				numWasFound = true;
 				numFound = get_tarval_long(curTarval);
 				std::cout << "num found: " << numFound << std::endl;
 				std::cout << "phi predecessor: ";
 				ir_printf("%F\n", pred);
 			}
-
-			i++;
 		}
-
-		if (!valueDetermined)
+		
+		// only unknown values found
+		if (onlyUnknowns)
 		{
-			// only unknown values found
-			if (onlyUnknowns)
-			{
-				std::cout << "case 4" << std::endl;
-				set_irn_link(node, (void*)tarval_unknown);
-			}
-			// n times same number found
-			else if (isSingleValue && numFoundAt >= 0)
-			{
-				std::cout << "case 3" << std::endl;
-				ir_node* newConstNode = new_r_Const_long(get_irn_irg(node), mode_Is, numFound);
-				set_irn_link(newConstNode, (void*)new_tarval_from_long(numFound, mode_Is));
-				exchange(node, newConstNode);
-			}
-			else
-				// n - 1 unknown values and 1 number found
-			{
-				std::cout << "case 2" << std::endl;
-				set_irn_link(node, (ir_tarval*)new_tarval_from_long(numFound, mode_Is));
-			}
-
+			std::cout << "case 4" << std::endl;
+			set_irn_link(node, (void*)tarval_unknown);
+		}
+		// n times same number found
+		else if (numWasFound)
+		{
+			std::cout << "case 3" << std::endl;
+			//TODO: I'm not sure you may do this here...
+			ir_node* newConstNode = new_r_Const_long(get_irn_irg(node), mode_Is, numFound);
+			set_irn_link(newConstNode, (void*)new_tarval_from_long(numFound, mode_Is));
+			exchange(node, newConstNode);
+		}
+		else
+			// n - 1 unknown values and 1 number found
+		{
+			std::cout << "case 2" << std::endl;
+			set_irn_link(node, (ir_tarval*)new_tarval_from_long(numFound, mode_Is));
 		}
 	}
 
