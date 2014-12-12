@@ -8,7 +8,6 @@ namespace firm
 		newNodes = std::make_shared<std::set<ir_node*>>();
 	}
 
-
 	void FirmNodeHandler::optimizePhi(ir_node* node)
 	{
 		int predCount = get_irn_arity(node);
@@ -124,186 +123,189 @@ namespace firm
 	}
 
 
-	shptr<std::set<ir_node*>> FirmNodeHandler::handle(ir_node* node)
+	shptr<std::set<ir_node*>> FirmNodeHandler::getNewNodes() const
 	{
-		newNodes->clear();
+		return this->newNodes;
+	}
 
-		if (is_Const(node))
+	void FirmNodeHandler::handleConst(ir_node* node)
+	{
+		// set tarval of this const node as its irn_link value
+		set_irn_link(node, (void*)get_Const_tarval(node));
+	}
+
+	void FirmNodeHandler::handlePhi(ir_node* node)
+	{
+		optimizePhi(node);
+	}
+
+	void FirmNodeHandler::handleMinus(ir_node* node)
+	{
+		ir_node* child = get_irn_n(node, 0);
+
+		if (is_Const(child))
+			exchange(node, new_r_Const_long(irg, mode_Is, -get_tarval_long(computed_value(child))));
+	}
+
+	void FirmNodeHandler::handleAdd(ir_node* node)
+	{
+		ir_node* left = get_irn_n(node, 0);
+		ir_node* right = get_irn_n(node, 1);
+
+		// Both arguments are constants.
+		if (is_Const(left) && is_Const(right))
 		{
-			// set tarval of this const node as its irn_link value
-			set_irn_link(node, (void*)get_Const_tarval(node));
+			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is,
+			                        get_tarval_long(computed_value(left)) + get_tarval_long(computed_value(right))));
 		}
-		// TODO: Fix segfaults
-		/* else if (is_Phi(node))
-			optimizePhi(node); */
-		else if (is_Minus(node))
+		else
 		{
-			ir_node* child = get_irn_n(node, 0);
+			// Check whether at least one argument is 0, and if so,
+			// apply the rule x + 0 = x (or 0 + x = x).
 
-			if (is_Const(child))
-				exchange(node, new_r_Const_long(irg, mode_Is, -get_tarval_long(computed_value(child))));
+			if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
+				updateTarvalAndExchange(node, right);
+
+			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
+				updateTarvalAndExchange(node, left);
 		}
-		else if (is_Add(node))
-		{
+	}
 
+	void FirmNodeHandler::handleSub(ir_node* node)
+	{
+		ir_tarval* tarVal = computed_value(node);
+
+		if (get_tarval_mode(tarVal) == mode_Is)
+			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
+		else
+		{
+			// Check whether at least one argument is 0, and if so,
+			// apply the rule x - 0 = x (or 0 - x = -x).
 			ir_node* left = get_irn_n(node, 0);
 			ir_node* right = get_irn_n(node, 1);
 
-			// Both arguments are constants.
-			if (is_Const(left) && is_Const(right))
-			{
-				updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is,
-				                        get_tarval_long(computed_value(left)) + get_tarval_long(computed_value(right))));
-			}
-			else
-			{
-				// Check whether at least one argument is 0, and if so,
-				// apply the rule x + 0 = x (or 0 + x = x).
+			if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
+				updateTarvalAndExchange(node, new_Minus(right, mode_Is));
 
-				if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
-					updateTarvalAndExchange(node, right);
-
-				if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
-					updateTarvalAndExchange(node, left);
-			}
-
+			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
+				updateTarvalAndExchange(node, left);
 		}
-		else if (is_Sub(node))
+	}
+
+	void FirmNodeHandler::handleMul(ir_node* node)
+	{
+		ir_tarval* tarVal = computed_value(node);
+
+		if (get_tarval_mode(tarVal) == mode_Is)
+			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
+		else
 		{
-			ir_tarval* tarVal = computed_value(node);
+			ir_node* left = get_irn_n(node, 0);
+			ir_node* right = get_irn_n(node, 1);
 
-			if (get_tarval_mode(tarVal) == mode_Is)
-				updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
-			else
+			// If possible, apply the rules:
+			//     x * (-1) = -x
+			//     x * 1 = x
+			//     x * 0 = 0
+			if (is_Const(left))
 			{
-				// Check whether at least one argument is 0, and if so,
-				// apply the rule x - 0 = x (or 0 - x = -x).
-				ir_node* left = get_irn_n(node, 0);
-				ir_node* right = get_irn_n(node, 1);
+				long value = get_tarval_long(computed_value(left));
 
-				if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
+				if (value == -1)
 					updateTarvalAndExchange(node, new_Minus(right, mode_Is));
+				else if (value == 0)
+					updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
+				else if (value == 1)
+					updateTarvalAndExchange(node, right);
+			}
 
-				if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
+			// See above...
+			if (is_Const(right))
+			{
+				long value = get_tarval_long(computed_value(right));
+
+				if (value == -1)
+					updateTarvalAndExchange(node, new_Minus(left, mode_Is));
+				else if(value == 0)
+					updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
+				else if(value == 1)
 					updateTarvalAndExchange(node, left);
 			}
 		}
-		else if (is_Mul(node))
+	}
+
+	void FirmNodeHandler::handleDivAndMod(ir_node* node)
+	{
+		// Get children of div node (operands)
+		ir_node* dividend = get_irn_n(node, 1);
+		ir_node* divisor = get_irn_n(node, 2);
+
+		if (is_Const(dividend) && is_Const(divisor))
 		{
-			ir_tarval* tarVal = computed_value(node);
+			long divisorValue = get_tarval_long(computed_value(divisor));
 
-			if (get_tarval_mode(tarVal) == mode_Is)
-				updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
-			else
+			// Optimize if not dividing by zero, otherwise simply leave the original Div node alone
+			if (divisorValue != 0)
 			{
-				ir_node* left = get_irn_n(node, 0);
-				ir_node* right = get_irn_n(node, 1);
-
-				// If possible, apply the rules:
-				//     x * (-1) = -x
-				//     x * 1 = x
-				//     x * 0 = 0
-				if (is_Const(left))
+				for (auto& ne : FirmInterface::getInstance().getOuts(node))
 				{
-					long value = get_tarval_long(computed_value(left));
+					ir_node* o = ne.first;
 
-					if (value == -1)
-						updateTarvalAndExchange(node, new_Minus(right, mode_Is));
-					else if (value == 0)
-						updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
-					else if (value == 1)
-						updateTarvalAndExchange(node, right);
-				}
-
-				// See above...
-				if (is_Const(right))
-				{
-					long value = get_tarval_long(computed_value(right));
-
-					if (value == -1)
-						updateTarvalAndExchange(node, new_Minus(left, mode_Is));
-					else if (value == 0)
-						updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
-					else if (value == 1)
-						updateTarvalAndExchange(node, left);
-				}
-			}
-
-		}
-		else if (is_Div(node) || is_Mod(node))
-		{
-			// Get children of div node (operands)
-			ir_node* dividend = get_irn_n(node, 1);
-			ir_node* divisor = get_irn_n(node, 2);
-
-			if (is_Const(dividend) && is_Const(divisor))
-			{
-				long divisorValue = get_tarval_long(computed_value(divisor));
-
-				// Optimize if not dividing by zero, otherwise simply leave the original Div node alone
-				if (divisorValue != 0)
-				{
-					for (auto& ne : FirmInterface::getInstance().getOuts(node))
+					if (get_irn_mode(o) == mode_M)
 					{
-						ir_node* o = ne.first;
-
-						if (get_irn_mode(o) == mode_M)
-						{
-							for (auto& e : FirmInterface::getInstance().getOuts(o))
-								set_irn_n(e.first, e.second, get_irn_n(node, 0));
-						}
-						else
-						{
-							long dividendValue = get_tarval_long(computed_value(dividend));
-							int32_t tarVal = is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue;
-							// TODO @Max Make div/mod and updateTarvalAndExchange work together
-							exchange(o, new_r_Const_long(irg, mode_Is, tarVal));
-						}
+						for (auto& e : FirmInterface::getInstance().getOuts(o))
+							set_irn_n(e.first, e.second, get_irn_n(node, 0));
+					}
+					else
+					{
+						long dividendValue = get_tarval_long(computed_value(dividend));
+						int32_t tarVal = is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue;
+						// TODO @Max Make div/mod and updateTarvalAndExchange work together
+						exchange(o, new_r_Const_long(irg, mode_Is, tarVal));
 					}
 				}
 			}
 		}
-		else if (is_Proj(node))
+	}
+
+	void FirmNodeHandler::handleProj(ir_node* node)
+	{
+		// Get first child of proj node
+		ir_node* child_node = get_irn_n(node, 0);
+
+		if (is_Cond(child_node))
 		{
-			// Get first child of proj node
-			ir_node* child_node = get_irn_n(node, 0);
+			unsigned proj_num = get_Proj_num(node);
+			ir_node* cmp_node = get_irn_n(child_node, 0);
+			ir_relation relation = get_Cmp_relation(cmp_node);
 
-			if (is_Cond(child_node))
+			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
+			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
 			{
-				unsigned proj_num = get_Proj_num(node);
-				ir_node* cmp_node = get_irn_n(child_node, 0);
-				ir_relation relation = get_Cmp_relation(cmp_node);
-
-				if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
-				        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
-				{
-
-					// Exchange the Proj with an unconditional jump.
-					exchange(node, new_r_Jmp(get_nodes_block(child_node)));
-				}
-
-				if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
-				        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
-				{
-
-					// Exchange Proj nodes leading to dead blocks with bad blocks.
-					// TODO: Remove bad nodes.
-					exchange(node, new_r_Bad(irg, get_modeX()));
-				}
+				// Exchange the Proj with an unconditional jump.
+				exchange(node, new_r_Jmp(get_nodes_block(child_node)));
 			}
 
+			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
+			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
+			{
+				// Exchange Proj nodes leading to dead blocks with bad blocks.
+				// TODO: Remove bad nodes.
+				exchange(node, new_r_Bad(irg, get_modeX()));
+			}
 		}
-		else if (is_Cmp(node))
+	}
+
+	void FirmNodeHandler::handleCmp(ir_node* node)
+	{
+		ir_node* left = get_irn_n(node, 0);
+		ir_node* right = get_irn_n(node, 1);
+
+		if (is_Const(left) && is_Const(right))
 		{
 
-			ir_node* left = get_irn_n(node, 0);
-			ir_node* right = get_irn_n(node, 1);
-
-			if (is_Const(left) && is_Const(right))
-			{
-
-				long left_value = get_tarval_long(computed_value(left));
-				long right_value = get_tarval_long(computed_value(right));
+			long left_value = get_tarval_long(computed_value(left));
+			long right_value = get_tarval_long(computed_value(right));
 
 #define SET_RELATION(A, B) \
 		        case ir_relation::ir_relation_ ## A : \
@@ -312,39 +314,53 @@ namespace firm
 		 		} while (0); \
 		 		break;
 
-				switch (get_Cmp_relation(node))
-				{
-						SET_RELATION(equal, == )
-						SET_RELATION(greater, > )
-						SET_RELATION(greater_equal, >= )
-						SET_RELATION(less, < )
-						SET_RELATION(less_equal, <= )
-						SET_RELATION(unordered_less_greater, != )
+			switch (get_Cmp_relation(node))
+			{
+					SET_RELATION(equal, == )
+					SET_RELATION(greater, > )
+					SET_RELATION(greater_equal, >= )
+					SET_RELATION(less, < )
+					SET_RELATION(less_equal, <= )
+					SET_RELATION(unordered_less_greater, != )
 
-					default:
-						break;
-				} // switch
+				default:
+					break;
+			} // switch
 
 #undef SET_RELATION
-			} // if (is_Const ...
-		} // else if (is_Cmp ...
-		else if (is_Conv(node))
+		} // if (is_Const ...
+	}
+
+	void FirmNodeHandler::handleConv(ir_node* node)
+	{
+		// This removes *some* unnecessary conversions, notably those
+		// occuring during calls to System.out.println, but this should
+		// probably be extended for more general useless conversions.
+		ir_node* child = get_irn_n(node, 0);
+
+		if (is_Conv(child))
 		{
-			// This removes *some* unnecessary conversions, notably those
-			// occuring during calls to System.out.println, but this should
-			// probably be extended for more general useless conversions.
-			ir_node* child = get_irn_n(node, 0);
+			ir_node* grand_child = get_irn_n(child, 0);
 
-			if (is_Conv(child))
-			{
-				ir_node* grand_child = get_irn_n(child, 0);
-
-				if (get_irn_mode(node) == get_irn_mode(grand_child))
-					exchange(node, grand_child);
-			}
+			if (get_irn_mode(node) == get_irn_mode(grand_child))
+				exchange(node, grand_child);
 		}
+	}
 
+	void FirmNodeHandler::handle(ir_node* node)
+	{
+		newNodes->clear();
 
-		return newNodes;
+		if (is_Const(node)) handleConst(node);
+		// TODO: Fix segfaults
+		// else if (is_Phi(node)) handlePhi(node);
+		else if (is_Minus(node)) handleMinus(node);
+		else if (is_Add(node)) handleAdd(node);
+		else if (is_Sub(node)) handleSub(node);
+		else if (is_Mul(node)) handleMul(node);
+		else if (is_Div(node) || is_Mod(node)) handleDivAndMod(node);
+		else if (is_Proj(node)) handleProj(node);
+		else if (is_Cmp(node)) handleCmp(node);
+		else if (is_Conv(node)) handleConv(node);
 	}
 }
