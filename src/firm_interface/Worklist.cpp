@@ -22,9 +22,9 @@ namespace firm
 		while (!worklist.empty())
 		{
 			ir_node* node = worklist.front();
-			auto newNodes = handler.handle(node);
+			handler.handle(node);
 
-			for (auto& newNode : *newNodes)
+			for (auto& newNode : *handler.getNewNodes())
 				worklist.push(newNode);
 
 			worklist.pop();
