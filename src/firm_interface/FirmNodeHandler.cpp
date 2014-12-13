@@ -159,6 +159,8 @@ namespace firm
 
 		if (is_Const(child))
 			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, -get_tarval_long(computed_value(child))));
+		else if (is_Minus(child))
+			updateTarvalAndExchange(node, get_irn_n(child, 0));
 	}
 
 	void FirmNodeHandler::handleAdd(ir_node* node)
