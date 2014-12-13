@@ -117,6 +117,25 @@ namespace firm
 		exchange(oldNode, newNode);
 	}
 
+	void FirmNodeHandler::updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode)
+	{
+		/* TODO: Only tested for Div and Mod currently
+		 * may need adjusting for Load, Store, ... (any node requring a Proj)
+		 */
+		for (auto& ne : FirmInterface::getInstance().getOuts(oldNode))
+		{
+			ir_node* o = ne.first;
+
+			if (get_irn_mode(o) == mode_M)
+			{
+				// Relink memory chain
+				for (auto& e : FirmInterface::getInstance().getOuts(o))
+					set_irn_n(e.first, e.second, get_irn_n(oldNode, 0));
+			}
+			else
+				exchange(o, newNode);
+		}
+	}
 
 	shptr<std::set<ir_node*>> FirmNodeHandler::getNewNodes() const
 	{
@@ -239,28 +258,37 @@ namespace firm
 		{
 			long divisorValue = get_tarval_long(computed_value(divisor));
 
-			// Optimize if not dividing by zero, otherwise simply leave the original Div node alone
 			if (divisorValue != 0)
 			{
-				for (auto& ne : FirmInterface::getInstance().getOuts(node))
-				{
-					ir_node* o = ne.first;
-
-					if (get_irn_mode(o) == mode_M)
-					{
-						for (auto& e : FirmInterface::getInstance().getOuts(o))
-							set_irn_n(e.first, e.second, get_irn_n(node, 0));
-					}
-					else
-					{
-						long dividendValue = get_tarval_long(computed_value(dividend));
-						int32_t tarVal = is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue;
-						// TODO @Max Make div/mod and updateTarvalAndExchange work together
-						exchange(o, new_r_Const_long(irg, mode_Is, tarVal));
-					}
-				}
+				long dividendValue = get_tarval_long(computed_value(dividend));
+				ir_node* replacement = new_r_Const_long(irg, mode_Is, is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue);
+				updateTarvalAndExchangeMemory(node, replacement);
 			}
+			else
+				updateTarvalAndExchangeMemory(node, new_r_Unknown(irg, mode_Is));
 		}
+		else if (is_Const(dividend))
+		{
+			long value = get_tarval_long(computed_value(dividend));
+
+			if (value == 0)
+				updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, 0));
+			else if (value == 1 && is_Div(node))
+				updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, 1));
+		}
+		else if (is_Const(divisor))
+		{
+			long value = get_tarval_long(computed_value(divisor));
+
+			if (value == -1)
+				updateTarvalAndExchangeMemory(node, is_Div(node) ? new_r_Minus(get_nodes_block(node), dividend, mode_Is) : new_r_Const_long(irg, mode_Is, 0));
+			else if (value == 0)
+				updateTarvalAndExchangeMemory(node, new_r_Unknown(irg, mode_Is));
+			else if (value == 1)
+				updateTarvalAndExchangeMemory(node, is_Div(node) ? dividend : new_r_Const_long(irg, mode_Is, 0));
+		}
+		else if (dividend == divisor)
+			updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, is_Div(node) ? 1 : 0));
 	}
 
 	void FirmNodeHandler::handleProj(ir_node* node)
@@ -303,11 +331,9 @@ namespace firm
 			long right_value = get_tarval_long(computed_value(right));
 
 #define SET_RELATION(A, B) \
-		        case ir_relation::ir_relation_ ## A : \
-		 		do { \
-		 			set_Cmp_relation(node, left_value B right_value ? ir_relation::ir_relation_true : ir_relation::ir_relation_false); \
-		 		} while (0); \
-		 		break;
+				case ir_relation::ir_relation_ ## A : \
+					set_Cmp_relation(node, left_value B right_value ? ir_relation::ir_relation_true : ir_relation::ir_relation_false); \
+				break;
 
 			switch (get_Cmp_relation(node))
 			{
@@ -324,6 +350,8 @@ namespace firm
 
 #undef SET_RELATION
 		} // if (is_Const ...
+		else if (left == right)
+			set_Cmp_relation(node, get_Cmp_relation(node) & ir_relation_equal ? ir_relation_true : ir_relation_false);
 	}
 
 	void FirmNodeHandler::handleConv(ir_node* node)
