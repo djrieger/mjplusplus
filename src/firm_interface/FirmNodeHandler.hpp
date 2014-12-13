@@ -18,6 +18,7 @@ namespace firm
 			void optimizePhi(ir_node* node);
 			void updateTarvalForArithmeticNode(ir_node* node);
 			void updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode);
+			void updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode);
 
 			void handleConst(ir_node* node);
 			void handlePhi(ir_node* node);
