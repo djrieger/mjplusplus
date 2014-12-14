@@ -468,7 +468,7 @@ namespace firm
 
 		if (is_Const(node)) handleConst(node);
 		// TODO: Fix segfaults
-		else if (is_Phi(node)) handlePhi(node);
+		else if (is_Phi(node) && get_irn_mode(node) == mode_Is) handlePhi(node);
 		else if (is_Minus(node)) handleMinus(node);
 		else if (is_Add(node)) handleAdd(node);
 		else if (is_Sub(node)) handleSub(node);
