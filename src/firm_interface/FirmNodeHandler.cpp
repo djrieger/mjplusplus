@@ -10,68 +10,158 @@ namespace firm
 
 	void FirmNodeHandler::optimizePhi(ir_node* node)
 	{
+		auto prevTarval = (ir_tarval*)get_irn_link(node);
 		int predCount = get_irn_arity(node);
+		bool isConst = true;
+		bool isBad = false;
+		bool valSet = false;
+		long val = 0;
+		int i = 0;
+		int numUnkowns = 0;
+		ir_printf("processing %F at %p with %d predecessors and tarval %F\n", node, node, predCount, prevTarval);
 
-		bool onlyUnknowns = true;
-
-		bool numWasFound = false;
-		int numFound = -1;
-
-		std::cout << "phi has " << predCount << " predecessors" << std::endl;
-
-		for (int i = 0; i < predCount; i++)
+		do
 		{
 			ir_node* pred = get_irn_n(node, i);
-			ir_tarval* curTarval = (ir_tarval*)get_irn_link(pred);
 
-			if (curTarval == tarval_bad ||
-			        // number with different value found
-			        (numWasFound &&
-			         get_tarval_mode(curTarval) == mode_Is &&
-			         numFound != get_tarval_long(curTarval)))
+			if (is_Const(pred))
 			{
-				std::cout << "case 1" << std::endl;
-				// set tarval of phi to bad
-				set_irn_link(node, (void*)tarval_bad);
+				// node is const, so get its value and compare with previous values
+				auto curTarval = computed_value(pred);
 
-				return;
+				if (get_tarval_mode(curTarval) == mode_Is)
+				{
+					auto cur = get_tarval_long(curTarval);
+
+					if (valSet)
+					{
+						if (cur != val)
+						{
+							ir_printf("predecessor %F's value does not match the current value\n", pred);
+							// now we know, that we can not replace anything.
+							isBad = true;
+						}
+					}
+					else
+					{
+						ir_printf("initial value has been set to predecessor %F's value: %d\n", pred, cur);
+						// in first iteration: set const candidate.
+						val = cur;
+						valSet = true;
+					}
+				}
+				else
+				{
+					// the node is const, but its mode is not integer
+					// currently, we only handle mode_Is
+				}
 			}
-			// handle only unknown values
-			else if (curTarval != tarval_unknown)
-				onlyUnknowns = false;
-
-			// if current predecessor is a number, store index of predecessor and
-			if (get_tarval_mode(curTarval) == mode_Is)
+			else
 			{
-				numWasFound = true;
-				numFound = get_tarval_long(curTarval);
-				std::cout << "num found: " << numFound << std::endl;
-				std::cout << "phi predecessor: ";
-				ir_printf("%F\n", pred);
+				// we now know, that the node is not const and
+				// therefore, operate on tarvals from the map
+				auto curTarval = (ir_tarval*)get_irn_link(pred);
+				// to compare on previous tarval later on, set
+				isConst = false;
+
+				if (curTarval == tarval_unknown)
+				{
+					ir_printf("tarval of predecessor %F is unknown\n", pred);
+					++numUnkowns;
+					// just count the number of unknown values
+				}
+				else if (curTarval == tarval_bad)
+				{
+					ir_printf("tarval of predecessor %F is bad\n", pred);
+					// if any input is bad, were bad aswell
+					// no need to set isConst = false;
+					isBad = true;
+				}
+				else if (get_tarval_mode(curTarval) == mode_Is)
+				{
+					// were not bad, were not unknown and were integer
+					// compare the tarval with the current const val candidate
+					auto cur = get_tarval_long(curTarval);
+
+					if (valSet)
+					{
+						if (cur != val)
+						{
+							ir_printf("tarval of predecessor %F's value does not match the current value\n", pred);
+							// now we know, that we can not replace anything.
+							isBad = true;
+						}
+					}
+					else
+					{
+						ir_printf("initial value has been set to predecessor %F's tarval: %d\n", pred, cur);
+						// in first iteration: set const candidate.
+						val = cur;
+						valSet = true;
+					}
+				}
+				else
+				{
+					// not unknown, not bad, not Is, so nothing we currently handle
+				}
+
 			}
+
+			++i;
 		}
+		while (i < predCount && !isBad);
 
-		// only unknown values found
-		if (onlyUnknowns)
+		bool changed = false;
+		ir_printf("%F:\t", node);
+
+		if (isBad)
 		{
-			std::cout << "case 4" << std::endl;
+			std::cout << "is bad" << std::endl;
+			set_irn_link(node, (void*)tarval_bad);
+		}
+		else if (numUnkowns == predCount)
+		{
+			// if the number of unknown tarvals is the same as the number of predecessors
+			// we do know, that we only have unknowns and therefore set it to unknown
 			set_irn_link(node, (void*)tarval_unknown);
+			std::cout << "is unknown" << std::endl;
 		}
-		// n times same number found
-		else if (numWasFound)
+		else if (isConst ||
+		         (get_tarval_mode(prevTarval) == mode_Is && get_tarval_long(prevTarval) == val))
 		{
-			std::cout << "case 3" << std::endl;
-			//TODO: I'm not sure you may do this here...
-			ir_node* newConstNode = new_r_Const_long(get_irn_irg(node), mode_Is, numFound);
-			set_irn_link(newConstNode, (void*)new_tarval_from_long(numFound, mode_Is));
+			// were not unknown, were not bad and
+			// were either const or the value tarval of both iterations is the same
+			//  -> we can replace the phi node with a new const node
+			auto newConstNode = new_r_Const_long(get_irn_irg(node), mode_Is, val);
 			exchange(node, newConstNode);
+			changed = true;
+			std::cout << "is now replaced by a new const node" << std::endl;
+		}
+		else if (valSet)
+		{
+			// get_tarval_mode(prevTarval) == mode_Is && get_tarval_long(prevTarval) != val
+			// we do have a change in the tarval of the current node, so update this accordingly
+			set_irn_link(node, (void*) new_tarval_from_long(val, mode_Is));
+			changed = true;
+			std::cout << "tarval has been updated" << std::endl;
 		}
 		else
-			// n - 1 unknown values and 1 number found
+			std::cout << "remains totally unchanged" << std::endl;
+
+		// when exactly do we want to add successors to the worklist again=
+		if (changed)
 		{
-			std::cout << "case 2" << std::endl;
-			set_irn_link(node, (ir_tarval*)new_tarval_from_long(numFound, mode_Is));
+			// add all successors to the worklist again
+			ir_edge_t* edge = NULL;
+			foreach_out_edge(node, edge)
+			{
+				ir_node* srcNode = get_edge_src_irn(edge);
+				ir_printf("adding srcNode= %F at %p to worklist again\n", srcNode, srcNode);
+				newNodes->insert(srcNode);
+			}
 		}
+
+		std::cout << std::endl;
 	}
 
 	void FirmNodeHandler::updateTarvalForArithmeticNode(ir_node* node)
@@ -378,7 +468,7 @@ namespace firm
 
 		if (is_Const(node)) handleConst(node);
 		// TODO: Fix segfaults
-		// else if (is_Phi(node)) handlePhi(node);
+		else if (is_Phi(node)) handlePhi(node);
 		else if (is_Minus(node)) handleMinus(node);
 		else if (is_Add(node)) handleAdd(node);
 		else if (is_Sub(node)) handleSub(node);
