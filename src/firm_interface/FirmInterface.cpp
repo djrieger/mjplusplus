@@ -224,17 +224,21 @@ namespace firm
 		{
 			// calloc
 			proc_calloc = new_type_method(2, 1);
-			set_method_param_type(proc_calloc, 0, new_type_primitive(mode_Is));
-			set_method_param_type(proc_calloc, 1, new_type_primitive(mode_Is));
+			set_method_param_type(proc_calloc, 0, new_type_primitive(get_reference_mode_unsigned_eq(mode_P)));
+			set_method_param_type(proc_calloc, 1, new_type_primitive(get_reference_mode_unsigned_eq(mode_P)));
 			set_method_res_type(proc_calloc, 0, new_type_primitive(mode_P));
 			ir_type* globalOwner = get_glob_type();
 			callocMethodEntity = new_entity(globalOwner, new_id_from_str("calloc"), proc_calloc);
 		}
 
 		// call calloc
-		ir_node* args[] = {count, FirmInterface::getInstance().createNodeForIntegerConstant(size)};
+		ir_node* args[] =
+		{
+			new_Conv(count, get_reference_mode_unsigned_eq(mode_P)),
+			new_Conv(FirmInterface::getInstance().createNodeForIntegerConstant(size), get_reference_mode_unsigned_eq(mode_P))
+		};
 		//ir_graph* irg = get_current_ir_graph();
-		ir_node* store = get_store(); // get_store();
+		ir_node* store = get_store();
 		ir_node* callee = new_Address(callocMethodEntity);
 		ir_node* call_node = new_Call(store, callee, 2, args, proc_calloc);
 

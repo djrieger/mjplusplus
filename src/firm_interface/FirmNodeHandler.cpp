@@ -248,7 +248,7 @@ namespace firm
 		ir_node* child = get_irn_n(node, 0);
 
 		if (is_Const(child))
-			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, -get_tarval_long(computed_value(child))));
+			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), -get_tarval_long(computed_value(child))));
 		else if (is_Minus(child))
 			updateTarvalAndExchange(node, get_irn_n(child, 0));
 	}
@@ -261,7 +261,7 @@ namespace firm
 		// Both arguments are constants.
 		if (is_Const(left) && is_Const(right))
 		{
-			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is,
+			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node),
 			                        get_tarval_long(computed_value(left)) + get_tarval_long(computed_value(right))));
 		}
 		else
@@ -281,8 +281,8 @@ namespace firm
 	{
 		ir_tarval* tarVal = computed_value(node);
 
-		if (get_tarval_mode(tarVal) == mode_Is)
-			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
+		if (tarVal != tarval_unknown && tarVal != tarval_bad)
+			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal)));
 		else
 		{
 			// Check whether at least one argument is 0, and if so,
@@ -291,7 +291,7 @@ namespace firm
 			ir_node* right = get_irn_n(node, 1);
 
 			if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
-				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, mode_Is));
+				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, get_irn_mode(node)));
 
 			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
 				updateTarvalAndExchange(node, left);
@@ -302,8 +302,8 @@ namespace firm
 	{
 		ir_tarval* tarVal = computed_value(node);
 
-		if (get_tarval_mode(tarVal) == mode_Is)
-			updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, get_tarval_long(tarVal)));
+		if (tarVal != tarval_unknown && tarVal != tarval_bad)
+			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal)));
 		else
 		{
 			ir_node* left = get_irn_n(node, 0);
@@ -318,9 +318,9 @@ namespace firm
 				long value = get_tarval_long(computed_value(left));
 
 				if (value == -1)
-					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, mode_Is));
+					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, get_irn_mode(node)));
 				else if (value == 0)
-					updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
+					updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), 0));
 				else if (value == 1)
 					updateTarvalAndExchange(node, right);
 			}
@@ -331,9 +331,9 @@ namespace firm
 				long value = get_tarval_long(computed_value(right));
 
 				if (value == -1)
-					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, mode_Is));
+					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, get_irn_mode(node)));
 				else if (value == 0)
-					updateTarvalAndExchange(node, new_r_Const_long(irg, mode_Is, 0));
+					updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), 0));
 				else if (value == 1)
 					updateTarvalAndExchange(node, left);
 			}
@@ -460,6 +460,8 @@ namespace firm
 			if (get_irn_mode(node) == get_irn_mode(grand_child))
 				exchange(node, grand_child);
 		}
+		else if (is_Const(child))
+			exchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(computed_value(child))));
 	}
 
 	void FirmNodeHandler::handle(ir_node* node)
