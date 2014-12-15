@@ -1,6 +1,6 @@
 #include "MemberVisitor.hpp"
 #include "StatementVisitor.hpp"
-#include "../FirmNodeHandler.hpp"
+#include "../ConstantFolder.hpp"
 #include "../Worklist.hpp"
 
 namespace firm
@@ -16,8 +16,8 @@ namespace firm
 		{
 			dump_ir_graph(irg, "pre-optimize");
 
-			FirmNodeHandler handler(irg);
-			firm::Worklist worklist(irg, handler);
+			ConstantFolder constantFolder(irg);
+			firm::Worklist worklist(irg, constantFolder);
 
 			edges_activate(irg);
 			worklist.run();

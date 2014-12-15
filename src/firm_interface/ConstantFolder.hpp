@@ -1,17 +1,18 @@
-#ifndef FIRM_NODE_HANDLER_HPP
-#define FIRM_NODE_HANDLER_HPP
+#ifndef CONSTANT_FOLDER
+#define CONSTANT_FOLDER
 
 #include <libfirm/firm.h>
 #include <set>
 #include <queue>
 #include <iostream>
 #include "../globals.hpp"
+#include "GraphOptimizer.hpp"
 
 namespace firm
 {
-	class FirmNodeHandler
+	class ConstantFolder : public GraphOptimizer
 	{
-		private:
+		protected:
 			ir_graph* irg;
 			shptr<std::set<ir_node*>> newNodes;
 
@@ -31,8 +32,8 @@ namespace firm
 			void handleCmp(ir_node* node);
 			void handleConv(ir_node* node);
 		public:
-			FirmNodeHandler(ir_graph* irg);
-			void handle(ir_node*);
+			virtual void handle(ir_node*);
+			ConstantFolder(ir_graph* irg);
 			shptr<std::set<ir_node*>> getNewNodes() const;
 	};
 }

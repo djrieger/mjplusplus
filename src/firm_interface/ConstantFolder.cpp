@@ -1,14 +1,14 @@
-#include "FirmNodeHandler.hpp"
+#include "ConstantFolder.hpp"
 #include "FirmInterface.hpp"
 
 namespace firm
 {
-	FirmNodeHandler::FirmNodeHandler(ir_graph* irg): irg(irg)
+	ConstantFolder::ConstantFolder(ir_graph* irg): GraphOptimizer(irg)
 	{
 		newNodes = std::make_shared<std::set<ir_node*>>();
 	}
 
-	void FirmNodeHandler::optimizePhi(ir_node* node)
+	void ConstantFolder::optimizePhi(ir_node* node)
 	{
 		auto prevTarval = (ir_tarval*)get_irn_link(node);
 		int predCount = get_irn_arity(node);
@@ -164,7 +164,7 @@ namespace firm
 		std::cout << std::endl;
 	}
 
-	void FirmNodeHandler::updateTarvalForArithmeticNode(ir_node* node)
+	void ConstantFolder::updateTarvalForArithmeticNode(ir_node* node)
 	{
 		ir_node* child1 = get_irn_n(node, 0);
 		ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);
@@ -207,14 +207,14 @@ namespace firm
 		}
 	}
 
-	void FirmNodeHandler::updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode)
+	void ConstantFolder::updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode)
 	{
 		//TODO: Fix segfaults
 		updateTarvalForArithmeticNode(oldNode);
 		exchange(oldNode, newNode);
 	}
 
-	void FirmNodeHandler::updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode)
+	void ConstantFolder::updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode)
 	{
 		/* TODO: Only tested for Div and Mod currently
 		 * may need adjusting for Load, Store, ... (any node requring a Proj)
@@ -234,23 +234,23 @@ namespace firm
 		}
 	}
 
-	shptr<std::set<ir_node*>> FirmNodeHandler::getNewNodes() const
+	shptr<std::set<ir_node*>> ConstantFolder::getNewNodes() const
 	{
 		return this->newNodes;
 	}
 
-	void FirmNodeHandler::handleConst(ir_node* node)
+	void ConstantFolder::handleConst(ir_node* node)
 	{
 		// set tarval of this const node as its irn_link value
 		set_irn_link(node, (void*)get_Const_tarval(node));
 	}
 
-	void FirmNodeHandler::handlePhi(ir_node* node)
+	void ConstantFolder::handlePhi(ir_node* node)
 	{
 		optimizePhi(node);
 	}
 
-	void FirmNodeHandler::handleMinus(ir_node* node)
+	void ConstantFolder::handleMinus(ir_node* node)
 	{
 		ir_node* child = get_irn_n(node, 0);
 
@@ -260,7 +260,7 @@ namespace firm
 			updateTarvalAndExchange(node, get_irn_n(child, 0));
 	}
 
-	void FirmNodeHandler::handleAdd(ir_node* node)
+	void ConstantFolder::handleAdd(ir_node* node)
 	{
 		ir_node* left = get_irn_n(node, 0);
 		ir_node* right = get_irn_n(node, 1);
@@ -284,7 +284,7 @@ namespace firm
 		}
 	}
 
-	void FirmNodeHandler::handleSub(ir_node* node)
+	void ConstantFolder::handleSub(ir_node* node)
 	{
 		ir_tarval* tarVal = computed_value(node);
 
@@ -305,7 +305,7 @@ namespace firm
 		}
 	}
 
-	void FirmNodeHandler::handleMul(ir_node* node)
+	void ConstantFolder::handleMul(ir_node* node)
 	{
 		ir_tarval* tarVal = computed_value(node);
 
@@ -347,7 +347,7 @@ namespace firm
 		}
 	}
 
-	void FirmNodeHandler::handleDivAndMod(ir_node* node)
+	void ConstantFolder::handleDivAndMod(ir_node* node)
 	{
 		// Get children of div node (operands)
 		ir_node* dividend = get_irn_n(node, 1);
@@ -390,7 +390,7 @@ namespace firm
 			updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, is_Div(node) ? 1 : 0));
 	}
 
-	void FirmNodeHandler::handleProj(ir_node* node)
+	void ConstantFolder::handleProj(ir_node* node)
 	{
 		// Get first child of proj node
 		ir_node* child_node = get_irn_n(node, 0);
@@ -418,7 +418,7 @@ namespace firm
 		}
 	}
 
-	void FirmNodeHandler::handleCmp(ir_node* node)
+	void ConstantFolder::handleCmp(ir_node* node)
 	{
 		ir_node* left = get_irn_n(node, 0);
 		ir_node* right = get_irn_n(node, 1);
@@ -453,7 +453,7 @@ namespace firm
 			set_Cmp_relation(node, get_Cmp_relation(node) & ir_relation_equal ? ir_relation_true : ir_relation_false);
 	}
 
-	void FirmNodeHandler::handleConv(ir_node* node)
+	void ConstantFolder::handleConv(ir_node* node)
 	{
 		// This removes *some* unnecessary conversions, notably those
 		// occuring during calls to System.out.println, but this should
@@ -471,7 +471,7 @@ namespace firm
 			exchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(computed_value(child))));
 	}
 
-	void FirmNodeHandler::handle(ir_node* node)
+	void ConstantFolder::handle(ir_node* node)
 	{
 		newNodes->clear();
 
