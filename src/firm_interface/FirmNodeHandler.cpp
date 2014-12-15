@@ -168,6 +168,10 @@ namespace firm
 	{
 		ir_node* child1 = get_irn_n(node, 0);
 		ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);
+
+		if (!tarval1)
+			tarval1 = tarval_unknown;
+
 		ir_node* child2 = NULL;
 		ir_tarval* tarval2 = NULL;
 
@@ -175,9 +179,12 @@ namespace firm
 		{
 			child2 = get_irn_n(node, 1);
 			tarval2 = (ir_tarval*)get_irn_link(child2);
+
+			if (!tarval2)
+				tarval2 = tarval_unknown;
 		}
 
-		if (get_tarval_mode(tarval1) == mode_Is && get_tarval_mode(tarval2) == mode_Is)
+		if (get_tarval_mode(tarval1) == mode_Is && (is_Minus(node) || get_tarval_mode(tarval2) == mode_Is))
 		{
 			ir_tarval* resultVal;
 
@@ -203,7 +210,7 @@ namespace firm
 	void FirmNodeHandler::updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode)
 	{
 		//TODO: Fix segfaults
-		// updateTarvalForArithmeticNode(oldNode);
+		updateTarvalForArithmeticNode(oldNode);
 		exchange(oldNode, newNode);
 	}
 
