@@ -6,7 +6,7 @@
 #include <functional>
 #include <set>
 #include "../globals.hpp"
-#include "FirmNodeHandler.hpp"
+#include "ConstantFolder.hpp"
 
 namespace firm
 {
@@ -15,9 +15,9 @@ namespace firm
 		private:
 			ir_graph* functionGraph;
 			std::queue<ir_node*> worklist;
-			FirmNodeHandler& handler;
+			ConstantFolder& handler;
 		public:
-			Worklist(ir_graph* functionGraph, FirmNodeHandler& handler);
+			Worklist(ir_graph* functionGraph, ConstantFolder& handler);
 			void run();
 
 	};

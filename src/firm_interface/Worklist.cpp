@@ -39,7 +39,7 @@ namespace firm
 		inc_irg_visited(irg);
 		walk_topo_helper(get_irg_end(irg), walker, env);
 	}
-	Worklist::Worklist(ir_graph* functionGraph, FirmNodeHandler& handler): functionGraph(functionGraph), handler(handler)
+	Worklist::Worklist(ir_graph* functionGraph, ConstantFolder& handler): functionGraph(functionGraph), handler(handler)
 	{
 		typedef void (*ir_func)(ir_node*, void*);
 		ir_func addToWorklist = [](ir_node * node, void* env)
