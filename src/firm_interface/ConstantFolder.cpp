@@ -301,7 +301,7 @@ namespace firm
 				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, get_irn_mode(node)));
 
 			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
-				updateTarvalAndExchange(node, left);
+				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, mode_Is));
 		}
 	}
 
