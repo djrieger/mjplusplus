@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "../globals.hpp"
 #include "ConstantFolder.hpp"
+#include "Node.hpp"
 
 namespace firm
 {
@@ -20,11 +21,11 @@ namespace firm
 			std::unordered_map<ir_node*, bool> isQueued;
 
 			void cleanUp();
-			void processChildren(ir_node* node, std::function<void (ir_node* leftChild, ir_tarval* leftTarval, ir_node* rightChild, ir_tarval* rightTarval)> fun);
+			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
 
-			void replaceGeneric(ir_node* node);
-			void replaceAdd(ir_node* node);
-			void replaceSub(ir_node* node);
+			void replaceGeneric(Node node);
+			void replaceAdd(Node node);
+			void replaceSub(Node node);
 		public:
 			Worklist(ir_graph* functionGraph, ConstantFolder& handler);
 			void run();

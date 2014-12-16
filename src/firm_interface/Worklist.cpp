@@ -75,26 +75,24 @@ namespace firm
 		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
-	void Worklist::replaceGeneric(ir_node* node)
+	void Worklist::replaceGeneric(Node node)
 	{
 		std::cout << "found ";
 		ir_printf("%F\n", node);
 
-		ir_tarval* tarval = (ir_tarval*)get_irn_link(node);
-
-		if (tarval != tarval_bad && tarval != tarval_unknown && get_tarval_mode(tarval) == mode_Is)
+		if (node.getTarval() != tarval_bad && node.getTarval() != tarval_unknown && node.getTarval().isModeIs())
 		{
-			ir_printf("parent tarval = %F\n", tarval);
+			// ir_printf("parent tarval = %F\n", tarval);
 			bool constChildren = true;
-			int i = 0;
-			std::cout << "arity = " << get_irn_arity(node) << std::endl;
+			unsigned int i = 0;
+			// std::cout << "arity = " << get_irn_arity(node) << std::endl;
 
-			while ( i < get_irn_arity(node) && constChildren)
+			while ( i < node.getChildCount() && constChildren)
 			{
-				ir_tarval* predTarval = (ir_tarval*)get_irn_link(get_irn_n(node, i));
-				ir_printf("child tarval = %F\n", predTarval);
+				Tarval predTarval = node.getChild(i).getTarval();
+				// ir_printf("child tarval = %F\n", predTarval);
 
-				if (!predTarval || get_tarval_mode(predTarval) != get_tarval_mode(tarval) || predTarval == tarval_bad || predTarval == tarval_unknown)
+				if (!predTarval || get_tarval_mode(predTarval) != get_tarval_mode(node.getTarval()) || predTarval == tarval_bad || predTarval == tarval_unknown)
 					constChildren = false;
 
 				i++;
@@ -104,9 +102,8 @@ namespace firm
 			{
 				std::cout << "removed ";
 				ir_printf("%F\n", node);
-				ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), get_tarval_long(tarval));
-				set_irn_link(constNode, (void*)tarval);
-				exchange(node, constNode);
+				ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), node.getTarval().getLong());
+				node.replaceWith(constNode, true);
 			}
 		}
 	}
@@ -141,49 +138,52 @@ namespace firm
 		cleanUp();
 	}
 
-	void Worklist::processChildren(ir_node* node, std::function<void (ir_node* leftChild, ir_tarval* leftTarval, ir_node* rightChild, ir_tarval* rightTarval)> fun)
+	void Worklist::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
 	{
 		ir_printf("node: %F\n", node);
-		ir_node* child1 = get_irn_n(node, 0);
-		ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);
-		ir_printf("tarval1: %F\n", tarval1);
+		Node child1 = node.getChild(0);
+		//ir_printf("tarval1: %F\n", tarval1);
 
-		if (get_irn_arity(node) == 1)
+		if (node.getChildCount() == 1)
 		{
-			if (get_tarval_mode(tarval1) == mode_Is)
-				fun(child1, tarval1, NULL, NULL);
+			if (node.getTarval().isModeIs())
+				fun(child1, NULL);
 		} else
 		{
-			ir_node* child2 = get_irn_n(node, 1);
-			ir_tarval* tarval2 = (ir_tarval*)get_irn_link(child2);
-			ir_printf("tarval2: %F\n", tarval2);
-			fun(child1, tarval1, child2, tarval2);
+			Node child2 = node.getChild(1);
+			//ir_printf("tarval2: %F\n", tarval2);
+			fun(child1, child2);
 		}
 	}
 
-	void Worklist::replaceAdd(ir_node* node)
+	void Worklist::replaceAdd(Node node)
 	{
-		processChildren(node, [&] (ir_node * leftChild, ir_tarval * leftTarval, ir_node * rightChild, ir_tarval * rightTarval) -> void
+		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-			if (leftTarval && get_tarval_mode(leftTarval) == mode_Is && get_tarval_long(leftTarval) == 0) {
-				//set_irn_link(rightChild, (void*))
-				exchange(node, rightChild);	
-			} 
-			else if (rightTarval && get_tarval_mode(rightTarval) == mode_Is && get_tarval_long(rightTarval) == 0) exchange(node, leftChild);
-			else replaceGeneric(node);
+			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isModeIs() && tarval.getLong() == 0; };
+			if (tarvalIsZero(leftChild.getTarval()))
+				node.replaceWith(rightChild);
+			else if (tarvalIsZero(rightChild.getTarval()))
+			 	node.replaceWith(leftChild);
+			else
+				replaceGeneric(node);
 		});
 	}
 
-	void Worklist::replaceSub(ir_node* node)
+	void Worklist::replaceSub(Node node)
 	{
-		processChildren(node, [&] (ir_node * leftChild, ir_tarval * leftTarval, ir_node * rightChild, ir_tarval * rightTarval) -> void
+		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-			ir_printf("SUB arity = %d\n", get_irn_arity(node));
-			ir_printf("SUB: left tar %F right tar %F\n", leftTarval, rightTarval);
-			ir_printf("SUB: left child %F right child %F\n", leftChild, rightChild);
-			if (leftTarval && get_tarval_mode(leftTarval) == mode_Is && get_tarval_long(leftTarval) == 0) exchange(node, new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
-			else if (rightTarval && get_tarval_mode(rightTarval) == mode_Is && get_tarval_long(rightTarval) == 0) exchange(node, leftChild);
-			else replaceGeneric(node);
+			// ir_printf("SUB arity = %d\n", get_irn_arity(node));
+			// ir_printf("SUB: left tar %F right tar %F\n", leftTarval, rightTarval);
+			// ir_printf("SUB: left child %F right child %F\n", leftChild, rightChild);
+			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isModeIs() && tarval.getLong() == 0; };
+			if (tarvalIsZero(leftChild.getTarval()))
+				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+			else if (tarvalIsZero(rightChild.getTarval()))
+				node.replaceWith(leftChild);
+			else
+				replaceGeneric(node);
 		});
 	}
 

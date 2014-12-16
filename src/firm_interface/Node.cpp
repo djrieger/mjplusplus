@@ -50,6 +50,13 @@ namespace firm {
 
 		return outs;
 	}	
+
+	void Node::replaceWith(ir_node* node, bool copyTarval)
+	{
+		if (copyTarval)
+			set_irn_link(node, (void*) (ir_tarval*)getTarval());
+		exchange(this->node, node);
+	}
 }
 
 

@@ -23,6 +23,7 @@ namespace firm
 			unsigned int getChildCount() const;
 			bool hasChildren() const;
 			shptr<vec<Node>> getChildren() const;
+			void replaceWith(ir_node* node, bool copyTarval = false);
 	};
 }
 
