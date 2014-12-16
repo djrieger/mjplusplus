@@ -5,7 +5,7 @@ namespace firm
 {
 	ConstantFolder::ConstantFolder(ir_graph* irg): GraphOptimizer(irg)
 	{
-		
+
 	}
 
 	void ConstantFolder::optimizePhi(ir_node* node)
@@ -89,7 +89,7 @@ namespace firm
 			// we do have a change in the tarval of the current node, so update this accordingly
 			ir_tarval* newTarval = new_tarval_from_long(val, mode_Is);
 			set_irn_link(node, (void*) newTarval);
-			
+
 			if (newTarval != prevTarval)
 				markOutNodesAsNew(node);
 
@@ -124,12 +124,8 @@ namespace firm
 			ir_tarval* resultVal;
 
 			if (is_Add(node)) resultVal = tarval_add(tarval1, tarval2);
-			else if (is_Sub(node)) {
-				//if (get_tarval_long(tarval1) == 0) resultVal = tarval2;
-				//else if (get_tarval_long(tarval2) == 0) resultVal = new_tarval_from_long(- get_tarval_long(tarval1), mode_Is);
-				//else
-				 resultVal = tarval_sub(tarval1, tarval2, NULL);
-			} else if (is_Mul(node)) resultVal = tarval_mul(tarval1, tarval2);
+			else if (is_Sub(node)) resultVal = tarval_sub(tarval1, tarval2, NULL);
+			else if (is_Mul(node)) resultVal = tarval_mul(tarval1, tarval2);
 			else if (is_Minus(node)) resultVal = tarval_neg(tarval1);
 			//else if (is_Div(node)) resultVal = tarval_div(tarval1, tarval2);
 			else
@@ -162,20 +158,9 @@ namespace firm
 		*/
 	}
 
-	void ConstantFolder::handlePhi(ir_node* node)
-	{
-		optimizePhi(node);
-	}
-
-	void ConstantFolder::handleMinus(ir_node* node)
-	{
-		updateTarvalForArithmeticNode(node);
-	}
-
 	void ConstantFolder::handleMul(ir_node* node)
 	{
 		//ir_tarval* tarVal = computed_value(node);
-		updateTarvalForArithmeticNode(node);
 
 		/*
 
@@ -336,17 +321,17 @@ namespace firm
 		// occuring during calls to System.out.println, but this should
 		// probably be extended for more general useless conversions.
 		ir_node* child = get_irn_n(node, 0);
-/*
-		if (is_Conv(child))
-		{
-			ir_node* grand_child = get_irn_n(child, 0);
+		/*
+				if (is_Conv(child))
+				{
+					ir_node* grand_child = get_irn_n(child, 0);
 
-			if (get_irn_mode(node) == get_irn_mode(grand_child))
-				exchange(node, grand_child);
-		}
-		else if (is_Const(child))
-			exchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(computed_value(child))));
-		*/
+					if (get_irn_mode(node) == get_irn_mode(grand_child))
+						exchange(node, grand_child);
+				}
+				else if (is_Const(child))
+					exchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(computed_value(child))));
+				*/
 	}
 
 	void ConstantFolder::handle(ir_node* node)
@@ -354,15 +339,15 @@ namespace firm
 		newNodes->clear();
 
 		// TODO: Fix segfaults
-		if (is_Phi(node) && get_irn_mode(node) == mode_Is) handlePhi(node);
-		else if (is_Minus(node)) handleMinus(node);
-		else if (is_Add(node)) updateTarvalForArithmeticNode(node);
-		else if (is_Sub(node)) updateTarvalForArithmeticNode(node);
-		else if (is_Mul(node)) handleMul(node);
-
-		else if (is_Div(node) || is_Mod(node)) handleDivAndMod(node);
-		else if (is_Proj(node)) handleProj(node);
+		if (is_Phi(node) && get_irn_mode(node) == mode_Is) optimizePhi(node);
+		else if (is_Minus(node) ||  is_Add(node) || is_Sub(node) ||  is_Mul(node))
+			updateTarvalForArithmeticNode(node);
+		else if (is_Div(node) || is_Mod(node))
+			handleDivAndMod(node);
+		else if (is_Proj(node))
+			handleProj(node);
 		//else if (is_Cmp(node)) handleCmp(node);
-		else if (is_Conv(node)) handleConv(node);
+		else if (is_Conv(node))
+			handleConv(node);
 	}
 }

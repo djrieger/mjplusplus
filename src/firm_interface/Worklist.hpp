@@ -17,10 +17,14 @@ namespace firm
 			ir_graph* functionGraph;
 			std::queue<ir_node*> worklist;
 			ConstantFolder& handler;
-			std::unordered_map<ir_node*,bool> isQueued;
+			std::unordered_map<ir_node*, bool> isQueued;
 
-			void replace(ir_node * node);
 			void cleanUp();
+			void processChildren(ir_node* node, std::function<void (ir_node* leftChild, ir_tarval* leftTarval, ir_node* rightChild, ir_tarval* rightTarval)> fun);
+
+			void replaceGeneric(ir_node* node);
+			void replaceAdd(ir_node* node);
+			void replaceSub(ir_node* node);
 		public:
 			Worklist(ir_graph* functionGraph, ConstantFolder& handler);
 			void run();
