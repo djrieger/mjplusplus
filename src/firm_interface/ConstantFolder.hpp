@@ -20,7 +20,6 @@ namespace firm
 			void updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode);
 			void updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode);
 
-			void handleConst(ir_node* node);
 			void handlePhi(ir_node* node);
 			void handleMinus(ir_node* node);
 			void handleAdd(ir_node* node);

@@ -165,12 +165,6 @@ namespace firm
 		*/
 	}
 
-	void ConstantFolder::handleConst(ir_node* node)
-	{
-		// set tarval of this const node as its irn_link value
-		set_irn_link(node, (void*)get_Const_tarval(node));
-	}
-
 	void ConstantFolder::handlePhi(ir_node* node)
 	{
 		optimizePhi(node);
@@ -192,22 +186,23 @@ namespace firm
 		ir_node* right = get_irn_n(node, 1);
 
 		// Both arguments are constants.
-		if (is_Const(left) && is_Const(right))
-		{
-			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node),
-			                        get_tarval_long(computed_value(left)) + get_tarval_long(computed_value(right))));
-		}
-		else
-		{
+		// if (is_Const(left) && is_Const(right))
+		// {
+			updateTarvalForArithmeticNode(node);
+		// }
+		// else
+		// {
 			// Check whether at least one argument is 0, and if so,
 			// apply the rule x + 0 = x (or 0 + x = x).
-
+			/*
+				TODO: Reenable
 			if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
 				updateTarvalAndExchange(node, right);
 
 			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
 				updateTarvalAndExchange(node, left);
-		}
+				*/
+		// }
 	}
 
 	void ConstantFolder::handleSub(ir_node* node)
@@ -233,10 +228,16 @@ namespace firm
 
 	void ConstantFolder::handleMul(ir_node* node)
 	{
-		ir_tarval* tarVal = computed_value(node);
+		//ir_tarval* tarVal = computed_value(node);
+		updateTarvalForArithmeticNode(node);
 
+		return;
+
+		
+		ir_tarval* tarVal = (ir_tarval*)get_irn_link(node);
 		if (tarVal != tarval_unknown && tarVal != tarval_bad)
-			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal)));
+			//updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal)));
+			updateTarvalForArithmeticNode(node);
 		else
 		{
 			ir_node* left = get_irn_n(node, 0);
@@ -402,9 +403,8 @@ namespace firm
 	{
 		newNodes->clear();
 
-		if (is_Const(node)) handleConst(node);
 		// TODO: Fix segfaults
-		else if (is_Phi(node) && get_irn_mode(node) == mode_Is) handlePhi(node);
+		if (is_Phi(node) && get_irn_mode(node) == mode_Is) handlePhi(node);
 		else if (is_Minus(node)) handleMinus(node);
 		else if (is_Add(node)) handleAdd(node);
 		else if (is_Sub(node)) handleSub(node);
