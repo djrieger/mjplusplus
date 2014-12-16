@@ -18,3 +18,9 @@ Simon_17: constant propagation with loops
 Simon_18: combination of constant folding and propagation
 Simon_19: combination of arithmetic identities constant folding
 Simon_20: elimination of unreachable control flow (constant conditions)
+Simon_21: optimistical constant propagation ("x=1;x=2-x"-loop)
+Simon_22: optimistical constant propagation (1^b as O(n))
+Simon_23: optimistical constant propagation (1^b as O(log n))
+Simon_24: optimization of constant return values
+Simon_25: incorporation of constant return values into constant propagation
+Simon_26: common subexpression elimination

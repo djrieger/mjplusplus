@@ -1,0 +1,14 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(12, 3);
+	}
+	
+	public void q(int w, int pi) {
+		int x = w*4;
+		int y = w*(2+2); /* @comment "reuse node for "w*4" */
+		System.out.println(x-y); /* @old "x-y" @opt "0" */
+		int i = -1;
+		System.out.println((2*pi+34)*w);
+		System.out.println(i*(2*pi+34)); /* @comment "reuse node for "2*pi+34" */
+	}
+}

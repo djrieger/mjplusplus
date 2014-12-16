@@ -1,0 +1,12 @@
+class a {
+	public static void main(String[] args) {
+		int r = 1;
+		int b = 1;
+		int e = 100;
+		while (e > 0) {
+			e = e-1;
+			r = r*b; /* @old "r=r*b;" @opt "r=1;" | @opt "" */
+		}
+		System.out.println(r); /* @old "r" @opt "1;" */
+	}
+}

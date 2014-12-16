@@ -340,7 +340,7 @@ namespace firm
 
 		// TODO: Fix segfaults
 		if (is_Phi(node) && get_irn_mode(node) == mode_Is) optimizePhi(node);
-		else if (is_Minus(node) ||  is_Add(node) || is_Sub(node) ||  is_Mul(node))
+		else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
 			updateTarvalForArithmeticNode(node);
 		else if (is_Div(node) || is_Mod(node))
 			handleDivAndMod(node);
