@@ -3,6 +3,7 @@
 
 #include <libfirm/firm.h>
 #include "../globals.hpp"
+#include "Tarval.hpp"
 
 namespace firm
 {
@@ -10,10 +11,11 @@ namespace firm
 		private:
 			ir_node* node;
 		public:
+			Node() {}
 			Node(ir_node* node);	
 			operator ir_node*() { return node; }
-			ir_tarval* getTarval() const;
-			void setTarval(ir_tarval* tarval);
+			Tarval getTarval() const;
+			void setTarval(Tarval tarval);
 			void setTarvalToBad();
 			void setTarvalToUnknown();
 			shptr<vec<std::pair<Node, unsigned int>>> getOuts() const;
