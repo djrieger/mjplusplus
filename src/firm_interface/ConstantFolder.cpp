@@ -87,9 +87,11 @@ namespace firm
 		{
 			// get_tarval_mode(prevTarval) == mode_Is && get_tarval_long(prevTarval) != val
 			// we do have a change in the tarval of the current node, so update this accordingly
-			set_irn_link(node, (void*) new_tarval_from_long(val, mode_Is));
+			ir_tarval* newTarval = new_tarval_from_long(val, mode_Is);
+			set_irn_link(node, (void*) newTarval);
 			
-			markOutNodesAsNew(node);
+			if (newTarval != prevTarval)
+				markOutNodesAsNew(node);
 
 			std::cout << "tarval has been updated" << std::endl;
 		}
@@ -146,6 +148,7 @@ namespace firm
 		/* TODO: Only tested for Div and Mod currently
 		 * may need adjusting for Load, Store, ... (any node requring a Proj)
 		 */
+		/*
 		for (auto& ne : FirmInterface::getInstance().getOuts(oldNode))
 		{
 			ir_node* o = ne.first;
@@ -159,6 +162,7 @@ namespace firm
 			//else
 				//exchange(o, newNode);
 		}
+		*/
 	}
 
 	void ConstantFolder::handleConst(ir_node* node)
@@ -210,8 +214,8 @@ namespace firm
 	{
 		ir_tarval* tarVal = computed_value(node);
 
-		if (tarVal != tarval_unknown && tarVal != tarval_bad)
-			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal)));
+		if (/* tarVal != tarval_unknown && */ tarVal != tarval_bad)
+			updateTarvalAndExchange(node, NULL /* new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal))*/);
 		else
 		{
 			// Check whether at least one argument is 0, and if so,
@@ -223,7 +227,7 @@ namespace firm
 				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, get_irn_mode(node)));
 
 			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
-				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, mode_Is));
+				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, get_irn_mode(node)));
 		}
 	}
 
@@ -407,7 +411,7 @@ namespace firm
 		else if (is_Mul(node)) handleMul(node);
 		else if (is_Div(node) || is_Mod(node)) handleDivAndMod(node);
 		else if (is_Proj(node)) handleProj(node);
-		else if (is_Cmp(node)) handleCmp(node);
+		//else if (is_Cmp(node)) handleCmp(node);
 		else if (is_Conv(node)) handleConv(node);
 	}
 }

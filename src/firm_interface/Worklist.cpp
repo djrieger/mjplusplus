@@ -3,7 +3,7 @@
 namespace firm
 {
 
-	static void walk_topo_helper(ir_node* irn, irg_walk_func* walker, void* env)
+	static void walk_topo_helper(ir_node* irn, std::function<void (ir_node*, void*)> walker, void* env)
 	{
 		if (irn_visited(irn))
 			return;
@@ -34,7 +34,7 @@ namespace firm
 		mark_irn_visited(irn);
 	}
 
-	static void walk_topological(ir_graph* irg, irg_walk_func* walker, void* env)
+	static void walk_topological(ir_graph* irg, std::function<void (ir_node*, void*)> walker, void* env)
 	{
 		inc_irg_visited(irg);
 		walk_topo_helper(get_irg_end(irg), walker, env);
@@ -73,6 +73,33 @@ namespace firm
 		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
+	void Worklist::replacePhi(ir_node * node)
+	{
+		std::cout << "found Phi" << std::endl;
+
+		ir_tarval* tarval = (ir_tarval*)get_irn_link(node);
+		if (tarval != tarval_bad && tarval != tarval_unknown && get_tarval_mode(tarval) == mode_Is) 
+		{
+		ir_printf("parent tarval = %F\n", tarval);
+			bool constChildren = true;
+			int i = 0;
+			std::cout << "arity = " << get_irn_arity(node) << std::endl;	
+			while ( i < get_irn_arity(node) && constChildren)
+			{
+				ir_tarval* predTarval = (ir_tarval*)get_irn_link(get_irn_n(node, i)); 
+				ir_printf("child tarval = %F\n", predTarval);
+				if (get_tarval_mode(predTarval) != get_tarval_mode(tarval) || predTarval == tarval_bad || predTarval == tarval_unknown)
+					constChildren = false;
+				i++;
+			}
+			if (constChildren) {
+				std::cout << "removed ";
+				ir_printf("%F\n", node);				
+				exchange(node, new_r_Const_long(functionGraph, get_irn_mode(node), get_tarval_long(tarval)));
+			}
+		}		
+	}
+
 	void Worklist::run()
 	{
 		while (!worklist.empty())
@@ -82,16 +109,28 @@ namespace firm
 			worklist.pop();
 			handler.handle(node);
 
-			for (auto& newNode : *handler.getNewNodes())
+			// std::cout << handler.getNewNodes()->size() << std::endl;
+			for (auto& newNode : *handler.getNewNodes()) {
 				if (!isQueued[newNode]) {
 					worklist.push(newNode);
 					isQueued[newNode] = true;
-					//std::cout << "added node: ";
-					//ir_printf("%F\n", newNode);					
+					// std::cout << "added node: ";
+					// ir_printf("%F\n", newNode);					
 				} else {
-					//std::cout << "did not add node: ";
-					//ir_printf("%F\n", newNode);
+					// std::cout << "did not add node: ";
+					// ir_printf("%F\n", newNode);
 				}
+
+			}
 		}
+
+		typedef void (*ir_func)(ir_node*, void*);
+		
+		auto replaceLambda = [&]  (ir_node* node, void*) {
+			if (is_Phi(node) && get_irn_mode(node) == mode_Is)
+				replacePhi(node);
+			
+		};
+		walk_topological(functionGraph, replaceLambda, NULL);
 	}
 }
