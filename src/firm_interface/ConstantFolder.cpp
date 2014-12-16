@@ -10,6 +10,7 @@ namespace firm
 
 	void ConstantFolder::optimizePhi(ir_node* node)
 	{
+		std::cout << "---------------------------" << std::endl;
 		auto prevTarval = (ir_tarval*)get_irn_link(node);
 		int predCount = get_irn_arity(node);
 		bool isConst = true;
@@ -156,12 +157,10 @@ namespace firm
 			foreach_out_edge(node, edge)
 			{
 				ir_node* srcNode = get_edge_src_irn(edge);
-				ir_printf("adding srcNode= %F at %p to worklist again\n", srcNode, srcNode);
+				//ir_printf("adding srcNode= %F at %p to worklist again\n", srcNode, srcNode);
 				newNodes->insert(srcNode);
 			}
 		}
-
-		std::cout << std::endl;
 	}
 
 	void ConstantFolder::updateTarvalForArithmeticNode(ir_node* node)
