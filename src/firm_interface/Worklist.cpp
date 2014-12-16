@@ -148,7 +148,8 @@ namespace firm
 		{
 			if (node.getTarval().isModeIs())
 				fun(child1, NULL);
-		} else
+		}
+		else
 		{
 			Node child2 = node.getChild(1);
 			//ir_printf("tarval2: %F\n", tarval2);
@@ -161,10 +162,11 @@ namespace firm
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
 			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isModeIs() && tarval.getLong() == 0; };
+
 			if (tarvalIsZero(leftChild.getTarval()))
 				node.replaceWith(rightChild);
 			else if (tarvalIsZero(rightChild.getTarval()))
-			 	node.replaceWith(leftChild);
+				node.replaceWith(leftChild);
 			else
 				replaceGeneric(node);
 		});
@@ -178,6 +180,7 @@ namespace firm
 			// ir_printf("SUB: left tar %F right tar %F\n", leftTarval, rightTarval);
 			// ir_printf("SUB: left child %F right child %F\n", leftChild, rightChild);
 			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isModeIs() && tarval.getLong() == 0; };
+
 			if (tarvalIsZero(leftChild.getTarval()))
 				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
 			else if (tarvalIsZero(rightChild.getTarval()))
