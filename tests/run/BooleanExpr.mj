@@ -1,0 +1,19 @@
+class a {
+  public static void main(String[] args) {
+    a q = new a();
+    if (q.x()) {
+      System.out.println(42);
+    }
+    if (q.y()) {
+      System.out.println(42);
+    }
+  }
+
+  public boolean y() {
+    return true || (false && false);
+  }
+
+  public boolean x() {
+    return true || true;
+  }
+}
