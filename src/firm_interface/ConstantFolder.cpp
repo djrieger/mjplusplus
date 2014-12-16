@@ -8,26 +8,26 @@ namespace firm
 
 	}
 
-	void ConstantFolder::optimizePhi(ir_node* node)
+	void ConstantFolder::optimizePhi(Node node)
 	{
 		std::cout << "---------------------------" << std::endl;
-		auto prevTarval = (ir_tarval*)get_irn_link(node);
-		int predCount = get_irn_arity(node);
+		Tarval prevTarval = node.getTarval();
+		unsigned int predCount = node.getChildCount();
 		bool isConst = true;
 		bool isBad = false;
 		bool valSet = false;
 		long val = 0;
-		int i = 0;
+		unsigned int i = 0;
 		int numUnkowns = 0;
-		ir_printf("processing %F at %p with %d predecessors and tarval %F\n", node, node, predCount, prevTarval);
+		ir_printf("processing %F at %p with %d predecessors and tarval %F\n", (ir_node*)node, (ir_node*)node, predCount, prevTarval);
 
 		do
 		{
-			ir_node* pred = get_irn_n(node, i);
+			Node pred = node.getChild(i);
 
 			// we now know, that the node is not const and
 			// therefore, operate on tarvals from the map
-			auto curTarval = (ir_tarval*)get_irn_link(pred);
+			Tarval curTarval = pred.getTarval();
 			// to compare on previous tarval later on, set
 			isConst = false;
 
@@ -44,11 +44,11 @@ namespace firm
 				// no need to set isConst = false;
 				isBad = true;
 			}
-			else if (get_tarval_mode(curTarval) == mode_Is)
+			else if (curTarval.isModeIs())
 			{
 				// were not bad, were not unknown and were integer
 				// compare the tarval with the current const val candidate
-				auto cur = get_tarval_long(curTarval);
+				auto cur = curTarval.getLong();
 
 				if (valSet)
 				{
@@ -81,14 +81,14 @@ namespace firm
 		if (isBad)
 		{
 			std::cout << "is bad" << std::endl;
-			set_irn_link(node, (void*)tarval_bad);
+			node.setTarval(BadTarval());
 		}
 		else if (valSet)
 		{
 			// get_tarval_mode(prevTarval) == mode_Is && get_tarval_long(prevTarval) != val
 			// we do have a change in the tarval of the current node, so update this accordingly
-			ir_tarval* newTarval = new_tarval_from_long(val, mode_Is);
-			set_irn_link(node, (void*) newTarval);
+			Tarval newTarval(val);
+			node.setTarval(newTarval);
 
 			if (newTarval != prevTarval)
 				markOutNodesAsNew(node);
@@ -99,27 +99,27 @@ namespace firm
 			std::cout << "remains totally unchanged" << std::endl;
 	}
 
-	void ConstantFolder::updateTarvalForArithmeticNode(ir_node* node)
+	void ConstantFolder::updateTarvalForArithmeticNode(Node node)
 	{
-		ir_node* child1 = get_irn_n(node, 0);
-		ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);
+		Node child1(node.getChild(0));
+		Tarval tarval1 = child1.getTarval();
 
 		if (!tarval1)
-			tarval1 = tarval_unknown;
+			tarval1 = Tarval(tarval_unknown);
 
-		ir_node* child2 = NULL;
-		ir_tarval* tarval2 = NULL;
+		Node child2;
+		Tarval tarval2;
 
-		if (get_irn_arity(node) > 1)
+		if (node.getChildCount() > 1)
 		{
-			child2 = get_irn_n(node, 1);
-			tarval2 = (ir_tarval*)get_irn_link(child2);
+			child2 = node.getChild(1);
+			tarval2 = child2.getTarval();
 
 			if (!tarval2)
-				tarval2 = tarval_unknown;
+				tarval2 = Tarval(tarval_unknown);
 		}
 
-		if (get_tarval_mode(tarval1) == mode_Is && (is_Minus(node) || get_tarval_mode(tarval2) == mode_Is))
+		if (tarval1.isModeIs() && (is_Minus(node) || tarval2.isModeIs()))
 		{
 			ir_tarval* resultVal;
 
@@ -339,10 +339,10 @@ namespace firm
 		newNodes->clear();
 
 		// TODO: Fix segfaults
-		if (is_Phi(node) && get_irn_mode(node) == mode_Is) optimizePhi(node);
-		else if (is_Minus(node) ||  is_Add(node) || is_Sub(node) ||  is_Mul(node))
+		if (is_Phi(node) && get_irn_mode(node) == mode_Is) optimizePhi(firm::Node(node));
+		else if (is_Minus(node) ||is_Add(node) ||is_Sub(node) ||is_Mul(node))
 			updateTarvalForArithmeticNode(node);
-		else if (is_Div(node) || is_Mod(node))
+		else if (is_Div(node) ||is_Mod(node))
 			handleDivAndMod(node);
 		else if (is_Proj(node))
 			handleProj(node);

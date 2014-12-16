@@ -5,23 +5,17 @@ namespace firm {
 
 	}
 
-	ir_tarval* Node::getTarval() const {
-		return (ir_tarval*)get_irn_link(node);
+	Tarval Node::getTarval() const {
+		ir_tarval* tarval = (ir_tarval*)get_irn_link(node);
+		if (!tarval)
+			return NULL;
+		else
+			return Tarval(tarval);
 	}
 
-	void Node::setTarval(ir_tarval* tarval) 
+	void Node::setTarval(Tarval tarval) 
 	{
-		set_irn_link(node, (void*) tarval);
-	}
-
-	void Node::setTarvalToBad() 
-	{
-		setTarval(tarval_bad);
-	}
-
-	void Node::setTarvalToUnknown() 
-	{
-		setTarval(tarval_unknown);
+		set_irn_link(node, (void*) (ir_tarval*) tarval);
 	}
 
 	Node Node::getChild(unsigned int i) const {

@@ -7,6 +7,7 @@
 #include <iostream>
 #include "../globals.hpp"
 #include "GraphOptimizer.hpp"
+#include "Node.hpp"
 
 namespace firm
 {
@@ -15,8 +16,8 @@ namespace firm
 		protected:
 			ir_graph* irg;
 
-			void optimizePhi(ir_node* node);
-			void updateTarvalForArithmeticNode(ir_node* node);
+			void optimizePhi(Node node);
+			void updateTarvalForArithmeticNode(Node node);
 			void updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode);
 
 			void handlePhi(ir_node* node);
