@@ -19,7 +19,8 @@ namespace firm
 			ConstantFolder& handler;
 			std::unordered_map<ir_node*,bool> isQueued;
 
-			void replacePhi(ir_node * node);
+			void replace(ir_node * node);
+			void cleanUp();
 		public:
 			Worklist(ir_graph* functionGraph, ConstantFolder& handler);
 			void run();

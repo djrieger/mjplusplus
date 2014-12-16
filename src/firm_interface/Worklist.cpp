@@ -73,9 +73,10 @@ namespace firm
 		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
-	void Worklist::replacePhi(ir_node * node)
+	void Worklist::replace(ir_node * node)
 	{
-		std::cout << "found Phi" << std::endl;
+		std::cout << "found ";
+		ir_printf("%F\n", node);
 
 		ir_tarval* tarval = (ir_tarval*)get_irn_link(node);
 		if (tarval != tarval_bad && tarval != tarval_unknown && get_tarval_mode(tarval) == mode_Is) 
@@ -95,7 +96,9 @@ namespace firm
 			if (constChildren) {
 				std::cout << "removed ";
 				ir_printf("%F\n", node);				
-				exchange(node, new_r_Const_long(functionGraph, get_irn_mode(node), get_tarval_long(tarval)));
+				ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), get_tarval_long(tarval));
+				set_irn_link(constNode, (void*)tarval);
+				exchange(node, constNode);
 			}
 		}		
 	}
@@ -124,13 +127,20 @@ namespace firm
 			}
 		}
 
+		cleanUp();
+	}
+
+	void Worklist::cleanUp() 
+	{
 		typedef void (*ir_func)(ir_node*, void*);
 		
-		auto replaceLambda = [&]  (ir_node* node, void*) {
-			if (is_Phi(node) && get_irn_mode(node) == mode_Is)
-				replacePhi(node);
-			
+		auto replaceLambda = [&] (ir_node* node, void*) {
+			if (get_irn_mode(node) == mode_Is) {
+				if (is_Phi(node)) replace(node);
+				else if (is_Add(node)) replace(node);
+				else if (is_Mul(node)) replace(node);
+			}
 		};
-		walk_topological(functionGraph, replaceLambda, NULL);
+		walk_topological(functionGraph, replaceLambda, NULL);		
 	}
 }
