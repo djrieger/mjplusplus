@@ -14,7 +14,6 @@ namespace firm
 	{
 		protected:
 			ir_graph* irg;
-			shptr<std::set<ir_node*>> newNodes;
 
 			void optimizePhi(ir_node* node);
 			void updateTarvalForArithmeticNode(ir_node* node);
@@ -34,7 +33,6 @@ namespace firm
 		public:
 			virtual void handle(ir_node*);
 			ConstantFolder(ir_graph* irg);
-			shptr<std::set<ir_node*>> getNewNodes() const;
 	};
 }
 #endif
