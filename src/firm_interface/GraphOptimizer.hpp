@@ -16,7 +16,7 @@ namespace firm
 			/**
 			 * add all successors to the worklist again
 			 */
-			void markOutNodesAsNew(ir_node *node);
+			void markOutNodesAsNew(ir_node* node);
 		public:
 			GraphOptimizer(ir_graph* irg);
 			virtual void handle(ir_node*) = 0;
