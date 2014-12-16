@@ -8,7 +8,8 @@ namespace firm
 {
 	class Node;
 
-	class Tarval {
+	class Tarval
+	{
 		protected:
 			ir_tarval* tarval;
 		public:
@@ -18,21 +19,38 @@ namespace firm
 			bool isModeIs() const;
 			long getLong() const;
 			void setValue(ir_tarval* tarval);
-			operator ir_tarval*() { return tarval; }
-			bool operator==(Tarval const& otherTarval) const { return tarval == otherTarval.tarval; }
-			bool operator==(ir_tarval * otherTarval) const { return tarval == otherTarval; }
-			bool operator!=(Tarval const& otherTarval) const { return !operator==(otherTarval); }
-			bool operator!=(ir_tarval * otherTarval) const { return !operator==(otherTarval); }
+			operator ir_tarval* ()
+			{
+				return tarval;
+			}
+			bool operator==(Tarval const& otherTarval) const
+			{
+				return tarval == otherTarval.tarval;
+			}
+			bool operator==(ir_tarval* otherTarval) const
+			{
+				return tarval == otherTarval;
+			}
+			bool operator!=(Tarval const& otherTarval) const
+			{
+				return !operator==(otherTarval);
+			}
+			bool operator!=(ir_tarval* otherTarval) const
+			{
+				return !operator==(otherTarval);
+			}
 	};
 
-	class BadTarval : public Tarval {
+	class BadTarval : public Tarval
+	{
 		public:
-			BadTarval();		
+			BadTarval();
 	};
 
-	class UnknownTarval : public Tarval {
+	class UnknownTarval : public Tarval
+	{
 		public:
-			UnknownTarval();		
-	};	
+			UnknownTarval();
+	};
 }
 #endif

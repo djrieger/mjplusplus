@@ -7,13 +7,17 @@
 
 namespace firm
 {
-	class Node {
+	class Node
+	{
 		private:
 			ir_node* node;
 		public:
 			Node() {}
-			Node(ir_node* node);	
-			operator ir_node*() { return node; }
+			Node(ir_node* node);
+			operator ir_node* ()
+			{
+				return node;
+			}
 			Tarval getTarval() const;
 			void setTarval(Tarval tarval);
 			void setTarvalToBad();
