@@ -39,20 +39,38 @@ namespace firm
 		inc_irg_visited(irg);
 		walk_topo_helper(get_irg_end(irg), walker, env);
 	}
+
 	Worklist::Worklist(ir_graph* functionGraph, ConstantFolder& handler): functionGraph(functionGraph), handler(handler)
 	{
 		typedef void (*ir_func)(ir_node*, void*);
+
+		struct envMembers {
+ 			std::queue<ir_node*>* pQueue;
+ 			std::unordered_map<ir_node*,bool>* pIsQueued;
+ 		};
+
+		envMembers envInstance;
+		envInstance.pQueue = &this->worklist;
+		envInstance.pIsQueued = &this->isQueued;
+
 		ir_func addToWorklist = [](ir_node * node, void* env)
 		{
-			auto worklist = (std::queue<ir_node*>*)env;
-			set_irn_link(node, (void*)tarval_unknown);
-			worklist->push(node);
+			auto envInstance = (envMembers*)env;
+
+			ir_tarval* tarval;
+			// TODO: Support other modes such as Bu, Lu
+			if (is_Const(node) && get_irn_mode(node) == mode_Is) 
+				tarval = get_Const_tarval(node);
+			else
+				tarval = tarval_unknown;
+
+			set_irn_link(node, (void*)tarval);
+
+			envInstance->pQueue->push(node);
+			(*envInstance->pIsQueued)[node] = true;
 		};
 
-		// post ordering
-		//assure_irg_properties(functionGraph, IR_GRAPH_PROPERTY_CONSISTENT_DOMINANCE);
-		//irg_walk_blkwise_dom_top_down(functionGraph, NULL, addToWorklist, (void*)&this->worklist);
-		walk_topological(functionGraph, addToWorklist, (void*)&this->worklist);
+		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
 	void Worklist::run()
@@ -60,14 +78,20 @@ namespace firm
 		while (!worklist.empty())
 		{
 			ir_node* node = worklist.front();
+			this->isQueued[node] = false;
+			worklist.pop();
 			handler.handle(node);
 
 			for (auto& newNode : *handler.getNewNodes())
-				worklist.push(newNode);
-
-			worklist.pop();
+				if (!isQueued[newNode]) {
+					worklist.push(newNode);
+					isQueued[newNode] = true;
+					//std::cout << "added node: ";
+					//ir_printf("%F\n", newNode);					
+				} else {
+					//std::cout << "did not add node: ";
+					//ir_printf("%F\n", newNode);
+				}
 		}
 	}
-
-
 }

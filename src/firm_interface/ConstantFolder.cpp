@@ -124,7 +124,7 @@ namespace firm
 		{
 			// if the number of unknown tarvals is the same as the number of predecessors
 			// we do know, that we only have unknowns and therefore set it to unknown
-			set_irn_link(node, (void*)tarval_unknown);
+			//set_irn_link(node, (void*)tarval_unknown);
 			std::cout << "is unknown" << std::endl;
 		}
 		else if (isConst ||
