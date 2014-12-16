@@ -124,8 +124,12 @@ namespace firm
 			ir_tarval* resultVal;
 
 			if (is_Add(node)) resultVal = tarval_add(tarval1, tarval2);
-			else if (is_Sub(node)) resultVal = tarval_sub(tarval1, tarval2, NULL);
-			else if (is_Mul(node)) resultVal = tarval_mul(tarval1, tarval2);
+			else if (is_Sub(node)) {
+				//if (get_tarval_long(tarval1) == 0) resultVal = tarval2;
+				//else if (get_tarval_long(tarval2) == 0) resultVal = new_tarval_from_long(- get_tarval_long(tarval1), mode_Is);
+				//else
+				 resultVal = tarval_sub(tarval1, tarval2, NULL);
+			} else if (is_Mul(node)) resultVal = tarval_mul(tarval1, tarval2);
 			else if (is_Minus(node)) resultVal = tarval_neg(tarval1);
 			//else if (is_Div(node)) resultVal = tarval_div(tarval1, tarval2);
 			else
@@ -134,13 +138,6 @@ namespace firm
 			set_irn_link(node, (void*) resultVal);
 			markOutNodesAsNew(node);
 		}
-	}
-
-	void ConstantFolder::updateTarvalAndExchange(ir_node* oldNode, ir_node* newNode)
-	{
-		//TODO: Fix segfaults
-		updateTarvalForArithmeticNode(oldNode);
-		// exchange(oldNode, newNode);
 	}
 
 	void ConstantFolder::updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode)
@@ -172,58 +169,7 @@ namespace firm
 
 	void ConstantFolder::handleMinus(ir_node* node)
 	{
-		ir_node* child = get_irn_n(node, 0);
-
-		if (is_Const(child))
-			updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), -get_tarval_long(computed_value(child))));
-		else if (is_Minus(child))
-			updateTarvalAndExchange(node, get_irn_n(child, 0));
-	}
-
-	void ConstantFolder::handleAdd(ir_node* node)
-	{
-		ir_node* left = get_irn_n(node, 0);
-		ir_node* right = get_irn_n(node, 1);
-
-		// Both arguments are constants.
-		// if (is_Const(left) && is_Const(right))
-		// {
-			updateTarvalForArithmeticNode(node);
-		// }
-		// else
-		// {
-			// Check whether at least one argument is 0, and if so,
-			// apply the rule x + 0 = x (or 0 + x = x).
-			/*
-				TODO: Reenable
-			if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
-				updateTarvalAndExchange(node, right);
-
-			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
-				updateTarvalAndExchange(node, left);
-				*/
-		// }
-	}
-
-	void ConstantFolder::handleSub(ir_node* node)
-	{
-		ir_tarval* tarVal = computed_value(node);
-
-		if (/* tarVal != tarval_unknown && */ tarVal != tarval_bad)
-			updateTarvalAndExchange(node, NULL /* new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal))*/);
-		else
-		{
-			// Check whether at least one argument is 0, and if so,
-			// apply the rule x - 0 = x (or 0 - x = -x).
-			ir_node* left = get_irn_n(node, 0);
-			ir_node* right = get_irn_n(node, 1);
-
-			if (is_Const(left) && get_tarval_long(computed_value(left)) == 0)
-				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, get_irn_mode(node)));
-
-			if (is_Const(right) && get_tarval_long(computed_value(right)) == 0)
-				updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, get_irn_mode(node)));
-		}
+		updateTarvalForArithmeticNode(node);
 	}
 
 	void ConstantFolder::handleMul(ir_node* node)
@@ -231,9 +177,9 @@ namespace firm
 		//ir_tarval* tarVal = computed_value(node);
 		updateTarvalForArithmeticNode(node);
 
-		return;
+		/*
 
-		
+
 		ir_tarval* tarVal = (ir_tarval*)get_irn_link(node);
 		if (tarVal != tarval_unknown && tarVal != tarval_bad)
 			//updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal)));
@@ -272,11 +218,14 @@ namespace firm
 					updateTarvalAndExchange(node, left);
 			}
 		}
+
+		*/
 	}
 
 	void ConstantFolder::handleDivAndMod(ir_node* node)
 	{
 		// Get children of div node (operands)
+		/*
 		ir_node* dividend = get_irn_n(node, 1);
 		ir_node* divisor = get_irn_n(node, 2);
 
@@ -315,6 +264,7 @@ namespace firm
 		}
 		else if (dividend == divisor)
 			updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, is_Div(node) ? 1 : 0));
+			*/
 	}
 
 	void ConstantFolder::handleProj(ir_node* node)
@@ -406,9 +356,10 @@ namespace firm
 		// TODO: Fix segfaults
 		if (is_Phi(node) && get_irn_mode(node) == mode_Is) handlePhi(node);
 		else if (is_Minus(node)) handleMinus(node);
-		else if (is_Add(node)) handleAdd(node);
-		else if (is_Sub(node)) handleSub(node);
+		else if (is_Add(node)) updateTarvalForArithmeticNode(node);
+		else if (is_Sub(node)) updateTarvalForArithmeticNode(node);
 		else if (is_Mul(node)) handleMul(node);
+
 		else if (is_Div(node) || is_Mod(node)) handleDivAndMod(node);
 		else if (is_Proj(node)) handleProj(node);
 		//else if (is_Cmp(node)) handleCmp(node);

@@ -137,8 +137,30 @@ namespace firm
 		auto replaceLambda = [&] (ir_node* node, void*) {
 			if (get_irn_mode(node) == mode_Is) {
 				if (is_Phi(node)) replace(node);
-				else if (is_Add(node)) replace(node);
+				else if (is_Add(node)) { 
+					ir_node* child1 = get_irn_n(node, 0);
+					ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);					
+					ir_node* child2 = get_irn_n(node, 1);
+					ir_tarval* tarval2 = (ir_tarval*)get_irn_link(child2);			
+					ir_printf("%F\n", tarval1);
+					ir_printf("%F\n", tarval2);
+					if (get_tarval_mode(tarval1) == mode_Is && get_tarval_long(tarval1) == 0) exchange(node, child2);
+					else if (get_tarval_mode(tarval2) == mode_Is && get_tarval_long(tarval2) == 0) exchange(node, child1);
+					else replace(node);					
+				}
 				else if (is_Mul(node)) replace(node);
+				else if (is_Sub(node)) {
+					ir_node* child1 = get_irn_n(node, 0);
+					ir_tarval* tarval1 = (ir_tarval*)get_irn_link(child1);					
+					ir_node* child2 = get_irn_n(node, 1);
+					ir_tarval* tarval2 = (ir_tarval*)get_irn_link(child2);			
+					std::cout << "magic" << std::endl;							
+					ir_printf("%F\n", tarval1);
+					ir_printf("%F\n", tarval2);
+					if (get_tarval_mode(tarval1) == mode_Is && get_tarval_long(tarval1) == 0) exchange(node, new_r_Minus(get_nodes_block(node), child2, get_irn_mode(node)));
+					else if (get_tarval_mode(tarval2) == mode_Is && get_tarval_long(tarval2) == 0) exchange(node, child1);
+					else replace(node);
+				} else if (is_Minus(node)) replace(node);
 			}
 		};
 		walk_topological(functionGraph, replaceLambda, NULL);		
