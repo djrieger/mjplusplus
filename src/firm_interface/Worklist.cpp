@@ -157,10 +157,7 @@ namespace firm
 			ir_node* child2 = get_irn_n(node, 1);
 			ir_tarval* tarval2 = (ir_tarval*)get_irn_link(child2);
 			ir_printf("tarval2: %F\n", tarval2);
-			/*if (get_tarval_mode(tarval2) != mode_Is)
-				fun(child1, tarval1, child2, NULL);
-			else */
-				fun(child1, tarval1, child2, tarval2);
+			fun(child1, tarval1, child2, tarval2);
 		}
 	}
 
@@ -189,45 +186,6 @@ namespace firm
 			else replaceGeneric(node);
 		});
 	}
-
-	void Worklist::replaceMul(ir_node* node)
-	{
-		processChildren(node, [&] (ir_node * leftChild, ir_tarval * leftTarval, ir_node * rightChild, ir_tarval * rightTarval) -> void
-		{
-			if (leftTarval && get_tarval_mode(leftTarval) == mode_Is && get_tarval_long(leftTarval) == 0) exchange(node, new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
-			else if (rightTarval && get_tarval_mode(rightTarval) == mode_Is && get_tarval_long(rightTarval) == 0) exchange(node, leftChild);
-			else replaceGeneric(node);
-
-			// If possible, apply the rules:
-			//     x * (-1) = -x
-			//     x * 1 = x
-			//     x * 0 = 0
-			if (leftTarval && get_tarval_mode(leftTarval) == mode_Is)
-			{
-				long value = get_tarval_long(leftTarval);
-
-				if (value == -1)
-					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, get_irn_mode(node)));
-				else if (value == 0)
-					updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), 0));
-				else if (value == 1)
-					updateTarvalAndExchange(node, right);
-			}
-
-			// See above...
-			if (rightTarval && get_tarval_mode(rightTarval) == mode_Is)
-			{
-				long value = get_tarval_long(rightTarval);
-
-				if (value == -1)
-					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, get_irn_mode(node)));
-				else if (value == 0)
-					updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), 0));
-				else if (value == 1)
-					updateTarvalAndExchange(node, left);
-			}			
-		});
-	}	
 
 	void Worklist::cleanUp()
 	{
