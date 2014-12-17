@@ -197,15 +197,22 @@ namespace firm
 	{
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-			auto handleCases = [&] (Node leftChild, Node rightChild) -> void 
+			auto handleCases = [&] (Node leftChild, Node rightChild) -> void
 			{
-				if (leftChild.getTarval() && leftChild.getTarval().isModeIs()) 
+				if (leftChild.getTarval() && leftChild.getTarval().isModeIs())
 				{
 					switch (leftChild.getTarval().getLong())
 					{
-						case 0: node.replaceWith(new_r_Const_long(functionGraph, get_irn_mode(node), 0)); break;
-						case 1: node.replaceWith(rightChild); break;
-						case -1: node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+						case 0:
+							node.replaceWith(new_r_Const_long(functionGraph, get_irn_mode(node), 0));
+							break;
+
+						case 1:
+							node.replaceWith(rightChild);
+							break;
+
+						case -1:
+							node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
 					}
 				}
 			};

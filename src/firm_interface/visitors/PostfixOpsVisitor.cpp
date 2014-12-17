@@ -69,8 +69,20 @@ namespace firm
 
 		void PostfixOpsVisitor::visit(shptr<ast::po::MethodInvocation const> methodInvocation)
 		{
-			ir_node* caller = expressionVisitor.getResultNode();
-			std::tie(resultNode, resultType) = FirmInterface::getInstance().createNodeForMethodCall(caller, methodInvocation);
+			std::string mangledMethodName = methodInvocation->getDeclaration()->mangle();
+			ir_node* caller;
+
+			if (mangledMethodName == "_COut_Mprintln")
+			{
+				//we got out System.out.println
+				caller = FirmInterface::getInstance().createNullPointerNode();
+			}
+
+			else
+				caller = expressionVisitor.getResultNode();
+
+			std::tie(resultNode, resultType) =
+			    FirmInterface::getInstance().createNodeForMethodCall(caller, methodInvocation);
 		}
 	}
 }
