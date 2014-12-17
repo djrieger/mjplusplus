@@ -23,7 +23,7 @@ namespace firm
 			void cleanUp();
 			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
 
-			void replaceGeneric(Node node);
+			bool replaceGeneric(Node node);
 			void replaceAdd(Node node);
 			void replaceSub(Node node);
 			void replaceMul(Node node);
