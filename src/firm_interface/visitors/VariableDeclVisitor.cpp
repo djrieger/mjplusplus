@@ -24,6 +24,7 @@ namespace firm
 
 			if (doStore)
 				resultNode = addr;
+
 			else
 			{
 				ir_node* load = new_Load(mem, addr, get_type_mode(field_type), field_type, cons_none);

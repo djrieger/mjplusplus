@@ -377,6 +377,7 @@ namespace firm
 		return classFieldEntities[ {class_type, field_name}];
 	}
 
+	/*
 	ir_entity* FirmInterface::getSystemNode()
 	{
 		static ir_entity* system_ent = NULL;
@@ -393,7 +394,9 @@ namespace firm
 
 		return system_ent;
 	}
+	*/
 
+	/*
 	void FirmInterface::initSystem()
 	{
 		ir_entity* system_ent = getSystemNode();
@@ -421,6 +424,7 @@ namespace firm
 
 		set_store(new_Proj(new_Store(get_store(), addr, out_n, out_type, cons_none), mode_M, pn_Store_M));
 	}
+	*/
 
 	std::string FirmInterface::replace_dollar(std::string name)
 	{

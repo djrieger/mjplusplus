@@ -305,17 +305,20 @@ namespace firm
 				numUnkowns++;
 		}
 
-		if (isBad) {
+		if (isBad)
+		{
 			set_irn_link(node, (void*)tarval_bad);
 			ir_printf("setting node %F (%d) to bad\n", node, get_irn_node_nr(node));
 		}
-		else if (numUnkowns == Node(node).getChildCount()) {
+		else if (numUnkowns == Node(node).getChildCount())
+		{
 			set_irn_link(node, (void*)tarval_unknown);
 			ir_printf("setting node %F (%d) to unknown\n", node, get_irn_node_nr(node));
 		}
 		else
 		{
 			std::cout << "Optimizing" << std::endl;
+
 			if (is_Phi(node) && get_irn_mode(node) == mode_Is)
 				optimizePhi(firm::Node(node));
 			else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
