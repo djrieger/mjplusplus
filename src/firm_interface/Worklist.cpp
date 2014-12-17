@@ -70,7 +70,7 @@ namespace firm
 						if (child.getTarval() == tarval_bad)
 							return true;
 				}
-				
+
 				return false;
 			};
 
@@ -135,7 +135,7 @@ namespace firm
 			worklist.pop();
 
 			//if (is_Add(node))
-				ir_printf("Handling %F (%d), tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
+			ir_printf("Handling %F (%d), tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
 
 			handler.handle(node);
 
@@ -260,12 +260,14 @@ namespace firm
 		auto replaceLambda = [&] (ir_node * node, void*)
 		{
 			replaceGeneric(node);
+
 			//{
-				if (is_Add(node)) replaceAdd(node);
-				else if (is_Mul(node)) replaceMul(node);
-				else if (is_Sub(node)) replaceSub(node);
-				else if (is_Minus(node)) replaceMinus(node);
-				else if (is_Conv(node)) replaceConv(node);
+			if (is_Add(node)) replaceAdd(node);
+			else if (is_Mul(node)) replaceMul(node);
+			else if (is_Sub(node)) replaceSub(node);
+			else if (is_Minus(node)) replaceMinus(node);
+			else if (is_Conv(node)) replaceConv(node);
+
 			//}
 
 			// Todo: optimize booleans

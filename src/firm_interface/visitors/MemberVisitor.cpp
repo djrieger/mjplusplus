@@ -102,7 +102,7 @@ namespace firm
 			set_current_ir_graph(irg);
 
 			// Build System
-			FirmInterface::getInstance().initSystem();
+			//FirmInterface::getInstance().initSystem();
 
 			visitMethodBodyAndFinalize(mainMethodDecl, irg);
 		}
