@@ -72,6 +72,11 @@ namespace firm
 	{
 		return get_irn_mode(node);
 	}
+
+	long Node::getNodeNumber() const
+	{
+		return get_irn_node_nr(node);
+	}
 }
 
 
