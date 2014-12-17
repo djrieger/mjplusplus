@@ -152,8 +152,7 @@ namespace firm
 			worklist.pop();
 
 			//if (is_Add(node))
-
-			ir_printf("Handling %F (%d), new tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
+			ir_printf("Handling %F (%d), old tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
 			handler.handle(node);
 
 			ir_printf("Handled %F (%d), new tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
@@ -297,5 +296,9 @@ namespace firm
 			// but also for a's value.
 		};
 		walk_topological(functionGraph, replaceLambda, NULL);
+		walk_topological(functionGraph, [](ir_node * node, void*)
+		{
+			set_irn_link(node, (void*)NULL);
+		}, NULL);
 	}
 }
