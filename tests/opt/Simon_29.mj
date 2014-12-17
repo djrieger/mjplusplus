@@ -1,0 +1,33 @@
+class a {
+	public int f0;
+	public int f1;
+	public static void main(String[] a)
+	{
+		new a().q();
+	}
+	
+	public void q() {
+		a y = new a();
+		f0 = 3; /* @comment "offset addition (offset = 0) can be removed" */
+		f1 = 2;
+		p();
+		y.f0 = y.f0 + 1; /* @comment "offset addition (offset = 0) can be removed" */
+		System.out.println(f0);
+			/* @comment "offset addition (offset = 0) can be removed" */
+		new b().w();
+	}
+	
+	public void p() {
+		f0 = 4; /* @comment "offset addition (offset = 0) can be removed" */
+	}
+}
+
+class b {
+	public b next;
+	public int z;
+	public void w() {
+		next = this; /* @comment "offset addition (offset = 0) can be removed" */
+		System.out.println(next.next.next.next.z);
+			 /* @comment "offset addition (offset = 0) can be removed" */
+	}
+}

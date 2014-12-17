@@ -24,3 +24,7 @@ Simon_23: optimistical constant propagation (1^b as O(log n))
 Simon_24: optimization of constant return values
 Simon_25: incorporation of constant return values into constant propagation
 Simon_26: common subexpression elimination
+Simon_27: "i=1;i=2-i"-loop and constant optimization
+Simon_28: combination of constant optimization and "i=1;i=2-i"-loop
+Simon_29: offset addition of zero is unnecessary (field access)
+Simon_30: offset addition of zero is unnecessary (array access)
