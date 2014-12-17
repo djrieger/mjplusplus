@@ -126,9 +126,6 @@ namespace firm
 
 	void Worklist::cleanUp()
 	{
-		// typedef void (*ir_func)(ir_node*, void*);
-
-		// auto replaceLambda = ;
 		walk_topological(functionGraph, [&] (ir_node * node, void*)
 		{
 			handler.cleanUp(Node(node));

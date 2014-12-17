@@ -14,8 +14,6 @@ namespace firm
 	class ConstantFolder : public GraphOptimizer
 	{
 		protected:
-			ir_graph* irg;
-
 			void optimizePhi(Node node);
 			void updateTarvalForArithmeticNode(Node node);
 			void updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode);
