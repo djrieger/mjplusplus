@@ -26,6 +26,7 @@ namespace firm
 			void replaceGeneric(Node node);
 			void replaceAdd(Node node);
 			void replaceSub(Node node);
+			void replaceMinus(Node node);
 		public:
 			Worklist(ir_graph* functionGraph, ConstantFolder& handler);
 			void run();

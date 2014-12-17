@@ -176,9 +176,6 @@ namespace firm
 	{
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-			// ir_printf("SUB arity = %d\n", get_irn_arity(node));
-			// ir_printf("SUB: left tar %F right tar %F\n", leftTarval, rightTarval);
-			// ir_printf("SUB: left child %F right child %F\n", leftChild, rightChild);
 			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isModeIs() && tarval.getLong() == 0; };
 
 			if (tarvalIsZero(leftChild.getTarval()))
@@ -190,6 +187,20 @@ namespace firm
 		});
 	}
 
+	void Worklist::replaceMinus(Node node)
+	{
+		if (is_Minus(node.getChild(0)))
+			node.replaceWith(node.getChild(0).getChild(0));
+	}
+/*
+	void Worklist::replaceMul(Node node)
+	{
+		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
+		{
+
+		});
+	}
+*/
 	void Worklist::cleanUp()
 	{
 		typedef void (*ir_func)(ir_node*, void*);
@@ -200,10 +211,9 @@ namespace firm
 			{
 				if (is_Phi(node)) replaceGeneric(node);
 				else if (is_Add(node)) replaceAdd(node);
-				else if (is_Mul(node)) replaceGeneric(node);
+				else if (is_Mul(node)) replaceGeneric(node); //replaceMul(node);
 				else if (is_Sub(node)) replaceSub(node);
-
-				else if (is_Minus(node)) replaceGeneric(node);
+				else if (is_Minus(node)) replaceMinus(node);
 			}
 		};
 		walk_topological(functionGraph, replaceLambda, NULL);
