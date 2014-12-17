@@ -93,10 +93,6 @@ namespace firm
 			// we do have a change in the tarval of the current node, so update this accordingly
 			Tarval newTarval(val);
 			node.setTarval(newTarval);
-
-			if (newTarval != prevTarval)
-				markOutNodesAsNew(node);
-
 			std::cout << "tarval has been updated" << std::endl;
 		}
 		else
@@ -135,9 +131,14 @@ namespace firm
 			else
 				throw "updateTarvalForArithmeticNode called on illegal node";
 
+
 			if (resultVal)
 				set_irn_link(node, (void*) resultVal);
 
+			if (is_Mul(node))
+			{
+				ir_printf("Mul children 1: %F, 2: %F yields resultVal %F\n", tarval1, tarval2, resultVal);
+			}
 			markOutNodesAsNew(node);
 		}
 
@@ -283,12 +284,21 @@ namespace firm
 			set_Cmp_relation(node, get_Cmp_relation(node) & ir_relation_equal ? ir_relation_true : ir_relation_false);
 	}
 
+	void ConstantFolder::handleConv(ir_node* node)
+	{
+		ir_printf("///////////////////////// Conv node %d\n", get_irn_node_nr(node));
+		set_irn_link(node, (void*)new_tarval_from_long(get_tarval_long((ir_tarval*)get_irn_link(get_irn_n(node, 0))), get_irn_mode(node)));
+		ir_printf("Conv tarval after setting: %F\n", get_irn_link(node));
+	}
+
 	void ConstantFolder::handle(ir_node* node)
 	{
 		newNodes->clear();
 
 		if (Node(node).getChildCount() == 0)
 			return;
+
+		Tarval oldTarval = Node(node).getTarval();
 
 		bool isBad = false;
 		unsigned int numUnkowns = 0;
@@ -308,17 +318,13 @@ namespace firm
 		if (isBad)
 		{
 			set_irn_link(node, (void*)tarval_bad);
-			ir_printf("setting node %F (%d) to bad\n", node, get_irn_node_nr(node));
 		}
 		else if (numUnkowns == Node(node).getChildCount())
 		{
 			set_irn_link(node, (void*)tarval_unknown);
-			ir_printf("setting node %F (%d) to unknown\n", node, get_irn_node_nr(node));
 		}
 		else
 		{
-			std::cout << "Optimizing" << std::endl;
-
 			if (is_Phi(node) && get_irn_mode(node) == mode_Is)
 				optimizePhi(firm::Node(node));
 			else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
@@ -327,7 +333,12 @@ namespace firm
 				handleDivAndMod(node);
 			else if (is_Proj(node))
 				handleProj(node);
+			else if (is_Conv(node))
+				handleConv(node);
 		}
+
+		if (Node(node).getTarval() != oldTarval)
+			markOutNodesAsNew(node);
 
 		//else if (is_Cmp(node))
 		//	handleCmp(node);
