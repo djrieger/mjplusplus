@@ -192,15 +192,28 @@ namespace firm
 		if (is_Minus(node.getChild(0)))
 			node.replaceWith(node.getChild(0).getChild(0));
 	}
-/*
+
 	void Worklist::replaceMul(Node node)
 	{
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-
+			auto handleCases = [&] (Node leftChild, Node rightChild) -> void 
+			{
+				if (leftChild.getTarval() && leftChild.getTarval().isModeIs()) 
+				{
+					switch (leftChild.getTarval().getLong())
+					{
+						case 0: node.replaceWith(new_r_Const_long(functionGraph, get_irn_mode(node), 0)); break;
+						case 1: node.replaceWith(rightChild); break;
+						case -1: node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+					}
+				}
+			};
+			handleCases(leftChild, rightChild);
+			handleCases(rightChild, leftChild);
 		});
 	}
-*/
+
 	void Worklist::cleanUp()
 	{
 		typedef void (*ir_func)(ir_node*, void*);
@@ -211,7 +224,7 @@ namespace firm
 			{
 				if (is_Phi(node)) replaceGeneric(node);
 				else if (is_Add(node)) replaceAdd(node);
-				else if (is_Mul(node)) replaceGeneric(node); //replaceMul(node);
+				else if (is_Mul(node)) replaceMul(node);
 				else if (is_Sub(node)) replaceSub(node);
 				else if (is_Minus(node)) replaceMinus(node);
 			}
