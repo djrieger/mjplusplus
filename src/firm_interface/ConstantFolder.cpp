@@ -136,9 +136,8 @@ namespace firm
 				set_irn_link(node, (void*) resultVal);
 
 			if (is_Mul(node))
-			{
 				ir_printf("Mul children 1: %F, 2: %F yields resultVal %F\n", tarval1, tarval2, resultVal);
-			}
+
 			markOutNodesAsNew(node);
 		}
 
@@ -286,9 +285,9 @@ namespace firm
 
 	void ConstantFolder::handleConv(ir_node* node)
 	{
-		ir_printf("///////////////////////// Conv node %d\n", get_irn_node_nr(node));
+		//ir_printf("///////////////////////// Conv node %d\n", get_irn_node_nr(node));
 		set_irn_link(node, (void*)new_tarval_from_long(get_tarval_long((ir_tarval*)get_irn_link(get_irn_n(node, 0))), get_irn_mode(node)));
-		ir_printf("Conv tarval after setting: %F\n", get_irn_link(node));
+		//ir_printf("Conv tarval after setting: %F\n", get_irn_link(node));
 	}
 
 	void ConstantFolder::handle(ir_node* node)
@@ -316,13 +315,9 @@ namespace firm
 		}
 
 		if (isBad)
-		{
 			set_irn_link(node, (void*)tarval_bad);
-		}
 		else if (numUnkowns == Node(node).getChildCount())
-		{
 			set_irn_link(node, (void*)tarval_unknown);
-		}
 		else
 		{
 			if (is_Phi(node) && get_irn_mode(node) == mode_Is)
