@@ -158,55 +158,6 @@ namespace firm
 		*/
 	}
 
-	void ConstantFolder::handleMul(ir_node* node)
-	{
-		//ir_tarval* tarVal = computed_value(node);
-
-		/*
-
-
-		ir_tarval* tarVal = (ir_tarval*)get_irn_link(node);
-		if (tarVal != tarval_unknown && tarVal != tarval_bad)
-			//updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(tarVal)));
-			updateTarvalForArithmeticNode(node);
-		else
-		{
-			ir_node* left = get_irn_n(node, 0);
-			ir_node* right = get_irn_n(node, 1);
-
-			// If possible, apply the rules:
-			//     x * (-1) = -x
-			//     x * 1 = x
-			//     x * 0 = 0
-			if (is_Const(left))
-			{
-				long value = get_tarval_long(computed_value(left));
-
-				if (value == -1)
-					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), right, get_irn_mode(node)));
-				else if (value == 0)
-					updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), 0));
-				else if (value == 1)
-					updateTarvalAndExchange(node, right);
-			}
-
-			// See above...
-			if (is_Const(right))
-			{
-				long value = get_tarval_long(computed_value(right));
-
-				if (value == -1)
-					updateTarvalAndExchange(node, new_r_Minus(get_nodes_block(node), left, get_irn_mode(node)));
-				else if (value == 0)
-					updateTarvalAndExchange(node, new_r_Const_long(irg, get_irn_mode(node), 0));
-				else if (value == 1)
-					updateTarvalAndExchange(node, left);
-			}
-		}
-
-		*/
-	}
-
 	void ConstantFolder::handleDivAndMod(ir_node* node)
 	{
 		// Get children of div node (operands)
