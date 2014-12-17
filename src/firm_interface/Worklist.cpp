@@ -61,7 +61,7 @@ namespace firm
 			ir_tarval* tarval;
 
 			// TODO: Support other modes such as Bu, Lu
-			if (is_Const(node) && get_irn_mode(node) == mode_Is)
+			if (is_Const(node) && Node(node).getTarval().isNumeric())
 				tarval = get_Const_tarval(node);
 			else
 				tarval = tarval_unknown;
@@ -161,7 +161,7 @@ namespace firm
 	{
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isModeIs() && tarval.getLong() == 0; };
+			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
 
 			if (tarvalIsZero(leftChild.getTarval()))
 				node.replaceWith(rightChild);
@@ -176,7 +176,7 @@ namespace firm
 	{
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isModeIs() && tarval.getLong() == 0; };
+			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
 
 			if (tarvalIsZero(leftChild.getTarval()))
 				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
@@ -199,19 +199,30 @@ namespace firm
 		{
 			auto handleCases = [&] (Node leftChild, Node rightChild) -> void 
 			{
-				if (leftChild.getTarval() && leftChild.getTarval().isModeIs()) 
+				if (leftChild.getTarval() && leftChild.getTarval().isNumeric()) 
 				{
 					switch (leftChild.getTarval().getLong())
 					{
 						case 0: node.replaceWith(new_r_Const_long(functionGraph, get_irn_mode(node), 0)); break;
 						case 1: node.replaceWith(rightChild); break;
-						case -1: node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+						case -1: node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
 					}
 				}
 			};
 			handleCases(leftChild, rightChild);
 			handleCases(rightChild, leftChild);
+			replaceGeneric(node);
 		});
+	}
+
+	void Worklist::replaceConv(Node node) 
+	{
+		Node child = node.getChild(0);
+		if (is_Conv(child) && node.getMode() == child.getMode())
+			node.replaceWith(child);
+		else if (is_Const(child)) {
+			node.replaceWith(new_r_Const_long(functionGraph, node.getMode(), child.getTarval().getLong()));
+		}
 	}
 
 	void Worklist::cleanUp()
@@ -220,14 +231,18 @@ namespace firm
 
 		auto replaceLambda = [&] (ir_node * node, void*)
 		{
-			if (get_irn_mode(node) == mode_Is)
+			if (Node(node).getTarval().isNumeric())
 			{
 				if (is_Phi(node)) replaceGeneric(node);
 				else if (is_Add(node)) replaceAdd(node);
 				else if (is_Mul(node)) replaceMul(node);
 				else if (is_Sub(node)) replaceSub(node);
 				else if (is_Minus(node)) replaceMinus(node);
+				else if (is_Conv(node)) replaceConv(node);
 			}
+			// Todo: optimize booleans
+			// Todo: optimize stuff like a + 0 not only for a's tarval (already implemented)
+			// but also for a's value.
 		};
 		walk_topological(functionGraph, replaceLambda, NULL);
 	}

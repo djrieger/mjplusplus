@@ -26,7 +26,6 @@ namespace firm
 			void handleDivAndMod(ir_node* node);
 			void handleProj(ir_node* node);
 			void handleCmp(ir_node* node);
-			void handleConv(ir_node* node);
 		public:
 			virtual void handle(ir_node*);
 			ConstantFolder(ir_graph* irg);
