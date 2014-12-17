@@ -85,7 +85,7 @@ namespace firm
 			else
 			{
 				// got System
-
+				/*
 				lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
 				auto si = std::make_shared<ast::Ident>(sit);
 				auto s = std::make_shared<ast::Type>(si);
@@ -96,6 +96,8 @@ namespace firm
 				ir_node* load = new_Load(get_store(), system_addr, get_type_mode(resultType), resultType, cons_none);
 				set_store(new_Proj(load, mode_M, pn_Load_M));
 				resultNode = new_Proj(load, mode_P, pn_Load_res);
+				*/
+				resultNode = NULL;
 			}
 		}
 
@@ -283,23 +285,43 @@ namespace firm
 			{
 				PostfixOpsVisitor popsVisitor(*this);
 
-				for (auto it = pops->begin(); it != pops->end() - 1; it++)
+				if (resultNode)
 				{
-					(*it)->accept(popsVisitor);
+					for (auto it = pops->begin(); it != pops->end() - 1; it++)
+					{
+						(*it)->accept(popsVisitor);
+						resultNode = popsVisitor.getResultNode();
+						resultType = popsVisitor.getResultType();
+					}
+
+					// last PostfixOp may store
+					doStore = old_do_store;
+
+					if (doStore)
+						popsVisitor.setDoStore(true);
+
+					pops->back()->accept(popsVisitor);
+					resultNode = popsVisitor.getResultNode();
+					resultType = popsVisitor.getResultType();
+					varNum = popsVisitor.getVarNum();
+				}
+				else
+				{
+					/*
+					* resultNode == NULL means we got our $System as Ident.
+					* (Maybe adding some sort of flag for this might be useful in the future.)
+					* That means this PostfixExpression can currently only be
+					* 			System.out.println(EXPRESSION);
+					* So we can jump to the last PostfixOp without handling the field access etc.
+					* The PostfixOpVisitor will recognize our println and handle it accordingly.
+					*/
+					auto printlnCall = pops->back();
+					printlnCall->accept(popsVisitor);
+
 					resultNode = popsVisitor.getResultNode();
 					resultType = popsVisitor.getResultType();
 				}
 
-				// last PostfixOp may store
-				doStore = old_do_store;
-
-				if (doStore)
-					popsVisitor.setDoStore(true);
-
-				pops->back()->accept(popsVisitor);
-				resultNode = popsVisitor.getResultNode();
-				resultType = popsVisitor.getResultType();
-				varNum = popsVisitor.getVarNum();
 			}
 		}
 	}

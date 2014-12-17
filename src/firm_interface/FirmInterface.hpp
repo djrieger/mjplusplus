@@ -103,8 +103,8 @@ namespace firm
 			ir_entity* getMethodEntity(ir_type* class_type, std::string method_name);
 			ir_entity* getFieldEntity(ir_type* class_type, std::string method_name);
 			ir_entity* createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration);
-			ir_entity* getSystemNode();
-			void initSystem();
+			//ir_entity* getSystemNode();
+			//void initSystem();
 
 			void setInput(std::string const& in);
 			void setOutput(std::string const& out);
