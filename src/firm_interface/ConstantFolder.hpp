@@ -27,8 +27,18 @@ namespace firm
 			void handleProj(ir_node* node);
 			void handleCmp(ir_node* node);
 			void handleConv(ir_node* node);
+
+			bool tarvalIsZero(Tarval tarval);
+			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
+			bool replaceGeneric(Node node);
+			void replaceAdd(Node node);
+			void replaceSub(Node node);
+			void replaceMul(Node node);
+			void replaceMinus(Node node);
+			void replaceConv(Node node);
 		public:
 			virtual void handle(ir_node*);
+			virtual void cleanUp(Node node);
 			ConstantFolder(ir_graph* irg);
 	};
 }
