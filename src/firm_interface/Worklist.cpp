@@ -95,13 +95,16 @@ namespace firm
 	{
 		// std::cout << "found ";
 		// ir_printf("%F\n", node);
+		/*
 		bool constChildren = true;
 
-		if (node.getTarval() != tarval_bad && node.getTarval() != tarval_unknown && node.getTarval().isModeIs())
+		if (node.getTarval() != tarval_bad && node.getTarval() != tarval_unknown && node.getTarval().isNumeric())
 		{
 			// ir_printf("parent tarval = %F\n", tarval);
 			unsigned int i = 0;
 			// std::cout << "arity = " << get_irn_arity(node) << std::endl;
+			bool valSet = false;
+			long currentVal;
 
 			while ( i < node.getChildCount() && constChildren)
 			{
@@ -110,20 +113,33 @@ namespace firm
 
 				if (!predTarval || get_tarval_mode(predTarval) != get_tarval_mode(node.getTarval()) || predTarval == tarval_bad || predTarval == tarval_unknown)
 					constChildren = false;
+				else
+				 {
+					if (!valSet) {
+						currentVal = node.getChild(i).getTarval().getLong();
+						valSet = true;
+					}
+					else {
+						if (currentVal != node.getChild(i).getTarval().getLong())
+							constChildren = false;
+					}
+				}
 
 				i++;
 			}
-
-			if (constChildren)
+*/
+			if (node.getTarval().isNumeric())
 			{
 				// std::cout << "removed ";
 				// ir_printf("%F with tarval %F\n", node, node.getTarval());
 				ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), node.getTarval().getLong());
 				node.replaceWith(constNode, true);
+				return true;
 			}
-		}
+			return false;
+		// }
 
-		return constChildren;
+		//return constChildren;
 	}
 
 	void Worklist::run()
@@ -135,9 +151,10 @@ namespace firm
 			worklist.pop();
 
 			//if (is_Add(node))
-			ir_printf("Handling %F (%d), tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
-
+			
 			handler.handle(node);
+
+			ir_printf("Handled %F (%d), new tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
 
 			for (auto& newNode : *handler.getNewNodes())
 			{
@@ -184,11 +201,12 @@ namespace firm
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
 			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
-
-			if (tarvalIsZero(leftChild.getTarval()))
-				node.replaceWith(rightChild);
-			else if (tarvalIsZero(rightChild.getTarval()))
-				node.replaceWith(leftChild);
+			// Responsible for one failed run test:
+						if (tarvalIsZero(leftChild.getTarval()))
+							node.replaceWith(rightChild);
+						else if (tarvalIsZero(rightChild.getTarval()))
+							node.replaceWith(leftChild);
+							
 		});
 	}
 
@@ -259,15 +277,15 @@ namespace firm
 
 		auto replaceLambda = [&] (ir_node * node, void*)
 		{
-			replaceGeneric(node);
+			if (!replaceGeneric(node)) {
 
-			//{
-			if (is_Add(node)) replaceAdd(node);
-			else if (is_Mul(node)) replaceMul(node);
-			else if (is_Sub(node)) replaceSub(node);
-			else if (is_Minus(node)) replaceMinus(node);
-			else if (is_Conv(node)) replaceConv(node);
-
+				//{
+				if (is_Add(node)) replaceAdd(node);
+				else if (is_Mul(node)) replaceMul(node);
+				else if (is_Sub(node)) replaceSub(node);
+				else if (is_Minus(node)) replaceMinus(node);
+				else if (is_Conv(node)) replaceConv(node);
+	}
 			//}
 
 			// Todo: optimize booleans

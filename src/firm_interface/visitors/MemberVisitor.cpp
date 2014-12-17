@@ -14,7 +14,7 @@ namespace firm
 
 		void MemberVisitor::foldConstants(ir_graph* irg)
 		{
-			dump_ir_graph(irg, "pre-optimize");
+			
 
 			ConstantFolder constantFolder(irg);
 			firm::Worklist worklist(irg, constantFolder);
@@ -23,7 +23,7 @@ namespace firm
 			worklist.run();
 			edges_deactivate(irg);
 
-			dump_ir_graph(irg, "post-optimize");
+			
 		}
 
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
@@ -67,7 +67,17 @@ namespace firm
 			irg_finalize_cons(irg);
 
 			// optimize Firm graph
+			 dump_ir_graph(irg, "orig");
 			foldConstants(irg);
+			dump_ir_graph(irg, "it1");
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			foldConstants(irg);
+			dump_ir_graph(irg, "final");
 
 
 			irg_verify(irg);
