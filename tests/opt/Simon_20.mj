@@ -5,11 +5,11 @@ class a {
 	
 	public void q(int r) {
 		if (true) {if (false) System.out.println(5);
-		else System.out.println(6);}
+					else System.out.println(6);}
 		else System.out.println(7);
 		/* @old
 			"if (true) {if (false) System.out.println(5);
-			else System.out.println(6);}
+						else System.out.println(6);}
 			else System.out.println(7);"
 		@opt "System.out.println(6); */
 		
@@ -33,7 +33,7 @@ class a {
 		while (true) {e=e+3;e=2-1;}
 		/* @old "while (true) {e=e+3;e=2-1;}"
 		@opt "while (true);" */
-		e=2;System.out.println(4); /* @old "e=2;System.out.println(4);" @opt "" */
+		e=e+2;System.out.println(e); /* @old "e=e+2;System.out.println(e);" @opt "" */
 	}
 	
 	public void loop2() {
