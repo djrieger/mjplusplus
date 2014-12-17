@@ -60,9 +60,25 @@ namespace firm
 
 			ir_tarval* tarval;
 
+			auto isBadNode = [&] (Node node) -> bool
+			{
+				if (is_Call(node) || is_Load(node) || is_Start(node))
+					return true;
+				else if (Node(node).getChildCount() > 0)
+				{
+					for (Node child : Node(node).getChildren())
+						if (child.getTarval() == tarval_bad)
+							return true;
+				}
+				
+				return false;
+			};
+
 			// TODO: Support other modes such as Bu, Lu
 			if (is_Const(node) && Node(node).getTarval().isNumeric())
 				tarval = get_Const_tarval(node);
+			else if (isBadNode(Node(node)))
+				tarval = tarval_bad;
 			else
 				tarval = tarval_unknown;
 
@@ -77,8 +93,8 @@ namespace firm
 
 	bool Worklist::replaceGeneric(Node node)
 	{
-		std::cout << "found ";
-		ir_printf("%F\n", node);
+		// std::cout << "found ";
+		// ir_printf("%F\n", node);
 		bool constChildren = true;
 
 		if (node.getTarval() != tarval_bad && node.getTarval() != tarval_unknown && node.getTarval().isModeIs())
@@ -100,8 +116,8 @@ namespace firm
 
 			if (constChildren)
 			{
-				std::cout << "removed ";
-				ir_printf("%F\n", node);
+				// std::cout << "removed ";
+				// ir_printf("%F with tarval %F\n", node, node.getTarval());
 				ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), node.getTarval().getLong());
 				node.replaceWith(constNode, true);
 			}
@@ -117,6 +133,10 @@ namespace firm
 			ir_node* node = worklist.front();
 			this->isQueued[node] = false;
 			worklist.pop();
+
+			//if (is_Add(node))
+				ir_printf("Handling %F (%d), tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
+
 			handler.handle(node);
 
 			for (auto& newNode : *handler.getNewNodes())
@@ -182,10 +202,10 @@ namespace firm
 
 			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
 
-						if (tarvalIsZero(leftChild.getTarval()))
-							node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
-						else if (tarvalIsZero(rightChild.getTarval()))
-							node.replaceWith(leftChild);
+			if (tarvalIsZero(leftChild.getTarval()))
+				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+			else if (tarvalIsZero(rightChild.getTarval()))
+				node.replaceWith(leftChild);
 		});
 	}
 
@@ -199,15 +219,22 @@ namespace firm
 	{
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
-			auto handleCases = [&] (Node leftChild, Node rightChild) -> void 
+			auto handleCases = [&] (Node leftChild, Node rightChild) -> void
 			{
-				if (leftChild.getTarval() && leftChild.getTarval().isNumeric()) 
+				if (leftChild.getTarval() && leftChild.getTarval().isNumeric())
 				{
 					switch (leftChild.getTarval().getLong())
 					{
-						case 0: node.replaceWith(new_r_Const_long(functionGraph, get_irn_mode(node), 0)); break;
-						case 1: node.replaceWith(rightChild); break;
-						case -1: node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
+						case 0:
+							node.replaceWith(new_r_Const_long(functionGraph, get_irn_mode(node), 0));
+							break;
+
+						case 1:
+							node.replaceWith(rightChild);
+							break;
+
+						case -1:
+							node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
 					}
 				}
 			};
@@ -216,14 +243,14 @@ namespace firm
 		});
 	}
 
-	void Worklist::replaceConv(Node node) 
+	void Worklist::replaceConv(Node node)
 	{
 		Node child = node.getChild(0);
+
 		if (is_Conv(child) && node.getMode() == child.getMode())
 			node.replaceWith(child);
-		else if (is_Const(child)) {
+		else if (is_Const(child))
 			node.replaceWith(new_r_Const_long(functionGraph, node.getMode(), child.getTarval().getLong()));
-		}
 	}
 
 	void Worklist::cleanUp()
@@ -232,14 +259,15 @@ namespace firm
 
 		auto replaceLambda = [&] (ir_node * node, void*)
 		{
-			if (!replaceGeneric(node) && Node(node).getTarval().isNumeric())
-			{
+			replaceGeneric(node);
+			//{
 				if (is_Add(node)) replaceAdd(node);
 				else if (is_Mul(node)) replaceMul(node);
 				else if (is_Sub(node)) replaceSub(node);
 				else if (is_Minus(node)) replaceMinus(node);
 				else if (is_Conv(node)) replaceConv(node);
-			}
+			//}
+
 			// Todo: optimize booleans
 			// Todo: optimize stuff like a + 0 not only for a's tarval (already implemented)
 			// but also for a's value.

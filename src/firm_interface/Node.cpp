@@ -40,14 +40,14 @@ namespace firm
 		return get_irn_arity(node) > 0;
 	}
 
-	shptr<vec<Node>> Node::getChildren() const
+	vec<Node> Node::getChildren() const
 	{
-		auto children = std::make_shared<vec<Node>>();
+		auto children = vec<Node>();
 
 		for (unsigned int i = 0; i < getChildCount(); ++i)
-			children->push_back(getChild(i));
+			children.push_back(getChild(i));
 
-		return children;
+		return std::move(children);
 	}
 
 	shptr<vec<std::pair<Node, unsigned int>>> Node::getOuts() const

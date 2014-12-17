@@ -19,11 +19,13 @@ namespace firm
 		long val = 0;
 		unsigned int i = 0;
 		int numUnkowns = 0;
-		ir_printf("processing %F at %p with %d predecessors and tarval %F\n", (ir_node*)node, (ir_node*)node, predCount, prevTarval);
+		ir_printf("processing %F (%d) at %p with %d predecessors and tarval %F\n", (ir_node*)node, get_irn_node_nr(node), (ir_node*)node, predCount, prevTarval);
 
 		do
 		{
 			Node pred = node.getChild(i);
+
+			ir_printf("tarval of pred %F (%d)", pred, get_irn_node_nr(pred));
 
 			// we now know, that the node is not const and
 			// therefore, operate on tarvals from the map
@@ -33,13 +35,13 @@ namespace firm
 
 			if (curTarval == tarval_unknown)
 			{
-				ir_printf("tarval of predecessor %F is unknown\n", pred);
+				ir_printf(" is unknown\n");
 				++numUnkowns;
 				// just count the number of unknown values
 			}
 			else if (curTarval == tarval_bad)
 			{
-				ir_printf("tarval of predecessor %F is bad\n", pred);
+				ir_printf(" is bad\n");
 				// if any input is bad, were bad aswell
 				// no need to set isConst = false;
 				isBad = true;
@@ -54,14 +56,16 @@ namespace firm
 				{
 					if (cur != val)
 					{
-						ir_printf("tarval of predecessor %F's value does not match the current value\n", pred);
+						ir_printf("'s value does not match the current value\n");
 						// now we know, that we can not replace anything.
 						isBad = true;
 					}
+					else
+						ir_printf("'s value does match the current value\n");
 				}
 				else
 				{
-					ir_printf("initial value has been set to predecessor %F's tarval: %d\n", pred, cur);
+					ir_printf(": initial value set to %d\n", cur);
 					// in first iteration: set const candidate.
 					val = cur;
 					valSet = true;
@@ -131,9 +135,14 @@ namespace firm
 			else
 				throw "updateTarvalForArithmeticNode called on illegal node";
 
-			set_irn_link(node, (void*) resultVal);
+			if (resultVal)
+				set_irn_link(node, (void*) resultVal);
+
 			markOutNodesAsNew(node);
 		}
+
+		if (tarval1 == tarval_bad || (tarval2 && tarval2 == tarval_bad))
+			set_irn_link(node, (void*) tarval_bad);
 	}
 
 	void ConstantFolder::updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode)
@@ -206,29 +215,37 @@ namespace firm
 	void ConstantFolder::handleProj(ir_node* node)
 	{
 		// Get first child of proj node
-		ir_node* child_node = get_irn_n(node, 0);
+		// TODO: Does Proj need to copy the tarval of a preceding Proj?
+		/*ir_node* child_node = get_irn_n(node, 0);
+		if (!is_Start(child_node)) {
+		ir_printf("Trying to get tarval of Proj node %F (%d) child %F, tarval %F\n", node, get_irn_node_nr(node), child_node, get_irn_link(child_node));
+		set_irn_link(node, get_irn_link(child_node));
+		ir_printf("Proj node tarval after setting: %F\n", get_irn_link(node));*/
 
-		if (is_Cond(child_node))
-		{
-			unsigned proj_num = get_Proj_num(node);
-			ir_node* cmp_node = get_irn_n(child_node, 0);
-			ir_relation relation = get_Cmp_relation(cmp_node);
+		/*
+				ir_printf("===== %F with tar %F\n", node, Node(node).getTarval());
 
-			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
-			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
-			{
-				// Exchange the Proj with an unconditional jump.
-				//exchange(node, new_r_Jmp(get_nodes_block(child_node)));
-			}
+				if (is_Cond(child_node))
+				{
+					unsigned proj_num = get_Proj_num(node);
+					ir_node* cmp_node = get_irn_n(child_node, 0);
+					ir_relation relation = get_Cmp_relation(cmp_node);
 
-			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
-			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
-			{
-				// Exchange Proj nodes leading to dead blocks with bad blocks.
-				// TODO: Remove bad nodes.
-				//exchange(node, new_r_Bad(irg, get_modeX()));
-			}
-		}
+					if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
+					        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
+					{
+						// Exchange the Proj with an unconditional jump.
+						//exchange(node, new_r_Jmp(get_nodes_block(child_node)));
+					}
+
+					if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
+					        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
+					{
+						// Exchange Proj nodes leading to dead blocks with bad blocks.
+						// TODO: Remove bad nodes.
+						//exchange(node, new_r_Bad(irg, get_modeX()));
+					}
+				}*/
 	}
 
 	void ConstantFolder::handleCmp(ir_node* node)
@@ -270,14 +287,45 @@ namespace firm
 	{
 		newNodes->clear();
 
-		if (is_Phi(node) && get_irn_mode(node) == mode_Is)
-			optimizePhi(firm::Node(node));
-		else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
-			updateTarvalForArithmeticNode(node);
-		else if (is_Div(node) || is_Mod(node))
-			handleDivAndMod(node);
-		else if (is_Proj(node))
-			handleProj(node);
+		if (Node(node).getChildCount() == 0)
+			return;
+
+		bool isBad = false;
+		unsigned int numUnkowns = 0;
+
+
+		for (Node child : Node(node).getChildren())
+		{
+			if (child.getTarval() == tarval_bad)
+			{
+				isBad = true;
+				break;
+			}
+			else if (child.getTarval() == tarval_unknown)
+				numUnkowns++;
+		}
+
+		if (isBad) {
+			set_irn_link(node, (void*)tarval_bad);
+			ir_printf("setting node %F (%d) to bad\n", node, get_irn_node_nr(node));
+		}
+		else if (numUnkowns == Node(node).getChildCount()) {
+			set_irn_link(node, (void*)tarval_unknown);
+			ir_printf("setting node %F (%d) to unknown\n", node, get_irn_node_nr(node));
+		}
+		else
+		{
+			std::cout << "Optimizing" << std::endl;
+			if (is_Phi(node) && get_irn_mode(node) == mode_Is)
+				optimizePhi(firm::Node(node));
+			else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
+				updateTarvalForArithmeticNode(node);
+			else if (is_Div(node) || is_Mod(node))
+				handleDivAndMod(node);
+			else if (is_Proj(node))
+				handleProj(node);
+		}
+
 		//else if (is_Cmp(node))
 		//	handleCmp(node);
 	}
