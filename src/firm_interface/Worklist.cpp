@@ -91,58 +91,6 @@ namespace firm
 		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
-	bool Worklist::replaceGeneric(Node node)
-	{
-		// std::cout << "found ";
-		// ir_printf("%F\n", node);
-		/*
-		bool constChildren = true;
-
-		if (node.getTarval() != tarval_bad && node.getTarval() != tarval_unknown && node.getTarval().isNumeric())
-		{
-			// ir_printf("parent tarval = %F\n", tarval);
-			unsigned int i = 0;
-			// std::cout << "arity = " << get_irn_arity(node) << std::endl;
-			bool valSet = false;
-			long currentVal;
-
-			while ( i < node.getChildCount() && constChildren)
-			{
-				Tarval predTarval = node.getChild(i).getTarval();
-				// ir_printf("child tarval = %F\n", predTarval);
-
-				if (!predTarval || get_tarval_mode(predTarval) != get_tarval_mode(node.getTarval()) || predTarval == tarval_bad || predTarval == tarval_unknown)
-					constChildren = false;
-				else
-				 {
-					if (!valSet) {
-						currentVal = node.getChild(i).getTarval().getLong();
-						valSet = true;
-					}
-					else {
-						if (currentVal != node.getChild(i).getTarval().getLong())
-							constChildren = false;
-					}
-				}
-
-				i++;
-			}
-		*/
-		if (node.getTarval().isNumeric())
-		{
-			// std::cout << "removed ";
-			// ir_printf("%F with tarval %F\n", node, node.getTarval());
-			ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), node.getTarval().getLong());
-			node.replaceWith(constNode, true);
-			return true;
-		}
-
-		return false;
-		// }
-
-		//return constChildren;
-	}
-
 	void Worklist::run()
 	{
 		while (!worklist.empty())
@@ -151,7 +99,6 @@ namespace firm
 			this->isQueued[node] = false;
 			worklist.pop();
 
-			//if (is_Add(node))
 			ir_printf("Handling %F (%d), old tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
 			handler.handle(node);
 
@@ -171,131 +118,21 @@ namespace firm
 					std::cout << "did not add node: ";
 					ir_printf("%F\n", newNode);
 				}
-
 			}
 		}
 
 		cleanUp();
 	}
 
-	void Worklist::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
-	{
-		ir_printf("node: %F\n", node);
-		Node child1 = node.getChild(0);
-		//ir_printf("tarval1: %F\n", tarval1);
-
-		if (node.getChildCount() == 1)
-		{
-			if (node.getTarval().isModeIs())
-				fun(child1, NULL);
-		}
-		else
-		{
-			Node child2 = node.getChild(1);
-			//ir_printf("tarval2: %F\n", tarval2);
-			fun(child1, child2);
-		}
-	}
-
-	void Worklist::replaceAdd(Node node)
-	{
-		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-		{
-			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
-			// Responsible for one failed run test:
-			if (tarvalIsZero(leftChild.getTarval()))
-				node.replaceWith(rightChild);
-			else if (tarvalIsZero(rightChild.getTarval()))
-				node.replaceWith(leftChild);
-
-		});
-	}
-
-	void Worklist::replaceSub(Node node)
-	{
-		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-		{
-			ir_printf("SUB: tar = %F\n", node.getTarval());
-			ir_printf("SUB: left tar %F right tar %F\n", leftChild.getTarval(), rightChild.getTarval());
-			//ir_printf("SUB: left child %F right child %F\n", leftChild, rightChild);
-
-			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
-
-			if (tarvalIsZero(leftChild.getTarval()))
-				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
-			else if (tarvalIsZero(rightChild.getTarval()))
-				node.replaceWith(leftChild);
-		});
-	}
-
-	void Worklist::replaceMinus(Node node)
-	{
-		if (is_Minus(node.getChild(0)))
-			node.replaceWith(node.getChild(0).getChild(0));
-	}
-
-	void Worklist::replaceMul(Node node)
-	{
-		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-		{
-			auto handleCases = [&] (Node leftChild, Node rightChild) -> void
-			{
-				if (leftChild.getTarval() && leftChild.getTarval().isNumeric())
-				{
-					switch (leftChild.getTarval().getLong())
-					{
-						case 0:
-							node.replaceWith(new_r_Const_long(functionGraph, get_irn_mode(node), 0));
-							break;
-
-						case 1:
-							node.replaceWith(rightChild);
-							break;
-
-						case -1:
-							node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
-					}
-				}
-			};
-			handleCases(leftChild, rightChild);
-			handleCases(rightChild, leftChild);
-		});
-	}
-
-	void Worklist::replaceConv(Node node)
-	{
-		Node child = node.getChild(0);
-
-		if (is_Conv(child) && node.getMode() == child.getMode())
-			node.replaceWith(child);
-		else if (is_Const(child))
-			node.replaceWith(new_r_Const_long(functionGraph, node.getMode(), child.getTarval().getLong()));
-	}
-
 	void Worklist::cleanUp()
 	{
-		typedef void (*ir_func)(ir_node*, void*);
+		// typedef void (*ir_func)(ir_node*, void*);
 
-		auto replaceLambda = [&] (ir_node * node, void*)
+		// auto replaceLambda = ;
+		walk_topological(functionGraph, [&] (ir_node * node, void*)
 		{
-			if (!replaceGeneric(node))
-			{
-
-				//{
-				if (is_Add(node)) replaceAdd(node);
-				else if (is_Mul(node)) replaceMul(node);
-				else if (is_Sub(node)) replaceSub(node);
-				else if (is_Minus(node)) replaceMinus(node);
-				else if (is_Conv(node)) replaceConv(node);
-			}
-
-			//}
-
-			// Todo: optimize booleans
-			// Todo: optimize stuff like a + 0 not only for a's tarval (already implemented)
-			// but also for a's value.
-		};
-		walk_topological(functionGraph, replaceLambda, NULL);
+			handler.cleanUp(Node(node));
+		}, NULL);
 		walk_topological(functionGraph, [](ir_node * node, void*)
 		{
 			set_irn_link(node, (void*)NULL);

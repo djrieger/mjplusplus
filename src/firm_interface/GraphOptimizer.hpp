@@ -4,6 +4,7 @@
 #include <libfirm/firm.h>
 #include <set>
 #include "../globals.hpp"
+#include "Node.hpp"
 
 namespace firm
 {
@@ -20,6 +21,7 @@ namespace firm
 		public:
 			GraphOptimizer(ir_graph* irg);
 			virtual void handle(ir_node*) = 0;
+			virtual void cleanUp(Node node) = 0;
 			shptr<std::set<ir_node*>> getNewNodes() const;
 	};
 }
