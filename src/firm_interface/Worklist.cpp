@@ -75,15 +75,15 @@ namespace firm
 		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
-	void Worklist::replaceGeneric(Node node)
+	bool Worklist::replaceGeneric(Node node)
 	{
 		std::cout << "found ";
 		ir_printf("%F\n", node);
+		bool constChildren = true;
 
 		if (node.getTarval() != tarval_bad && node.getTarval() != tarval_unknown && node.getTarval().isModeIs())
 		{
 			// ir_printf("parent tarval = %F\n", tarval);
-			bool constChildren = true;
 			unsigned int i = 0;
 			// std::cout << "arity = " << get_irn_arity(node) << std::endl;
 
@@ -106,6 +106,8 @@ namespace firm
 				node.replaceWith(constNode, true);
 			}
 		}
+
+		return constChildren;
 	}
 
 	void Worklist::run()
@@ -167,8 +169,6 @@ namespace firm
 				node.replaceWith(rightChild);
 			else if (tarvalIsZero(rightChild.getTarval()))
 				node.replaceWith(leftChild);
-			else
-				replaceGeneric(node);
 		});
 	}
 
@@ -176,14 +176,16 @@ namespace firm
 	{
 		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
 		{
+			ir_printf("SUB: tar = %F\n", node.getTarval());
+			ir_printf("SUB: left tar %F right tar %F\n", leftChild.getTarval(), rightChild.getTarval());
+			//ir_printf("SUB: left child %F right child %F\n", leftChild, rightChild);
+
 			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
 
-			if (tarvalIsZero(leftChild.getTarval()))
-				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
-			else if (tarvalIsZero(rightChild.getTarval()))
-				node.replaceWith(leftChild);
-			else
-				replaceGeneric(node);
+						if (tarvalIsZero(leftChild.getTarval()))
+							node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+						else if (tarvalIsZero(rightChild.getTarval()))
+							node.replaceWith(leftChild);
 		});
 	}
 
@@ -211,7 +213,6 @@ namespace firm
 			};
 			handleCases(leftChild, rightChild);
 			handleCases(rightChild, leftChild);
-			replaceGeneric(node);
 		});
 	}
 
@@ -231,10 +232,9 @@ namespace firm
 
 		auto replaceLambda = [&] (ir_node * node, void*)
 		{
-			if (Node(node).getTarval().isNumeric())
+			if (!replaceGeneric(node) && Node(node).getTarval().isNumeric())
 			{
-				if (is_Phi(node)) replaceGeneric(node);
-				else if (is_Add(node)) replaceAdd(node);
+				if (is_Add(node)) replaceAdd(node);
 				else if (is_Mul(node)) replaceMul(node);
 				else if (is_Sub(node)) replaceSub(node);
 				else if (is_Minus(node)) replaceMinus(node);
