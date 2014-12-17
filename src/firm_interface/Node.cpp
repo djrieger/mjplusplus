@@ -67,6 +67,11 @@ namespace firm
 
 		exchange(this->node, node);
 	}
+
+	ir_mode* Node::getMode() const
+	{
+		return get_irn_mode(node);
+	}
 }
 
 

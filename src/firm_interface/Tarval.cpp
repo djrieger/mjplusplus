@@ -21,6 +21,16 @@ namespace firm
 		return get_tarval_mode(tarval) == mode_Is;
 	}
 
+	bool Tarval::isModeLu() const
+	{
+		return get_tarval_mode(tarval) == mode_Lu;
+	}
+
+	bool Tarval::isNumeric() const
+	{
+		return isModeLu() || isModeIs();
+	}
+
 	long Tarval::getLong() const
 	{
 		return get_tarval_long(tarval);

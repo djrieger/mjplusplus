@@ -1,0 +1,22 @@
+class a {
+	public static void main(String[] a)
+	{
+		new a().q(6);
+	}
+	
+	public void q(int z) {
+		int[] y = new int[4];
+		int i = 5;
+		while (z > 0) {
+			z = z*z;
+			i = (i+1)*(i+1) - 11 - 4*i; /* @comment "i is constant 5" */
+		}
+		System.out.println(z);if(true) return;
+		y[i-5] = 5; /* @comment "offset addition (offset = 0) can be removed" */
+		y[1] = 2;
+		y[0] = y[0] + 1; /* @comment "offset addition (offset = 0) can be removed" */
+		System.out.println(y[0]);
+			/* @comment "offset addition (offset = 0) can be removed" */
+		System.out.println(y[1]);
+	}
+}
