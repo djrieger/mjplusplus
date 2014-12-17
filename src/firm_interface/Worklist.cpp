@@ -127,16 +127,17 @@ namespace firm
 
 				i++;
 			}
-*/
-			if (node.getTarval().isNumeric())
-			{
-				// std::cout << "removed ";
-				// ir_printf("%F with tarval %F\n", node, node.getTarval());
-				ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), node.getTarval().getLong());
-				node.replaceWith(constNode, true);
-				return true;
-			}
-			return false;
+		*/
+		if (node.getTarval().isNumeric())
+		{
+			// std::cout << "removed ";
+			// ir_printf("%F with tarval %F\n", node, node.getTarval());
+			ir_node* constNode = new_r_Const_long(functionGraph, get_irn_mode(node), node.getTarval().getLong());
+			node.replaceWith(constNode, true);
+			return true;
+		}
+
+		return false;
 		// }
 
 		//return constChildren;
@@ -151,7 +152,8 @@ namespace firm
 			worklist.pop();
 
 			//if (is_Add(node))
-			
+
+			ir_printf("Handling %F (%d), new tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
 			handler.handle(node);
 
 			ir_printf("Handled %F (%d), new tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
@@ -202,11 +204,11 @@ namespace firm
 		{
 			auto tarvalIsZero = [] (Tarval tarval) -> bool { return tarval && tarval.isNumeric() && tarval.getLong() == 0; };
 			// Responsible for one failed run test:
-						if (tarvalIsZero(leftChild.getTarval()))
-							node.replaceWith(rightChild);
-						else if (tarvalIsZero(rightChild.getTarval()))
-							node.replaceWith(leftChild);
-							
+			if (tarvalIsZero(leftChild.getTarval()))
+				node.replaceWith(rightChild);
+			else if (tarvalIsZero(rightChild.getTarval()))
+				node.replaceWith(leftChild);
+
 		});
 	}
 
@@ -277,7 +279,8 @@ namespace firm
 
 		auto replaceLambda = [&] (ir_node * node, void*)
 		{
-			if (!replaceGeneric(node)) {
+			if (!replaceGeneric(node))
+			{
 
 				//{
 				if (is_Add(node)) replaceAdd(node);
@@ -285,7 +288,8 @@ namespace firm
 				else if (is_Sub(node)) replaceSub(node);
 				else if (is_Minus(node)) replaceMinus(node);
 				else if (is_Conv(node)) replaceConv(node);
-	}
+			}
+
 			//}
 
 			// Todo: optimize booleans

@@ -11,7 +11,7 @@ class a {
 			z = z*z;
 			i = (i+1)*(i+1) - 11 - 4*i; /* @comment "i is constant 5" */
 		}
-		System.out.println(z);if(true) return;
+		System.out.println(z);
 		y[i-5] = 5; /* @comment "offset addition (offset = 0) can be removed" */
 		y[1] = 2;
 		y[0] = y[0] + 1; /* @comment "offset addition (offset = 0) can be removed" */
