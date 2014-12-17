@@ -119,7 +119,7 @@ namespace firm
 				tarval2 = Tarval(tarval_unknown);
 		}
 
-		if (tarval1.isModeIs() && (is_Minus(node) || tarval2.isModeIs()))
+		if (tarval1.isNumeric() && (is_Minus(node) || tarval2.isNumeric()))
 		{
 			ir_tarval* resultVal;
 
@@ -266,25 +266,6 @@ namespace firm
 			set_Cmp_relation(node, get_Cmp_relation(node) & ir_relation_equal ? ir_relation_true : ir_relation_false);
 	}
 
-	void ConstantFolder::handleConv(ir_node* node)
-	{
-		// This removes *some* unnecessary conversions, notably those
-		// occuring during calls to System.out.println, but this should
-		// probably be extended for more general useless conversions.
-		ir_node* child = get_irn_n(node, 0);
-		/*
-				if (is_Conv(child))
-				{
-					ir_node* grand_child = get_irn_n(child, 0);
-
-					if (get_irn_mode(node) == get_irn_mode(grand_child))
-						exchange(node, grand_child);
-				}
-				else if (is_Const(child))
-					exchange(node, new_r_Const_long(irg, get_irn_mode(node), get_tarval_long(computed_value(child))));
-				*/
-	}
-
 	void ConstantFolder::handle(ir_node* node)
 	{
 		newNodes->clear();
@@ -297,8 +278,8 @@ namespace firm
 			handleDivAndMod(node);
 		else if (is_Proj(node))
 			handleProj(node);
-		//else if (is_Cmp(node)) handleCmp(node);
-		else if (is_Conv(node))
-			handleConv(node);
+
+		//else if (is_Cmp(node))
+		//	handleCmp(node);
 	}
 }

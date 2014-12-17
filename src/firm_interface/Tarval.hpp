@@ -17,6 +17,8 @@ namespace firm
 			Tarval(long value);
 			Tarval() {}
 			bool isModeIs() const;
+			bool isModeLu() const;
+			bool isNumeric() const;
 			long getLong() const;
 			void setValue(ir_tarval* tarval);
 			operator ir_tarval* ()
