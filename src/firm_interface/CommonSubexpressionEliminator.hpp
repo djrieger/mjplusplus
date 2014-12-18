@@ -16,7 +16,7 @@ namespace firm
 			bool handleConst(Node node);
 		public:
 			CommonSubexpressionEliminator(ir_graph* irg);
-			virtual void handle(ir_node*);
+			virtual void handle(Node);
 			virtual void cleanUp(Node node);
 	};
 }

@@ -1,0 +1,20 @@
+class a {
+  public static void main(String[] args) {
+    a x = new a();
+
+    boolean z = true;
+    z = true && false;
+    z = true || false;
+    z = true && false || true;
+
+    if (x.ret(true))
+      System.out.println(42);
+
+    if (x.ret(false))
+      System.out.println(24);
+  }
+
+  public boolean ret(boolean r) {
+    return r && true && (false || true);
+  }
+}
