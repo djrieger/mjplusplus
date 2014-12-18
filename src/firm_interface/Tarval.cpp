@@ -15,6 +15,10 @@ namespace firm
 	{
 
 	}
+	ir_mode* Tarval::getMode() const
+	{
+		return get_tarval_mode(tarval);
+	}
 
 	bool Tarval::isModeIs() const
 	{
@@ -24,6 +28,11 @@ namespace firm
 	bool Tarval::isModeLu() const
 	{
 		return get_tarval_mode(tarval) == mode_Lu;
+	}
+
+	bool Tarval::isModeBu() const
+	{
+		return get_tarval_mode(tarval) == mode_Bu;
 	}
 
 	bool Tarval::isNumeric() const
