@@ -11,13 +11,13 @@ namespace firm
 	void ConstantFolder::optimizePhi(Node node)
 	{
 		std::cout << "---------------------------" << std::endl;
-		Tarval prevTarval = node.getTarval();
 		unsigned int predCount = node.getChildCount();
 		bool isBad = false;
 		bool valSet = false;
 		long val = 0;
 		unsigned int i = 0;
-		ir_printf("processing %F (%d) at %p with %d predecessors and tarval %F\n", (ir_node*)node, get_irn_node_nr(node), (ir_node*)node, predCount, prevTarval);
+		auto nodeMode = node.getMode();
+		ir_printf("processing %F (%d) at %p with %d predecessors and tarval %F\n", (ir_node*)node, get_irn_node_nr(node), (ir_node*)node, predCount, node.getTarval());
 
 		while (i < predCount && !isBad)
 		{
@@ -27,7 +27,7 @@ namespace firm
 
 			Tarval curTarval = pred.getTarval();
 
-			if (curTarval.isNumeric())
+			if (nodeMode == curTarval.getMode())
 			{
 				auto cur = curTarval.getLong();
 
@@ -52,7 +52,7 @@ namespace firm
 			}
 			else
 			{
-				// not unknown, not bad, not Numeric, so nothing we currently handle
+				// mode of current predecessor does not match the mode of the node
 			}
 
 			++i;
@@ -68,7 +68,7 @@ namespace firm
 		else if (valSet)
 		{
 			// we do have a change in the tarval of the current node, so update this accordingly
-			Tarval newTarval(val);
+			Tarval newTarval(val, nodeMode);
 			node.setTarval(newTarval);
 			std::cout << "tarval has been updated" << std::endl;
 		}
@@ -157,42 +157,6 @@ namespace firm
 		*/
 	}
 
-	void ConstantFolder::handleProj(ir_node* node)
-	{
-		// Get first child of proj node
-		// TODO: Does Proj need to copy the tarval of a preceding Proj?
-		/*ir_node* child_node = get_irn_n(node, 0);
-		if (!is_Start(child_node)) {
-		ir_printf("Trying to get tarval of Proj node %F (%d) child %F, tarval %F\n", node, get_irn_node_nr(node), child_node, get_irn_link(child_node));
-		set_irn_link(node, get_irn_link(child_node));
-		ir_printf("Proj node tarval after setting: %F\n", get_irn_link(node));*/
-
-		/*
-				ir_printf("===== %F with tar %F\n", node, Node(node).getTarval());
-
-				if (is_Cond(child_node))
-				{
-					unsigned proj_num = get_Proj_num(node);
-					ir_node* cmp_node = get_irn_n(child_node, 0);
-					ir_relation relation = get_Cmp_relation(cmp_node);
-
-					if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
-					        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
-					{
-						// Exchange the Proj with an unconditional jump.
-						//exchange(node, new_r_Jmp(get_nodes_block(child_node)));
-					}
-
-					if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
-					        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
-					{
-						// Exchange Proj nodes leading to dead blocks with bad blocks.
-						// TODO: Remove bad nodes.
-						//exchange(node, new_r_Bad(irg, get_modeX()));
-					}
-				}*/
-	}
-
 	void ConstantFolder::handleCmp(ir_node* node)
 	{
 		ir_node* left = get_irn_n(node, 0);
@@ -201,8 +165,8 @@ namespace firm
 		if (is_Const(left) && is_Const(right))
 		{
 
-			long left_value = get_tarval_long(computed_value(left));
-			long right_value = get_tarval_long(computed_value(right));
+			long left_value = get_tarval_long(get_Const_tarval(left));
+			long right_value = get_tarval_long(get_Const_tarval(right));
 
 #define SET_RELATION(A, B) \
 				case ir_relation::ir_relation_ ## A : \
@@ -226,14 +190,6 @@ namespace firm
 		} // if (is_Const ...
 		else if (left == right)
 			set_Cmp_relation(node, get_Cmp_relation(node) & ir_relation_equal ? ir_relation_true : ir_relation_false);
-	}
-
-	void ConstantFolder::handleConv(Node node)
-	{
-		// Rewrote this line using Node/Tarval wrappers:
-		// set_irn_link(node, (void*)new_tarval_from_long(get_tarval_long((ir_tarval*)get_irn_link(get_irn_n(node, 0))), get_irn_mode(node)));
-		Tarval newTarval(node.getChild(0).getTarval().getLong(), node.getMode());
-		node.setTarval(newTarval);
 	}
 
 	void ConstantFolder::handle(Node node)
@@ -270,7 +226,7 @@ namespace firm
 		else
 		{
 			// we now know that, depending on the node, we might be able to optimize something
-			if (is_Phi(node) && node.getMode() == mode_Is) // TODO: not only mode_Is
+			if (is_Phi(node) && node.isNumericOrBool())
 				optimizePhi(node);
 			else if (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Div(node) || is_Mod(node))
 				updateTarvalForArithmeticNode(node);
@@ -282,13 +238,25 @@ namespace firm
 					node.setTarval(Tarval(- childTarval.getLong(), node.getMode()));
 			}
 			else if (is_Proj(node))
-				handleProj(node);
+			{
+				auto child_node = node.getChild(0);
+
+				if (!is_Start(child_node))
+				{
+					//ir_printf("Trying to get tarval of Proj node %F (%d) child %F, tarval %F\n", node, get_irn_node_nr(node), child_node, get_irn_link(child_node));
+					node.setTarval(child_node.getTarval());
+					//ir_printf("Proj node tarval after setting: %F\n", get_irn_link(node));*/
+				}
+			}
 			else if (is_Conv(node))
-				handleConv(node);
+			{
+				Tarval newTarval(node.getChild(0).getTarval().getLong(), node.getMode());
+				node.setTarval(newTarval);
+			}
 		}
 
 		// TODO: fix this ->
-		//else if (is_Cmp(node))
+		//else if (is_Cmp(node) && node.isNumericOrBool())
 		//	handleCmp(node);
 
 		// compare the preserved tarval from before the iteration
@@ -382,11 +350,39 @@ namespace firm
 			node.replaceWith(new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
 	}
 
+	void ConstantFolder::replaceProj(Node node)
+	{
+		//TODOish: still necessary or already covered by replaceGeneric?
+		Node child_node = node.getChild(0);
+
+		if (is_Cond(child_node))
+		{
+			unsigned proj_num = get_Proj_num(node);
+			Node cmp_node = child_node.getChild(0);
+			ir_relation relation = get_Cmp_relation(cmp_node);
+
+			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
+			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
+			{
+				// Exchange the Proj with an unconditional jump.
+				exchange(node, new_r_Jmp(get_nodes_block(child_node)));
+			}
+
+			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
+			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
+			{
+				// Exchange Proj nodes leading to dead blocks with bad blocks.
+				// TODO: Remove bad nodes.
+				exchange(node, new_r_Bad(irg, get_modeX()));
+			}
+		}
+	}
+
 	bool ConstantFolder::replaceGeneric(Node node)
 	{
-		if (node.getTarval().isNumeric())
+		if (node.getTarval().isNumericOrBool())
 		{
-			ir_node* constNode = new_r_Const_long(irg, get_irn_mode(node), node.getTarval().getLong());
+			ir_node* constNode = new_r_Const_long(irg, node.getMode(), node.getTarval().getLong());
 			node.replaceWith(constNode, true);
 			return true;
 		}
@@ -403,6 +399,7 @@ namespace firm
 			else if (is_Sub(node)) replaceSub(node);
 			else if (is_Minus(node)) replaceMinus(node);
 			else if (is_Conv(node)) replaceConv(node);
+			else if (is_Proj(node)) replaceProj(node);
 		}
 
 		// Todo: optimize booleans
