@@ -16,9 +16,12 @@ namespace firm
 			Tarval(ir_tarval* tarval);
 			Tarval(long value, ir_mode* mode = mode_Is);
 			Tarval();
+			ir_mode* getMode() const;
 			bool isModeIs() const;
 			bool isModeLu() const;
+			bool isModeBu() const;
 			bool isNumeric() const;
+			bool isNumericOrBool() const;
 			bool isBad() const;
 			bool isUnknown() const;
 			long getLong() const;
