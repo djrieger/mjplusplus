@@ -21,6 +21,7 @@ namespace firm
 			bool isModeLu() const;
 			bool isModeBu() const;
 			bool isNumeric() const;
+			bool isNumericOrBool() const;
 			bool isBad() const;
 			bool isUnknown() const;
 			long getLong() const;
