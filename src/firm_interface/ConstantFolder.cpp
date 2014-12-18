@@ -78,48 +78,61 @@ namespace firm
 
 	void ConstantFolder::updateTarvalForArithmeticNode(Node node)
 	{
-		Node child1(node.getChild(0));
-		Tarval tarval1 = child1.getTarval();
+		Tarval tvLeft = node.getChild(0).getTarval();
+		Tarval tvRight = node.getChild(1).getTarval();
+		Tarval resultVal;
 
-		if (!tarval1)
-			tarval1 = Tarval(tarval_unknown);
-
-		Node child2;
-		Tarval tarval2;
-
-		if (node.getChildCount() > 1)
+		switch (node.getOpcode())
 		{
-			child2 = node.getChild(1);
-			tarval2 = child2.getTarval();
+			case iro_Add:
+				if (tvLeft.isNumeric() && tvRight.isNumeric()) resultVal = tarval_add(tvLeft, tvRight);
 
-			if (!tarval2)
-				tarval2 = Tarval(tarval_unknown);
-		}
+				break;
 
-		if (tarval1.isNumeric() && (is_Minus(node) || tarval2.isNumeric()))
-		{
-			ir_tarval* resultVal;
+			case iro_Mul:
+				// 0 * x = x * 0 = 0
+				if (tvLeft.isNumWithVal(0) || tvRight.isNumWithVal(0)) resultVal = Tarval(0, node.getMode());
+				else if (tvLeft.isNumeric() && tvRight.isNumeric()) resultVal = tarval_mul(tvLeft, tvRight);
 
-			if (is_Add(node)) resultVal = tarval_add(tarval1, tarval2);
-			else if (is_Sub(node)) resultVal = tarval_sub(tarval1, tarval2, NULL);
-			else if (is_Mul(node)) resultVal = tarval_mul(tarval1, tarval2);
-			else if (is_Minus(node)) resultVal = tarval_neg(tarval1);
-			//else if (is_Div(node)) resultVal = tarval_div(tarval1, tarval2);
-			else
+				break;
+
+			case iro_Minus:
+				if (tvLeft.isNumeric()) resultVal = Tarval(- tvLeft.getLong(), node.getMode());
+
+				break;
+
+			case iro_Sub:
+				if (tvLeft.isNumeric() && tvRight.isNumeric()) resultVal = tarval_sub(tvLeft, tvRight, NULL);
+
+				break;
+
+			case iro_Div:
+			case iro_Mod:
+				if (tvRight.isNumWithVal(0) // x / 0, x % 0 => undefined behavior, set to zero
+				        || tvLeft.isNumWithVal(0) // 0 / x, 0 % x = 0
+				        || (is_Mod(node) && (tvRight.isNumWithVal(1) || tvRight.isNumWithVal(-1)))) // x % 1 or -1 = 0
+					resultVal = Tarval(0, node.getMode());
+				// x / y, x % y
+				else if (tvLeft.isNumeric() && tvRight.isNumeric())
+				{
+					if (is_Div(node))
+						resultVal = tarval_div(tvLeft, tvRight);
+					else
+					{
+						ir_tarval* remainder;
+						tarval_divmod(tvLeft, tvRight, &remainder);
+						resultVal = Tarval(remainder);
+					}
+				}
+
+				break;
+
+			default:
 				throw "updateTarvalForArithmeticNode called on illegal node";
-
-
-			if (resultVal)
-				set_irn_link(node, (void*) resultVal);
-
-			if (is_Mul(node))
-				ir_printf("Mul children 1: %F, 2: %F yields resultVal %F\n", tarval1, tarval2, resultVal);
-
-			markOutNodesAsNew(node);
 		}
 
-		if (tarval1 == tarval_bad || (tarval2 && tarval2 == tarval_bad))
-			set_irn_link(node, (void*) tarval_bad);
+		if (resultVal)
+			node.setTarval(resultVal);
 	}
 
 	void ConstantFolder::updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode)
@@ -142,51 +155,6 @@ namespace firm
 				//exchange(o, newNode);
 		}
 		*/
-	}
-
-	void ConstantFolder::handleDivAndMod(ir_node* node)
-	{
-		// Get children of div node (operands)
-		/*
-		ir_node* dividend = get_irn_n(node, 1);
-		ir_node* divisor = get_irn_n(node, 2);
-
-		if (is_Const(dividend) && is_Const(divisor))
-		{
-			long divisorValue = get_tarval_long(computed_value(divisor));
-
-			if (divisorValue != 0)
-			{
-				long dividendValue = get_tarval_long(computed_value(dividend));
-				ir_node* replacement = new_r_Const_long(irg, mode_Is, is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue);
-				updateTarvalAndExchangeMemory(node, replacement);
-			}
-			else
-				updateTarvalAndExchangeMemory(node, new_r_Unknown(irg, mode_Is));
-		}
-		else if (is_Const(dividend))
-		{
-			long value = get_tarval_long(computed_value(dividend));
-
-			if (value == 0)
-				updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, 0));
-			else if (value == 1 && is_Div(node))
-				updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, 1));
-		}
-		else if (is_Const(divisor))
-		{
-			long value = get_tarval_long(computed_value(divisor));
-
-			if (value == -1)
-				updateTarvalAndExchangeMemory(node, is_Div(node) ? new_r_Minus(get_nodes_block(node), dividend, mode_Is) : new_r_Const_long(irg, mode_Is, 0));
-			else if (value == 0)
-				updateTarvalAndExchangeMemory(node, new_r_Unknown(irg, mode_Is));
-			else if (value == 1)
-				updateTarvalAndExchangeMemory(node, is_Div(node) ? dividend : new_r_Const_long(irg, mode_Is, 0));
-		}
-		else if (dividend == divisor)
-			updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, is_Div(node) ? 1 : 0));
-			*/
 	}
 
 	void ConstantFolder::handleProj(ir_node* node)
@@ -304,10 +272,15 @@ namespace firm
 			// we now know that, depending on the node, we might be able to optimize something
 			if (is_Phi(node) && node.getMode() == mode_Is) // TODO: not only mode_Is
 				optimizePhi(node);
-			else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
+			else if (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Div(node) || is_Mod(node))
 				updateTarvalForArithmeticNode(node);
-			else if (is_Div(node) || is_Mod(node))
-				handleDivAndMod(node);
+			else if (is_Minus(node))
+			{
+				Tarval childTarval = node.getChild(0).getTarval();
+
+				if (childTarval.isNumeric())
+					node.setTarval(Tarval(- childTarval.getLong(), node.getMode()));
+			}
 			else if (is_Proj(node))
 				handleProj(node);
 			else if (is_Conv(node))

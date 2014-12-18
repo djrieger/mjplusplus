@@ -15,17 +15,22 @@ namespace firm
 		public:
 			Tarval(ir_tarval* tarval);
 			Tarval(long value, ir_mode* mode = mode_Is);
-			Tarval() {}
+			Tarval();
 			bool isModeIs() const;
 			bool isModeLu() const;
 			bool isNumeric() const;
 			bool isBad() const;
 			bool isUnknown() const;
 			long getLong() const;
+			bool isNumWithVal(long val) const;
 			void setValue(ir_tarval* tarval);
 			operator ir_tarval* ()
 			{
 				return tarval;
+			}
+			operator bool ()
+			{
+				return tarval != NULL;
 			}
 			bool operator==(Tarval const& otherTarval) const
 			{
