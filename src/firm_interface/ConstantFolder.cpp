@@ -285,9 +285,11 @@ namespace firm
 
 	void ConstantFolder::handleConv(ir_node* node)
 	{
-		//ir_printf("///////////////////////// Conv node %d\n", get_irn_node_nr(node));
-		set_irn_link(node, (void*)new_tarval_from_long(get_tarval_long((ir_tarval*)get_irn_link(get_irn_n(node, 0))), get_irn_mode(node)));
-		//ir_printf("Conv tarval after setting: %F\n", get_irn_link(node));
+		// Rewrote this line using Node/Tarval wrappers:
+		// set_irn_link(node, (void*)new_tarval_from_long(get_tarval_long((ir_tarval*)get_irn_link(get_irn_n(node, 0))), get_irn_mode(node)));
+		Node _node(node); 
+		Tarval newTarval(_node.getChild(0).getTarval().getLong(), _node.getMode());
+		_node.setTarval(newTarval);
 	}
 
 	void ConstantFolder::handle(ir_node* node)
