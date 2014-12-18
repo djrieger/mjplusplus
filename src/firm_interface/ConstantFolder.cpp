@@ -188,42 +188,6 @@ namespace firm
 			*/
 	}
 
-	void ConstantFolder::handleProj(ir_node* node)
-	{
-		// Get first child of proj node
-		// TODO: Does Proj need to copy the tarval of a preceding Proj?
-		/*ir_node* child_node = get_irn_n(node, 0);
-		if (!is_Start(child_node)) {
-		ir_printf("Trying to get tarval of Proj node %F (%d) child %F, tarval %F\n", node, get_irn_node_nr(node), child_node, get_irn_link(child_node));
-		set_irn_link(node, get_irn_link(child_node));
-		ir_printf("Proj node tarval after setting: %F\n", get_irn_link(node));*/
-
-		/*
-				ir_printf("===== %F with tar %F\n", node, Node(node).getTarval());
-
-				if (is_Cond(child_node))
-				{
-					unsigned proj_num = get_Proj_num(node);
-					ir_node* cmp_node = get_irn_n(child_node, 0);
-					ir_relation relation = get_Cmp_relation(cmp_node);
-
-					if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
-					        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
-					{
-						// Exchange the Proj with an unconditional jump.
-						//exchange(node, new_r_Jmp(get_nodes_block(child_node)));
-					}
-
-					if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
-					        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
-					{
-						// Exchange Proj nodes leading to dead blocks with bad blocks.
-						// TODO: Remove bad nodes.
-						//exchange(node, new_r_Bad(irg, get_modeX()));
-					}
-				}*/
-	}
-
 	void ConstantFolder::handleCmp(ir_node* node)
 	{
 		ir_node* left = get_irn_n(node, 0);
@@ -257,14 +221,6 @@ namespace firm
 		} // if (is_Const ...
 		else if (left == right)
 			set_Cmp_relation(node, get_Cmp_relation(node) & ir_relation_equal ? ir_relation_true : ir_relation_false);
-	}
-
-	void ConstantFolder::handleConv(Node node)
-	{
-		// Rewrote this line using Node/Tarval wrappers:
-		// set_irn_link(node, (void*)new_tarval_from_long(get_tarval_long((ir_tarval*)get_irn_link(get_irn_n(node, 0))), get_irn_mode(node)));
-		Tarval newTarval(node.getChild(0).getTarval().getLong(), node.getMode());
-		node.setTarval(newTarval);
 	}
 
 	void ConstantFolder::handle(Node node)
@@ -420,6 +376,34 @@ namespace firm
 			node.replaceWith(new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
 	}
 
+	void ConstantFolder::replaceProj(Node node)
+	{
+		//TODOish: still necessary or already covered by replaceGeneric?
+		Node child_node = node.getChild(0);
+
+		if (is_Cond(child_node))
+		{
+			unsigned proj_num = get_Proj_num(node);
+			Node cmp_node = child_node.getChild(0);
+			ir_relation relation = get_Cmp_relation(cmp_node);
+
+			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_true)
+			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
+			{
+				// Exchange the Proj with an unconditional jump.
+				exchange(node, new_r_Jmp(get_nodes_block(child_node)));
+			}
+
+			if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
+			        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
+			{
+				// Exchange Proj nodes leading to dead blocks with bad blocks.
+				// TODO: Remove bad nodes.
+				exchange(node, new_r_Bad(irg, get_modeX()));
+			}
+		}
+	}
+
 	bool ConstantFolder::replaceGeneric(Node node)
 	{
 		if (node.getTarval().isNumeric())
@@ -441,6 +425,7 @@ namespace firm
 			else if (is_Sub(node)) replaceSub(node);
 			else if (is_Minus(node)) replaceMinus(node);
 			else if (is_Conv(node)) replaceConv(node);
+			else if (is_Proj(node)) replaceProj(node);
 		}
 
 		// Todo: optimize booleans
