@@ -13,43 +13,22 @@ namespace firm
 		std::cout << "---------------------------" << std::endl;
 		Tarval prevTarval = node.getTarval();
 		unsigned int predCount = node.getChildCount();
-		bool isConst = true;
 		bool isBad = false;
 		bool valSet = false;
 		long val = 0;
 		unsigned int i = 0;
-		int numUnkowns = 0;
 		ir_printf("processing %F (%d) at %p with %d predecessors and tarval %F\n", (ir_node*)node, get_irn_node_nr(node), (ir_node*)node, predCount, prevTarval);
 
-		do
+		while (i < predCount && !isBad)
 		{
 			Node pred = node.getChild(i);
 
 			ir_printf("tarval of pred %F (%d)", pred, get_irn_node_nr(pred));
 
-			// we now know, that the node is not const and
-			// therefore, operate on tarvals from the map
 			Tarval curTarval = pred.getTarval();
-			// to compare on previous tarval later on, set
-			isConst = false;
 
-			if (curTarval == tarval_unknown)
+			if (curTarval.isNumeric())
 			{
-				ir_printf(" is unknown\n");
-				++numUnkowns;
-				// just count the number of unknown values
-			}
-			else if (curTarval == tarval_bad)
-			{
-				ir_printf(" is bad\n");
-				// if any input is bad, were bad aswell
-				// no need to set isConst = false;
-				isBad = true;
-			}
-			else if (curTarval.isModeIs())
-			{
-				// were not bad, were not unknown and were integer
-				// compare the tarval with the current const val candidate
 				auto cur = curTarval.getLong();
 
 				if (valSet)
@@ -73,12 +52,11 @@ namespace firm
 			}
 			else
 			{
-				// not unknown, not bad, not Is, so nothing we currently handle
+				// not unknown, not bad, not Numeric, so nothing we currently handle
 			}
 
 			++i;
 		}
-		while (i < predCount && !isBad);
 
 		ir_printf("%F:\t", node);
 
@@ -89,7 +67,6 @@ namespace firm
 		}
 		else if (valSet)
 		{
-			// get_tarval_mode(prevTarval) == mode_Is && get_tarval_long(prevTarval) != val
 			// we do have a change in the tarval of the current node, so update this accordingly
 			Tarval newTarval(val);
 			node.setTarval(newTarval);
@@ -293,17 +270,20 @@ namespace firm
 
 	void ConstantFolder::handle(Node node)
 	{
+		// we might have to add nodes to the queue again, therefore clear the container for them.
 		newNodes->clear();
 
+		// nodes without predecessors such as const or start nodes shouldn't need any treatment at all
 		if (node.getChildCount() == 0)
 			return;
 
+		// preserve old Tarval for comparison later on
 		Tarval oldTarval = node.getTarval();
 
 		bool isBad = false;
 		unsigned int numUnkowns = 0;
 
-
+		// iterate over the predecessors of the node and prolong bad or unknown tarvals
 		for (Node child : node.getChildren())
 		{
 			if (child.getTarval().isBad())
@@ -321,7 +301,8 @@ namespace firm
 			node.setTarval(UnknownTarval());
 		else
 		{
-			if (is_Phi(node) && node.getMode() == mode_Is)
+			// we now know that, depending on the node, we might be able to optimize something
+			if (is_Phi(node) && node.getMode() == mode_Is) // TODO: not only mode_Is
 				optimizePhi(node);
 			else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
 				updateTarvalForArithmeticNode(node);
@@ -333,11 +314,14 @@ namespace firm
 				handleConv(node);
 		}
 
-		if (node.getTarval() != oldTarval)
-			markOutNodesAsNew(node);
-
+		// TODO: fix this ->
 		//else if (is_Cmp(node))
 		//	handleCmp(node);
+
+		// compare the preserved tarval from before the iteration
+		// and the newly set tarval; if they differ: add successors to the queue again.
+		if (node.getTarval() != oldTarval)
+			markOutNodesAsNew(node);
 	}
 
 	void ConstantFolder::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
