@@ -9,14 +9,14 @@ namespace firm
 
 	}
 
-	void CommonSubexpressionEliminator::handle(ir_node* node)
+	void CommonSubexpressionEliminator::handle(Node node)
 	{
 		newNodes->clear();
 
 		bool changed = false;
 
 		if (is_Const(node))
-			changed = handleConst(Node(node));
+			changed = handleConst(node);
 
 		if (changed)
 			markOutNodesAsNew(node);
@@ -24,7 +24,7 @@ namespace firm
 
 	bool CommonSubexpressionEliminator::handleConst(Node node)
 	{
-		std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
+		//std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
 
 		if (node.getMode() != mode_Is)
 			return false;
