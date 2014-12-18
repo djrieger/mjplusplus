@@ -283,47 +283,46 @@ namespace firm
 			set_Cmp_relation(node, get_Cmp_relation(node) & ir_relation_equal ? ir_relation_true : ir_relation_false);
 	}
 
-	void ConstantFolder::handleConv(ir_node* node)
+	void ConstantFolder::handleConv(Node node)
 	{
 		// Rewrote this line using Node/Tarval wrappers:
 		// set_irn_link(node, (void*)new_tarval_from_long(get_tarval_long((ir_tarval*)get_irn_link(get_irn_n(node, 0))), get_irn_mode(node)));
-		Node _node(node); 
-		Tarval newTarval(_node.getChild(0).getTarval().getLong(), _node.getMode());
-		_node.setTarval(newTarval);
+		Tarval newTarval(node.getChild(0).getTarval().getLong(), node.getMode());
+		node.setTarval(newTarval);
 	}
 
-	void ConstantFolder::handle(ir_node* node)
+	void ConstantFolder::handle(Node node)
 	{
 		newNodes->clear();
 
-		if (Node(node).getChildCount() == 0)
+		if (node.getChildCount() == 0)
 			return;
 
-		Tarval oldTarval = Node(node).getTarval();
+		Tarval oldTarval = node.getTarval();
 
 		bool isBad = false;
 		unsigned int numUnkowns = 0;
 
 
-		for (Node child : Node(node).getChildren())
+		for (Node child : node.getChildren())
 		{
-			if (child.getTarval() == tarval_bad)
+			if (child.getTarval().isBad())
 			{
 				isBad = true;
 				break;
 			}
-			else if (child.getTarval() == tarval_unknown)
+			else if (child.getTarval().isUnknown())
 				numUnkowns++;
 		}
 
 		if (isBad)
-			set_irn_link(node, (void*)tarval_bad);
+			node.setTarval(BadTarval());
 		else if (numUnkowns == Node(node).getChildCount())
-			set_irn_link(node, (void*)tarval_unknown);
+			node.setTarval(UnknownTarval());
 		else
 		{
-			if (is_Phi(node) && get_irn_mode(node) == mode_Is)
-				optimizePhi(firm::Node(node));
+			if (is_Phi(node) && node.getMode() == mode_Is)
+				optimizePhi(node);
 			else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
 				updateTarvalForArithmeticNode(node);
 			else if (is_Div(node) || is_Mod(node))
@@ -334,7 +333,7 @@ namespace firm
 				handleConv(node);
 		}
 
-		if (Node(node).getTarval() != oldTarval)
+		if (node.getTarval() != oldTarval)
 			markOutNodesAsNew(node);
 
 		//else if (is_Cmp(node))

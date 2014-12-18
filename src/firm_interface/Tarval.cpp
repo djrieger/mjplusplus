@@ -4,7 +4,7 @@ namespace firm
 {
 	Tarval::Tarval(ir_tarval* tarval): tarval(tarval) {}
 
-	Tarval::Tarval(long value): tarval(new_tarval_from_long(value, mode_Is)) {}
+	Tarval::Tarval(long value, ir_mode* mode): tarval(new_tarval_from_long(value, mode)) {}
 
 	BadTarval::BadTarval(): Tarval(tarval_bad)
 	{
@@ -29,6 +29,16 @@ namespace firm
 	bool Tarval::isNumeric() const
 	{
 		return isModeLu() || isModeIs();
+	}
+
+	bool Tarval::isBad() const
+	{
+		return tarval == tarval_bad;
+	}
+
+	bool Tarval::isUnknown() const
+	{
+		return tarval == tarval_unknown;
 	}
 
 	long Tarval::getLong() const
