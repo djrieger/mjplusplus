@@ -11,13 +11,13 @@ namespace firm
 	void ConstantFolder::optimizePhi(Node node)
 	{
 		std::cout << "---------------------------" << std::endl;
-		Tarval prevTarval = node.getTarval();
 		unsigned int predCount = node.getChildCount();
 		bool isBad = false;
 		bool valSet = false;
 		long val = 0;
 		unsigned int i = 0;
-		ir_printf("processing %F (%d) at %p with %d predecessors and tarval %F\n", (ir_node*)node, get_irn_node_nr(node), (ir_node*)node, predCount, prevTarval);
+		auto nodeMode = node.getMode();
+		ir_printf("processing %F (%d) at %p with %d predecessors and tarval %F\n", (ir_node*)node, get_irn_node_nr(node), (ir_node*)node, predCount, node.getTarval());
 
 		while (i < predCount && !isBad)
 		{
@@ -27,7 +27,7 @@ namespace firm
 
 			Tarval curTarval = pred.getTarval();
 
-			if (curTarval.isNumeric())
+			if (nodeMode == curTarval.getMode())
 			{
 				auto cur = curTarval.getLong();
 
@@ -52,7 +52,7 @@ namespace firm
 			}
 			else
 			{
-				// not unknown, not bad, not Numeric, so nothing we currently handle
+				// mode of current predecessor does not match the mode of the node
 			}
 
 			++i;
@@ -68,7 +68,7 @@ namespace firm
 		else if (valSet)
 		{
 			// we do have a change in the tarval of the current node, so update this accordingly
-			Tarval newTarval(val);
+			Tarval newTarval(val, nodeMode);
 			node.setTarval(newTarval);
 			std::cout << "tarval has been updated" << std::endl;
 		}
