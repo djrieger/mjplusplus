@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "../globals.hpp"
 #include "ConstantFolder.hpp"
+#include "CommonSubexpressionEliminator.hpp"
 #include "Node.hpp"
 
 namespace firm
@@ -17,12 +18,12 @@ namespace firm
 		private:
 			ir_graph* functionGraph;
 			std::queue<ir_node*> worklist;
-			ConstantFolder& handler;
+			GraphOptimizer& handler;
 			std::unordered_map<ir_node*, bool> isQueued;
 
 			void cleanUp();
 		public:
-			Worklist(ir_graph* functionGraph, ConstantFolder& handler);
+			Worklist(ir_graph* functionGraph, GraphOptimizer& handler);
 			void run();
 	};
 }

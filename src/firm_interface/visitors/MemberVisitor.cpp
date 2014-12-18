@@ -26,6 +26,16 @@ namespace firm
 
 		}
 
+		void MemberVisitor::eliminateCommonSubexpressions(ir_graph* irg)
+		{
+			CommonSubexpressionEliminator commonSubexpressionEliminator(irg);
+			firm::Worklist worklist(irg, commonSubexpressionEliminator);
+
+			edges_activate(irg);
+			worklist.run();
+			edges_deactivate(irg);
+		}
+
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 		{
 			// set method start block as current block
@@ -69,6 +79,7 @@ namespace firm
 			// optimize Firm graph
 			dump_ir_graph(irg, "orig");
 			foldConstants(irg);
+			eliminateCommonSubexpressions(irg);
 			dump_ir_graph(irg, "it1");
 			std::cout << "_________________________________________________" << std::endl;
 			std::cout << "_________________________________________________" << std::endl;
