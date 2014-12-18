@@ -308,131 +308,140 @@ namespace firm
 			else if (is_Div(node) || is_Mod(node))
 				handleDivAndMod(node);
 			else if (is_Proj(node))
-				handleProj(node);
-			else if (is_Conv(node))
-				handleConv(node);
-		}
+				auto child_node = node.getChild(0);
 
-		// TODO: fix this ->
-		//else if (is_Cmp(node) && node.isNumericOrBool())
-		//	handleCmp(node);
-
-		// compare the preserved tarval from before the iteration
-		// and the newly set tarval; if they differ: add successors to the queue again.
-		if (node.getTarval() != oldTarval)
-			markOutNodesAsNew(node);
-	}
-
-	void ConstantFolder::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
-	{
-		Node child1 = node.getChild(0);
-
-		if (node.getChildCount() == 1 && node.getTarval().isModeIs())
-			fun(child1, NULL);
-		else
-		{
-			Node child2 = node.getChild(1);
-			fun(child1, child2);
-		}
-	}
-
-	bool ConstantFolder::tarvalIsZero(Tarval tarval)
-	{
-		return tarval && tarval.isNumeric() && tarval.getLong() == 0;
-	}
-
-	void ConstantFolder::replaceAdd(Node node)
-	{
-		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-		{
-			if (tarvalIsZero(leftChild.getTarval()))
-				node.replaceWith(rightChild);
-			else if (tarvalIsZero(rightChild.getTarval()))
-				node.replaceWith(leftChild);
-
-		});
-	}
-
-	void ConstantFolder::replaceSub(Node node)
-	{
-		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-		{
-			if (tarvalIsZero(leftChild.getTarval()))
-				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
-			else if (tarvalIsZero(rightChild.getTarval()))
-				node.replaceWith(leftChild);
-		});
-	}
-
-	void ConstantFolder::replaceMinus(Node node)
-	{
-		if (is_Minus(node.getChild(0)))
-			node.replaceWith(node.getChild(0).getChild(0));
-	}
-
-	void ConstantFolder::replaceMul(Node node)
-	{
-		processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-		{
-			auto handleCases = [&] (Node leftChild, Node rightChild) -> void
+			if (!is_Start(child_node))
 			{
-				if (leftChild.getTarval() && leftChild.getTarval().isNumeric())
+				//ir_printf("Trying to get tarval of Proj node %F (%d) child %F, tarval %F\n", node, get_irn_node_nr(node), child_node, get_irn_link(child_node));
+				node.setTarval(child_node.getTarval());
+				//ir_printf("Proj node tarval after setting: %F\n", get_irn_link(node));*/
+				else if (is_Conv(node))
 				{
-					switch (leftChild.getTarval().getLong())
-					{
-						case 0:
-							node.replaceWith(new_r_Const_long(irg, get_irn_mode(node), 0));
-							break;
-
-						case 1:
-							node.replaceWith(rightChild);
-							break;
-
-						case -1:
-							node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
-					}
+					Tarval newTarval(node.getChild(0).getTarval().getLong(), node.getMode());
+					node.setTarval(newTarval);
 				}
-			};
-			handleCases(leftChild, rightChild);
-			handleCases(rightChild, leftChild);
-		});
-	}
+			}
 
-	void ConstantFolder::replaceConv(Node node)
-	{
-		Node child = node.getChild(0);
+			// TODO: fix this ->
+			//else if (is_Cmp(node) && node.isNumericOrBool())
+			//	handleCmp(node);
 
-		if (is_Conv(child) && node.getMode() == child.getMode())
-			node.replaceWith(child);
-		else if (is_Const(child))
-			node.replaceWith(new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
-	}
-
-	bool ConstantFolder::replaceGeneric(Node node)
-	{
-		if (node.getTarval().isNumeric())
-		{
-			ir_node* constNode = new_r_Const_long(irg, get_irn_mode(node), node.getTarval().getLong());
-			node.replaceWith(constNode, true);
-			return true;
+			// compare the preserved tarval from before the iteration
+			// and the newly set tarval; if they differ: add successors to the queue again.
+			if (node.getTarval() != oldTarval)
+				markOutNodesAsNew(node);
 		}
 
-		return false;
-	}
-
-	void ConstantFolder::cleanUp(Node node)
-	{
-		if (!replaceGeneric(node))
+		void ConstantFolder::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
 		{
-			if (is_Add(node)) replaceAdd(node);
-			else if (is_Mul(node)) replaceMul(node);
-			else if (is_Sub(node)) replaceSub(node);
-			else if (is_Minus(node)) replaceMinus(node);
-			else if (is_Conv(node)) replaceConv(node);
+			Node child1 = node.getChild(0);
+
+			if (node.getChildCount() == 1 && node.getTarval().isModeIs())
+				fun(child1, NULL);
+			else
+			{
+				Node child2 = node.getChild(1);
+				fun(child1, child2);
+			}
 		}
 
-		// Todo: optimize booleans
-		// Todo: optimize stuff like a + 0 not only for a's tarval (already implemented)
-		// but also for a's value.
+		bool ConstantFolder::tarvalIsZero(Tarval tarval)
+		{
+			return tarval && tarval.isNumeric() && tarval.getLong() == 0;
+		}
+
+		void ConstantFolder::replaceAdd(Node node)
+		{
+			processChildren(node, [&] (Node leftChild, Node rightChild) -> void
+			{
+				if (tarvalIsZero(leftChild.getTarval()))
+					node.replaceWith(rightChild);
+				else if (tarvalIsZero(rightChild.getTarval()))
+					node.replaceWith(leftChild);
+
+			});
+		}
+
+		void ConstantFolder::replaceSub(Node node)
+		{
+			processChildren(node, [&] (Node leftChild, Node rightChild) -> void
+			{
+				if (tarvalIsZero(leftChild.getTarval()))
+					node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+				else if (tarvalIsZero(rightChild.getTarval()))
+					node.replaceWith(leftChild);
+			});
+		}
+
+		void ConstantFolder::replaceMinus(Node node)
+		{
+			if (is_Minus(node.getChild(0)))
+				node.replaceWith(node.getChild(0).getChild(0));
+		}
+
+		void ConstantFolder::replaceMul(Node node)
+		{
+			processChildren(node, [&] (Node leftChild, Node rightChild) -> void
+			{
+				auto handleCases = [&] (Node leftChild, Node rightChild) -> void
+				{
+					if (leftChild.getTarval() && leftChild.getTarval().isNumeric())
+					{
+						switch (leftChild.getTarval().getLong())
+						{
+							case 0:
+								node.replaceWith(new_r_Const_long(irg, get_irn_mode(node), 0));
+								break;
+
+							case 1:
+								node.replaceWith(rightChild);
+								break;
+
+							case -1:
+								node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
+						}
+					}
+				};
+				handleCases(leftChild, rightChild);
+				handleCases(rightChild, leftChild);
+			});
+		}
+
+		void ConstantFolder::replaceConv(Node node)
+		{
+			Node child = node.getChild(0);
+
+			if (is_Conv(child) && node.getMode() == child.getMode())
+				node.replaceWith(child);
+			else if (is_Const(child))
+				node.replaceWith(new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
+		}
+
+		bool ConstantFolder::replaceGeneric(Node node)
+		{
+			if (node.getTarval().isNumeric())
+			{
+				ir_node* constNode = new_r_Const_long(irg, get_irn_mode(node), node.getTarval().getLong());
+				node.replaceWith(constNode, true);
+				return true;
+			}
+
+			return false;
+		}
+
+		void ConstantFolder::cleanUp(Node node)
+		{
+			if (!replaceGeneric(node))
+			{
+				if (is_Add(node)) replaceAdd(node);
+				else if (is_Mul(node)) replaceMul(node);
+				else if (is_Sub(node)) replaceSub(node);
+				else if (is_Minus(node)) replaceMinus(node);
+				else if (is_Conv(node)) replaceConv(node);
+			}
+
+			// Todo: optimize booleans
+			// Todo: optimize stuff like a + 0 not only for a's tarval (already implemented)
+			// but also for a's value.
+		}
 	}
-}
