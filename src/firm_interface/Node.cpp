@@ -77,6 +77,11 @@ namespace firm
 	{
 		return get_irn_node_nr(node);
 	}
+
+	unsigned Node::getOpcode() const
+	{
+		return get_irn_opcode(node);
+	}
 }
 
 

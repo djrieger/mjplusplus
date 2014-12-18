@@ -18,6 +18,26 @@ namespace firm
 			{
 				return node;
 			}
+			operator bool ()
+			{
+				return node != NULL;
+			}
+			bool operator==(Node const& otherNode) const
+			{
+				return node == otherNode.node;
+			}
+			bool operator==(ir_node* otherNode) const
+			{
+				return node == otherNode;
+			}
+			bool operator!=(Node const& otherNode) const
+			{
+				return !operator==(otherNode);
+			}
+			bool operator!=(ir_node* otherNode) const
+			{
+				return !operator==(otherNode);
+			}
 			Tarval getTarval() const;
 			void setTarval(Tarval tarval);
 			void setTarvalToBad();
@@ -30,6 +50,7 @@ namespace firm
 			void replaceWith(ir_node* node, bool copyTarval = false);
 			ir_mode* getMode() const;
 			long getNodeNumber() const;
+			unsigned getOpcode() const;
 	};
 }
 

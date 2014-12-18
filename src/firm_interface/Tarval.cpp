@@ -6,6 +6,8 @@ namespace firm
 
 	Tarval::Tarval(long value, ir_mode* mode): tarval(new_tarval_from_long(value, mode)) {}
 
+	Tarval::Tarval(): tarval(NULL) {}
+
 	BadTarval::BadTarval(): Tarval(tarval_bad)
 	{
 
@@ -51,4 +53,8 @@ namespace firm
 		this->tarval = tarval;
 	}
 
+	bool Tarval::isNumWithVal(long val) const
+	{
+		return isNumeric() && getLong() == val;
+	}
 }
