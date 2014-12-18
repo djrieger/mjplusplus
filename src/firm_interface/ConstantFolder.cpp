@@ -301,7 +301,7 @@ namespace firm
 		else
 		{
 			// we now know that, depending on the node, we might be able to optimize something
-			if (is_Phi(node) && node.getMode() == mode_Is) // TODO: not only mode_Is
+			if (is_Phi(node) && node.isNumericOrBool())
 				optimizePhi(node);
 			else if (is_Minus(node) || is_Add(node) || is_Sub(node) || is_Mul(node))
 				updateTarvalForArithmeticNode(node);
@@ -314,7 +314,7 @@ namespace firm
 		}
 
 		// TODO: fix this ->
-		//else if (is_Cmp(node))
+		//else if (is_Cmp(node) && node.isNumericOrBool())
 		//	handleCmp(node);
 
 		// compare the preserved tarval from before the iteration
