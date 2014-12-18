@@ -14,6 +14,8 @@
 #include "visitors/MemberVisitor.hpp"
 #include "visitors/ExpressionVisitor.hpp"
 
+#include "CodeGen.hpp"
+
 namespace firm
 {
 	FirmInterface::FirmInterface()
@@ -62,7 +64,8 @@ namespace firm
 
 		try
 		{
-			be_main(o, in_name.c_str());
+			//be_main(o, in_name.c_str());
+			CodeGen::assemble(o);
 		}
 		catch (...)
 		{
@@ -185,14 +188,13 @@ namespace firm
 		set_store(new_store);
 
 		// get the result
-		ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
-
 		bool hasReturnType = !methodDeclaration->getReturnType()->isVoid();
 
 		if (hasReturnType)
 		{
 			ir_type* resultType = getType(methodDeclaration->getReturnType());
 			ir_mode* result_mode = getMode(methodDeclaration->getReturnType());
+			ir_node* tuple = new_Proj(call_node, get_modeT(), pn_Call_T_result);
 			ir_node* resultNode = new_Proj(tuple, result_mode, 0);
 			return std::tuple<ir_node*, ir_type*>(resultNode, resultType);
 		}
