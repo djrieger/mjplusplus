@@ -76,7 +76,7 @@ namespace firm
 	bool Node::isNumericOrBool() const
 	{
 		auto mode = get_irn_mode(node);
-		return mode == mode_Is || mode = mode_Bu || mode == mode_Lu;
+		return mode == mode_Is || mode == mode_Bu || mode == mode_Lu;
 	}
 
 	long Node::getNodeNumber() const
