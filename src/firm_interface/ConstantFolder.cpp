@@ -153,11 +153,11 @@ namespace firm
 
 		if (is_Const(dividend) && is_Const(divisor))
 		{
-			long divisorValue = get_tarval_long(computed_value(divisor));
+			long divisorValue = get_tarval_long((ir_tarval*)get_irn_link((divisor));
 
 			if (divisorValue != 0)
 			{
-				long dividendValue = get_tarval_long(computed_value(dividend));
+				long dividendValue = get_tarval_long((ir_tarval*)get_irn_link((dividend));
 				ir_node* replacement = new_r_Const_long(irg, mode_Is, is_Div(node) ? dividendValue / divisorValue : dividendValue % divisorValue);
 				updateTarvalAndExchangeMemory(node, replacement);
 			}
@@ -166,8 +166,7 @@ namespace firm
 		}
 		else if (is_Const(dividend))
 		{
-			long value = get_tarval_long(computed_value(dividend));
-
+			long value = get_tarval_long((ir_tarval*)get_irn_link((dividend));
 			if (value == 0)
 				updateTarvalAndExchangeMemory(node, new_r_Const_long(irg, mode_Is, 0));
 			else if (value == 1 && is_Div(node))
@@ -175,7 +174,7 @@ namespace firm
 		}
 		else if (is_Const(divisor))
 		{
-			long value = get_tarval_long(computed_value(divisor));
+			long value = get_tarval_long((ir_tarval*)get_irn_link((divisor));
 
 			if (value == -1)
 				updateTarvalAndExchangeMemory(node, is_Div(node) ? new_r_Minus(get_nodes_block(node), dividend, mode_Is) : new_r_Const_long(irg, mode_Is, 0));
@@ -233,8 +232,8 @@ namespace firm
 		if (is_Const(left) && is_Const(right))
 		{
 
-			long left_value = get_tarval_long(computed_value(left));
-			long right_value = get_tarval_long(computed_value(right));
+			long left_value = get_tarval_long(get_Const_tarval(left));
+			long right_value = get_tarval_long(get_Const_tarval(right));
 
 #define SET_RELATION(A, B) \
 				case ir_relation::ir_relation_ ## A : \
