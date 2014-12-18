@@ -24,7 +24,7 @@ namespace firm
 			void handleDivAndMod(ir_node* node);
 			void handleProj(ir_node* node);
 			void handleCmp(ir_node* node);
-			void handleConv(ir_node* node);
+			void handleConv(Node node);
 
 			bool tarvalIsZero(Tarval tarval);
 			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
@@ -35,7 +35,7 @@ namespace firm
 			void replaceMinus(Node node);
 			void replaceConv(Node node);
 		public:
-			virtual void handle(ir_node*);
+			virtual void handle(Node);
 			virtual void cleanUp(Node node);
 			ConstantFolder(ir_graph* irg);
 	};
