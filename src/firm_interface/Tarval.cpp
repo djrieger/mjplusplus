@@ -50,6 +50,11 @@ namespace firm
 		return tarval == tarval_unknown;
 	}
 
+	bool Tarval::isNumericOrBool() const
+	{
+		return isNumeric() || isModeBu();
+	}
+
 	long Tarval::getLong() const
 	{
 		return get_tarval_long(tarval);

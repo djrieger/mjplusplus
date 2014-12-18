@@ -29,6 +29,7 @@ namespace firm
 			vec<Node> getChildren() const;
 			void replaceWith(ir_node* node, bool copyTarval = false);
 			ir_mode* getMode() const;
+			bool isNumericOrBool() const;
 			long getNodeNumber() const;
 	};
 }
