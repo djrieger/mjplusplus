@@ -406,9 +406,9 @@ namespace firm
 
 	bool ConstantFolder::replaceGeneric(Node node)
 	{
-		if (node.getTarval().isNumeric())
+		if (node.getTarval().isNumericOrBool())
 		{
-			ir_node* constNode = new_r_Const_long(irg, get_irn_mode(node), node.getTarval().getLong());
+			ir_node* constNode = new_r_Const_long(irg, node.getMode(), node.getTarval().getLong());
 			node.replaceWith(constNode, true);
 			return true;
 		}
