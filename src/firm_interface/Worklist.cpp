@@ -91,7 +91,7 @@ namespace firm
 		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
-	void Worklist::run()
+	bool Worklist::run()
 	{
 		while (!worklist.empty())
 		{
@@ -122,6 +122,7 @@ namespace firm
 		}
 
 		cleanUp();
+		return handler.graphChanged();
 	}
 
 	void Worklist::cleanUp()

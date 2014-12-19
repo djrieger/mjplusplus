@@ -13,6 +13,8 @@ class a {
 		System.out.println(c);
 		c = 0 / x; /* @old "0 / x" @opt "0" */
 		System.out.println(c);
+		c = 0 % x; /* @old "0 % x" @opt "0" */
+		System.out.println(c);
 		c = b % 1; /* @old "b % 1" @opt "0" */
 		System.out.println(c);
 		c = b % (-1); /* @old "b % (-1)" @opt "0" */

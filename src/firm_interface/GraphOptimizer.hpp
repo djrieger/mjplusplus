@@ -22,6 +22,7 @@ namespace firm
 			GraphOptimizer(ir_graph* irg);
 			virtual void handle(Node) = 0;
 			virtual void cleanUp(Node node) = 0;
+			virtual bool graphChanged();
 			shptr<std::set<ir_node*>> getNewNodes() const;
 	};
 }

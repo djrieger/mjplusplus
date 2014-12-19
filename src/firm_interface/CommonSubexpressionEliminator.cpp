@@ -1,6 +1,7 @@
 #include "CommonSubexpressionEliminator.hpp"
 #include "FirmInterface.hpp"
 #include <iostream>
+#include <algorithm>
 
 namespace firm
 {
@@ -11,50 +12,69 @@ namespace firm
 
 	void CommonSubexpressionEliminator::handle(Node node)
 	{
-		newNodes->clear();
-
-		bool changed = false;
+		set_irn_link(node, NULL);
 
 		if (is_Const(node))
-			changed = handleConst(node);
-
-		if (changed)
-			markOutNodesAsNew(node);
+			handleConst(node);
+		else if (node.getMode() == mode_Is &&
+		         (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Minus(node)))
+			handleArithmetic(node);
 	}
 
-	bool CommonSubexpressionEliminator::handleConst(Node node)
+	void CommonSubexpressionEliminator::handleConst(Node node)
 	{
 		//std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
 
 		if (node.getMode() != mode_Is)
-			return false;
+			return;
 
-		long int n = node.getTarval().getLong();
+		long int n = get_tarval_long(get_Const_tarval(node));
 		auto constIt = const_nodes.find(n);
 		bool change = constIt != const_nodes.end();
+		//std::cout << "constant " << n << " bool " << change << std::endl;
 
 		if (change)
-			node.replaceWith(constIt->second);
+			set_irn_link(node, (void*) &constIt->second);
 		else
 			const_nodes.emplace(n, node);
+	}
 
-		return change;
+	void CommonSubexpressionEliminator::handleArithmetic(Node node)
+	{
+		std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
+
+		unsigned op = get_irn_opcode(node);
+		vec<Node> childrenNodes = node.getChildren();
+		vec<unsigned> children;
+
+		for (auto c : childrenNodes)
+			children.push_back(get_irn_node_nr(c));
+
+		std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<< " << get_irn_node_nr(get_irn_n(node, -1)) << std::endl;
+		std::tuple<unsigned, unsigned, vec<unsigned>> elem {op, get_irn_node_nr(get_irn_n(node, -1)), children};
+		std::cout << op << " and first child " << children[0] << std::endl;
+		auto nodeIt = comp_nodes.find(elem);
+
+		if (nodeIt != comp_nodes.end())
+			set_irn_link(node, (void*) &nodeIt->second);
+		else
+			comp_nodes.emplace(elem, node);
+	}
+
+	bool CommonSubexpressionEliminator::graphChanged()
+	{
+		return changed;
 	}
 
 	void CommonSubexpressionEliminator::cleanUp(Node node)
 	{
-		/*if (!replaceGeneric(node))
-		{
-			if (is_Add(node)) replaceAdd(node);
-			else if (is_Mul(node)) replaceMul(node);
-			else if (is_Sub(node)) replaceSub(node);
-			else if (is_Minus(node)) replaceMinus(node);
-			else if (is_Conv(node)) replaceConv(node);
-		}
+		Node* replacement = (Node*) get_irn_link(node);
 
-		// Todo: optimize booleans
-		// Todo: optimize stuff like a + 0 not only for a's tarval (already implemented)
-		// but also for a's value.
-		*/
+		if (replacement != NULL)
+		{
+			std::cout << "Replacing " << node.getNodeNumber() << " with " << replacement->getNodeNumber() << std::endl;
+			node.replaceWith(*replacement);
+			changed = true;
+		}
 	}
 }
