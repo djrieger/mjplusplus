@@ -9,6 +9,8 @@ class a {
 		int c;
 		c = b - b; /* @old "b - b" @opt "0" */
 		System.out.println(c);
+		c = b / b; /* @old "b / b" @opt "1" */
+                System.out.println(c);
 		c = b * 0; /* @old "b * 0" @opt "0" */
 		System.out.println(c);
 		c = 0 / x; /* @old "0 / x" @opt "0" */
