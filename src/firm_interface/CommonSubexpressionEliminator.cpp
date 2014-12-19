@@ -41,7 +41,7 @@ namespace firm
 
 	void CommonSubexpressionEliminator::handleArithmetic(Node node)
 	{
-		std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
+		//std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
 
 		unsigned op = get_irn_opcode(node);
 		vec<Node> childrenNodes = node.getChildren();
@@ -50,9 +50,9 @@ namespace firm
 		for (auto c : childrenNodes)
 			children.push_back(get_irn_node_nr(c));
 
-		std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<< " << get_irn_node_nr(get_irn_n(node, -1)) << std::endl;
+		//std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<< " << get_irn_node_nr(get_irn_n(node, -1)) << std::endl;
 		std::tuple<unsigned, unsigned, vec<unsigned>> elem {op, get_irn_node_nr(get_irn_n(node, -1)), children};
-		std::cout << op << " and first child " << children[0] << std::endl;
+		//std::cout << op << " and first child " << children[0] << std::endl;
 		auto nodeIt = comp_nodes.find(elem);
 
 		if (nodeIt != comp_nodes.end())
