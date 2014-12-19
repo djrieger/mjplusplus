@@ -16,8 +16,8 @@ namespace firm
 
 		if (is_Const(node))
 			handleConst(node);
-		else if (node.getMode() == mode_Is &&
-		         (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Minus(node)))
+		else if (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Minus(node)
+		         || (is_Conv(node) && node.getMode() == mode_Lu))
 			handleArithmetic(node);
 	}
 
@@ -25,18 +25,31 @@ namespace firm
 	{
 		//std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
 
-		if (node.getMode() != mode_Is)
-			return;
+		if (node.getMode() == mode_Is)
+		{
+			long int n = get_tarval_long(get_Const_tarval(node));
+			auto constIt = const_Is_nodes.find(n);
+			bool change = constIt != const_Is_nodes.end();
+			//std::cout << "constant " << n << " bool " << change << std::endl;
 
-		long int n = get_tarval_long(get_Const_tarval(node));
-		auto constIt = const_nodes.find(n);
-		bool change = constIt != const_nodes.end();
-		//std::cout << "constant " << n << " bool " << change << std::endl;
+			if (change)
+				set_irn_link(node, (void*) &constIt->second);
+			else
+				const_Is_nodes.emplace(n, node);
+		}
+		else if (node.getMode() == mode_Lu)
+		{
+			uint64_t n = get_tarval_long(get_Const_tarval(node));
+			auto constIt = const_Lu_nodes.find(n);
+			bool change = constIt != const_Lu_nodes.end();
+			//std::cout << "constant " << n << " bool " << change << std::endl;
 
-		if (change)
-			set_irn_link(node, (void*) &constIt->second);
-		else
-			const_nodes.emplace(n, node);
+			if (change)
+				set_irn_link(node, (void*) &constIt->second);
+			else
+				const_Lu_nodes.emplace(n, node);
+		}
+
 	}
 
 	void CommonSubexpressionEliminator::handleArithmetic(Node node)

@@ -37,7 +37,8 @@ namespace firm
 	{
 
 		protected:
-			std::unordered_map<long int, Node> const_nodes;
+			std::unordered_map<long int, Node> const_Is_nodes;
+			std::unordered_map<uint64_t, Node> const_Lu_nodes;
 			std::unordered_map<std::tuple<unsigned, unsigned, vec<unsigned>>, Node> comp_nodes;
 			void handleConst(Node node);
 			void handleArithmetic(Node node);
