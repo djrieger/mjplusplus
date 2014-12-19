@@ -79,15 +79,15 @@ namespace firm
 			// optimize Firm graph
 			dump_ir_graph(irg, "orig");
 			foldConstants(irg);
-			eliminateCommonSubexpressions(irg);
-			dump_ir_graph(irg, "it1");
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			foldConstants(irg);
+			//eliminateCommonSubexpressions(irg);
+			//dump_ir_graph(irg, "it1");
+			// std::cout << "_________________________________________________" << std::endl;
+			// std::cout << "_________________________________________________" << std::endl;
+			// std::cout << "_________________________________________________" << std::endl;
+			// std::cout << "_________________________________________________" << std::endl;
+			// std::cout << "_________________________________________________" << std::endl;
+			// std::cout << "_________________________________________________" << std::endl;
+			//foldConstants(irg);
 			dump_ir_graph(irg, "final");
 
 
