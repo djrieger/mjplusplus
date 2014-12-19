@@ -42,8 +42,9 @@ namespace firm
 			void setTarval(Tarval tarval);
 			void setTarvalToBad();
 			void setTarvalToUnknown();
-			shptr<vec<std::pair<Node, unsigned int>>> getOuts() const;
+			vec<std::pair<Node, unsigned int>> getOuts() const;
 			Node getChild(unsigned int i) const;
+			void setChild(unsigned int i, Node child);
 			unsigned int getChildCount() const;
 			bool hasChildren() const;
 			vec<Node> getChildren() const;
