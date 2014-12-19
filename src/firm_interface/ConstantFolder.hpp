@@ -15,7 +15,7 @@ namespace firm
 	{
 		protected:
 			void optimizePhi(Node node);
-			void updateTarvalForArithmeticNode(Node node);
+			bool updateTarvalForArithmeticNode(Node node);
 			void updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode);
 
 			void handlePhi(ir_node* node);
