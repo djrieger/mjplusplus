@@ -16,7 +16,6 @@ namespace firm
 		protected:
 			void optimizePhi(Node node);
 			bool updateTarvalForArithmeticNode(Node node);
-			void updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode);
 
 			void handlePhi(ir_node* node);
 			void handleMinus(ir_node* node);
@@ -26,6 +25,7 @@ namespace firm
 
 			bool tarvalIsZero(Tarval tarval);
 			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
+			void replaceDivMod(Node node);
 			bool replaceGeneric(Node node);
 			void replaceAdd(Node node);
 			void replaceSub(Node node);

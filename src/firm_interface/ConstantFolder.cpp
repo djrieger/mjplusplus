@@ -111,28 +111,30 @@ namespace firm
 
 			case iro_Div:
 			case iro_Mod:
+				{
 				// div and mod have divisor/dividend as child 1 and 2, child 0 is memory projection
-				tvLeft = node.getChild(1).getTarval();
-				tvRight = node.getChild(2).getTarval();
+				Tarval dividend = node.getChild(1).getTarval();
+				Tarval divisor = node.getChild(2).getTarval();
 
-				if (tvRight.isNumWithVal(0) // x / 0, x % 0 => undefined behavior, set to zero
-				        || tvLeft.isNumWithVal(0) // 0 / x, 0 % x = 0
-				        || (is_Mod(node) && (tvRight.isNumWithVal(1) || tvRight.isNumWithVal(-1)))) // x % 1 or -1 = 0
-					resultVal = Tarval(0, tvLeft.isNumeric() ? tvLeft.getMode() : tvRight.getMode());
+				if (divisor.isNumWithVal(0) // x / 0, x % 0 => undefined behavior, set to zero
+				        || dividend.isNumWithVal(0) // 0 / x, 0 % x = 0
+				        || (is_Mod(node) && (divisor.isNumWithVal(1) || divisor.isNumWithVal(-1)))) // x % 1 or -1 = 0
+					resultVal = Tarval(0, dividend.isNumeric() ? dividend.getMode() : divisor.getMode());
 				// x / y, x % y
-				else if (tvLeft.isNumeric() && tvRight.isNumeric())
+				else if (dividend.isNumeric() && divisor.isNumeric())
 				{
 					if (is_Div(node))
-						resultVal = tarval_div(tvLeft, tvRight);
+						resultVal = tarval_div(dividend, divisor);
 					else
 					{
 						ir_tarval* remainder;
-						tarval_divmod(tvLeft, tvRight, &remainder);
+						tarval_divmod(dividend, divisor, &remainder);
 						resultVal = Tarval(remainder);
 					}
 				}
 
 				break;
+			}
 
 			default:
 				throw "updateTarvalForArithmeticNode called on illegal node";
@@ -145,28 +147,6 @@ namespace firm
 		}
 		else
 			return false;
-	}
-
-	void ConstantFolder::updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode)
-	{
-		/* TODO: Only tested for Div and Mod currently
-		 * may need adjusting for Load, Store, ... (any node requring a Proj)
-		 */
-		/*
-		for (auto& ne : FirmInterface::getInstance().getOuts(oldNode))
-		{
-			ir_node* o = ne.first;
-
-			if (get_irn_mode(o) == mode_M)
-			{
-				// Relink memory chain
-				for (auto& e : FirmInterface::getInstance().getOuts(o))
-					set_irn_n(e.first, e.second, get_irn_n(oldNode, 0));
-			}
-			//else
-				//exchange(o, newNode);
-		}
-		*/
 	}
 
 	void ConstantFolder::handleCmp(ir_node* node)
@@ -382,6 +362,29 @@ namespace firm
 		}
 	}
 
+	void ConstantFolder::replaceDivMod(Node node)
+	{
+		/* TODO: Only tested for Div and Mod currently
+		 * may need adjusting for Load, Store, ... (any node requring a Proj)
+		 */
+		
+		for (auto& ne : node.getOuts())
+		{
+			// ir_node* o = ne.first;
+			Node o = ne.first;
+
+			if (o.getMode() == mode_M)
+			{
+				// Relink memory chain
+				for (auto& e : o.getOuts())
+					e.first.setChild(e.second, node.getChild(0));
+					// set_irn_n(e.first, e.second, get_irn_n(node, 0));
+			}
+			else
+				o.replaceWith(new_r_Const_long(irg, node.getTarval().getMode(), node.getTarval().getLong()));
+		}
+	}
+
 	bool ConstantFolder::replaceGeneric(Node node)
 	{
 		if (!is_Const(node) && !is_Div(node) && !is_Mod(node) && node.getTarval().isNumericOrBool() && node.getMode() != mode_M)
@@ -403,6 +406,7 @@ namespace firm
 			else if (is_Mul(node)) replaceMul(node);
 			else if (is_Sub(node)) replaceSub(node);
 			else if (is_Minus(node)) replaceMinus(node);
+			// else if (is_Div(node) || is_Mod(node)) replaceDivMod(node);
 			else if (is_Conv(node)) replaceConv(node);
 			else if (is_Proj(node)) replaceProj(node);
 		}
