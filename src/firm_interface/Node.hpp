@@ -51,6 +51,7 @@ namespace firm
 			void replaceWith(ir_node* node, bool copyTarval = false);
 			ir_mode* getMode() const;
 			bool isNumericOrBool() const;
+			bool isNumeric() const;
 			long getNodeNumber() const;
 			unsigned getOpcode() const;
 	};

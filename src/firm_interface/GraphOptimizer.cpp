@@ -24,4 +24,9 @@ namespace firm
 	{
 		return this->newNodes;
 	}
+
+	bool GraphOptimizer::graphChanged()
+	{
+		return false;
+	}
 }

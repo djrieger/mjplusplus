@@ -28,12 +28,18 @@ namespace firm
 
 		void MemberVisitor::eliminateCommonSubexpressions(ir_graph* irg)
 		{
-			CommonSubexpressionEliminator commonSubexpressionEliminator(irg);
-			firm::Worklist worklist(irg, commonSubexpressionEliminator);
+			bool change = true;
 
-			edges_activate(irg);
-			worklist.run();
-			edges_deactivate(irg);
+			while (change)
+			{
+				CommonSubexpressionEliminator commonSubexpressionEliminator(irg);
+				firm::Worklist worklist(irg, commonSubexpressionEliminator);
+
+				edges_activate(irg);
+				change = worklist.run();
+
+				edges_deactivate(irg);
+			}
 		}
 
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
@@ -79,9 +85,17 @@ namespace firm
 			// optimize Firm graph
 			dump_ir_graph(irg, "orig");
 			foldConstants(irg);
-			eliminateCommonSubexpressions(irg);
 			dump_ir_graph(irg, "it1");
-			foldConstants(irg);
+
+			eliminateCommonSubexpressions(irg);
+			//should be done in a loop until nothing changes / threshold reached
+			/*std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			std::cout << "_________________________________________________" << std::endl;
+			foldConstants(irg);*/
 			dump_ir_graph(irg, "final");
 
 
