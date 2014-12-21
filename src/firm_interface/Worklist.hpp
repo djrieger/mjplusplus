@@ -24,7 +24,8 @@ namespace firm
 			void cleanUp();
 		public:
 			Worklist(ir_graph* functionGraph, GraphOptimizer& handler);
-			void run();
+			//returns whether optimization happend
+			bool run();
 	};
 }
 
