@@ -363,26 +363,21 @@ namespace firm
 	}
 
 	void ConstantFolder::replaceDivMod(Node node)
-	{
-		/* TODO: Only tested for Div and Mod currently
-		 * may need adjusting for Load, Store, ... (any node requring a Proj)
-		 */
-		
-		for (auto& ne : node.getOuts())
-		{
-			// ir_node* o = ne.first;
-			Node o = ne.first;
-
-			if (o.getMode() == mode_M)
+	{		
+		if (node.getTarval().isNumeric())
+			for (auto& ne : node.getOuts())
 			{
-				// Relink memory chain
-				for (auto& e : o.getOuts())
-					e.first.setChild(e.second, node.getChild(0));
-					// set_irn_n(e.first, e.second, get_irn_n(node, 0));
+				Node outChild = ne.first;
+
+				if (outChild.getMode() == mode_M)
+				{
+					// Relink memory chain
+					for (auto& e : outChild.getOuts())
+						e.first.setChild(e.second, node.getChild(0));
+				}
+				else
+					outChild.replaceWith(new_r_Const_long(irg, node.getTarval().getMode(), node.getTarval().getLong()));
 			}
-			else
-				o.replaceWith(new_r_Const_long(irg, node.getTarval().getMode(), node.getTarval().getLong()));
-		}
 	}
 
 	bool ConstantFolder::replaceGeneric(Node node)
@@ -406,7 +401,7 @@ namespace firm
 			else if (is_Mul(node)) replaceMul(node);
 			else if (is_Sub(node)) replaceSub(node);
 			else if (is_Minus(node)) replaceMinus(node);
-			// else if (is_Div(node) || is_Mod(node)) replaceDivMod(node);
+			else if (is_Div(node) || is_Mod(node)) replaceDivMod(node);
 			else if (is_Conv(node)) replaceConv(node);
 			else if (is_Proj(node)) replaceProj(node);
 		}

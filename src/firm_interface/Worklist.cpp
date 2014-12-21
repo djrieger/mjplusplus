@@ -114,9 +114,9 @@ namespace firm
 			this->isQueued[node] = false;
 			worklist.pop();
 
-			ir_printf("Handling %F (%d), tarval %F -> ", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
+			// ir_printf("Handling %F (%d), tarval %F -> ", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
 			handler.handle(node);
-			ir_printf("%F\n", (ir_tarval*)get_irn_link(node));
+			// ir_printf("%F\n", (ir_tarval*)get_irn_link(node));
 
 			for (auto& newNode : *handler.getNewNodes())
 			{
