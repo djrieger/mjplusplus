@@ -17,9 +17,6 @@ namespace firm
 		private:
 			FILE* out;
 
-			std::map<ir_node*, unsigned> partial;  //number of unseen children
-			std::map<ir_node*, std::pair<size_t, std::vector<size_t>>> usage;  //node data: {register written, registers read}
-
 			enum Constraint
 			{
 				NONE = 0,
@@ -32,20 +29,34 @@ namespace firm
 				R9//sixth arg
 			};
 
-			struct Register
+			struct Access
 			{
 				Constraint constraint;
+				size_t reg;
+			};
+
+			struct Register
+			{
 				std::vector<ir_node*> writes;
 				std::vector<ir_node*> reads;
 			};
 
+			static const Constraint arg_order[];
+
+			std::map<ir_node*, size_t> partial;  //number of unseen children
+			std::map<ir_node*, std::pair<std::vector<Access>, std::vector<Access>>> usage;  //node data: {registers written, registers read}
 			std::vector<Register> registers;
-			std::map<ir_node*, std::vector<std::string>> code;  //genereated code per block, bottom to top
+			std::map<ir_node*, std::vector<ir_node*>> code;   //genereated code per block, bottom to top
 
 			CodeGen(FILE* out);
 
+			char const* constraintToRegister(Constraint c);
+
 			void assemble(ir_graph* irg);
 			void assemble(ir_node* irn);
+
+			void output(ir_graph* irg);
+			void output(ir_node* irn);
 
 		public:
 			static void assemble(FILE* out);
