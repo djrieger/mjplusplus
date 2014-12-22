@@ -9,6 +9,8 @@
 
 namespace firm
 {
+	const CodeGen::Constraint CodeGen::arg_order[] = {RDI, RSI, RDX, RCX, R8, R9};
+
 	CodeGen::CodeGen(FILE* out) : out(out)
 	{
 		;
@@ -32,6 +34,12 @@ namespace firm
 	 * irn_link used as key for register usage lookup
 	 */
 
+	char const* CodeGen::constraintToRegister(Constraint c)
+	{
+		static std::vector<char const*> registers = {"!!!NONE!!!", "%rax", "%rcx", "%rdx", "%rdi", "%rsi", "%r8", "%r9"};
+		return registers[c];
+	}
+
 	void CodeGen::assemble(FILE* out)
 	{
 		CodeGen cg(out);
@@ -48,7 +56,7 @@ namespace firm
 		code.clear();
 
 		// fake register for non-data parents
-		registers.push_back({NONE, {}, {}});
+		registers.push_back({{}, {}});
 
 		edges_activate(irg);
 		// no code for end block, just find returns
@@ -61,19 +69,7 @@ namespace firm
 		//TODO: keepalives
 
 		edges_deactivate(irg);
-		//TODO: emit function
-		//TODO: %n$ syntax not in standart C(++)
-		fprintf(out, "\t.p2align 4,,15\n\t.globl  %1$s\n\t.type   %1$s, @function\n%1$s:\n", get_entity_name(get_irg_entity(irg)));
-
-		for (auto& block : code)
-		{
-			fprintf(out, ".L_%s_%zu:\n", get_entity_name(get_irg_entity(irg)), get_irn_node_nr(block.first));
-
-			for (auto it = block.second.rbegin(); it != block.second.rend(); it++)
-				fprintf(out, "\t%s\n", it->c_str());
-		}
-
-		fprintf(out, "\t.size   %1$s, .-%1$s\n\n", get_entity_name(get_irg_entity(irg)));
+		output(irg);
 	}
 
 	void CodeGen::assemble(ir_node* irn)
@@ -89,7 +85,6 @@ namespace firm
 			code[block].push_back("jmp .L_" + get_entity_name(get_irg_entity(irg)) + "_" + to_string(get_irn_node_nr(block)));
 		}*/
 
-		ir_printf("assembling (%ld) %F in %F\n", get_irn_node_nr(irn), irn, block);
 		auto children = FirmInterface::getInstance().getOuts(irn);
 
 		auto it = partial.find(irn);
@@ -97,10 +92,25 @@ namespace firm
 		if (it != partial.end())
 			it->second--;
 		else
+		{
 			partial[irn] = children.size() - 1;
+
+			for (auto& child : children)
+			{
+				if (is_Anchor(child.first))
+					partial[irn]--;
+			}
+
+			if (is_Start(irn))
+				// start nodes seem to have an extra Proj T and Proj P64 child...
+				partial[irn] -= 2;
+		}
+
+		ir_printf("testing (%ld) %F, %zu of %zu left\n", get_irn_node_nr(irn), irn, partial[irn], children.size());
 
 		if (partial[irn] == 0)
 		{
+			ir_printf("assembling (%ld) %F in %F\n", get_irn_node_nr(irn), irn, block);
 			//all children seen - handle it now
 			//default: node doesn't use registers. generally wrong, but allows unimplemented nodes to not explode instantly
 			set_irn_link(irn, NULL);
@@ -112,15 +122,15 @@ namespace firm
 			{
 				ir_node* key = (ir_node*) get_irn_link(child.first);
 
-				if (!key || !usage[key].second[child.second])
+				if (!key || !usage[key].second[child.second].reg)
 					continue;//no data dependency, skip
 
 				if (!current_reg)
-					current_reg = usage[key].second[child.second];
+					current_reg = usage[key].second[child.second].reg;
 				else
 				{
 					// we actually have to merge
-					size_t merge = usage[key].second[child.second];
+					size_t merge = usage[key].second[child.second].reg;
 
 					if (current_reg == merge)
 						continue;// ... or maybe not
@@ -128,26 +138,26 @@ namespace firm
 					auto& cur_reg = registers[current_reg];
 					auto& merge_reg = registers[merge];
 
-					if (cur_reg.constraint && merge_reg.constraint && cur_reg.constraint != merge_reg.constraint)
+					cur_reg.writes.insert(cur_reg.writes.end(), merge_reg.writes.begin(), merge_reg.writes.end());
+
+					for (auto& w : merge_reg.writes)
 					{
-						//different constraints: we can't merge, generate move
-						code[block].push_back("mov " + std::to_string(current_reg) + " to " + std::to_string(merge));
-						//todo: represent this in usage?
-						//TODO: remember failed merges, two failed merges might be mergable
+						for (auto& ww : usage[w].first)
+						{
+							if (ww.reg == merge)
+								ww.reg = current_reg;
+						}
 					}
-					else
+
+					cur_reg.reads.insert(cur_reg.reads.end(), merge_reg.reads.begin(), merge_reg.reads.end());
+
+					for (auto& r : merge_reg.reads)
 					{
-						//same constraint or at least one is unconstrained: merge
-						cur_reg.constraint = cur_reg.constraint ? cur_reg.constraint : merge_reg.constraint;
-						cur_reg.writes.insert(cur_reg.writes.end(), merge_reg.writes.begin(), merge_reg.writes.end());
-
-						for (ir_node* w : merge_reg.writes)
-							usage[w].first = current_reg;
-
-						cur_reg.reads.insert(cur_reg.reads.end(), merge_reg.reads.begin(), merge_reg.reads.end());
-
-						for (ir_node* r : merge_reg.reads)
-							std::replace(usage[r].second.begin(), usage[r].second.end(), merge, current_reg);
+						for (auto& rr : usage[r].second)
+						{
+							if (rr.reg == merge)
+								rr.reg = current_reg;
+						}
 					}
 				}
 			}
@@ -156,80 +166,187 @@ namespace firm
 			//TODO...
 			if (is_Return(irn))
 			{
-				code[block].push_back("return");
-
 				if (get_irn_arity(irn) == 2)
 				{
 					set_irn_link(irn, irn);
 					// return value (which we read) must be in RAX
-					usage[irn] = {0, {0, registers.size()}};
-					registers.push_back({RAX, {}, {irn}});
+					usage[irn] = {{}, {{NONE, 0}, {RAX, registers.size()}}};
+					registers.push_back({{}, {irn}});
 				}
-				else
-					set_irn_link(irn, NULL);
+
+				code[block].push_back(irn);
 			}
 			else if (is_Proj(irn))
 			{
 				if (get_irn_mode(irn) == mode_M || get_irn_mode(irn) == mode_T)
 					;//only required for ordering
-				else
+				else if (current_reg)
 				{
 					//parent is Proj T T_args: add register contraint
 					//parent is Proj T T_result: rax constraint
 					//TODO: all other cases(?) ignore Proj
-					ir_node* parent = get_irn_n(irn, 0);
-
-					if (is_Proj(parent) && get_irn_mode(parent) == mode_T)
-					{
-						Constraint c = NONE;
-
-						if (get_irn_n(parent, 0) == get_irg_start(get_irn_irg(irn)))
-						{
-							// function arguments
-							if (get_Proj_num(irn) >= 6)
-								printf("more than 6 arguments...");
-							else
-							{
-								static const Constraint arg_order[] = {RDI, RSI, RDX, RCX, R8, R9};
-								c = arg_order[get_Proj_num(irn)];
-							}
-						}
-						else
-							c = RAX;
-
-						if (!current_reg)
-							printf("unused?!");
-						else
-						{
-							auto& reg = registers[current_reg];
-
-							if (reg.constraint == NONE)
-							{
-								reg.constraint = c;
-								usage[irn] = {0, {current_reg}};//pseudo read
-							}
-							else
-							{
-								//conflicting constraints, generate move
-								code[block].push_back("mov " + std::to_string(registers.size()) + " to " + std::to_string(current_reg));
-								usage[irn] = {current_reg, {registers.size()}};
-								registers.push_back({c, {}, {irn}});
-								reg.writes.push_back(irn);
-							}
-
-							set_irn_link(irn, irn);
-						}
-					}
+					set_irn_link(irn, irn);
+					usage[irn] = {{}, {{NONE, current_reg}}};//pseudo read, so Start, Call, Load nodes can find their registers
+					registers[current_reg].reads.push_back(irn);
+					//code[block].push_back("# pseudo read " + std::to_string(current_reg));
 				}
+				else
+					printf("\tcurrent_reg: %zu\n", current_reg);
 			}
 			else if (is_Start(irn))
-				;//we're done
+			{
+				std::vector<Access> writes;
+
+				for (auto& child : children)
+				{
+					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(child.first), child.first, child.first);
+
+					if (!is_Proj(child.first) || get_irn_mode(child.first) != mode_T || get_Proj_num(child.first) != pn_Start_T_args)
+						continue;
+
+					auto used_args = FirmInterface::getInstance().getOuts(child.first);
+
+					for (auto& used_arg : used_args)
+					{
+						ir_printf("\t\t\t(%lu) %F %p\n", get_irn_node_nr(used_arg.first), used_arg.first, used_arg.first);
+
+						if (!is_Proj(used_arg.first))
+							continue;
+
+						// function arguments
+						if (get_Proj_num(used_arg.first) >= 6)
+						{
+							printf("more than 6 arguments...");
+							continue;
+						}
+
+						Constraint c = arg_order[get_Proj_num(used_arg.first)];
+						size_t reg = usage[used_arg.first].second[0].reg;
+						registers[reg].writes.push_back(irn);
+						writes.push_back({c, reg});
+					}
+				}
+
+				usage[irn] = {writes, {}};
+				code[block].push_back(irn);
+			}
+			else if (is_Call(irn))
+			{
+				std::vector<Access> writes;
+
+				for (auto& child : children)
+				{
+					if (get_irn_mode(child.first) == mode_M)
+						continue;
+
+					auto return_tuple = FirmInterface::getInstance().getOuts(child.first);
+
+					for (auto& used_return : return_tuple)
+					{
+						if (!get_irn_link(used_return.first))
+							continue;
+
+						// call return value
+						size_t reg = usage[used_return.first].second[0].reg;
+						registers[reg].writes.push_back(irn);
+						writes.push_back({RAX, reg});
+					}
+				}
+
+				std::vector<Access> reads = {{NONE, 0}, {NONE, 0}};
+
+				for (int i = 2; i < get_irn_arity(irn); i++)
+				{
+					reads.push_back({arg_order[i - 2], registers.size()});
+					registers.push_back({{}, {irn}});
+				}
+
+				set_irn_link(irn, irn);
+				usage[irn] = {writes, reads};
+				code[block].push_back(irn);
+			}
+			else if (is_Const(irn))
+			{
+				printf("\tcurrent_reg: %zu\n", current_reg);
+				set_irn_link(irn, irn);
+				usage[irn] = {{{NONE, current_reg}}, {}};
+				registers[current_reg].writes.push_back(irn);
+				code[block].push_back(irn);
+			}
 			else
 				printf("\tnot implemented yet\n");
 
 			// take care of parents
 			for (int i = get_irn_arity(irn) - 1; i >= 0; i--)
 				assemble(get_irn_n(irn, i));
+		}
+		else
+		{
+			printf("\twaiting for:\n");
+
+			for (auto& child : children)
+				ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(child.first), child.first, child.first);
+		}
+	}
+
+	void CodeGen::output(ir_graph* irg)
+	{
+		//TODO: %n$ syntax not in standart C(++)
+		fprintf(out, "\t.p2align 4,,15\n\t.globl  %1$s\n\t.type   %1$s, @function\n%1$s:\n", get_entity_name(get_irg_entity(irg)));
+
+		for (auto& block : code)
+		{
+			fprintf(out, ".L_%s_%zu:\n", get_entity_name(get_irg_entity(irg)), get_irn_node_nr(block.first));
+
+			for (auto it = block.second.rbegin(); it != block.second.rend(); it++)
+				output(*it);
+		}
+
+		fprintf(out, "\t.size   %1$s, .-%1$s\n\n", get_entity_name(get_irg_entity(irg)));
+	}
+
+	void CodeGen::output(ir_node* irn)
+	{
+		if (is_Return(irn))
+		{
+			fprintf(out, "\t# return\n");
+
+			if (get_irn_arity(irn) == 2)
+				fprintf(out, "\tmov %zd(%%rsp), %%rax\n", -8 * usage[irn].second[1].reg);
+
+			fprintf(out, "\tret\n");
+		}
+		else if (is_Start(irn))
+		{
+			fprintf(out, "\t# start\n");
+			auto& writes = usage[irn].first;
+
+			for (auto& w : writes)
+			{
+				if (w.reg)
+					fprintf(out, "\tmov %s, %zd(%%rsp)\n", constraintToRegister(w.constraint), -8 * w.reg);
+			}
+		}
+		else if (is_Call(irn))
+		{
+			fprintf(out, "\t# call\n");
+			auto& reads = usage[irn].second;
+
+			for (auto& r : reads)
+			{
+				if (r.reg)
+					fprintf(out, "\tmov %zd(%%rsp), %s\n", -8 * r.reg, constraintToRegister(r.constraint));
+			}
+
+			fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
+
+			if (!usage[irn].first.empty())
+				fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", -8 * usage[irn].first[0].reg);
+		}
+		else if (is_Const(irn))
+		{
+			fprintf(out, "\t# const\n");
+			fprintf(out, "\tmov%c $%ld, %zd(%%rsp)\n", get_irn_mode(irn) == mode_Is ? 'l' : 'q', get_tarval_long(get_Const_tarval(irn)), -8 * usage[irn].first[0].reg);
 		}
 	}
 }
