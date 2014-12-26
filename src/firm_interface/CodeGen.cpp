@@ -305,7 +305,7 @@ namespace firm
 			{
 				ir_node* key = (ir_node*) get_irn_link(child.first);
 
-				if (!key || !usage[key].second[child.second].reg)
+				if (!key || is_Anchor(child.first) || !usage[key].second[child.second].reg)
 					continue;//no data dependency, skip
 
 				if (!current_reg)
