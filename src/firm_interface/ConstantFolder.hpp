@@ -15,27 +15,26 @@ namespace firm
 	{
 		protected:
 			void optimizePhi(Node node);
-			void updateTarvalForArithmeticNode(Node node);
-			void updateTarvalAndExchangeMemory(ir_node* oldNode, ir_node* newNode);
+			bool updateTarvalForArithmeticNode(Node node);
 
 			void handlePhi(ir_node* node);
 			void handleMinus(ir_node* node);
 			void handleMul(ir_node* node);
 			void handleDivAndMod(ir_node* node);
-			void handleProj(ir_node* node);
 			void handleCmp(ir_node* node);
-			void handleConv(ir_node* node);
 
 			bool tarvalIsZero(Tarval tarval);
 			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
+			void replaceDivMod(Node node);
 			bool replaceGeneric(Node node);
 			void replaceAdd(Node node);
 			void replaceSub(Node node);
 			void replaceMul(Node node);
 			void replaceMinus(Node node);
 			void replaceConv(Node node);
+			void replaceProj(Node node);
 		public:
-			virtual void handle(ir_node*);
+			virtual void handle(Node);
 			virtual void cleanUp(Node node);
 			ConstantFolder(ir_graph* irg);
 	};

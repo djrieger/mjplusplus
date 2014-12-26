@@ -15,7 +15,7 @@ namespace firm
 		foreach_out_edge(node, edge)
 		{
 			ir_node* srcNode = get_edge_src_irn(edge);
-			ir_printf("adding srcNode= %F at %p to worklist again\n", srcNode, srcNode);
+			// ir_printf("adding srcNode= %F at %p to worklist again\n", srcNode, srcNode);
 			newNodes->insert(srcNode);
 		}
 	}
@@ -23,5 +23,10 @@ namespace firm
 	shptr<std::set<ir_node*>> GraphOptimizer::getNewNodes() const
 	{
 		return this->newNodes;
+	}
+
+	bool GraphOptimizer::graphChanged()
+	{
+		return false;
 	}
 }
