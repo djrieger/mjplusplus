@@ -23,10 +23,12 @@ namespace firm
 				RAX,//return, call result
 				RCX,//fourth arg
 				RDX,//third arg
-				RDI,//first arg
+				RBX, RSP, RBP,
 				RSI,//second arg
+				RDI,//first arg
 				R8,//fifth arg
-				R9//sixth arg
+				R9,//sixth arg
+				R10, R11, R12, R13, R14, R15
 			};
 
 			struct Access
@@ -54,7 +56,8 @@ namespace firm
 			size_t new_register();
 			void merge_register(size_t a, size_t b, bool add_to_free = true);
 
-			char const* constraintToRegister(Constraint c);
+			char const* constraintToRegister(Constraint c, ir_mode* mode);
+			char const* operationSuffix(ir_mode* mode);
 
 			void assemble(ir_graph* irg);
 			void assemble(ir_node* irn);
