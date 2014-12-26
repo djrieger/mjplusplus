@@ -54,8 +54,22 @@ namespace firm
 		envInstance.pQueue = &this->worklist;
 		envInstance.pIsQueued = &this->isQueued;
 
+		ir_func addPhis = [](ir_node * node, void* env)
+		{
+			if (is_Phi(node))
+			{
+				auto envInstance = (envMembers*)env;
+				set_irn_link(node, (void*)tarval_unknown);
+				envInstance->pQueue->push(node);
+				(*envInstance->pIsQueued)[node] = true;
+			}
+		};
+
 		ir_func addToWorklist = [](ir_node * node, void* env)
 		{
+			if (is_Phi(node))
+				return;
+
 			auto envInstance = (envMembers*)env;
 
 			ir_tarval* tarval;
@@ -64,12 +78,12 @@ namespace firm
 			{
 				if (is_Call(node) || is_Load(node) || is_Start(node))
 					return true;
-				else if (Node(node).getChildCount() > 0)
+				/*else if (Node(node).getChildCount() > 0)
 				{
 					for (Node child : Node(node).getChildren())
 						if (child.getTarval() == tarval_bad)
 							return true;
-				}
+				}*/
 
 				return false;
 			};
@@ -88,10 +102,11 @@ namespace firm
 			(*envInstance->pIsQueued)[node] = true;
 		};
 
+		walk_topological(functionGraph, addPhis, (void*)&envInstance);
 		walk_topological(functionGraph, addToWorklist, (void*)&envInstance);
 	}
 
-	void Worklist::run()
+	bool Worklist::run()
 	{
 		while (!worklist.empty())
 		{
@@ -99,10 +114,9 @@ namespace firm
 			this->isQueued[node] = false;
 			worklist.pop();
 
-			ir_printf("Handling %F (%d), old tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
+			// ir_printf("Handling %F (%d), tarval %F -> ", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
 			handler.handle(node);
-
-			ir_printf("Handled %F (%d), new tarval %F\n", node, get_irn_node_nr(node), (ir_tarval*)get_irn_link(node));
+			// ir_printf("%F\n", (ir_tarval*)get_irn_link(node));
 
 			for (auto& newNode : *handler.getNewNodes())
 			{
@@ -110,18 +124,19 @@ namespace firm
 				{
 					worklist.push(newNode);
 					isQueued[newNode] = true;
-					std::cout << "added node: ";
-					ir_printf("%F\n", newNode);
+					// std::cout << "added node: ";
+					// ir_printf("%F\n", newNode);
 				}
 				else
 				{
-					std::cout << "did not add node: ";
-					ir_printf("%F\n", newNode);
+					// std::cout << "did not add node: ";
+					// ir_printf("%F\n", newNode);
 				}
 			}
 		}
 
 		cleanUp();
+		return handler.graphChanged();
 	}
 
 	void Worklist::cleanUp()

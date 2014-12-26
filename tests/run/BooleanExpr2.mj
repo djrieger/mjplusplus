@@ -1,0 +1,16 @@
+class a {
+  public static void main(String[] args) {
+    a x = new a();
+
+    if (x.y())
+      System.out.println(42);
+    else
+      System.out.println(24);
+  }
+
+  public boolean y() {
+    if (true || false)
+      return false && true;
+    return false;
+  }
+}

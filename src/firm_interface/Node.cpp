@@ -30,6 +30,11 @@ namespace firm
 			throw "Tried to access child out of bounds";
 	}
 
+	void Node::setChild(unsigned int i, Node child)
+	{
+		set_irn_n(node, i, child);
+	}
+
 	unsigned int Node::getChildCount() const
 	{
 		return get_irn_arity(node);
@@ -50,16 +55,6 @@ namespace firm
 		return std::move(children);
 	}
 
-	shptr<vec<std::pair<Node, unsigned int>>> Node::getOuts() const
-	{
-		auto outs = std::make_shared<vec<std::pair<Node, unsigned int>>>();
-
-		for (ir_edge_t const* oe = get_irn_out_edge_first(node); oe; oe = get_irn_out_edge_next(node, oe, EDGE_KIND_NORMAL))
-			outs->emplace_back(Node(get_edge_src_irn(oe)), get_edge_src_pos(oe));
-
-		return outs;
-	}
-
 	void Node::replaceWith(ir_node* node, bool copyTarval)
 	{
 		if (copyTarval)
@@ -73,9 +68,36 @@ namespace firm
 		return get_irn_mode(node);
 	}
 
+	bool Node::isNumericOrBool() const
+	{
+		auto mode = get_irn_mode(node);
+		return mode == mode_Is || mode == mode_Bu || mode == mode_Lu;
+	}
+
+	bool Node::isNumeric() const
+	{
+		auto mode = get_irn_mode(node);
+		return mode == mode_Is || mode == mode_Lu;
+	}
+
 	long Node::getNodeNumber() const
 	{
 		return get_irn_node_nr(node);
+	}
+
+	unsigned Node::getOpcode() const
+	{
+		return get_irn_opcode(node);
+	}
+
+	vec<std::pair<Node, unsigned int>> Node::getOuts() const
+	{
+		vec<std::pair<Node, unsigned int>> outs;
+
+		for (ir_edge_t const* oe = get_irn_out_edge_first(node); oe; oe = get_irn_out_edge_next(node, oe, EDGE_KIND_NORMAL))
+			outs.emplace_back(Node(get_edge_src_irn(oe)), get_edge_src_pos(oe));
+
+		return outs;
 	}
 }
 
