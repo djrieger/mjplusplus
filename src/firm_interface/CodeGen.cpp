@@ -34,6 +34,87 @@ namespace firm
 	 * irn_link used as key for register usage lookup
 	 */
 
+	size_t CodeGen::new_register()
+	{
+		if (!free_registers.empty())
+		{
+			size_t reg = *free_registers.begin();
+			free_registers.erase(free_registers.begin());
+			registers[reg].writes.clear();
+			registers[reg].reads.clear();
+			return reg;
+		}
+		else
+		{
+			size_t reg = registers.size();
+			registers.push_back({{}, {}});
+			return reg;
+		}
+	}
+
+	void CodeGen::merge_register(size_t a, size_t b, bool add_to_free)
+	{
+		printf("\t\tmerging %zu and %zu\n", a, b);
+
+		if (a == b)
+			return;
+
+		auto& a_reg = registers[a];
+		auto& b_reg = registers[b];
+
+		printf("\t\twrites: ");
+
+		for (auto& w : b_reg.writes)
+		{
+			ir_printf("[%p %F]: ", w, w);
+
+			for (auto& ww : usage[w].first)
+			{
+				printf("%zu", ww.reg);
+
+				if (ww.reg == b)
+				{
+					ww.reg = a;
+					printf("->%zu", ww.reg);
+				}
+
+				printf(", ");
+			}
+
+			printf("; ");
+		}
+
+		a_reg.writes.insert(a_reg.writes.end(), b_reg.writes.begin(), b_reg.writes.end());
+
+		printf("\n\t\treads: ");
+
+		for (auto& r : b_reg.reads)
+		{
+			ir_printf("[%p %F]: ", r, r);
+
+			for (auto& rr : usage[r].second)
+			{
+				printf("%zu", rr.reg);
+
+				if (rr.reg == b)
+				{
+					rr.reg = a;
+					printf("->%zu", rr.reg);
+				}
+
+				printf(", ");
+			}
+
+			printf("; ");
+		}
+
+		printf("\n");
+		a_reg.reads.insert(a_reg.reads.end(), b_reg.reads.begin(), b_reg.reads.end());
+
+		if (add_to_free)
+			free_registers.insert(b);
+	}
+
 	char const* CodeGen::constraintToRegister(Constraint c)
 	{
 		static std::vector<char const*> registers = {"!!!NONE!!!", "%rax", "%rcx", "%rdx", "%rdi", "%rsi", "%r8", "%r9"};
@@ -53,6 +134,7 @@ namespace firm
 		partial.clear();
 		usage.clear();
 		registers.clear();
+		free_registers.clear();
 		code.clear();
 
 		// fake register for non-data parents
@@ -69,6 +151,107 @@ namespace firm
 		//TODO: keepalives
 
 		edges_deactivate(irg);
+
+		printf("----------\n");
+
+		for (auto& reg : registers)
+		{
+			printf("writes: ");
+
+			for (ir_node* w : reg.writes)
+				ir_printf("%F, ", w);
+
+			printf("\nreads: ");
+
+			for (ir_node* r : reg.reads)
+				ir_printf("%F, ", r);
+
+			printf("\n\n");
+		}
+
+		printf("free: ");
+
+		for (size_t f : free_registers)
+			printf("%zu, ", f);
+
+		printf("\n\n");
+
+		for (auto& u : usage)
+		{
+			ir_printf("%p - %F:\n\twrites: ", u.first, u.first);
+
+			for (auto& w : u.second.first)
+				printf("[%s, %zu], ", constraintToRegister(w.constraint), w.reg);
+
+			printf("\n\treads: ");
+
+			for (auto& r : u.second.second)
+				printf("[%s, %zu], ", constraintToRegister(r.constraint), r.reg);
+
+			printf("\n");
+		}
+
+		printf("\n----------\ncondensing\n----------\n");
+
+		while (!free_registers.empty())
+		{
+			printf("free: %zu\n", free_registers.size());
+
+			if (*free_registers.rbegin() == registers.size() - 1)
+			{
+				printf("\tdropping %zu at end\n", *free_registers.rbegin());
+				free_registers.erase(--free_registers.end());
+			}
+			else
+			{
+				size_t reg = *free_registers.begin();
+				printf("\tfilling %zu with last (%zu)\n", *free_registers.begin(), registers.size() - 1);
+				free_registers.erase(free_registers.begin());
+				registers[reg].writes.clear();
+				registers[reg].reads.clear();
+				merge_register(reg, registers.size() - 1, false);
+			}
+
+			registers.resize(registers.size() - 1);
+		}
+
+		for (auto& reg : registers)
+		{
+			printf("writes: ");
+
+			for (ir_node* w : reg.writes)
+				ir_printf("%F, ", w);
+
+			printf("\nreads: ");
+
+			for (ir_node* r : reg.reads)
+				ir_printf("%F, ", r);
+
+			printf("\n\n");
+		}
+
+		printf("free: ");
+
+		for (size_t f : free_registers)
+			printf("%zu, ", f);
+
+		printf("\n\n");
+
+		for (auto& u : usage)
+		{
+			ir_printf("%p - %F:\n\twrites: ", u.first, u.first);
+
+			for (auto& w : u.second.first)
+				printf("[%s, %zu], ", constraintToRegister(w.constraint), w.reg);
+
+			printf("\n\treads: ");
+
+			for (auto& r : u.second.second)
+				printf("[%s, %zu], ", constraintToRegister(r.constraint), r.reg);
+
+			printf("\n");
+		}
+
 		output(irg);
 	}
 
@@ -131,47 +314,22 @@ namespace firm
 				{
 					// we actually have to merge
 					size_t merge = usage[key].second[child.second].reg;
-
-					if (current_reg == merge)
-						continue;// ... or maybe not
-
-					auto& cur_reg = registers[current_reg];
-					auto& merge_reg = registers[merge];
-
-					cur_reg.writes.insert(cur_reg.writes.end(), merge_reg.writes.begin(), merge_reg.writes.end());
-
-					for (auto& w : merge_reg.writes)
-					{
-						for (auto& ww : usage[w].first)
-						{
-							if (ww.reg == merge)
-								ww.reg = current_reg;
-						}
-					}
-
-					cur_reg.reads.insert(cur_reg.reads.end(), merge_reg.reads.begin(), merge_reg.reads.end());
-
-					for (auto& r : merge_reg.reads)
-					{
-						for (auto& rr : usage[r].second)
-						{
-							if (rr.reg == merge)
-								rr.reg = current_reg;
-						}
-					}
+					merge_register(current_reg, merge);
 				}
 			}
 
 			//actual handling of the node
-			//TODO...
+			//TODO: complete this
+			//missing: phis, booleans and control flow
 			if (is_Return(irn))
 			{
 				if (get_irn_arity(irn) == 2)
 				{
 					set_irn_link(irn, irn);
 					// return value (which we read) must be in RAX
-					usage[irn] = {{}, {{NONE, 0}, {RAX, registers.size()}}};
-					registers.push_back({{}, {irn}});
+					size_t reg  = new_register();
+					usage[irn] = {{}, {{NONE, 0}, {RAX, reg}}};
+					registers[reg].reads.push_back(irn);
 				}
 
 				code[block].push_back(irn);
@@ -182,16 +340,16 @@ namespace firm
 					;//only required for ordering
 				else if (current_reg)
 				{
-					//parent is Proj T T_args: add register contraint
-					//parent is Proj T T_result: rax constraint
-					//TODO: all other cases(?) ignore Proj
 					set_irn_link(irn, irn);
 					usage[irn] = {{}, {{NONE, current_reg}}};//pseudo read, so Start, Call, Load nodes can find their registers
 					registers[current_reg].reads.push_back(irn);
-					//code[block].push_back("# pseudo read " + std::to_string(current_reg));
 				}
-				else
-					printf("\tcurrent_reg: %zu\n", current_reg);
+			}
+			else if (is_Conv(irn))
+			{
+				set_irn_link(irn, irn);
+				usage[irn] = {{}, {{NONE, current_reg}}};//pseudo read, so parent nodes can find their registers
+				registers[current_reg].reads.push_back(irn);
 			}
 			else if (is_Start(irn))
 			{
@@ -257,8 +415,9 @@ namespace firm
 
 				for (int i = 2; i < get_irn_arity(irn); i++)
 				{
-					reads.push_back({arg_order[i - 2], registers.size()});
-					registers.push_back({{}, {irn}});
+					size_t reg = new_register();
+					reads.push_back({arg_order[i - 2], reg});
+					registers[reg].reads.push_back(irn);
 				}
 
 				set_irn_link(irn, irn);
@@ -267,11 +426,70 @@ namespace firm
 			}
 			else if (is_Const(irn))
 			{
-				printf("\tcurrent_reg: %zu\n", current_reg);
 				set_irn_link(irn, irn);
 				usage[irn] = {{{NONE, current_reg}}, {}};
 				registers[current_reg].writes.push_back(irn);
 				code[block].push_back(irn);
+			}
+			else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn))
+			{
+				set_irn_link(irn, irn);
+				size_t a = new_register();
+				size_t b = new_register();
+				registers[current_reg].writes.push_back(irn);
+				registers[a].reads.push_back(irn);
+				registers[b].reads.push_back(irn);
+				usage[irn] = {{{NONE, current_reg}}, {{NONE, a}, {NONE, b}}};
+				code[block].push_back(irn);
+			}
+			else if (is_Minus(irn))
+			{
+				set_irn_link(irn, irn);
+				size_t a = new_register();
+				registers[current_reg].writes.push_back(irn);
+				registers[a].reads.push_back(irn);
+				usage[irn] = {{{NONE, current_reg}}, {{NONE, a}}};
+				code[block].push_back(irn);
+			}
+			else if (is_Div(irn) || is_Mod(irn))
+			{
+				set_irn_link(irn, irn);
+				size_t a = new_register();
+				size_t b = new_register();
+				registers[current_reg].writes.push_back(irn);
+				registers[a].reads.push_back(irn);
+				registers[b].reads.push_back(irn);
+				usage[irn] = {{{(is_Div(irn) ? RAX : RDX), current_reg}}, {{NONE, 0}, {RAX, a}, {NONE, b}}};
+				code[block].push_back(irn);
+			}
+			else if (is_Load(irn))
+			{
+				if (!current_reg)
+					printf("\tLoad with unused value\n");
+				else
+				{
+					set_irn_link(irn, irn);
+					size_t addr = new_register();
+					registers[addr].reads.push_back(irn);
+					registers[current_reg].writes.push_back(irn);
+					usage[irn] = {{{NONE, current_reg}}, {{NONE, 0}, {NONE, addr}}};
+					code[block].push_back(irn);
+				}
+			}
+			else if (is_Store(irn))
+			{
+				set_irn_link(irn, irn);
+				size_t addr = new_register();
+				size_t val = new_register();
+				registers[addr].reads.push_back(irn);
+				registers[val].reads.push_back(irn);
+				usage[irn] = {{}, {{NONE, 0}, {NONE, addr}, {NONE, val}}};
+				code[block].push_back(irn);
+			}
+			else if (is_Address(irn))
+			{
+				//dummy, silence not implemented yet line
+				;
 			}
 			else
 				printf("\tnot implemented yet\n");
@@ -293,6 +511,8 @@ namespace firm
 	{
 		//TODO: %n$ syntax not in standart C(++)
 		fprintf(out, "\t.p2align 4,,15\n\t.globl  %1$s\n\t.type   %1$s, @function\n%1$s:\n", get_entity_name(get_irg_entity(irg)));
+		// adjust stack
+		fprintf(out, "\tsub $%zd, %%rsp\n", 8 * registers.size());
 
 		for (auto& block : code)
 		{
@@ -307,46 +527,77 @@ namespace firm
 
 	void CodeGen::output(ir_node* irn)
 	{
+		ir_fprintf(out, "\t# %F\n", irn);
+
 		if (is_Return(irn))
 		{
-			fprintf(out, "\t# return\n");
-
 			if (get_irn_arity(irn) == 2)
-				fprintf(out, "\tmov %zd(%%rsp), %%rax\n", -8 * usage[irn].second[1].reg);
+				fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[1].reg - 8);
 
+			// free stack
+			fprintf(out, "\tadd $%zd, %%rsp\n", 8 * registers.size());
+			// and return
 			fprintf(out, "\tret\n");
 		}
 		else if (is_Start(irn))
 		{
-			fprintf(out, "\t# start\n");
 			auto& writes = usage[irn].first;
 
 			for (auto& w : writes)
 			{
 				if (w.reg)
-					fprintf(out, "\tmov %s, %zd(%%rsp)\n", constraintToRegister(w.constraint), -8 * w.reg);
+					fprintf(out, "\tmov %s, %zd(%%rsp)\n", constraintToRegister(w.constraint), 8 * w.reg - 8);
 			}
 		}
 		else if (is_Call(irn))
 		{
-			fprintf(out, "\t# call\n");
 			auto& reads = usage[irn].second;
 
 			for (auto& r : reads)
 			{
 				if (r.reg)
-					fprintf(out, "\tmov %zd(%%rsp), %s\n", -8 * r.reg, constraintToRegister(r.constraint));
+					fprintf(out, "\tmov %zd(%%rsp), %s\n", 8 * r.reg - 8, constraintToRegister(r.constraint));
 			}
 
 			fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
 
 			if (!usage[irn].first.empty())
-				fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", -8 * usage[irn].first[0].reg);
+				fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Const(irn))
+			fprintf(out, "\tmov%c $%ld, %zd(%%rsp)\n", get_irn_mode(irn) == mode_Is ? 'l' : 'q', get_tarval_long(get_Const_tarval(irn)), 8 * usage[irn].first[0].reg - 8);
+		else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn))
 		{
-			fprintf(out, "\t# const\n");
-			fprintf(out, "\tmov%c $%ld, %zd(%%rsp)\n", get_irn_mode(irn) == mode_Is ? 'l' : 'q', get_tarval_long(get_Const_tarval(irn)), -8 * usage[irn].first[0].reg);
+			char const* op = is_Add(irn) ? "add" : is_Sub(irn) ? "sub" : "imul";
+			//sub a, b seems to store b - a in b
+			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[0].reg - 8);
+			fprintf(out, "\t%s %zd(%%rsp), %%rax\n", op, 8 * usage[irn].second[1].reg - 8);
+			fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+		}
+		else if (is_Minus(irn))
+		{
+			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[0].reg - 8);
+			fprintf(out, "\tneg %%rax\n");
+			fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+		}
+		else if (is_Div(irn) || is_Mod(irn))
+		{
+			fprintf(out, "\tmov %zd(%%rsp), %%rax\n\txor %%rdx, %%rdx\n", 8 * usage[irn].second[1].reg - 8);
+			fprintf(out, "\tmov %zd(%%rsp), %%rbx\n", 8 * usage[irn].second[2].reg - 8);
+			fprintf(out, "\tidivl %%ebx\n");
+			fprintf(out, "\tmov %%r%cx, %zd(%%rsp)\n", is_Div(irn) ? 'a' : 'd', 8 * usage[irn].first[0].reg - 8);
+		}
+		else if (is_Load(irn))
+		{
+			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[1].reg - 8);
+			fprintf(out, "\tmov (%%rax), %%rax\n");
+			fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+		}
+		else if (is_Store(irn))
+		{
+			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[1].reg - 8);
+			fprintf(out, "\tmov %zd(%%rsp), %%rbx\n", 8 * usage[irn].second[2].reg - 8);
+			fprintf(out, "\tmov %%rbx, (%%rax)\n");
 		}
 	}
 }

@@ -46,9 +46,13 @@ namespace firm
 			std::map<ir_node*, size_t> partial;  //number of unseen children
 			std::map<ir_node*, std::pair<std::vector<Access>, std::vector<Access>>> usage;  //node data: {registers written, registers read}
 			std::vector<Register> registers;
+			std::set<size_t> free_registers;
 			std::map<ir_node*, std::vector<ir_node*>> code;   //genereated code per block, bottom to top
 
 			CodeGen(FILE* out);
+
+			size_t new_register();
+			void merge_register(size_t a, size_t b, bool add_to_free = true);
 
 			char const* constraintToRegister(Constraint c);
 
