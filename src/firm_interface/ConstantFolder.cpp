@@ -27,12 +27,12 @@ namespace firm
 
 			Tarval curTarval = pred.getTarval();
 
-			if (pred.getTarval().isBad()) 
+			if (pred.getTarval().isBad())
 			{
 				isBad = true;
 				continue;
 			}
-			
+
 			if (nodeMode == curTarval.getMode())
 			{
 				auto cur = curTarval.getLong();
@@ -46,8 +46,9 @@ namespace firm
 						// std::cout << "is bad" << std::endl;
 						isBad = true;
 					}
+
 					// else
-						// ir_printf("'s value does match the current value\n");
+					// ir_printf("'s value does match the current value\n");
 				}
 				else
 				{
@@ -73,8 +74,9 @@ namespace firm
 			// std::cout << "tarval has been updated to ";
 			// ir_printf("%F\n", newTarval);
 		}
+
 		// else
-			// std::cout << "remains totally unchanged" << std::endl;
+		// std::cout << "remains totally unchanged" << std::endl;
 	}
 
 	bool ConstantFolder::updateTarvalForArithmeticNode(Node node)
@@ -86,9 +88,9 @@ namespace firm
 		switch (node.getOpcode())
 		{
 			case iro_Add:
-				if (tvLeft.isNumeric() && tvRight.isNumeric()) 
+				if (tvLeft.isNumeric() && tvRight.isNumeric())
 					resultVal = tarval_add(tvLeft, tvRight);
-					
+
 				break;
 
 			case iro_Mul:
@@ -111,7 +113,7 @@ namespace firm
 
 			case iro_Div:
 			case iro_Mod:
-				{
+			{
 				// div and mod have divisor/dividend as child 1 and 2, child 0 is memory projection
 				Tarval dividend = node.getChild(1).getTarval();
 				Tarval divisor = node.getChild(2).getTarval();
@@ -206,7 +208,8 @@ namespace firm
 		{
 			Tarval childTarval = node.getChild(0).getTarval();
 
-			if (childTarval.isNumeric()) {
+			if (childTarval.isNumeric())
+			{
 				node.setTarval(Tarval(- childTarval.getLong(), node.getMode()));
 				changed = true;
 			}
@@ -220,7 +223,8 @@ namespace firm
 		else if (is_Conv(node))
 		{
 			Tarval childTarval = node.getChild(0).getTarval();
-			if (childTarval.isNumeric()) 
+
+			if (childTarval.isNumeric())
 			{
 				Tarval newTarval(childTarval.getLong(), node.getMode());
 				node.setTarval(newTarval);
@@ -231,20 +235,22 @@ namespace firm
 			changed = updateTarvalForArithmeticNode(node);
 
 		bool hasBadChildren = false;
-		if (!changed) {
+
+		if (!changed)
+		{
 			for (Node child : node.getChildren())
 			{
-				if (child.getTarval().isBad()) 
+				if (child.getTarval().isBad())
 				{
 					hasBadChildren = true;
 					break;
 				}
 			}
-			if (hasBadChildren) {
+
+			if (hasBadChildren)
 				node.setTarval(BadTarval());
-			}
 		}
-				
+
 		if (node.getTarval() != oldTarval)
 			markOutNodesAsNew(node);
 	}
@@ -363,7 +369,7 @@ namespace firm
 	}
 
 	void ConstantFolder::replaceDivMod(Node node)
-	{		
+	{
 		if (node.getTarval().isNumeric())
 			for (auto& ne : node.getOuts())
 			{

@@ -25,13 +25,19 @@ namespace firm
 	 * known constraints:
 	 *   return in RAX;
 	 *   call first args in RDI, RSI, RDX, RCX, R8, R9, remainder on stack, result in rax;
-	 *   div/mod in ?
+	 *   div/mod in operands in rax:rdx, any; result in rax (div), rdx (mod)
 	 *
 	 * each node puts it's result in a new register
 	 * phis and nodes with multiple children merge registers
 	 *
-	 *
 	 * irn_link used as key for register usage lookup
+	 *
+	 * register names:
+	 * 64bit    32bit    16bit    8bit
+	 * r[acdb]x e[acdb]x [acdb]x  [acdb][hl] (=r[0-3])  !! order is A, C, D, B !!
+	 * r[sb]p   e[sb]p   [sb]p    [sb]pl     (=r[4-5])
+	 * r[sd]i   e[sd]i   [sd]i    [sd]il     (=r[6-7])
+	 * r[8-15]  r[8-15]d r[8-15]w r[8-15]b
 	 */
 
 	size_t CodeGen::new_register()
@@ -115,10 +121,61 @@ namespace firm
 			free_registers.insert(b);
 	}
 
-	char const* CodeGen::constraintToRegister(Constraint c)
+	char const* CodeGen::constraintToRegister(Constraint c, ir_mode* mode)
 	{
-		static std::vector<char const*> registers = {"!!!NONE!!!", "%rax", "%rcx", "%rdx", "%rdi", "%rsi", "%r8", "%r9"};
-		return registers[c];
+		unsigned size = get_mode_size_bytes(mode);
+
+		switch (size)
+		{
+			case 1:
+				size = 3;
+				break;
+
+			case 2:
+				size = 2;
+				break;
+
+			case 4:
+				size = 1;
+				break;
+
+			case 8:
+				size = 0;
+				break;
+
+			default:
+				return "!!!";
+		}
+
+		static char const* registers[4][17] =
+		{
+			{"!!!NONE!!!", "%rax", "%rcx", "%rdx", "%rbx", "%rsp", "%rbp", "%rsi", "%rdi", "%r8", "%r9", "%r10", "%r11", "%r12", "%r13", "%r14", "%r15"},
+			{"!!!NONE!!!", "%eax", "%ecx", "%edx", "%ebx", "%esp", "%ebp", "%esi", "%edi", "%r8d", "%r9d", "%r10d", "%r11d", "%r12d", "%r13d", "%r14d", "%r15d"},
+			{"!!!NONE!!!", "%ax", "%cx", "%dx", "%bx", "%sp", "%bp", "%si", "%di", "%r8w", "%r9w", "%r10w", "%r11w", "%r12w", "%r13w", "%r14w", "%r15w"},
+			{"!!!NONE!!!", "%al", "%cl", "%dl", "%bl", "%spl", "%bpl", "%sil", "%dil", "%r8b", "%r9b", "%r10b", "%r11b", "%r12b", "%r13b", "%r14b", "%r15b"}
+		};
+		return registers[size][c];
+	}
+
+	char const* CodeGen::operationSuffix(ir_mode* mode)
+	{
+		switch (get_mode_size_bytes(mode))
+		{
+			case 1:
+				return "b";
+
+			case 2:
+				return "w";
+
+			case 4:
+				return "l";
+
+			case 8:
+				return "q";
+
+			default:
+				return "!!!";
+		}
 	}
 
 	void CodeGen::assemble(FILE* out)
@@ -181,12 +238,12 @@ namespace firm
 			ir_printf("%p - %F:\n\twrites: ", u.first, u.first);
 
 			for (auto& w : u.second.first)
-				printf("[%s, %zu], ", constraintToRegister(w.constraint), w.reg);
+				printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
 
 			printf("\n\treads: ");
 
 			for (auto& r : u.second.second)
-				printf("[%s, %zu], ", constraintToRegister(r.constraint), r.reg);
+				printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
 
 			printf("\n");
 		}
@@ -242,12 +299,12 @@ namespace firm
 			ir_printf("%p - %F:\n\twrites: ", u.first, u.first);
 
 			for (auto& w : u.second.first)
-				printf("[%s, %zu], ", constraintToRegister(w.constraint), w.reg);
+				printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
 
 			printf("\n\treads: ");
 
 			for (auto& r : u.second.second)
-				printf("[%s, %zu], ", constraintToRegister(r.constraint), r.reg);
+				printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
 
 			printf("\n");
 		}
@@ -301,20 +358,23 @@ namespace firm
 			//merge registers of children
 			size_t current_reg = 0;
 
-			for (auto& child : children)
+			if (!is_Proj(irn) || get_irn_mode(irn) != mode_T)
 			{
-				ir_node* key = (ir_node*) get_irn_link(child.first);
-
-				if (!key || is_Anchor(child.first) || !usage[key].second[child.second].reg)
-					continue;//no data dependency, skip
-
-				if (!current_reg)
-					current_reg = usage[key].second[child.second].reg;
-				else
+				for (auto& child : children)
 				{
-					// we actually have to merge
-					size_t merge = usage[key].second[child.second].reg;
-					merge_register(current_reg, merge);
+					ir_node* key = (ir_node*) get_irn_link(child.first);
+
+					if (!key || is_Anchor(child.first) || !usage[key].second[child.second].reg)
+						continue;//no data dependency, skip
+
+					if (!current_reg)
+						current_reg = usage[key].second[child.second].reg;
+					else
+					{
+						// we actually have to merge
+						size_t merge = usage[key].second[child.second].reg;
+						merge_register(current_reg, merge);
+					}
 				}
 			}
 
@@ -532,7 +592,10 @@ namespace firm
 		if (is_Return(irn))
 		{
 			if (get_irn_arity(irn) == 2)
-				fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[1].reg - 8);
+			{
+				ir_mode* value_mode = get_irn_mode(get_irn_n(irn, 1));
+				fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[irn].second[1].reg - 8, constraintToRegister(RAX, value_mode));
+			}
 
 			// free stack
 			fprintf(out, "\tadd $%zd, %%rsp\n", 8 * registers.size());
@@ -546,58 +609,78 @@ namespace firm
 			for (auto& w : writes)
 			{
 				if (w.reg)
-					fprintf(out, "\tmov %s, %zd(%%rsp)\n", constraintToRegister(w.constraint), 8 * w.reg - 8);
+					//TODO: get actual mode
+					fprintf(out, "\tmov %s, %zd(%%rsp)\n", constraintToRegister(w.constraint, mode_P), 8 * w.reg - 8);
 			}
 		}
 		else if (is_Call(irn))
 		{
 			auto& reads = usage[irn].second;
 
-			for (auto& r : reads)
+			for (int i = 2; i < get_irn_arity(irn); i++)
 			{
-				if (r.reg)
-					fprintf(out, "\tmov %zd(%%rsp), %s\n", 8 * r.reg - 8, constraintToRegister(r.constraint));
+				if (reads[i].reg)
+				{
+					ir_mode* arg_mode = get_irn_mode(get_irn_n(irn, i));
+					fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(arg_mode), 8 * reads[i].reg - 8, constraintToRegister(reads[i].constraint, arg_mode));
+				}
 			}
 
 			fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
 
 			if (!usage[irn].first.empty())
+				//TODO: get actual mode
 				fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Const(irn))
-			fprintf(out, "\tmov%c $%ld, %zd(%%rsp)\n", get_irn_mode(irn) == mode_Is ? 'l' : 'q', get_tarval_long(get_Const_tarval(irn)), 8 * usage[irn].first[0].reg - 8);
+			fprintf(out, "\tmov%s $%ld, %zd(%%rsp)\n", operationSuffix(get_irn_mode(irn)), get_tarval_long(get_Const_tarval(irn)), 8 * usage[irn].first[0].reg - 8);
 		else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn))
 		{
 			char const* op = is_Add(irn) ? "add" : is_Sub(irn) ? "sub" : "imul";
+			ir_mode* mode = get_irn_mode(irn);
+			char const* os = operationSuffix(mode);
+			char const* rs = constraintToRegister(RAX, mode);
 			//sub a, b seems to store b - a in b
-			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[0].reg - 8);
-			fprintf(out, "\t%s %zd(%%rsp), %%rax\n", op, 8 * usage[irn].second[1].reg - 8);
-			fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+			fprintf(out, "\tmov%s %zd(%%rsp), %s\n", os, 8 * usage[irn].second[0].reg - 8, rs);
+			fprintf(out, "\t%s%s %zd(%%rsp), %s\n", op, os, 8 * usage[irn].second[1].reg - 8, rs);
+			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs, 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Minus(irn))
 		{
-			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[0].reg - 8);
-			fprintf(out, "\tneg %%rax\n");
-			fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+			ir_mode* mode = get_irn_mode(irn);
+			char const* os = operationSuffix(mode);
+			char const* rs = constraintToRegister(RAX, mode);
+			fprintf(out, "\tmov%s %zd(%%rsp), %s\n", os, 8 * usage[irn].second[0].reg - 8, rs);
+			fprintf(out, "\tneg%s %s\n", os, rs);
+			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs, 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Div(irn) || is_Mod(irn))
 		{
-			fprintf(out, "\tmov %zd(%%rsp), %%rax\n\txor %%rdx, %%rdx\n", 8 * usage[irn].second[1].reg - 8);
-			fprintf(out, "\tmov %zd(%%rsp), %%rbx\n", 8 * usage[irn].second[2].reg - 8);
-			fprintf(out, "\tidivl %%ebx\n");
-			fprintf(out, "\tmov %%r%cx, %zd(%%rsp)\n", is_Div(irn) ? 'a' : 'd', 8 * usage[irn].first[0].reg - 8);
+			ir_mode* mode = is_Div(irn) ? get_Div_resmode(irn) : get_Mod_resmode(irn);
+			char const* os = operationSuffix(mode);
+			char const* rs = constraintToRegister(RBX, mode);
+			fprintf(out, "\tmov%s %zd(%%rsp), %s\n\txor %s, %s\n", os, 8 * usage[irn].second[1].reg - 8, constraintToRegister(RAX, mode), rs, rs);
+			fprintf(out, "\tmov%s %zd(%%rsp), %s\n", os, 8 * usage[irn].second[2].reg - 8, rs);
+			fprintf(out, "\tidiv%s %s\n", os, rs);
+			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Load(irn))
 		{
+			ir_mode* mode = get_Load_mode(irn);
+			char const* os = operationSuffix(mode);
+			char const* rs = constraintToRegister(RAX, mode);
 			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[1].reg - 8);
-			fprintf(out, "\tmov (%%rax), %%rax\n");
-			fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+			fprintf(out, "\tmov%s (%%rax), %s\n", os, rs);
+			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs, 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Store(irn))
 		{
+			ir_mode* mode = get_irn_mode(get_irn_n(irn, 2));
+			char const* os = operationSuffix(mode);
+			char const* rs = constraintToRegister(RBX, mode);
 			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[1].reg - 8);
-			fprintf(out, "\tmov %zd(%%rsp), %%rbx\n", 8 * usage[irn].second[2].reg - 8);
-			fprintf(out, "\tmov %%rbx, (%%rax)\n");
+			fprintf(out, "\tmov%s %zd(%%rsp), %s\n", os, 8 * usage[irn].second[2].reg - 8, rs);
+			fprintf(out, "\tmov%s %s, (%%rax)\n", os, rs);
 		}
 	}
 }

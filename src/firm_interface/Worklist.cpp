@@ -78,6 +78,7 @@ namespace firm
 			{
 				if (is_Call(node) || is_Load(node) || is_Start(node))
 					return true;
+
 				/*else if (Node(node).getChildCount() > 0)
 				{
 					for (Node child : Node(node).getChildren())
