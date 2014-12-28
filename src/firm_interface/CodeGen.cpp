@@ -585,7 +585,7 @@ namespace firm
 		//TODO: %n$ syntax not in standart C(++)
 		fprintf(out, "\t.p2align 4,,15\n\t.globl  %1$s\n\t.type   %1$s, @function\n%1$s:\n", get_entity_name(get_irg_entity(irg)));
 		// adjust stack
-		fprintf(out, "\tsub $%zd, %%rsp\n", 8 * registers.size());
+		fprintf(out, "\tsub $%zd, %%rsp\n", 8 * registers.size() - 8);
 
 		for (auto& block : code)
 		{
@@ -611,7 +611,7 @@ namespace firm
 			}
 
 			// free stack
-			fprintf(out, "\tadd $%zd, %%rsp\n", 8 * registers.size());
+			fprintf(out, "\tadd $%zd, %%rsp\n", 8 * registers.size() - 8);
 			// and return
 			fprintf(out, "\tret\n");
 		}
