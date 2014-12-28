@@ -408,8 +408,21 @@ namespace firm
 			else if (is_Conv(irn))
 			{
 				set_irn_link(irn, irn);
-				usage[irn] = {{}, {{NONE, current_reg}}};//pseudo read, so parent nodes can find their registers
-				registers[current_reg].reads.push_back(irn);
+
+				/* we need code for conv if the new mode is wider (either sign or zero extend, based on the old mode) */
+				if (get_mode_size_bytes(get_irn_mode(get_irn_n(irn, 0))) < get_mode_size_bytes(get_irn_mode(irn)))
+				{
+					size_t a = new_register();
+					usage[irn] = {{{NONE, current_reg}}, {{NONE, a}}};
+					registers[a].reads.push_back(irn);
+					registers[current_reg].writes.push_back(irn);
+					code[block].push_back(irn);
+				}
+				else
+				{
+					usage[irn] = {{}, {{NONE, current_reg}}};//pseudo read, so parent nodes can find their registers
+					registers[current_reg].reads.push_back(irn);
+				}
 			}
 			else if (is_Start(irn))
 			{
@@ -663,6 +676,17 @@ namespace firm
 			fprintf(out, "\tmov%s %zd(%%rsp), %s\n", os, 8 * usage[irn].second[2].reg - 8, rs);
 			fprintf(out, "\tidiv%s %s\n", os, rs);
 			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
+		}
+		else if (is_Conv(irn))
+		{
+			ir_mode* old_mode = get_irn_mode(get_irn_n(irn, 0));
+			char const* old_rs = constraintToRegister(RAX, old_mode);
+			ir_mode* mode = get_irn_mode(irn);
+			char const* rs = constraintToRegister(RAX, mode);
+
+			fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(old_mode), 8 * usage[irn].second[0].reg - 8, old_rs);
+			fprintf(out, "\tmov%cx %s, %s\n", get_mode_sign(old_mode) ? 's' : 'z', old_rs, rs);
+			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", operationSuffix(mode), rs, 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Load(irn))
 		{
