@@ -62,6 +62,9 @@ namespace firm
 			void assemble(ir_graph* irg);
 			void assemble(ir_node* irn);
 
+			void load_or_imm(ir_node* node, size_t reg);
+			void gen_bin_op(ir_node* irn, ir_mode* mode, char const* op);
+
 			void output(ir_graph* irg);
 			void output(ir_node* irn);
 
