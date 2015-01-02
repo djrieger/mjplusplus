@@ -66,7 +66,7 @@ namespace firm
 			void gen_bin_op(ir_node* irn, ir_mode* mode, char const* op);
 
 			void output(ir_graph* irg);
-			void output(ir_node* irn);
+			void output(ir_node* irn, ir_node* block);
 
 		public:
 			static void assemble(FILE* out);
