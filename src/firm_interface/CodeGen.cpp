@@ -205,14 +205,12 @@ namespace firm
 		for (int i = get_irn_arity(eb) - 1; i >= 0; i--)
 			assemble(get_irn_n(eb, i));
 
-		/*
 		//handle keepalives
 		ir_node* en = get_irg_end(irg);
 		set_irn_link(en, NULL);
 
 		for (int i = get_irn_arity(en) - 1; i >= 0; i--)
 			assemble(get_irn_n(en, i));
-		*/
 
 		edges_deactivate(irg);
 
@@ -357,15 +355,19 @@ namespace firm
 
 		ir_printf("testing (%ld) %F, %zu of %zu left\n", get_irn_node_nr(irn), irn, partial[irn], children.size());
 
-		if (partial[irn] == 0)
+		if (partial[irn] == 0 || (is_Phi(irn) && get_irn_link(irn) != irn))
 		{
 			ir_printf("assembling (%ld) %F in %F\n", get_irn_node_nr(irn), irn, block);
 			//all children seen - handle it now
 			//default: node doesn't use registers. generally wrong, but allows unimplemented nodes to not explode instantly
-			set_irn_link(irn, NULL);
 
 			//merge registers of children
 			size_t current_reg = 0;
+
+			if (is_Phi(irn) && get_irn_link(irn) == irn)
+				current_reg = usage[irn].first[0].reg;
+			else
+				set_irn_link(irn, NULL);
 
 			if (get_irn_mode(irn) != mode_M
 			        && get_irn_mode(irn) != mode_X
@@ -394,7 +396,29 @@ namespace firm
 			//actual handling of the node
 			//TODO: complete this
 			//missing: phis
-			if (is_Return(irn))
+			if (is_Phi(irn))
+			{
+				if (get_irn_mode(irn) != mode_M && get_irn_link(irn) != irn)
+				{
+					/*
+					 * for each parent: add mov/load new_reg -> phi_reg in parent block
+					 */
+					for (int pred = 0; pred < get_irn_arity(irn); pred++)
+					{
+						code[get_nodes_block(get_irn_n(block, pred))].push_back(irn);
+						size_t a = is_Const(get_irn_n(irn, pred)) ? 0 : new_register();
+						usage[irn].second.push_back({NONE, a});
+
+						if (a)
+							registers[a].reads.push_back(irn);
+					}
+
+					set_irn_link(irn, irn);
+					usage[irn].first.push_back({NONE, current_reg});
+					registers[current_reg].writes.push_back(irn);
+				}
+			}
+			else if (is_Return(irn))
 			{
 				if (get_irn_arity(irn) == 2)
 				{
@@ -646,8 +670,11 @@ namespace firm
 				printf("\tnot implemented yet\n");
 
 			// take care of parents
-			for (int i = get_irn_arity(irn) - 1; i >= 0; i--)
-				assemble(get_irn_n(irn, i));
+			if (!(is_Phi(irn) && partial[irn] + 1 != children.size()))
+			{
+				for (int i = get_irn_arity(irn) - 1; i >= 0; i--)
+					assemble(get_irn_n(irn, i));
+			}
 		}
 		else
 		{
@@ -692,17 +719,39 @@ namespace firm
 			fprintf(out, ".L_%s_%zu:\n", get_entity_name(get_irg_entity(irg)), get_irn_node_nr(block.first));
 
 			for (auto it = block.second.rbegin(); it != block.second.rend(); it++)
-				output(*it);
+				output(*it, block.first);
 		}
 
 		fprintf(out, "\t.size   %s, .-%s\n\n", name, name);
 	}
 
-	void CodeGen::output(ir_node* irn)
+	void CodeGen::output(ir_node* irn, ir_node* block)
 	{
 		ir_fprintf(out, "\t# %F\n", irn);
 
-		if (is_Return(irn))
+		if (is_Phi(irn))
+		{
+			ir_node* phi_block = get_nodes_block(irn);
+			int pred;
+
+			for (pred = 0; pred < get_irn_arity(phi_block); pred++)
+			{
+				if (get_nodes_block(get_irn_n(phi_block, pred)) == block)
+					break;
+			}
+
+			ir_node* value = get_irn_n(irn, pred);
+			ir_mode* value_mode = get_irn_mode(value);
+
+			if (is_Const(value))
+				fprintf(out, "\tmov%s $%ld, %zd(%%rsp)\n", operationSuffix(value_mode), get_tarval_long(get_Const_tarval(value)), 8 * usage[irn].first[0].reg - 8);
+			else
+			{
+				fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[irn].second[pred].reg - 8, constraintToRegister(RAX, value_mode));
+				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", operationSuffix(value_mode), constraintToRegister(RAX, value_mode), 8 * usage[irn].first[0].reg - 8);
+			}
+		}
+		else if (is_Return(irn))
 		{
 			if (get_irn_arity(irn) == 2)
 			{
