@@ -62,7 +62,7 @@ runTestDiff() {
 	segfaults=0
 
 	for i in $1/*.mj ; do
-		LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ $2 $i | diff $i.output - > /dev/null
+		LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ $2 $i | diff -q $i.output - > /dev/null
 		ret=$?
 		if [ $ret -eq 0 ] ; then
 			succeeded=$((succeeded + 1))
@@ -102,7 +102,7 @@ runCompileTestDiff() {
 			ret=$?
 			if [ $ret -eq 0 ] ; then
 				#check diff
-				./$prefix.out | diff $prefix.check - > /dev/null
+				./$prefix.out | diff -q $prefix.check - > /dev/null
 				ret=$?
 				if [ $ret -eq 0 ] ; then
 					succeeded=$((succeeded + 1))

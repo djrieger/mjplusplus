@@ -50,6 +50,7 @@ namespace firm
 			std::vector<Register> registers;
 			std::set<size_t> free_registers;
 			std::map<ir_node*, std::vector<ir_node*>> code;   //genereated code per block, bottom to top
+			std::stack<ir_node*> stack;
 
 			CodeGen(FILE* out);
 
