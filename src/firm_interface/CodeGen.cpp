@@ -205,7 +205,7 @@ namespace firm
 		set_irn_link(en, NULL);
 
 		for (int i = 0; i < get_irn_arity(en); i++)
-			stack.push(get_irn_n(en, i));
+			stack2.push(get_irn_n(en, i));
 
 		// no code for end block, just find returns
 		ir_node* eb = get_irg_end_block(irg);
@@ -214,11 +214,61 @@ namespace firm
 		for (int i = 0; i < get_irn_arity(eb); i++)
 			stack.push(get_irn_n(eb, i));
 
-		while (!stack.empty())
+		while (!stack.empty() || !stack2.empty())
 		{
-			ir_node* irn = stack.top();
-			stack.pop();
-			assemble(irn);
+			while (!stack.empty())
+			{
+				printf("TODO: ");
+				std::stack<ir_node*> tmp = stack;
+
+				while (!tmp.empty())
+				{
+					printf("%ld, ", get_irn_node_nr(tmp.top()));
+					tmp.pop();
+				}
+
+				printf("// ");
+				std::stack<ir_node*> tmp2 = stack2;
+
+				while (!tmp2.empty())
+				{
+					printf("%ld, ", get_irn_node_nr(tmp2.top()));
+					tmp2.pop();
+				}
+
+				printf("\n");
+
+				ir_node* irn = stack.top();
+				stack.pop();
+				assemble(irn);
+			}
+
+			printf("TODO: ");
+			std::stack<ir_node*> tmp = stack;
+
+			while (!tmp.empty())
+			{
+				printf("%ld, ", get_irn_node_nr(tmp.top()));
+				tmp.pop();
+			}
+
+			printf("// ");
+			std::stack<ir_node*> tmp2 = stack2;
+
+			while (!tmp2.empty())
+			{
+				printf("%ld, ", get_irn_node_nr(tmp2.top()));
+				tmp2.pop();
+			}
+
+			printf("\n");
+
+			if (!stack2.empty())
+			{
+				ir_node* irn = stack2.top();
+				stack2.pop();
+				assemble(irn);
+			}
 		}
 
 		edges_deactivate(irg);
@@ -342,16 +392,17 @@ namespace firm
 		if (get_irn_link(block) != block)
 		{
 			// handle the block
-			// requeue the node
-			stack.push(irn);
+			// requeue the node if it isn't the block itself
+			if (irn != block)
+				stack.push(irn);
 
 			set_irn_link(block, block);
 
 			printf("Block %ld - phis\n", get_irn_node_nr(block));
 
-			for (ir_node* phi = get_Block_phis(block); ir_printf("got %F\n", phi), (phi && is_Phi(phi)); phi = get_Phi_next(phi))
+			for (ir_node* phi = get_Block_phis(block); phi && is_Phi(phi); phi = get_Phi_next(phi))
 			{
-				ir_printf("Block %ld: %F\n", get_irn_node_nr(block), phi);
+				ir_printf("\t%ld: %F\n", get_irn_node_nr(phi), phi);
 				auto it = partial.find(phi);
 
 				if (it != partial.end())
@@ -359,14 +410,17 @@ namespace firm
 				else
 					partial[phi] = 1 + FirmInterface::getInstance().getOuts(phi).size();
 
-				stack.push(phi);
+				stack2.push(phi);
 			}
 
 			// take care of block parents
 			printf("Block %ld - control flow\n", get_irn_node_nr(block));
 
 			for (int i = 0; i < get_irn_arity(block); i++)
+			{
+				ir_printf("\t%ld: %F\n", get_irn_node_nr(get_irn_n(block, i)), get_irn_n(block, i));
 				stack.push(get_irn_n(block, i));
+			}
 
 			printf("Block %ld - done\n", get_irn_node_nr(block));
 			return;
@@ -404,7 +458,12 @@ namespace firm
 				for (int i = 0; i < get_irn_arity(irn); i++)
 				{
 					ir_node* p = get_irn_n(irn, i);
-					stack.push(p);
+
+					if (get_nodes_block(p) == block)
+						stack.push(p);
+					else
+						stack2.push(p);
+
 					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(p), p, p);
 				}
 			}
@@ -435,7 +494,7 @@ namespace firm
 				set_irn_link(irn, NULL);
 
 			// don't merge: memory projs/phis (note: div/mod/load/... are tuples), control flow, basic blocks, the start node and its children, compares (control flow children but not mode_X itself)
-			// (basicaly all things that never needs (output) registers or musn't have them merged (start))
+			// (basicaly all things that never needs (output) registers or mustn't have them merged (start))
 			if (get_irn_mode(irn) != mode_M
 			        && get_irn_mode(irn) != mode_X
 			        && get_irn_mode(irn) != mode_BB
@@ -465,6 +524,27 @@ namespace firm
 			{
 				if (get_irn_mode(irn) != mode_M && get_irn_link(irn) != irn)
 				{
+					// for each parent: ensure control flow is done
+					bool cf = false;
+
+					for (int pred = 0; pred < get_irn_arity(irn); pred++)
+					{
+						ir_node* pblock = get_nodes_block(get_irn_n(block, pred));
+
+						if (get_irn_link(pblock) != pblock)
+						{
+							if (!cf)
+								stack2.push(irn);
+
+							cf = true;
+							stack.push(pblock);
+						}
+					}
+
+					if (cf)
+						// undone control flow
+						return;
+
 					// for each parent: add mov/load new_reg -> phi_reg in parent block
 					for (int pred = 0; pred < get_irn_arity(irn); pred++)
 					{
