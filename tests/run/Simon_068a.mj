@@ -1,0 +1,11 @@
+class a {
+        public int modulo(int arg1, int arg2) {
+                return arg1 % arg2;
+        }
+
+	public static void main(String[] args) {
+		System.out.println(new a().modulo(-7, 3));
+		System.out.println(new a().modulo(7, -3));
+		System.out.println(new a().modulo(-7, -3));
+	}
+}
