@@ -94,15 +94,15 @@ runCompileTestDiff() {
 	for i in run/*.mj ; do
 		#extract substring
 		prefix=$(expr $i : '\(.*\)\.mj')
-		LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ -cfo $prefix.S $i > /dev/null
+		LD_LIBRARY_PATH=../libfirm/build/debug ../mj++ -o $prefix $i > /dev/null
 		ret=$?
 		if [ $ret -eq 0 ] ; then
-			#compile
-			gcc -m64 $prefix.S -o $prefix.out
-			ret=$?
+			#compile --> is now done in mj++ itself
+			#gcc -m64 $prefix.S -o $prefix.out
+			#ret=$?
 			if [ $ret -eq 0 ] ; then
 				#check diff
-				./$prefix.out | diff -q $prefix.check - > /dev/null
+				./$prefix | diff -q $prefix.check - > /dev/null
 				ret=$?
 				if [ $ret -eq 0 ] ; then
 					succeeded=$((succeeded + 1))
@@ -116,7 +116,7 @@ runCompileTestDiff() {
 				echo "\033[1;31mTest $i assembler error\033[0m"
 				TEST_PASSED=false
 			fi
-			rm $prefix.S $prefix.out
+			rm $prefix.S $prefix
 		elif [ $ret -eq 1 ] ; then
 			compfailed=$((compfailed + 1))
 			echo "\033[1;31mTest $i compilation failed\033[0m"
@@ -133,8 +133,8 @@ runCompileTestDiff() {
 }
 
 runTestDiff ast_printer "--print-ast" #&
-runTest parser_correct " " #&
-runTest parser_incorrect " " #&
+runTest parser_correct "--parse" #&
+runTest parser_incorrect "--parse" #&
 runTest semantic_correct "--check" #&
 runTest semantic_incorrect "--check" #&
 runCompileTestDiff run ""
