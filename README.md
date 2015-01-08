@@ -9,7 +9,7 @@ Compile by running `make` (debug version) or `make release` (release version) in
 
 Run the compiler like this:
 
-`./mj++ [--dumplexgraph|--lextest|--print-ast|--check [--firm]|--compile-firm] FILE`
+`./mj++ [--dumplexgraph|--lextest|--print-ast|--parse|--check [--firm]|--compile-firm|--assembly] [--out] FILE`
 
 - `--dumlexgraph`: Dump the automaton that is used by the lexer to a file. (Format: GML)
 
@@ -17,10 +17,20 @@ Run the compiler like this:
 
 - `--print-ast`: Pretty print the parsed file.
 
+- `--parse`: Run the syntax analysis on the given `FILE`.
+
 - `--check`: Run the semantic analysis on the given `FILE`.
 
 - `--firm` : Build the graphs and create an assembly file. Only works with `--check`.
 
 - `--compile-firm` : Run semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc.
 
-If the compiler is started without an option, the given `FILE` will be parsed and the return signal indicates, if it is correct.
+- `--assembly`: Keeps the created assembly file after compilation.
+
+- `--out`: A few options can be given an output file with this command.
+
+If the compiler is started without an alternative mode, like `--compile-firm` or `--print-ast`, the given `FILE` will be compiled using our own code generation and gcc. 
+The created assembly file will be deleted afterwards. This behaviour can be altered by `--assembly`.
+The created executeable file will be named `FILE.out`. This behaviour can be altered by `--out`.
+
+Example: `./mj++ -out foo foo.mj`
