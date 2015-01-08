@@ -87,6 +87,11 @@ namespace firm
 			 * Convert the generated Firm graphs to assembler and save in file out_name
 			 */
 			void build();
+
+			/**
+			 * Convert the generated Firm graphs to assembler using FIRM itself and save in file out_name
+			 */
+			void buildWithFirm();
 			/**
 			 * Replace all dollar signs in name with _C
 			 */
