@@ -82,9 +82,16 @@ int compileAssembly(std::string out_name_assembly)
 	return ret;
 }
 
+int removeAssembly(std::string out_name_assembly)
+{
+	std::string cmd = "rm " + out_name_assembly;
+	int ret = system(cmd.c_str());
+	return ret;
+}
+
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, CHECK, SUPPRESS_ERRORS, FIRM, OUT, COMPILE_FIRM};
+	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, PARSE, CHECK, SUPPRESS_ERRORS, FIRM, ASSEMBLY, OUT, COMPILE_FIRM};
 	static const option::Descriptor usage[] =
 	{
 		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
@@ -92,12 +99,14 @@ int main(int argc, const char** argv)
 		{DUMPLEXGRAPH, 0, "d", "dumplexgraph", option::Arg::None, "  --dumplexgraph\tPrint automaton of lexer to the given file name."},
 		{LEXTEST, 0, "l", "lextest", option::Arg::None, "  --lextest\tOnly run the lexer on the input FILE."},
 		{PRINT_AST, 0, "p", "print-ast", option::Arg::None, "  --print-ast\tPretty prints the content of the abstract syntax tree after a file has been parsed."},
+		{PARSE, 0, "p", "parse", option::Arg::None, "  --parse\tRuns the syntax analysis"},
 		{CHECK, 0, "c", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
 		{SUPPRESS_ERRORS, 0, "s", "suppress-errors", option::Arg::None, "  --suppress-errors\tprevents any errors from being printed"},
 		{FIRM, 0, "f", "firm", option::Arg::None, "  --firm\tInitialize libFirm"},
+		{ASSEMBLY, 0, "a", "assembly", option::Arg::None, "  --assembly\tKeeps the assembly file after compiling."},
 		{OUT, 0, "o", "out", option::Arg::Required, "  --out FILE\tSet the output for various commands to FILE"},
 		{COMPILE_FIRM, 0, "b", "compile-firm", option::Arg::None, "  --compile-firm\tRun the semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc."},
-		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the parser will be run in silent mode."},
+		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the compiler will be run with the given file."},
 		{0, 0, 0, 0, 0, 0}
 	};
 
@@ -157,7 +166,13 @@ int main(int argc, const char** argv)
 		}
 
 		if (options[PRINT_AST] && valid)
+		{
 			parser.getRoot()->toString(std::cout, 0);
+			return !valid;
+		}
+
+		if (options[PARSE])
+			return !valid;
 
 		if (options[CHECK] && valid)
 		{
@@ -182,16 +197,19 @@ int main(int argc, const char** argv)
 				compileAssembly(out_name_assembly);
 			}
 		}
-		else
+		else //default compile mode
 		{
 			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
 
 			if (valid)
 			{
-				std::string out_name_assembly = out_name + (options[OUT] ? "" : ".S");
+				std::string out_name_assembly = out_name + ".S";
 				runFirm(file_name, out_name_assembly, parser.getRoot());
 				build();
 				compileAssembly(out_name_assembly);
+
+				if (!options[ASSEMBLY])
+					removeAssembly(out_name_assembly);
 			}
 		}
 
