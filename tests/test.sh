@@ -20,7 +20,7 @@ runTest() {
 	failed=0
 	segfaults=0
 
-	for i in $1/* ; do
+	for i in $1/*.mj ; do
 		# skip big tests if option is given:
 		if [ $FAST = true -a -z "${i##*big.mj}" ]; then
 			continue
