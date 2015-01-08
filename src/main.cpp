@@ -60,10 +60,17 @@ void runFirm(std::string file_name, std::string out_name, shptr<ast::Program> ro
 {
 	firm::FirmInterface::getInstance().setInput(file_name);
 	firm::FirmInterface::getInstance().setOutput(out_name);
-	// TODO
-	// Create instance of FirmVisitor / ProgramVisitor / whatever is suitable
-
 	firm::FirmInterface::getInstance().convert(root);
+}
+
+void buildWithFirm()
+{
+	firm::FirmInterface::getInstance().buildWithFirm();
+}
+
+void build()
+{
+	firm::FirmInterface::getInstance().build();
 }
 
 int compileAssembly(std::string out_name_assembly)
@@ -157,7 +164,10 @@ int main(int argc, const char** argv)
 			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
 
 			if (options[FIRM] && valid)
+			{
 				runFirm(file_name, out_name + (options[OUT] ? "" : ".S"), parser.getRoot());
+				buildWithFirm();
+			}
 
 		}
 		else if (options[COMPILE_FIRM] && valid)
@@ -168,6 +178,19 @@ int main(int argc, const char** argv)
 			{
 				std::string out_name_assembly = out_name + (options[OUT] ? "" : ".S");
 				runFirm(file_name, out_name_assembly, parser.getRoot());
+				buildWithFirm();
+				compileAssembly(out_name_assembly);
+			}
+		}
+		else
+		{
+			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
+
+			if (valid)
+			{
+				std::string out_name_assembly = out_name + (options[OUT] ? "" : ".S");
+				runFirm(file_name, out_name_assembly, parser.getRoot());
+				build();
 				compileAssembly(out_name_assembly);
 			}
 		}
