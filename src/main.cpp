@@ -73,11 +73,11 @@ void build()
 	firm::FirmInterface::getInstance().build();
 }
 
-int compileAssembly(std::string out_name_assembly)
+int compileAssembly(std::string out_name_assembly, std::string out_name_file)
 {
 	std::cout << "Compiling" << std::endl;
 	//TODO: may check if "gcc" is installed...or something.
-	std::string cmd = "gcc " + out_name_assembly + " -o " + out_name_assembly.substr(0, out_name_assembly.find_last_of('.'));
+	std::string cmd = "gcc " + out_name_assembly + " -o " + out_name_file;
 	int ret = system(cmd.c_str());
 	return ret;
 }
@@ -192,9 +192,10 @@ int main(int argc, const char** argv)
 			if (valid)
 			{
 				std::string out_name_assembly = out_name + (options[OUT] ? "" : ".S");
+				std::string out_name_file = out_name + (options[OUT] ? "" : ".out");
 				runFirm(file_name, out_name_assembly, parser.getRoot());
 				buildWithFirm();
-				compileAssembly(out_name_assembly);
+				compileAssembly(out_name_assembly, out_name_file);
 			}
 		}
 		else //default compile mode
@@ -204,9 +205,10 @@ int main(int argc, const char** argv)
 			if (valid)
 			{
 				std::string out_name_assembly = out_name + ".S";
+				std::string out_name_file = out_name + (options[OUT] ? "" : ".out");
 				runFirm(file_name, out_name_assembly, parser.getRoot());
 				build();
-				compileAssembly(out_name_assembly);
+				compileAssembly(out_name_assembly, out_name_file);
 
 				if (!options[ASSEMBLY])
 					removeAssembly(out_name_assembly);

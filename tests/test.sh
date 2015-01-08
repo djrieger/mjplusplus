@@ -116,7 +116,7 @@ runCompileTestDiff() {
 				echo "\033[1;31mTest $i assembler error\033[0m"
 				TEST_PASSED=false
 			fi
-			rm $prefix.S $prefix
+			rm $prefix
 		elif [ $ret -eq 1 ] ; then
 			compfailed=$((compfailed + 1))
 			echo "\033[1;31mTest $i compilation failed\033[0m"
