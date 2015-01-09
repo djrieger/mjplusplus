@@ -379,55 +379,6 @@ namespace firm
 		return classFieldEntities[ {class_type, field_name}];
 	}
 
-	/*
-	ir_entity* FirmInterface::getSystemNode()
-	{
-		static ir_entity* system_ent = NULL;
-
-		if (!system_ent)
-		{
-			lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
-			auto s = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(sit));
-
-			ir_type* system_type = getType(s);
-			system_ent = new_entity(get_glob_type(), new_id_from_str("System"), system_type);
-			set_entity_initializer(system_ent, get_initializer_null());
-		}
-
-		return system_ent;
-	}
-	*/
-
-	/*
-	void FirmInterface::initSystem()
-	{
-		ir_entity* system_ent = getSystemNode();
-
-		lexer::Token oit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$Out"), { -1, 0}};
-		auto o = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(oit));
-		ir_type* out_type = getType(o);
-
-		lexer::Token sit {lexer::Token::Token_type::TOKEN_IDENT, lexer::Token::getTableReference("$System"), { -1, 0}};
-		auto s = std::make_shared<ast::Type>(std::make_shared<ast::Ident>(sit));
-		ir_type* system_type = getType(s);
-
-		ir_node* one = createNodeForIntegerConstant(1);
-		ir_node* out_n = createNodeForCallocCall(one, get_type_size_bytes(out_type));
-		ir_node* system_n = createNodeForCallocCall(one, get_type_size_bytes(system_type));
-		ir_node* system_addr = new_Address(system_ent);
-
-		set_store(new_Proj(new_Store(get_store(), system_addr, system_n, system_type, cons_none), mode_M, pn_Store_M));
-
-		ir_entity* out_field = getFieldEntity(get_pointer_points_to_type(system_type), "_CSystem_Fout");
-
-		ir_mode* addr_mode = get_reference_mode_unsigned_eq(mode_P);
-		ir_node* offset_node = new_Const_long(addr_mode, get_entity_offset(out_field));
-		ir_node* addr = new_Conv(new_Add(new_Conv(system_n, addr_mode), offset_node, addr_mode), mode_P);
-
-		set_store(new_Proj(new_Store(get_store(), addr, out_n, out_type, cons_none), mode_M, pn_Store_M));
-	}
-	*/
-
 	std::string FirmInterface::replace_dollar(std::string name)
 	{
 		std::string s = name;
@@ -469,11 +420,11 @@ namespace firm
 		return std::move(pWorklist);
 	}
 
-	std::vector<std::pair<ir_node*, unsigned int> > FirmInterface::getOuts(ir_node const* n)
+	std::vector<std::pair<ir_node*, unsigned int> > FirmInterface::getOuts(ir_node const* n, ir_edge_kind_t kind)
 	{
 		std::vector<std::pair<ir_node*, unsigned int>> outs;
 
-		for (ir_edge_t const* oe = get_irn_out_edge_first(n); oe; oe = get_irn_out_edge_next(n, oe, EDGE_KIND_NORMAL))
+		for (ir_edge_t const* oe = get_irn_out_edge_first_kind(n, kind); oe; oe = get_irn_out_edge_next(n, oe, kind))
 			outs.emplace_back(get_edge_src_irn(oe), get_edge_src_pos(oe));
 
 		return outs;
