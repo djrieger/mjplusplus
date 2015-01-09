@@ -211,7 +211,14 @@ namespace firm
 			ir_node* block = get_nodes_block(irn);
 
 			for (int i = 0; i < get_irn_arity(irn); i++)
+			{
 				phi_blocks.insert(get_nodes_block(get_irn_n(block, i)));
+				// try forcing dependency between phis of same block -- does nothing yet
+				ir_node* parent = get_irn_n(irn, i);
+
+				if (is_Phi(parent) && get_nodes_block(parent) == block)
+					add_irn_dep(parent, irn);
+			}
 
 			for (auto& e : FirmInterface::getInstance().getOuts(irn))
 			{
@@ -457,7 +464,7 @@ namespace firm
 				if (it != partial.end())
 					it->second++;
 				else
-					partial[phi] = 1 + FirmInterface::getInstance().getOuts(phi).size();
+					partial[phi] = 1 + FirmInterface::getInstance().getOuts(phi).size() + FirmInterface::getInstance().getOuts(phi, EDGE_KIND_DEP).size();
 
 				stack_phi.push(phi);
 			}
@@ -477,7 +484,7 @@ namespace firm
 
 		auto children = FirmInterface::getInstance().getOuts(irn);
 		auto children_dep = FirmInterface::getInstance().getOuts(irn, EDGE_KIND_DEP);
-		children.insert(children.end(), children_dep.begin(), children_dep.end());
+		children_dep.insert(children_dep.end(), children.begin(), children.end());
 
 		auto it = partial.find(irn);
 
@@ -485,9 +492,9 @@ namespace firm
 			it->second--;
 		else
 		{
-			partial[irn] = children.size() - 1;
+			partial[irn] = children_dep.size() - 1;
 
-			for (auto& child : children)
+			for (auto& child : children_dep)
 			{
 				if (is_Anchor(child.first))
 					partial[irn]--;
@@ -498,7 +505,7 @@ namespace firm
 				partial[irn] -= 2;
 		}
 
-		ir_printf("testing (%ld) %F, %zu of %zu left\n", get_irn_node_nr(irn), irn, partial[irn], children.size());
+		ir_printf("testing (%ld) %F, %zu of %zu left\n", get_irn_node_nr(irn), irn, partial[irn], children_dep.size());
 
 		if (partial[irn] == 0 || (is_Phi(irn) && get_irn_link(irn) != irn))
 		{
@@ -524,7 +531,7 @@ namespace firm
 				}
 			}
 
-			ir_printf("assembling (%ld) %F in %F\n", get_irn_node_nr(irn), irn, block);
+			ir_printf("assembling (%ld) %F in Block %ld\n", get_irn_node_nr(irn), irn, get_irn_node_nr(block));
 			//all children seen - handle it now
 			//phis are handeled twice, first directly after generating control flow for generating code
 			//    second (like all other nodes) when all children have been handled, for merging the output registers
@@ -557,7 +564,7 @@ namespace firm
 			        && !(get_irn_mode(irn) == mode_T && (irn == get_irg_start(get_irn_irg(irn)) || get_irn_n(irn, 0) == get_irg_start(get_irn_irg(irn))))
 			        && !is_Cmp(irn))
 			{
-				for (auto& child : FirmInterface::getInstance().getOuts(irn))
+				for (auto& child : children)
 				{
 					ir_node* key = (ir_node*) get_irn_link(child.first);
 
@@ -709,7 +716,7 @@ namespace firm
 			{
 				std::vector<Access> writes;
 
-				for (auto& child : FirmInterface::getInstance().getOuts(irn))
+				for (auto& child : children)
 				{
 					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(child.first), child.first, child.first);
 
@@ -747,7 +754,7 @@ namespace firm
 			{
 				std::vector<Access> writes;
 
-				for (auto& child : FirmInterface::getInstance().getOuts(irn))
+				for (auto& child : children)
 				{
 					if (get_irn_mode(child.first) == mode_M)
 						continue;
