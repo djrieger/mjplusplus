@@ -16,9 +16,13 @@ namespace firm
 
 		if (is_Const(node))
 			handleConst(node);
-		else if (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Minus(node)
-		         || (is_Conv(node) && node.getMode() == mode_Lu))
-			handleArithmetic(node);
+		else
+		{
+			ir_mode* mode = node.getMode();
+
+			if (!is_Proj(node) && (mode == mode_Is || mode == mode_Lu))
+				handleArithmetic(node);
+		}
 	}
 
 	void CommonSubexpressionEliminator::handleConst(Node node)
@@ -64,7 +68,7 @@ namespace firm
 			children.push_back(get_irn_node_nr(c));
 
 		//std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<< " << get_irn_node_nr(get_irn_n(node, -1)) << std::endl;
-		std::tuple<unsigned, unsigned, vec<unsigned>> elem {op, get_irn_node_nr(get_irn_n(node, -1)), children};
+		nodeInfo elem {op, get_irn_node_nr(get_irn_n(node, -1)), (uint64_t) node.getMode(), children};
 		//std::cout << op << " and first child " << children[0] << std::endl;
 		auto nodeIt = comp_nodes.find(elem);
 
