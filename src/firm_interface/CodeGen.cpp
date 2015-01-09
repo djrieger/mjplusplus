@@ -200,51 +200,55 @@ namespace firm
 
 		edges_activate(irg);
 
+		//force phi ordering
+		//code for phis in a specific block must be generated after all reads from that phi in the same block
+		irg_walk_graph(irg, [](ir_node * irn, void*)
+		{
+			if (!is_Phi(irn) || get_irn_mode(irn) == mode_M)
+				return;
+
+			std::set<ir_node*> phi_blocks;
+			ir_node* block = get_nodes_block(irn);
+
+			for (int i = 0; i < get_irn_arity(irn); i++)
+				phi_blocks.insert(get_nodes_block(get_irn_n(block, i)));
+
+			for (auto& e : FirmInterface::getInstance().getOuts(irn))
+			{
+				if (e.first != irn && phi_blocks.count(get_nodes_block(e.first)))
+					add_irn_dep(irn, e.first);
+			}
+		}, NULL, NULL
+		              );
+		dump_ir_graph(irg, "dep");
+
 		//handle keepalives
 		ir_node* en = get_irg_end(irg);
 		set_irn_link(en, NULL);
 
 		for (int i = 0; i < get_irn_arity(en); i++)
-			stack2.push(get_irn_n(en, i));
+		{
+			ir_node* enp = get_irn_n(en, i);
+
+			if (is_Block(enp) || is_Cmp(enp) || is_Cond(enp) || get_irn_mode(enp) == mode_X)
+				stack_cf.push(enp);
+			else if (is_Phi(enp))
+				stack_phi.push(enp);
+			else
+				stack_normal.push(enp);
+		}
 
 		// no code for end block, just find returns
 		ir_node* eb = get_irg_end_block(irg);
 		set_irn_link(eb, NULL);
 
 		for (int i = 0; i < get_irn_arity(eb); i++)
-			stack.push(get_irn_n(eb, i));
+			stack_cf.push(get_irn_n(eb, i));
 
-		while (!stack.empty() || !stack2.empty())
+		auto print_stack = [&]
 		{
-			while (!stack.empty())
-			{
-				printf("TODO: ");
-				std::stack<ir_node*> tmp = stack;
-
-				while (!tmp.empty())
-				{
-					printf("%ld, ", get_irn_node_nr(tmp.top()));
-					tmp.pop();
-				}
-
-				printf("// ");
-				std::stack<ir_node*> tmp2 = stack2;
-
-				while (!tmp2.empty())
-				{
-					printf("%ld, ", get_irn_node_nr(tmp2.top()));
-					tmp2.pop();
-				}
-
-				printf("\n");
-
-				ir_node* irn = stack.top();
-				stack.pop();
-				assemble(irn);
-			}
-
 			printf("TODO: ");
-			std::stack<ir_node*> tmp = stack;
+			std::stack<ir_node*> tmp = stack_cf;
 
 			while (!tmp.empty())
 			{
@@ -253,7 +257,7 @@ namespace firm
 			}
 
 			printf("// ");
-			std::stack<ir_node*> tmp2 = stack2;
+			std::stack<ir_node*> tmp2 = stack_phi;
 
 			while (!tmp2.empty())
 			{
@@ -261,12 +265,47 @@ namespace firm
 				tmp2.pop();
 			}
 
-			printf("\n");
+			printf("// ");
+			std::stack<ir_node*> tmp3 = stack_normal;
 
-			if (!stack2.empty())
+			while (!tmp3.empty())
 			{
-				ir_node* irn = stack2.top();
-				stack2.pop();
+				printf("%ld, ", get_irn_node_nr(tmp3.top()));
+				tmp3.pop();
+			}
+
+			printf("\n");
+		};
+
+		while (!stack_cf.empty() || !stack_phi.empty() || !stack_normal.empty())
+		{
+			while (!stack_cf.empty() || !stack_phi.empty())
+			{
+				while (!stack_cf.empty())
+				{
+					print_stack();
+
+					ir_node* irn = stack_cf.top();
+					stack_cf.pop();
+					assemble(irn);
+				}
+
+				print_stack();
+
+				if (!stack_phi.empty())
+				{
+					ir_node* irn = stack_phi.top();
+					stack_phi.pop();
+					assemble(irn);
+				}
+			}
+
+			print_stack();
+
+			if (!stack_normal.empty())
+			{
+				ir_node* irn = stack_normal.top();
+				stack_normal.pop();
 				assemble(irn);
 			}
 		}
@@ -384,6 +423,16 @@ namespace firm
 
 	void CodeGen::assemble(ir_node* irn)
 	{
+		auto push_node = [&](ir_node * irn)
+		{
+			if (is_Block(irn) || is_Cmp(irn) || is_Cond(irn) || get_irn_mode(irn) == mode_X)
+				stack_cf.push(irn);
+			else if (is_Phi(irn))
+				stack_phi.push(irn);
+			else
+				stack_normal.push(irn);
+		};
+
 		ir_node* block = irn;
 
 		if (!is_Block(irn))
@@ -394,7 +443,7 @@ namespace firm
 			// handle the block
 			// requeue the node if it isn't the block itself
 			if (irn != block)
-				stack.push(irn);
+				push_node(irn);
 
 			set_irn_link(block, block);
 
@@ -410,7 +459,7 @@ namespace firm
 				else
 					partial[phi] = 1 + FirmInterface::getInstance().getOuts(phi).size();
 
-				stack2.push(phi);
+				stack_phi.push(phi);
 			}
 
 			// take care of block parents
@@ -419,7 +468,7 @@ namespace firm
 			for (int i = 0; i < get_irn_arity(block); i++)
 			{
 				ir_printf("\t%ld: %F\n", get_irn_node_nr(get_irn_n(block, i)), get_irn_n(block, i));
-				stack.push(get_irn_n(block, i));
+				stack_cf.push(get_irn_n(block, i));
 			}
 
 			printf("Block %ld - done\n", get_irn_node_nr(block));
@@ -427,6 +476,9 @@ namespace firm
 		}
 
 		auto children = FirmInterface::getInstance().getOuts(irn);
+		auto children_dep = FirmInterface::getInstance().getOuts(irn, EDGE_KIND_DEP);
+		children.insert(children.end(), children_dep.begin(), children_dep.end());
+
 		auto it = partial.find(irn);
 
 		if (it != partial.end())
@@ -455,14 +507,18 @@ namespace firm
 			{
 				printf("\tqueueing:\n");
 
+				for (int i = 0; i < get_irn_n_deps(irn); i++)
+				{
+					ir_node* p = get_irn_dep(irn, i);
+					push_node(p);
+
+					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(p), p, p);
+				}
+
 				for (int i = 0; i < get_irn_arity(irn); i++)
 				{
 					ir_node* p = get_irn_n(irn, i);
-
-					if (get_nodes_block(p) == block)
-						stack.push(p);
-					else
-						stack2.push(p);
+					push_node(p);
 
 					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(p), p, p);
 				}
@@ -501,7 +557,7 @@ namespace firm
 			        && !(get_irn_mode(irn) == mode_T && (irn == get_irg_start(get_irn_irg(irn)) || get_irn_n(irn, 0) == get_irg_start(get_irn_irg(irn))))
 			        && !is_Cmp(irn))
 			{
-				for (auto& child : children)
+				for (auto& child : FirmInterface::getInstance().getOuts(irn))
 				{
 					ir_node* key = (ir_node*) get_irn_link(child.first);
 
@@ -534,10 +590,10 @@ namespace firm
 						if (get_irn_link(pblock) != pblock)
 						{
 							if (!cf)
-								stack2.push(irn);
+								stack_phi.push(irn);
 
 							cf = true;
-							stack.push(pblock);
+							stack_cf.push(pblock);
 						}
 					}
 
@@ -653,7 +709,7 @@ namespace firm
 			{
 				std::vector<Access> writes;
 
-				for (auto& child : children)
+				for (auto& child : FirmInterface::getInstance().getOuts(irn))
 				{
 					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(child.first), child.first, child.first);
 
@@ -673,8 +729,8 @@ namespace firm
 						if (get_Proj_num(used_arg.first) >= 6)
 						{
 							//TODO: 7th.. args are on stack, latter args at higher addresses
-							printf("more than 6 arguments...");
-							continue;
+							printf("more than 6 arguments...\n");
+							abort();
 						}
 
 						Constraint c = arg_order[get_Proj_num(used_arg.first)];
@@ -691,7 +747,7 @@ namespace firm
 			{
 				std::vector<Access> writes;
 
-				for (auto& child : children)
+				for (auto& child : FirmInterface::getInstance().getOuts(irn))
 				{
 					if (get_irn_mode(child.first) == mode_M)
 						continue;
@@ -712,7 +768,13 @@ namespace firm
 
 				std::vector<Access> reads = {{NONE, 0}, {NONE, 0}};
 
-				for (int i = 2; i < get_irn_arity(irn); i++)
+				if (get_irn_arity(irn) > 8)
+				{
+					printf("more than 6 arguments...\n");
+					abort();
+				}
+
+				for (int i = 2; i < std::min(8, get_irn_arity(irn)); i++)
 				{
 					size_t reg = is_Const(get_irn_n(irn, i)) ? 0 : new_register();
 					reads.push_back({arg_order[i - 2], reg});

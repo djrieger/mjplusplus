@@ -103,8 +103,6 @@ namespace firm
 			ir_entity* getMethodEntity(ir_type* class_type, std::string method_name);
 			ir_entity* getFieldEntity(ir_type* class_type, std::string method_name);
 			ir_entity* createMethodEntity(ir_type* caller, shptr<ast::MethodDeclaration const> methodDeclaration);
-			//ir_entity* getSystemNode();
-			//void initSystem();
 
 			void setInput(std::string const& in);
 			void setOutput(std::string const& out);
@@ -115,7 +113,7 @@ namespace firm
 			void foo();
 
 			std::queue<ir_node*> getWorklist(ir_graph* irg);
-			std::vector<std::pair<ir_node*, unsigned int>> getOuts(ir_node const* n);
+			std::vector<std::pair<ir_node*, unsigned int>> getOuts(ir_node const* n, ir_edge_kind_t kind = EDGE_KIND_NORMAL);
 	};
 }
 
