@@ -8,22 +8,19 @@
 #include "GraphOptimizer.hpp"
 #include "Node.hpp"
 
+typedef std::tuple<unsigned, unsigned, unsigned, vec<unsigned>> nodeInfo;
+
 namespace std
 {
-	/**
-	 * We need a hash for std::pair<ir_type*, std::string> for maps
-	 * such as firm::FirmInterface::classMethodEntities and
-	 * firm::FirmInterface::classFieldEntities
-	 */
 	template<>
-	struct hash<tuple<unsigned, unsigned, vec<unsigned>>>
+	struct hash<nodeInfo>
 	{
-		size_t operator ()(tuple<unsigned, unsigned, vec<unsigned>> const& t) const
+		size_t operator ()(nodeInfo const& t) const
 		{
 			hash<unsigned> h;
-			size_t hash = h(std::get<0>(t)) ^ h(std::get<1>(t));
+			size_t hash = h(std::get<0>(t)) ^ h(std::get<1>(t)) ^ h(std::get<2>(t));
 
-			for (auto it : std::get<2>(t))
+			for (auto it : std::get<3>(t))
 				hash = hash ^ h(it);
 
 			return hash;
@@ -39,7 +36,7 @@ namespace firm
 		protected:
 			std::unordered_map<long int, Node> const_Is_nodes;
 			std::unordered_map<uint64_t, Node> const_Lu_nodes;
-			std::unordered_map<std::tuple<unsigned, unsigned, vec<unsigned>>, Node> comp_nodes;
+			std::unordered_map<nodeInfo, Node> comp_nodes;
 			void handleConst(Node node);
 			void handleArithmetic(Node node);
 			bool changed = false;
