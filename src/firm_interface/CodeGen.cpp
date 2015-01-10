@@ -5,8 +5,6 @@
 
 #include "FirmInterface.hpp"
 
-//using namespace std::string_literals;
-
 namespace firm
 {
 	const CodeGen::Constraint CodeGen::arg_order[] = {RDI, RSI, RDX, RCX, R8, R9};
@@ -121,8 +119,85 @@ namespace firm
 			free_registers.insert(b);
 	}
 
+	void CodeGen::swap_register(size_t a, size_t b)
+	{
+		printf("\t\tswapping %zu and %zu\n", a, b);
+
+		if (a == b)
+			return;
+
+		auto& a_reg = registers[a];
+		auto& b_reg = registers[b];
+
+		printf("\t\twrites: ");
+		std::vector<ir_node*> writes(a_reg.writes.size() + b_reg.writes.size());
+		writes.resize(std::distance(writes.begin(), std::set_union(a_reg.writes.begin(), a_reg.writes.end(), b_reg.writes.begin(), b_reg.writes.end(), writes.begin())));
+
+		for (auto& w : writes)
+		{
+			ir_printf("[%p %F]: ", w, w);
+
+			for (auto& ww : usage[w].first)
+			{
+				printf("%zu", ww.reg);
+
+				if (ww.reg == a)
+				{
+					ww.reg = b;
+					printf("->%zu", ww.reg);
+				}
+				else if (ww.reg == b)
+				{
+					ww.reg = a;
+					printf("->%zu", ww.reg);
+				}
+
+				printf(", ");
+			}
+
+			printf("; ");
+		}
+
+		printf("\n\t\treads: ");
+		std::vector<ir_node*> reads(a_reg.reads.size() + b_reg.reads.size());
+		reads.resize(std::distance(reads.begin(), std::set_union(a_reg.reads.begin(), a_reg.reads.end(), b_reg.reads.begin(), b_reg.reads.end(), reads.begin())));
+
+		for (auto& r : reads)
+		{
+			ir_printf("[%p %F]: ", r, r);
+
+			for (auto& rr : usage[r].second)
+			{
+				printf("%zu", rr.reg);
+
+				if (rr.reg == a)
+				{
+					rr.reg = b;
+					printf("->%zu", rr.reg);
+				}
+				else if (rr.reg == b)
+				{
+					rr.reg = a;
+					printf("->%zu", rr.reg);
+				}
+
+				printf(", ");
+			}
+
+			printf("; ");
+		}
+
+		printf("\n");
+
+		a_reg.writes.swap(b_reg.writes);
+		a_reg.reads.swap(b_reg.reads);
+	}
+
 	char const* CodeGen::constraintToRegister(Constraint c, ir_mode* mode)
 	{
+		if (c >= STACK)
+			return "!!Stack!!";
+
 		unsigned size = get_mode_size_bytes(mode);
 
 		switch (size)
@@ -319,48 +394,50 @@ namespace firm
 
 		edges_deactivate(irg);
 
-		//******** register use debug/dump code pt 1 begin
-		printf("----------\n");
-
-		for (auto& reg : registers)
+		auto regdump = [&]
 		{
-			printf("writes: ");
+			printf("----------\n");
 
-			for (ir_node* w : reg.writes)
-				ir_printf("%F, ", w);
+			for (auto& reg : registers)
+			{
+				printf("writes: ");
 
-			printf("\nreads: ");
+				for (ir_node* w : reg.writes)
+					ir_printf("%F, ", w);
 
-			for (ir_node* r : reg.reads)
-				ir_printf("%F, ", r);
+				printf("\nreads: ");
+
+				for (ir_node* r : reg.reads)
+					ir_printf("%F, ", r);
+
+				printf("\n\n");
+			}
+
+			printf("free: ");
+
+			for (size_t f : free_registers)
+				printf("%zu, ", f);
 
 			printf("\n\n");
-		}
 
-		printf("free: ");
+			for (auto& u : usage)
+			{
+				ir_printf("%p - %F:\n\twrites: ", u.first, u.first);
 
-		for (size_t f : free_registers)
-			printf("%zu, ", f);
+				for (auto& w : u.second.first)
+					printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
 
-		printf("\n\n");
+				printf("\n\treads: ");
 
-		for (auto& u : usage)
-		{
-			ir_printf("%p - %F:\n\twrites: ", u.first, u.first);
+				for (auto& r : u.second.second)
+					printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
 
-			for (auto& w : u.second.first)
-				printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
+				printf("\n");
+			}
+		};
 
-			printf("\n\treads: ");
-
-			for (auto& r : u.second.second)
-				printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
-
-			printf("\n");
-		}
-
+		regdump();
 		printf("\n----------\ncondensing\n----------\n");
-		//******** register use debug/dump code pt 1 end
 
 		// register condensing
 		while (!free_registers.empty())
@@ -385,45 +462,35 @@ namespace firm
 			registers.resize(registers.size() - 1);
 		}
 
-		//******** register use debug/dump code pt 2 begin
-		for (auto& reg : registers)
+		regdump();
+
+		size_t args = get_method_n_params(get_entity_type(get_irg_entity(irg)));
+
+		if (args > 6)
 		{
-			printf("writes: ");
+			// if arguments are passed on the stack:
+			// - filter out stack arguments and move them to the end of the register vector
+			// - seperate them from the remaining registers with an additional dummy register
+			//     (actually the gap is used for the return address pushed by call)
+			// if some stack arguments are unused we'll use their registers for other variables
+			size_t last = new_register();
 
-			for (ir_node* w : reg.writes)
-				ir_printf("%F, ", w);
+			while (last <= args - 6)
+				// ensure register allocation for stack arguments
+				last = new_register();
 
-			printf("\nreads: ");
+			size_t gap = last - (args - 6);
+			swap_register(gap, last);
+			auto& writes = usage[get_irg_start(irg)].first;
 
-			for (ir_node* r : reg.reads)
-				ir_printf("%F, ", r);
+			for (auto& w : writes)
+			{
+				if (w.constraint >= STACK)
+					swap_register(gap + w.constraint - STACK + 1, w.reg);
+			}
 
-			printf("\n\n");
+			regdump();
 		}
-
-		printf("free: ");
-
-		for (size_t f : free_registers)
-			printf("%zu, ", f);
-
-		printf("\n\n");
-
-		for (auto& u : usage)
-		{
-			ir_printf("%p - %F:\n\twrites: ", u.first, u.first);
-
-			for (auto& w : u.second.first)
-				printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
-
-			printf("\n\treads: ");
-
-			for (auto& r : u.second.second)
-				printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
-
-			printf("\n");
-		}
-
-		//******** register use debug/dump code pt 2 end
 
 		output(irg);
 	}
@@ -733,14 +800,8 @@ namespace firm
 							continue;
 
 						// function arguments
-						if (get_Proj_num(used_arg.first) >= 6)
-						{
-							//TODO: 7th.. args are on stack, latter args at higher addresses
-							printf("more than 6 arguments...\n");
-							abort();
-						}
-
-						Constraint c = arg_order[get_Proj_num(used_arg.first)];
+						unsigned int arg = get_Proj_num(used_arg.first);
+						Constraint c = arg < 6 ? arg_order[arg] : (Constraint) (STACK + (-6 + arg));
 						size_t reg = usage[used_arg.first].second[0].reg;
 						registers[reg].writes.push_back(irn);
 						writes.push_back({c, reg});
@@ -775,16 +836,10 @@ namespace firm
 
 				std::vector<Access> reads = {{NONE, 0}, {NONE, 0}};
 
-				if (get_irn_arity(irn) > 8)
-				{
-					printf("more than 6 arguments...\n");
-					abort();
-				}
-
-				for (int i = 2; i < std::min(8, get_irn_arity(irn)); i++)
+				for (int i = 2; i < get_irn_arity(irn); i++)
 				{
 					size_t reg = is_Const(get_irn_n(irn, i)) ? 0 : new_register();
-					reads.push_back({arg_order[i - 2], reg});
+					reads.push_back({i < 8 ? arg_order[i - 2] : (Constraint) (STACK - 8 + i), reg});
 
 					if (reg)
 						registers[reg].reads.push_back(irn);
@@ -915,7 +970,15 @@ namespace firm
 
 		// adjust stack
 		if (registers.size() > 1)
-			fprintf(out, "\tsub $%zd, %%rsp\n", 8 * registers.size() - 8);
+		{
+			size_t reg_count = registers.size() - 1;
+
+			if (get_method_n_params(get_entity_type(get_irg_entity(irg))) > 6)
+				reg_count -= get_method_n_params(get_entity_type(get_irg_entity(irg))) - 6 + 1;
+
+			if (reg_count)
+				fprintf(out, "\tsub $%zd, %%rsp\n", 8 * reg_count);
+		}
 
 		for (auto& block : code)
 		{
@@ -968,7 +1031,16 @@ namespace firm
 
 			// free stack
 			if (registers.size() > 1)
-				fprintf(out, "\tadd $%zd, %%rsp\n", 8 * registers.size() - 8);
+			{
+				size_t reg_count = registers.size() - 1;
+
+				if (get_method_n_params(get_entity_type(get_irg_entity(get_irn_irg(irn)))) > 6)
+					reg_count -= get_method_n_params(get_entity_type(get_irg_entity(get_irn_irg(irn)))) - 6 + 1;
+
+				if (reg_count)
+					fprintf(out, "\tadd $%zd, %%rsp\n", 8 * reg_count);
+			}
+
 
 			// and return
 			fprintf(out, "\tret\n");
@@ -1046,7 +1118,7 @@ namespace firm
 
 			for (auto& w : writes)
 			{
-				if (w.reg)
+				if (w.reg && w.constraint < STACK)
 					//TODO: get actual mode (from start <- proj T args <- proj wanted_mode arg_n ?)
 					fprintf(out, "\tmov %s, %zd(%%rsp)\n", constraintToRegister(w.constraint, mode_P), 8 * w.reg - 8);
 			}
@@ -1058,12 +1130,37 @@ namespace firm
 			for (int i = 2; i < get_irn_arity(irn); i++)
 			{
 				ir_mode* arg_mode = get_irn_mode(get_irn_n(irn, i));
-				fprintf(out, "\tmov%s ", operationSuffix(arg_mode));
-				load_or_imm(get_irn_n(irn, i), reads[i].reg);
-				fprintf(out, ", %s\n", constraintToRegister(reads[i].constraint, arg_mode));
+				char const* os = operationSuffix(arg_mode);
+
+				if (i < 8)
+				{
+					// first 6 args in registers
+					fprintf(out, "\tmov%s ", os);
+					load_or_imm(get_irn_n(irn, i), reads[i].reg);
+					fprintf(out, ", %s\n", constraintToRegister(reads[i].constraint, arg_mode));
+				}
+				else
+				{
+					// remaining args on stack
+					char const* rs = constraintToRegister(RAX, arg_mode);
+					fprintf(out, "\tmov%s ", os);
+
+					if (reads[i].reg)
+						fprintf(out, "%zd(%%rsp), %s\n\tmov%s %s", 8 * reads[i].reg - 8, rs, os, rs);
+					else
+						fprintf(out, "$%ld", get_tarval_long(get_Const_tarval(get_irn_n(irn, i))));
+
+					fprintf(out, ", %zd(%%rsp)\n", (ssize_t) - 8 * (get_irn_arity(irn) - i));
+				}
 			}
 
+			if (get_irn_arity(irn) > 8)
+				fprintf(out, "\tsub $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
+
 			fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
+
+			if (get_irn_arity(irn) > 8)
+				fprintf(out, "\tadd $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
 
 			if (!usage[irn].first.empty())
 				//TODO: get actual mode (from call <- proj T result <- proj wanted_mode 0 ?)

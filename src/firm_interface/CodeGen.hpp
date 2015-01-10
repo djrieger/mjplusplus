@@ -28,7 +28,8 @@ namespace firm
 				RDI,//first arg
 				R8,//fifth arg
 				R9,//sixth arg
-				R10, R11, R12, R13, R14, R15
+				R10, R11, R12, R13, R14, R15,
+				STACK//seventh arg / first arg on stack -- must be last in enum
 			};
 
 			struct Access
@@ -58,6 +59,7 @@ namespace firm
 
 			size_t new_register();
 			void merge_register(size_t a, size_t b, bool add_to_free = true);
+			void swap_register(size_t a, size_t b);
 
 			char const* constraintToRegister(Constraint c, ir_mode* mode);
 			char const* operationSuffix(ir_mode* mode);
