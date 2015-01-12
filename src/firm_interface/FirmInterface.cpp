@@ -53,12 +53,9 @@ namespace firm
 		}
 	}
 
-
 	void FirmInterface::buildWithFirm()
 	{
 		std::cout << "Building with FIRM" << std::endl;
-		lower_highlevel();
-
 		FILE* o = fopen(out_name.c_str(), "w");
 
 		try
@@ -115,8 +112,6 @@ namespace firm
 	void FirmInterface::build()
 	{
 		std::cout << "Building" << std::endl;
-		lower_highlevel();
-
 		FILE* o = fopen(out_name.c_str(), "w");
 
 		try

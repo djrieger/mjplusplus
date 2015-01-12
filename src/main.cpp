@@ -91,22 +91,27 @@ int removeAssembly(std::string out_name_assembly)
 
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, LEXTEST, PRINT_AST, PARSE, CHECK, SUPPRESS_ERRORS, FIRM, ASSEMBLY, OUT, COMPILE_FIRM};
+	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, PRINT_AST, SUPPRESS_ERRORS, OUT, KEEP, COMPILE_FIRM, LEXTEST, PARSE, CHECK, FIRM, ASSEMBLY};
 	static const option::Descriptor usage[] =
 	{
-		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [option] FILE\n\nOptions:"},
-		{HELP, 0, "h", "help", option::Arg::None, "  --help, -h\tPrint usage and exit."},
-		{DUMPLEXGRAPH, 0, "d", "dumplexgraph", option::Arg::None, "  --dumplexgraph\tPrint automaton of lexer to the given file name."},
-		{LEXTEST, 0, "l", "lextest", option::Arg::None, "  --lextest\tOnly run the lexer on the input FILE."},
-		{PRINT_AST, 0, "p", "print-ast", option::Arg::None, "  --print-ast\tPretty prints the content of the abstract syntax tree after a file has been parsed."},
-		{PARSE, 0, "p", "parse", option::Arg::None, "  --parse\tRuns the syntax analysis"},
-		{CHECK, 0, "c", "check", option::Arg::None, "  --check\tRuns the semantic analysis"},
-		{SUPPRESS_ERRORS, 0, "s", "suppress-errors", option::Arg::None, "  --suppress-errors\tprevents any errors from being printed"},
-		{FIRM, 0, "f", "firm", option::Arg::None, "  --firm\tInitialize libFirm"},
-		{ASSEMBLY, 0, "a", "assembly", option::Arg::None, "  --assembly\tKeeps the assembly file after compiling."},
-		{OUT, 0, "o", "out", option::Arg::Required, "  --out FILE\tSet the output for various commands to FILE"},
-		{COMPILE_FIRM, 0, "b", "compile-firm", option::Arg::None, "  --compile-firm\tRun the semantic analysis, build the FIRM-graph and produce backend-code using FIRM and gcc."},
-		{UNKNOWN, 0, "", "", option::Arg::None, "If no option is given, the compiler will be run with the given file."},
+		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [options] FILE\n\nOptions:"},
+		{HELP, 0, "h", "help", option::Arg::None, " -h  --help\tPrint usage and exit"},
+		{DUMPLEXGRAPH, 0, "d", "dumplexgraph", option::Arg::None, " -d  --dumplexgraph\tPrint automaton of lexer to the given file name and exit"},
+
+		{UNKNOWN, 0, "", "", option::Arg::None, "\nRun options:"},
+		{LEXTEST, 0, "l", "lextest", option::Arg::None, " -l  --lextest\tOnly run the lexer"},
+		{PARSE, 0, "s", "parse", option::Arg::None, " -s  --parse\tStop after syntax analysis"},
+		{CHECK, 0, "c", "check", option::Arg::None, " -c  --check\tStop after semantic analysis"},
+		{FIRM, 0, "g", "graph", option::Arg::None, " -g  --firm\tStop after generating Firm graphs"},
+		{ASSEMBLY, 0, "a", "assembly", option::Arg::None, " -a  --assembly\tStop after generating assembler (default output file: input_without_ending.S)"},
+		{UNKNOWN, 0, "", "", option::Arg::None, "If none of these options is given, generate an executable (default output file: a.out)"},
+
+		{UNKNOWN, 0, "", "", option::Arg::None, "\nOther options:"},
+		{PRINT_AST, 0, "p", "print-ast", option::Arg::None, " -p  --print-ast\tAfter parsing, pretty print the abstract syntax tree"},
+		{SUPPRESS_ERRORS, 0, "q", "suppress-errors", option::Arg::None, " -q  --suppress-errors \tDo not print error messages"},
+		{KEEP, 0, "k", "keep", option::Arg::None, " -k  --keep\tKeep the assembly file after compiling"},
+		{COMPILE_FIRM, 0, "f", "compile-firm", option::Arg::None, " -f  --compile-firm\tGenerate assembler using the Firm backend instead of our own codegen"},
+		{OUT, 0, "o", "out", option::Arg::Required, " -o  --out FILE\tSet the output for various commands to FILE"},
 		{0, 0, 0, 0, 0, 0}
 	};
 
@@ -151,11 +156,14 @@ int main(int argc, const char** argv)
 	try
 	{
 		auto errorReporter = std::make_shared<ErrorReporter>(file_name, !options[SUPPRESS_ERRORS]);
+
+		//lexer
 		lexer::Lexer lexer(file_name.c_str(), stateomat, errorReporter);
 
 		if (options[LEXTEST])
 			return lexTest(lexer);
 
+		//parser
 		Parser parser(lexer, errorReporter);
 		bool valid = parser.start();
 
@@ -166,60 +174,44 @@ int main(int argc, const char** argv)
 		}
 
 		if (options[PRINT_AST] && valid)
-		{
 			parser.getRoot()->toString(std::cout, 0);
-			return !valid;
-		}
 
-		if (options[PARSE])
-			return !valid;
-
-		if (options[CHECK] && valid)
-		{
+		if (options[PARSE] && valid)
+			return EXIT_SUCCESS;
+		//sementic analysis
+		else if (valid)
 			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
-
-			if (options[FIRM] && valid)
-			{
-				runFirm(file_name, out_name + (options[OUT] ? "" : ".S"), parser.getRoot());
-				buildWithFirm();
-			}
-
-		}
-		else if (options[COMPILE_FIRM] && valid)
-		{
-			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
-
-			if (valid)
-			{
-				std::string out_name_assembly = out_name + (options[OUT] ? "" : ".S");
-				std::string out_name_file = out_name + (options[OUT] ? "" : ".out");
-				runFirm(file_name, out_name_assembly, parser.getRoot());
-				buildWithFirm();
-				compileAssembly(out_name_assembly, out_name_file);
-			}
-		}
-		else //default compile mode
-		{
-			valid = runSemanticAnalysis(parser.getRoot(), errorReporter);
-
-			if (valid)
-			{
-				std::string out_name_assembly = out_name + ".S";
-				std::string out_name_file = out_name + (options[OUT] ? "" : ".out");
-				runFirm(file_name, out_name_assembly, parser.getRoot());
-				build();
-				compileAssembly(out_name_assembly, out_name_file);
-
-				if (!options[ASSEMBLY])
-					removeAssembly(out_name_assembly);
-			}
-		}
 
 		if (!valid)
 		{
 			errorReporter->printErrors();
 			return EXIT_FAILURE;
 		}
+		else if (options[CHECK])
+			return EXIT_SUCCESS;
+
+		//firm
+		std::string out_name_assembly = out_name + (options[OUT] && options[ASSEMBLY] ? "" : ".S");
+		runFirm(file_name, out_name_assembly, parser.getRoot());
+
+		if (options[FIRM])
+			return EXIT_SUCCESS;
+
+		//assembly
+		if (options[COMPILE_FIRM])
+			buildWithFirm();
+		else
+			build();
+
+		if (options[ASSEMBLY])
+			return EXIT_SUCCESS;
+
+		//executable
+		std::string out_name_file = options[OUT] ? out_name : "a.out";
+		compileAssembly(out_name_assembly, out_name_file);
+
+		if (!options[KEEP])
+			removeAssembly(out_name_assembly);
 
 		return EXIT_SUCCESS;
 	}
