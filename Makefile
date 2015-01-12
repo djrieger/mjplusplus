@@ -18,21 +18,25 @@ HEADER_FILES := $(sort $(wildcard src/*.hpp)) $(sort $(wildcard src/**/*.hpp)) $
 
 all: $(TARGET)
 
-debug $(TARGET): $(SOURCE_FILES:.cpp=.o)
+debug $(TARGET): $(SOURCE_FILES:.cpp=.o) | libfirm/build/debug/libfirm.so
 	$(CPP) $(COMMON) $(DEBUGFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # analyse with gprof [options] ./mj++ gmon.out
-profile: $(SOURCE_FILES)
+profile: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so
 	$(CPP) $(COMMON) $(CPPFLAGS) $(PROFILEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # no .o files in release build
-release: $(SOURCE_FILES)
+release: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so
 	$(CPP) $(COMMON) $(CPPFLAGS) $(RELEASEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
+
+libfirm/build/debug/libfirm.so:
+	git submodule update --init
+	( cd libfirm && make )
 
 clean:
 	rm -f $(TARGET) $(SOURCE_FILES:.cpp=.o) gmon.out *~
 
-%.o : %.cpp
+%.o : %.cpp | libfirm/build/debug/libfirm.so
 	$(CPP) $(COMMON) $(CPPFLAGS) $(DEBUGFLAGS) -c $< -o $(<:.cpp=.o)
 
 style: $(SOURCE_FILES) $(HEADER_FILES)
@@ -43,8 +47,3 @@ styleclean:
 
 doc: $(SOURCE_FILES) $(HEADER_FILES) 
 	doxygen config/doxygen.config
-
-assemble:
-	gcc -m64 out.S src/firm_interface/print.asm
-
-.PHONY: doc
