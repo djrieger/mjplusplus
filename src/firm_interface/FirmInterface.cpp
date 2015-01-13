@@ -68,45 +68,40 @@ namespace firm
 			throw;
 		}
 
+		fprintf(o,
+		        "\t.file \"print.c\"\n\
+\t.section .rodata.str1.1,\"aMS\",@progbits,1\n\
+.LC0:\n\
+\t.string \"%%d\\n\"\n\
+\t.section .text.unlikely,\"ax\",@progbits\n\
+.LCOLDB1:\n\
+\t.text\n\
+.LHOTB1:\n\
+\t.p2align 4,,15\n\
+\t.globl _COut_Mprintln\n\
+\t.type _COut_Mprintln, @function\n\
+_COut_Mprintln:\n\
+.LFB11:\n\
+\t.cfi_startproc\n\
+\tsubq $8, %%rsp\n\
+\t.cfi_def_cfa_offset 16\n\
+\tmovl $.LC0, %%edi\n\
+\tcall printf\n\
+\taddq $8, %%rsp\n\
+\t.cfi_def_cfa_offset 8\n\
+\tret\n\
+\t.cfi_endproc\n\
+.LFE11:\n\
+\t.size _COut_Mprintln, .-_COut_Mprintln\n\
+\t.section .text.unlikely\n\
+.LCOLDE1:\n\
+\t.text\n\
+.LHOTE1:\n\
+\t.ident \"GCC: (Debian 4.9.1-19) 4.9.1\"\n\
+\t.section .note.GNU-stack,\"\",@progbits\n\
+"
+		       );
 		fclose(o);
-
-		std::string printFunAsm = "        .file   \"print.c\" \n\
-				.section        .rodata.str1.1,\"aMS\",@progbits,1 \n\
-		.LC0: \n\
-				.string \"%d\\n\" \n\
-				.section        .text.unlikely,\"ax\",@progbits \n\
-		.LCOLDB1: \n\
-				.text \n\
-		.LHOTB1: \n\
-				.p2align 4,,15 \n\
-				.globl  _COut_Mprintln \n\
-				.type   _COut_Mprintln, @function \n\
-		_COut_Mprintln: \n\
-		.LFB11: \n\
-				.cfi_startproc \n\
-				subq    $8, %rsp \n\
-				.cfi_def_cfa_offset 16 \n\
-				movl    $.LC0, %edi \n\
-				xorl    %eax, %eax \n\
-				call    printf \n\
-				xorl    %eax, %eax \n\
-				addq    $8, %rsp \n\
-				.cfi_def_cfa_offset 8 \n\
-				ret \n\
-				.cfi_endproc \n\
-		.LFE11: \n\
-				.size   _COut_Mprintln, .-_COut_Mprintln \n\
-				.section        .text.unlikely \n\
-		.LCOLDE1: \n\
-				.text \n\
-		.LHOTE1: \n\
-				.ident  \"GCC: (Debian 4.9.1-19) 4.9.1\" \n\
-				.section        .note.GNU-stack,\"\",@progbits \n\
-	";
-
-		std::ofstream output(out_name, std::ios::app);
-		output << printFunAsm;
-		output.close();
 	}
 
 	void FirmInterface::build()
@@ -124,45 +119,8 @@ namespace firm
 			throw;
 		}
 
+		fprintf(o, "\t.section .rodata.str1.1,\"aMS\",@progbits,1\n.LC0:\n\t.string \"%%d\\n\"\n");
 		fclose(o);
-
-		std::string printFunAsm = "        .file   \"print.c\" \n\
-				.section        .rodata.str1.1,\"aMS\",@progbits,1 \n\
-		.LC0: \n\
-				.string \"%d\\n\" \n\
-				.section        .text.unlikely,\"ax\",@progbits \n\
-		.LCOLDB1: \n\
-				.text \n\
-		.LHOTB1: \n\
-				.p2align 4,,15 \n\
-				.globl  _COut_Mprintln \n\
-				.type   _COut_Mprintln, @function \n\
-		_COut_Mprintln: \n\
-		.LFB11: \n\
-				.cfi_startproc \n\
-				subq    $8, %rsp \n\
-				.cfi_def_cfa_offset 16 \n\
-				movl    $.LC0, %edi \n\
-				xorl    %eax, %eax \n\
-				call    printf \n\
-				xorl    %eax, %eax \n\
-				addq    $8, %rsp \n\
-				.cfi_def_cfa_offset 8 \n\
-				ret \n\
-				.cfi_endproc \n\
-		.LFE11: \n\
-				.size   _COut_Mprintln, .-_COut_Mprintln \n\
-				.section        .text.unlikely \n\
-		.LCOLDE1: \n\
-				.text \n\
-		.LHOTE1: \n\
-				.ident  \"GCC: (Debian 4.9.1-19) 4.9.1\" \n\
-				.section        .note.GNU-stack,\"\",@progbits \n\
-	";
-
-		std::ofstream output(out_name, std::ios::app);
-		output << printFunAsm;
-		output.close();
 	}
 
 	ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration)

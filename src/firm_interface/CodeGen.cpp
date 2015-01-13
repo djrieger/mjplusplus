@@ -311,13 +311,7 @@ namespace firm
 		for (int i = 0; i < get_irn_arity(en); i++)
 		{
 			ir_node* enp = get_irn_n(en, i);
-
-			if (is_Block(enp) || is_Cmp(enp) || is_Cond(enp) || get_irn_mode(enp) == mode_X)
-				stack_cf.push(enp);
-			else if (is_Phi(enp))
-				stack_phi.push(enp);
-			else
-				stack_normal.push(enp);
+			workstack.push(enp);
 		}
 
 		// no code for end block, just find returns
@@ -325,12 +319,12 @@ namespace firm
 		set_irn_link(eb, NULL);
 
 		for (int i = 0; i < get_irn_arity(eb); i++)
-			stack_cf.push(get_irn_n(eb, i));
+			workstack.push(get_irn_n(eb, i));
 
-		auto print_stack = [&]
+		while (!workstack.empty())
 		{
 			printf("TODO: ");
-			std::stack<ir_node*> tmp = stack_cf;
+			std::stack<ir_node*> tmp = workstack;
 
 			while (!tmp.empty())
 			{
@@ -338,58 +332,11 @@ namespace firm
 				tmp.pop();
 			}
 
-			printf("// ");
-			std::stack<ir_node*> tmp2 = stack_phi;
-
-			while (!tmp2.empty())
-			{
-				printf("%ld, ", get_irn_node_nr(tmp2.top()));
-				tmp2.pop();
-			}
-
-			printf("// ");
-			std::stack<ir_node*> tmp3 = stack_normal;
-
-			while (!tmp3.empty())
-			{
-				printf("%ld, ", get_irn_node_nr(tmp3.top()));
-				tmp3.pop();
-			}
-
 			printf("\n");
-		};
 
-		while (!stack_cf.empty() || !stack_phi.empty() || !stack_normal.empty())
-		{
-			while (!stack_cf.empty() || !stack_phi.empty())
-			{
-				while (!stack_cf.empty())
-				{
-					print_stack();
-
-					ir_node* irn = stack_cf.top();
-					stack_cf.pop();
-					assemble(irn);
-				}
-
-				print_stack();
-
-				if (!stack_phi.empty())
-				{
-					ir_node* irn = stack_phi.top();
-					stack_phi.pop();
-					assemble(irn);
-				}
-			}
-
-			print_stack();
-
-			if (!stack_normal.empty())
-			{
-				ir_node* irn = stack_normal.top();
-				stack_normal.pop();
-				assemble(irn);
-			}
+			ir_node* irn = workstack.top();
+			workstack.pop();
+			assemble(irn);
 		}
 
 		edges_deactivate(irg);
@@ -497,15 +444,6 @@ namespace firm
 
 	void CodeGen::assemble(ir_node* irn)
 	{
-		auto push_node = [&](ir_node * irn)
-		{
-			if (is_Block(irn) || is_Cmp(irn) || is_Cond(irn) || get_irn_mode(irn) == mode_X)
-				stack_cf.push(irn);
-			else if (is_Phi(irn))
-				stack_phi.push(irn);
-			else
-				stack_normal.push(irn);
-		};
 
 		ir_node* block = irn;
 
@@ -517,7 +455,7 @@ namespace firm
 			// handle the block
 			// requeue the node if it isn't the block itself
 			if (irn != block)
-				push_node(irn);
+				workstack.push(irn);
 
 			set_irn_link(block, block);
 
@@ -533,7 +471,7 @@ namespace firm
 				else
 					partial[phi] = 1 + FirmInterface::getInstance().getOuts(phi).size() + FirmInterface::getInstance().getOuts(phi, EDGE_KIND_DEP).size();
 
-				stack_phi.push(phi);
+				workstack.push(phi);
 			}
 
 			// take care of block parents
@@ -542,7 +480,7 @@ namespace firm
 			for (int i = 0; i < get_irn_arity(block); i++)
 			{
 				ir_printf("\t%ld: %F\n", get_irn_node_nr(get_irn_n(block, i)), get_irn_n(block, i));
-				stack_cf.push(get_irn_n(block, i));
+				workstack.push(get_irn_n(block, i));
 			}
 
 			printf("Block %ld - done\n", get_irn_node_nr(block));
@@ -584,7 +522,7 @@ namespace firm
 				for (int i = 0; i < get_irn_n_deps(irn); i++)
 				{
 					ir_node* p = get_irn_dep(irn, i);
-					push_node(p);
+					workstack.push(p);
 
 					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(p), p, p);
 				}
@@ -592,7 +530,7 @@ namespace firm
 				for (int i = 0; i < get_irn_arity(irn); i++)
 				{
 					ir_node* p = get_irn_n(irn, i);
-					push_node(p);
+					workstack.push(p);
 
 					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(p), p, p);
 				}
@@ -654,31 +592,10 @@ namespace firm
 			{
 				if (get_irn_mode(irn) != mode_M && get_irn_link(irn) != irn)
 				{
-					// for each parent: ensure control flow is done
-					bool cf = false;
-
-					for (int pred = 0; pred < get_irn_arity(irn); pred++)
-					{
-						ir_node* pblock = get_nodes_block(get_irn_n(block, pred));
-
-						if (get_irn_link(pblock) != pblock)
-						{
-							if (!cf)
-								stack_phi.push(irn);
-
-							cf = true;
-							stack_cf.push(pblock);
-						}
-					}
-
-					if (cf)
-						// undone control flow
-						return;
-
 					// for each parent: add mov/load new_reg -> phi_reg in parent block
 					for (int pred = 0; pred < get_irn_arity(irn); pred++)
 					{
-						code[get_nodes_block(get_irn_n(block, pred))].push_back(irn);
+						code[get_nodes_block(get_irn_n(block, pred))].phi.push_back(irn);
 						size_t a = is_Const(get_irn_n(irn, pred)) ? 0 : new_register();
 						usage[irn].second.push_back({NONE, a});
 
@@ -702,7 +619,7 @@ namespace firm
 						registers[reg].reads.push_back(irn);
 				}
 
-				code[block].push_back(irn);
+				code[block].control.push_back(irn);
 			}
 			else if (is_Cmp(irn))
 			{
@@ -727,7 +644,7 @@ namespace firm
 					}
 				}
 
-				code[block].push_back(irn);
+				code[block].control.push_back(irn);
 			}
 			else if (is_Cond(irn))
 			{
@@ -742,12 +659,12 @@ namespace firm
 					}
 				}
 
-				code[block].push_back(irn);
+				code[block].control.push_back(irn);
 			}
 			else if (is_Jmp(irn))
 			{
 				set_irn_link(irn, children[0].first);
-				code[block].push_back(irn);
+				code[block].control.push_back(irn);
 			}
 			else if (is_Proj(irn))
 			{
@@ -771,7 +688,7 @@ namespace firm
 					usage[irn] = {{{NONE, current_reg}}, {{NONE, a}}};
 					registers[a].reads.push_back(irn);
 					registers[current_reg].writes.push_back(irn);
-					code[block].push_back(irn);
+					code[block].normal.push_back(irn);
 				}
 				else
 				{
@@ -809,7 +726,7 @@ namespace firm
 				}
 
 				usage[irn] = {writes, {}};
-				code[block].push_back(irn);
+				code[block].normal.push_back(irn);
 			}
 			else if (is_Call(irn))
 			{
@@ -847,7 +764,7 @@ namespace firm
 
 				set_irn_link(irn, irn);
 				usage[irn] = {writes, reads};
-				code[block].push_back(irn);
+				code[block].normal.push_back(irn);
 			}
 			else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn))
 			{
@@ -863,7 +780,7 @@ namespace firm
 					registers[b].reads.push_back(irn);
 
 				usage[irn] = {{{NONE, current_reg}}, {{NONE, a}, {NONE, b}}};
-				code[block].push_back(irn);
+				code[block].normal.push_back(irn);
 			}
 			else if (is_Minus(irn))
 			{
@@ -875,7 +792,7 @@ namespace firm
 					registers[a].reads.push_back(irn);
 
 				usage[irn] = {{{NONE, current_reg}}, {{NONE, a}}};
-				code[block].push_back(irn);
+				code[block].normal.push_back(irn);
 			}
 			else if (is_Div(irn) || is_Mod(irn))
 			{
@@ -891,7 +808,7 @@ namespace firm
 					registers[b].reads.push_back(irn);
 
 				usage[irn] = {{{(is_Div(irn) ? RAX : RDX), current_reg}}, {{NONE, 0}, {RAX, a}, {NONE, b}}};
-				code[block].push_back(irn);
+				code[block].normal.push_back(irn);
 			}
 			else if (is_Load(irn))
 			{
@@ -904,7 +821,7 @@ namespace firm
 					registers[addr].reads.push_back(irn);
 					registers[current_reg].writes.push_back(irn);
 					usage[irn] = {{{NONE, current_reg}}, {{NONE, 0}, {NONE, addr}}};
-					code[block].push_back(irn);
+					code[block].normal.push_back(irn);
 				}
 			}
 			else if (is_Store(irn))
@@ -918,7 +835,7 @@ namespace firm
 					registers[val].reads.push_back(irn);
 
 				usage[irn] = {{}, {{NONE, 0}, {NONE, addr}, {NONE, val}}};
-				code[block].push_back(irn);
+				code[block].normal.push_back(irn);
 			}
 			else if (is_Address(irn) || is_Const(irn))
 			{
@@ -966,7 +883,7 @@ namespace firm
 	void CodeGen::output(ir_graph* irg)
 	{
 		char const* name = get_entity_name(get_irg_entity(irg));
-		fprintf(out, "\t.p2align 4,,15\n\t.globl  %s\n\t.type   %s, @function\n%s:\n", name, name, name);
+		fprintf(out, "\t.p2align 4,,15\n\t.globl %s\n\t.type %s, @function\n%s:\n", name, name, name);
 
 		// adjust stack
 		if (registers.size() > 1)
@@ -984,7 +901,10 @@ namespace firm
 		{
 			fprintf(out, ".L_%s_%zu:\n", get_entity_name(get_irg_entity(irg)), get_irn_node_nr(block.first));
 
-			for (auto it = block.second.rbegin(); it != block.second.rend(); it++)
+			for (auto it = block.second.normal.rbegin(); it != block.second.normal.rend(); it++)
+				output(*it, block.first);
+
+			for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
 				output(*it, block.first);
 		}
 
@@ -1108,10 +1028,21 @@ namespace firm
 			// sub a, b stores b - a in b, same for cmp
 			// cmp a, b  /  jl foo   jumps when b < a
 			gen_bin_op(irn, mode, "cmp");
+
+			for (auto it = code[block].phi.rbegin(); it != code[block].phi.rend(); it++)
+				output(*it, block);
+
 			fprintf(out, "\tj%s .L_%s_%ld\n", cond, get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
-		else if (is_Cond(irn) || is_Jmp(irn))
+		else if (is_Cond(irn))
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
+		else if (is_Jmp(irn))
+		{
+			for (auto it = code[block].phi.rbegin(); it != code[block].phi.rend(); it++)
+				output(*it, block);
+
+			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
+		}
 		else if (is_Start(irn))
 		{
 			auto& writes = usage[irn].first;
@@ -1126,6 +1057,7 @@ namespace firm
 		else if (is_Call(irn))
 		{
 			auto& reads = usage[irn].second;
+			bool is_println = !strcmp("_COut_Mprintln", get_entity_name(get_Call_callee(irn)));
 
 			for (int i = 2; i < get_irn_arity(irn); i++)
 			{
@@ -1135,9 +1067,14 @@ namespace firm
 				if (i < 8)
 				{
 					// first 6 args in registers
-					fprintf(out, "\tmov%s ", os);
-					load_or_imm(get_irn_n(irn, i), reads[i].reg);
-					fprintf(out, ", %s\n", constraintToRegister(reads[i].constraint, arg_mode));
+					if (i == 2 && is_println)
+						fprintf(out, "\tmovq $.LC0, %%rdi\n");
+					else
+					{
+						fprintf(out, "\tmov%s ", os);
+						load_or_imm(get_irn_n(irn, i), reads[i].reg);
+						fprintf(out, ", %s\n", constraintToRegister(reads[i].constraint, arg_mode));
+					}
 				}
 				else
 				{
@@ -1154,17 +1091,27 @@ namespace firm
 				}
 			}
 
-			if (get_irn_arity(irn) > 8)
-				fprintf(out, "\tsub $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
+			if (is_println)
+			{
+				fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
+				fprintf(out, "\tcall printf\n");
+				fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
+			}
+			else
+			{
+				if (get_irn_arity(irn) > 8)
+					fprintf(out, "\tsub $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
 
-			fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
+				fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
 
-			if (get_irn_arity(irn) > 8)
-				fprintf(out, "\tadd $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
+				if (get_irn_arity(irn) > 8)
+					fprintf(out, "\tadd $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
 
-			if (!usage[irn].first.empty())
-				//TODO: get actual mode (from call <- proj T result <- proj wanted_mode 0 ?)
-				fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+				if (!usage[irn].first.empty())
+					//TODO: get actual mode (from call <- proj T result <- proj wanted_mode 0 ?)
+					fprintf(out, "\tmov %%rax, %zd(%%rsp)\n", 8 * usage[irn].first[0].reg - 8);
+			}
+
 		}
 		else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn))
 		{

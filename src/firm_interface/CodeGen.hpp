@@ -44,16 +44,21 @@ namespace firm
 				std::vector<ir_node*> reads;
 			};
 
+			struct Codelist
+			{
+				std::vector<ir_node*> normal;
+				std::vector<ir_node*> phi;
+				std::vector<ir_node*> control;
+			};
+
 			static const Constraint arg_order[];
 
 			std::map<ir_node*, size_t> partial;  //number of unseen children
 			std::map<ir_node*, std::pair<std::vector<Access>, std::vector<Access>>> usage;  //node data: {registers written, registers read}
 			std::vector<Register> registers;
 			std::set<size_t> free_registers;
-			std::map<ir_node*, std::vector<ir_node*>> code;   //genereated code per block, bottom to top
-			std::stack<ir_node*> stack_cf;
-			std::stack<ir_node*> stack_phi;
-			std::stack<ir_node*> stack_normal;
+			std::map<ir_node*, Codelist> code;   //genereated code per block, bottom to top
+			std::stack<ir_node*> workstack;
 
 			CodeGen(FILE* out);
 
