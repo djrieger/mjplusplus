@@ -68,8 +68,7 @@ namespace firm
 			throw;
 		}
 
-		fprintf(o,
-		        "\t.file \"print.c\"\n\
+		fprintf(o, "\t.file \"print.c\"\n\
 \t.section .rodata.str1.1,\"aMS\",@progbits,1\n\
 .LC0:\n\
 \t.string \"%%d\\n\"\n\
@@ -429,17 +428,13 @@ _COut_Mprintln:\n\
 		return std::move(pWorklist);
 	}
 
-	std::vector<std::pair<ir_node*, unsigned int> > FirmInterface::getOuts(ir_node const* n, ir_edge_kind_t kind)
+	std::vector<std::pair<ir_node*, unsigned int> > FirmInterface::getOuts(ir_node const* n)
 	{
 		std::vector<std::pair<ir_node*, unsigned int>> outs;
 
-		for (ir_edge_t const* oe = get_irn_out_edge_first_kind(n, kind); oe; oe = get_irn_out_edge_next(n, oe, kind))
+		for (ir_edge_t const* oe = get_irn_out_edge_first(n); oe; oe = get_irn_out_edge_next(n, oe, EDGE_KIND_NORMAL))
 			outs.emplace_back(get_edge_src_irn(oe), get_edge_src_pos(oe));
 
 		return outs;
-	}
-
-	void FirmInterface::foo()
-	{
 	}
 }

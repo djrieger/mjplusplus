@@ -275,35 +275,6 @@ namespace firm
 
 		edges_activate(irg);
 
-		//force phi ordering
-		//code for phis in a specific block must be generated after all reads from that phi in the same block
-		irg_walk_graph(irg, [](ir_node * irn, void*)
-		{
-			if (!is_Phi(irn) || get_irn_mode(irn) == mode_M)
-				return;
-
-			std::set<ir_node*> phi_blocks;
-			ir_node* block = get_nodes_block(irn);
-
-			for (int i = 0; i < get_irn_arity(irn); i++)
-			{
-				phi_blocks.insert(get_nodes_block(get_irn_n(block, i)));
-				// try forcing dependency between phis of same block -- does nothing yet
-				ir_node* parent = get_irn_n(irn, i);
-
-				if (is_Phi(parent) && get_nodes_block(parent) == block)
-					add_irn_dep(parent, irn);
-			}
-
-			for (auto& e : FirmInterface::getInstance().getOuts(irn))
-			{
-				if (e.first != irn && phi_blocks.count(get_nodes_block(e.first)))
-					add_irn_dep(irn, e.first);
-			}
-		}, NULL, NULL
-		              );
-		dump_ir_graph(irg, "dep");
-
 		//handle keepalives
 		ir_node* en = get_irg_end(irg);
 		set_irn_link(en, NULL);
@@ -469,7 +440,7 @@ namespace firm
 				if (it != partial.end())
 					it->second++;
 				else
-					partial[phi] = 1 + FirmInterface::getInstance().getOuts(phi).size() + FirmInterface::getInstance().getOuts(phi, EDGE_KIND_DEP).size();
+					partial[phi] = 1 + FirmInterface::getInstance().getOuts(phi).size();
 
 				workstack.push(phi);
 			}
@@ -488,18 +459,15 @@ namespace firm
 		}
 
 		auto children = FirmInterface::getInstance().getOuts(irn);
-		auto children_dep = FirmInterface::getInstance().getOuts(irn, EDGE_KIND_DEP);
-		children_dep.insert(children_dep.end(), children.begin(), children.end());
-
 		auto it = partial.find(irn);
 
 		if (it != partial.end())
 			it->second--;
 		else
 		{
-			partial[irn] = children_dep.size() - 1;
+			partial[irn] = children.size() - 1;
 
-			for (auto& child : children_dep)
+			for (auto& child : children)
 			{
 				if (is_Anchor(child.first))
 					partial[irn]--;
@@ -510,7 +478,7 @@ namespace firm
 				partial[irn] -= 2;
 		}
 
-		ir_printf("testing (%ld) %F, %zu of %zu left\n", get_irn_node_nr(irn), irn, partial[irn], children_dep.size());
+		ir_printf("testing (%ld) %F, %zu of %zu left\n", get_irn_node_nr(irn), irn, partial[irn], children.size());
 
 		if (partial[irn] == 0 || (is_Phi(irn) && get_irn_link(irn) != irn))
 		{
@@ -518,14 +486,6 @@ namespace firm
 			if (!is_Phi(irn) || (is_Phi(irn) && get_irn_link(irn) != irn))
 			{
 				printf("\tqueueing:\n");
-
-				for (int i = 0; i < get_irn_n_deps(irn); i++)
-				{
-					ir_node* p = get_irn_dep(irn, i);
-					workstack.push(p);
-
-					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(p), p, p);
-				}
 
 				for (int i = 0; i < get_irn_arity(irn); i++)
 				{
@@ -886,59 +846,131 @@ namespace firm
 		fprintf(out, "\t.p2align 4,,15\n\t.globl %s\n\t.type %s, @function\n%s:\n", name, name, name);
 
 		// adjust stack
-		if (registers.size() > 1)
-		{
-			size_t reg_count = registers.size() - 1;
+		size_t reg_count = registers.size() - 1;
 
-			if (get_method_n_params(get_entity_type(get_irg_entity(irg))) > 6)
-				reg_count -= get_method_n_params(get_entity_type(get_irg_entity(irg))) - 6 + 1;
+		if (get_method_n_params(get_entity_type(get_irg_entity(irg))) > 6)
+			reg_count -= get_method_n_params(get_entity_type(get_irg_entity(irg))) - 6 + 1;
 
-			if (reg_count)
-				fprintf(out, "\tsub $%zd, %%rsp\n", 8 * reg_count);
-		}
+		if (reg_count)
+			fprintf(out, "\tsub $%zd, %%rsp\n", 8 * reg_count);
 
 		for (auto& block : code)
 		{
 			fprintf(out, ".L_%s_%zu:\n", get_entity_name(get_irg_entity(irg)), get_irn_node_nr(block.first));
 
 			for (auto it = block.second.normal.rbegin(); it != block.second.normal.rend(); it++)
-				output(*it, block.first);
+				output(*it);
 
 			for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
-				output(*it, block.first);
+				output(*it);
 		}
 
 		fprintf(out, "\t.size   %s, .-%s\n\n", name, name);
 	}
 
-	void CodeGen::output(ir_node* irn, ir_node* block)
+	void CodeGen::output_phis(std::vector<ir_node*>& phis, ir_node const* block)
 	{
-		ir_fprintf(out, "\t# %F\n", irn);
+		if (phis.empty())
+			return;
 
-		if (is_Phi(irn))
+		// figure out currently relevant predecessor
+		ir_node* phi_block = get_nodes_block(phis[0]);
+		int pred;
+
+		for (pred = 0; pred < get_irn_arity(phis[0]); pred++)
 		{
-			// the only thing that needs the block argument...
-			ir_node* phi_block = get_nodes_block(irn);
-			int pred;
+			if (get_nodes_block(get_irn_n(phi_block, pred)) == block)
+				break;
+		}
 
-			for (pred = 0; pred < get_irn_arity(phi_block); pred++)
+		// sort phis: phis belonging to the same loop or chain are grouped together
+		//   and within these groups ordered for easy copying
+		std::sort(phis.begin(), phis.end(), [&](ir_node const * a, ir_node const * b)
+		{
+			// find node representing a's chain/loop
+			long head_a = get_irn_node_nr(a);// first/smallest phi in chain/loop
+
+			long min_a = head_a;
+			ir_node const* c = get_irn_n(a, pred);
+
+			while (is_Phi(c) && get_nodes_block(c) == phi_block)
 			{
-				if (get_nodes_block(get_irn_n(phi_block, pred)) == block)
+				head_a = get_irn_node_nr(c);
+				min_a = std::min(min_a, head_a);
+				c = get_irn_n(c, pred);
+
+				if (c == a)
+				{
+					//this is a loop, pick smallest node as head
+					head_a = min_a;
 					break;
+				}
 			}
 
-			ir_node* value = get_irn_n(irn, pred);
+			// find node representing b's chain/loop
+			c = b;
+			long head_b = get_irn_node_nr(b);
+			long min_b = head_b;
+
+			while (is_Phi(c) && get_nodes_block(c) == phi_block)
+			{
+				head_b = get_irn_node_nr(c);
+				min_b = std::min(min_b, head_b);
+
+				if (c == a)
+				{
+					// same chain/loop, a closer to head -> code for b first
+					return true;
+				}
+				else if (head_b == head_a)
+				{
+					// same chain/loop, b closer to head -> code for a first
+					return false;
+				}
+
+				c = get_irn_n(c, pred);
+
+				if (c == b)
+				{
+					head_b = min_b;
+					break;
+				}
+			}
+
+			// different chain/loop, arbitrary but consistent order
+			return head_a < head_b;
+		});
+
+		for (auto it = phis.rbegin() ; it != phis.rend(); it++)
+		{
+			ir_node* value = get_irn_n(*it, pred);
 			ir_mode* value_mode = get_irn_mode(value);
 
 			if (is_Const(value))
-				fprintf(out, "\tmov%s $%ld, %zd(%%rsp)\n", operationSuffix(value_mode), get_tarval_long(get_Const_tarval(value)), 8 * usage[irn].first[0].reg - 8);
+				fprintf(out, "\tmov%s $%ld, %zd(%%rsp)\n", operationSuffix(value_mode), get_tarval_long(get_Const_tarval(value)), 8 * usage[*it].first[0].reg - 8);
+			else if (is_Phi(value) && get_nodes_block(value) == phi_block && (it + 1 == phis.rend() || value != *(it + 1)))
+			{
+				// phi from the same block, but not the next in phis
+				// -> value is head of a phi-loop, use saved value
+				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", operationSuffix(value_mode), constraintToRegister(RDX, value_mode), 8 * usage[*it].first[0].reg - 8);
+			}
 			else
 			{
-				fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[irn].second[pred].reg - 8, constraintToRegister(RAX, value_mode));
-				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", operationSuffix(value_mode), constraintToRegister(RAX, value_mode), 8 * usage[irn].first[0].reg - 8);
+				if (false)
+					// value is tail of a phi-loop, rescue current value
+					fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[*it].first[0].reg - 8, constraintToRegister(RDX, value_mode));
+
+				fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[*it].second[pred].reg - 8, constraintToRegister(RAX, value_mode));
+				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", operationSuffix(value_mode), constraintToRegister(RAX, value_mode), 8 * usage[*it].first[0].reg - 8);
 			}
 		}
-		else if (is_Return(irn))
+	}
+
+	void CodeGen::output(ir_node* irn)
+	{
+		ir_fprintf(out, "\t# %F\n", irn);
+
+		if (is_Return(irn))
 		{
 			if (get_irn_arity(irn) == 2)
 			{
@@ -1028,19 +1060,14 @@ namespace firm
 			// sub a, b stores b - a in b, same for cmp
 			// cmp a, b  /  jl foo   jumps when b < a
 			gen_bin_op(irn, mode, "cmp");
-
-			for (auto it = code[block].phi.rbegin(); it != code[block].phi.rend(); it++)
-				output(*it, block);
-
+			output_phis(code[get_nodes_block(irn)].phi, get_nodes_block(irn));
 			fprintf(out, "\tj%s .L_%s_%ld\n", cond, get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
 		else if (is_Cond(irn))
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		else if (is_Jmp(irn))
 		{
-			for (auto it = code[block].phi.rbegin(); it != code[block].phi.rend(); it++)
-				output(*it, block);
-
+			output_phis(code[get_nodes_block(irn)].phi, get_nodes_block(irn));
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
 		else if (is_Start(irn))
