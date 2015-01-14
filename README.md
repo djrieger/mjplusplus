@@ -21,6 +21,7 @@ Run options:
 - `-c  --check`: Stop after semantic analysis
 - `-g  --firm`: Stop after generating Firm graphs
 - `-a  --assembly`: Stop after generating assembler (default output file: `input_without_ending.S`)
+
 If none of these options is given, generate an executable (default output file: `a.out`)
 
 Other options:
