@@ -22,14 +22,14 @@ namespace firm
 			void handleMul(ir_node* node);
 			void handleDivAndMod(ir_node* node);
 
-			bool tarvalIsZero(Tarval tarval);
-			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
+			//bool tarvalIsZero(Tarval tarval);
+			//void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
 			void replaceDivMod(Node node);
 			bool replaceGeneric(Node node);
-			void replaceAdd(Node node);
-			void replaceSub(Node node);
-			void replaceMul(Node node);
-			void replaceMinus(Node node);
+			//void replaceAdd(Node node);
+			//void replaceSub(Node node);
+			//void replaceMul(Node node);
+			//void replaceMinus(Node node);
 			void replaceConv(Node node);
 		public:
 			virtual void handle(Node);

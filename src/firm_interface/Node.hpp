@@ -39,6 +39,8 @@ namespace firm
 				return !operator==(otherNode);
 			}
 			Tarval getTarval() const;
+			Tarval getValue() const;
+			bool isConst() const;
 			void setTarval(Tarval tarval);
 			void setTarvalToBad();
 			void setTarvalToUnknown();

@@ -42,6 +42,8 @@ namespace firm
 
 				void optimizeControlFlow(ir_graph* irg);
 
+				void optimizeLocal(ir_graph* irg);
+
 				/**
 				 * Optimize the function graph by eliminating common subexpressions.
 				 * @param irg the function graph
