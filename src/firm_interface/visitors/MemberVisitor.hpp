@@ -40,6 +40,8 @@ namespace firm
 				 */
 				void foldConstants(ir_graph* irg);
 
+				void optimizeControlFlow(ir_graph* irg);
+
 				/**
 				 * Optimize the function graph by eliminating common subexpressions.
 				 * @param irg the function graph

@@ -2,6 +2,7 @@
 #include "StatementVisitor.hpp"
 #include "../ConstantFolder.hpp"
 #include "../Worklist.hpp"
+#include "../ControlFlowOptimizer.hpp"
 
 namespace firm
 {
@@ -24,6 +25,16 @@ namespace firm
 			edges_deactivate(irg);
 
 
+		}
+
+		void MemberVisitor::optimizeControlFlow(ir_graph* irg)
+		{
+			ControlFlowOptimizer cfOptimizer(irg);
+			firm::Worklist worklist(irg, cfOptimizer);
+
+			edges_activate(irg);
+			worklist.run();
+			edges_deactivate(irg);
 		}
 
 		void MemberVisitor::eliminateCommonSubexpressions(ir_graph* irg)
@@ -85,7 +96,8 @@ namespace firm
 			// optimize Firm graph
 			dump_ir_graph(irg, "orig");
 			foldConstants(irg);
-			dump_ir_graph(irg, "it1");
+			//dump_ir_graph(irg, "it1");
+			optimizeControlFlow(irg);
 
 			eliminateCommonSubexpressions(irg);
 			//should be done in a loop until nothing changes / threshold reached
@@ -96,9 +108,9 @@ namespace firm
 			std::cout << "_________________________________________________" << std::endl;
 			std::cout << "_________________________________________________" << std::endl;
 			foldConstants(irg);*/
+			// remove all bad nodes that might occur during optimizations
+			remove_bads(irg);
 			dump_ir_graph(irg, "final");
-
-
 			irg_verify(irg);
 		}
 
