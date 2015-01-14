@@ -17,10 +17,5 @@ class a
 		}
 		System.out.println(z*(i-1)); /* @old "z*(i-1)" @opt "0" */
 	}
-
-	public int m() {
-		int i = 5;
-		return i;
-	}
 }
 
