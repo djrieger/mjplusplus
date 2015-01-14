@@ -81,7 +81,7 @@ namespace firm
 
 		if (replacement != NULL)
 		{
-			std::cout << "Replacing " << node.getNodeNumber() << " with " << replacement->getNodeNumber() << std::endl;
+			//std::cout << "Replacing " << node.getNodeNumber() << " with " << replacement->getNodeNumber() << std::endl;
 			node.replaceWith(*replacement);
 			changed = true;
 		}
