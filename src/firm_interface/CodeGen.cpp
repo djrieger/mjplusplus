@@ -770,61 +770,109 @@ namespace firm
 				break;
 		}
 
+		std::set<ir_node const*> circle_nodes;
+
 		// sort phis: phis belonging to the same loop or chain are grouped together
 		//   and within these groups ordered for easy copying
 		std::sort(phis.begin(), phis.end(), [&](ir_node const * a, ir_node const * b)
 		{
-			// find node representing a's chain/loop
-			long head_a = get_irn_node_nr(a);// first/smallest phi in chain/loop
-
-			long min_a = head_a;
-			ir_node const* c = get_irn_n(a, pred);
-
-			while (is_Phi(c) && get_nodes_block(c) == phi_block)
+			auto foo = [&](ir_node const * phi, ir_node const * other) -> std::tuple<int, long, ir_node const*>
 			{
-				head_a = get_irn_node_nr(c);
-				min_a = std::min(min_a, head_a);
-				c = get_irn_n(c, pred);
+				bool has_circle = false;
+				bool on_circle = false;
+				bool found_other = false;
 
-				if (c == a)
+				ir_node const* entry = NULL;
+				long head = get_irn_node_nr(phi);
+				long min = head;
+				size_t count_phi = 0;
+				size_t count_other = 0;
+				size_t count_head = 0;
+
+				std::set<ir_node const*> visited;
+				ir_node const* cur = phi;
+
+				while (is_Phi(cur) && get_nodes_block(cur) == phi_block)
 				{
-					//this is a loop, pick smallest node as head
-					head_a = min_a;
-					break;
+					if (cur == other)
+					{
+						found_other = true;
+						count_other = 0;
+					}
+
+					head = get_irn_node_nr(cur);
+
+					if (head < min)
+					{
+						min = head;
+						count_head = 0;
+					}
+
+					auto it = visited.find(cur);
+
+					if (it != visited.end())
+					{
+						if (!has_circle)
+						{
+							has_circle = true;
+							entry = cur;
+							min = head;//reset min
+							count_head = 0;
+						}
+
+						if (cur == phi)
+						{
+							on_circle = true;
+							count_phi = 0;
+							circle_nodes.insert(phi);
+						}
+
+						visited.erase(it);
+					}
+					else
+					{
+						if (has_circle)
+							return std::make_tuple(!found_other ? 0 : !on_circle ? 1 : ((count_head < count_phi) == (count_head < count_other)) ? count_phi - count_other : count_other - count_phi, min, entry);
+
+						visited.insert(cur);
+					}
+
+					cur = get_irn_n(cur, pred);
+					count_phi++;
+					count_other++;
+					count_head++;
 				}
-			}
 
-			// find node representing b's chain/loop
-			c = b;
-			long head_b = get_irn_node_nr(b);
-			long min_b = head_b;
+				return std::make_tuple(found_other ? 1 : 0, head, entry);
+			};
 
-			while (is_Phi(c) && get_nodes_block(c) == phi_block)
-			{
-				head_b = get_irn_node_nr(c);
-				min_b = std::min(min_b, head_b);
+			int ra;
+			long head_a;
+			ir_node const* entry_a;
+			std::tie(ra, head_a, entry_a) = foo(a, b);
 
-				if (c == a)
-				{
-					// same chain/loop, a closer to head -> code for b first
-					return true;
-				}
-				else if (head_b == head_a)
-				{
-					// same chain/loop, b closer to head -> code for a first
-					return false;
-				}
+			if (ra < 0)
+				return true;
+			else if (ra > 0)
+				return false;
 
-				c = get_irn_n(c, pred);
+			int rb;
+			long head_b;
+			ir_node const* entry_b;
+			std::tie(rb, head_b, entry_b) = foo(b, a);
 
-				if (c == b)
-				{
-					head_b = min_b;
-					break;
-				}
-			}
+			if (rb < 0)
+				return false;
+			else if (rb > 0)
+				return true;
 
-			// different chain/loop, arbitrary but consistent order
+			// cases reaching this line:
+			// different chain/loop
+			// different chains attached to same loop
+			// -> arbitrary but consistent order
+			if (head_a == head_b)
+				return get_irn_node_nr(entry_a) < get_irn_node_nr(entry_b);
+
 			return head_a < head_b;
 		});
 
@@ -833,9 +881,11 @@ namespace firm
 			ir_node* value = get_irn_n(*it, pred);
 			ir_mode* value_mode = get_irn_mode(value);
 
+			ir_fprintf(out, "\t# (%ld) %F\n", get_irn_node_nr(*it), *it);
+
 			if (is_Const(value))
 				fprintf(out, "\tmov%s $%ld, %zd(%%rsp)\n", operationSuffix(value_mode), get_tarval_long(get_Const_tarval(value)), 8 * usage[*it].first[0].reg - 8);
-			else if (is_Phi(value) && get_nodes_block(value) == phi_block && (it + 1 == phis.rend() || value != *(it + 1)))
+			else if (circle_nodes.count(*it) && circle_nodes.count(value) && (it + 1 == phis.rend() || value != *(it + 1)))
 			{
 				// phi from the same block, but not the next in phis
 				// -> value is head of a phi-loop, use saved value
@@ -845,7 +895,7 @@ namespace firm
 			{
 				for (auto& child : FirmInterface::getInstance().getOuts(*it))
 				{
-					if (child.second == (unsigned) pred && is_Phi(child.first) && get_nodes_block(child.first) == phi_block && (it == phis.rbegin() || child.first != *(it - 1)))
+					if (circle_nodes.count(*it) && circle_nodes.count(child.first) && (it == phis.rbegin() || child.first != *(it - 1)))
 					{
 						// value is tail of a phi-loop, rescue current value
 						fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[*it].first[0].reg - 8, constraintToRegister(RDX, value_mode));
