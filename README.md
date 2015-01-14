@@ -13,7 +13,7 @@ If libfirm is not in your library path you can use the `mj++.sh` wrapper.
 
 Help options:
 - `-h  --help`: Print usage and exit
-- `-d  --dumplexgraph`: Print automaton of lexer to the given file name and exit (format: GML)
+- `-D  --dumplexgraph`: Print automaton of lexer to the given file name and exit (format: GML)
 
 Run options:
 - `-l  --lextest`: Only run the lexer
