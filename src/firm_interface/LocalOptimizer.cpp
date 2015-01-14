@@ -76,6 +76,27 @@ namespace firm
 		else if (is_Mul(node)) replaceMul(node);
 		else if (is_Sub(node)) replaceSub(node);
 		else if (is_Minus(node)) replaceMinus(node);
+		else if (is_Div(node))
+		{
+			auto divisor = node.getChild(2);
+
+			if (is_Const(divisor) && divisor.getValue().getLong() == 1)
+			{
+				for (auto& ne : node.getOuts())
+				{
+					Node outChild = ne.first;
+
+					if (outChild.getMode() == mode_M)
+					{
+						// Relink memory chain
+						for (auto& e : outChild.getOuts())
+							e.first.setChild(e.second, node.getChild(0));
+					}
+					else
+						outChild.replaceWith(node.getChild(1));
+				}
+			}
+		}
 	}
 
 } /* firm */
