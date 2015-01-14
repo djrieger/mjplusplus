@@ -10,7 +10,7 @@ namespace firm
 
 	void ConstantFolder::optimizePhi(Node node)
 	{
-		std::cout << "---------------------------" << std::endl;
+		//std::cout << "---------------------------" << std::endl;
 		unsigned int predCount = node.getChildCount();
 		bool isBad = false;
 		bool valSet = false;
@@ -62,7 +62,7 @@ namespace firm
 			++i;
 		}
 
-		ir_printf("%F:\t", node);
+		//ir_printf("%F:\t", node);
 
 		if (isBad)
 			node.setTarval(BadTarval());
@@ -327,7 +327,6 @@ namespace firm
 	{
 		if (!is_Const(node) && !is_Div(node) && !is_Mod(node) && node.getTarval().isNumericOrBool() && node.getMode() != mode_M)
 		{
-			ir_printf("node mode = %F\n", node.getMode());
 			ir_node* constNode = new_r_Const_long(irg, node.getMode(), node.getTarval().getLong());
 			node.replaceWith(constNode, true);
 			return true;
