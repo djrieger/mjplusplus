@@ -115,10 +115,8 @@ namespace firm
 			shptr<std::map<std::string, int>> getVarMap();
 			void setVarMap(shptr<std::map<std::string, int>> newVar2pos);
 
-			void foo();
-
 			std::queue<ir_node*> getWorklist(ir_graph* irg);
-			std::vector<std::pair<ir_node*, unsigned int>> getOuts(ir_node const* n, ir_edge_kind_t kind = EDGE_KIND_NORMAL);
+			std::vector<std::pair<ir_node*, unsigned int>> getOuts(ir_node const* n);
 	};
 }
 
