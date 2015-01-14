@@ -135,6 +135,11 @@ namespace firm
 						resultVal = Tarval(remainder);
 					}
 				}
+				else if (node.getChild(1) == node.getChild(2))
+				{
+					// case for unknown tarvals: x / x = 1
+					resultVal = Tarval(1, node.getChild(1).getMode());
+				}
 
 				break;
 			}
