@@ -27,14 +27,11 @@ namespace firm
 
 	void CommonSubexpressionEliminator::handleConst(Node node)
 	{
-		//std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
-
 		if (node.getMode() == mode_Is)
 		{
 			long int n = get_tarval_long(get_Const_tarval(node));
 			auto constIt = const_Is_nodes.find(n);
 			bool change = constIt != const_Is_nodes.end();
-			//std::cout << "constant " << n << " bool " << change << std::endl;
 
 			if (change)
 				set_irn_link(node, (void*) &constIt->second);
@@ -46,7 +43,6 @@ namespace firm
 			uint64_t n = get_tarval_long(get_Const_tarval(node));
 			auto constIt = const_Lu_nodes.find(n);
 			bool change = constIt != const_Lu_nodes.end();
-			//std::cout << "constant " << n << " bool " << change << std::endl;
 
 			if (change)
 				set_irn_link(node, (void*) &constIt->second);
@@ -58,8 +54,6 @@ namespace firm
 
 	void CommonSubexpressionEliminator::handleArithmetic(Node node)
 	{
-		//std::cout << ">>>>>>>>>>>>>>>>>>>>>>>>> " << node.getNodeNumber() << std::endl;
-
 		unsigned op = get_irn_opcode(node);
 		vec<Node> childrenNodes = node.getChildren();
 		vec<unsigned> children;
@@ -67,9 +61,7 @@ namespace firm
 		for (auto c : childrenNodes)
 			children.push_back(get_irn_node_nr(c));
 
-		//std::cout << "<<<<<<<<<<<<<<<<<<<<<<<<< " << get_irn_node_nr(get_irn_n(node, -1)) << std::endl;
 		nodeInfo elem {op, get_irn_node_nr(get_irn_n(node, -1)), (uint64_t) node.getMode(), children};
-		//std::cout << op << " and first child " << children[0] << std::endl;
 		auto nodeIt = comp_nodes.find(elem);
 
 		if (nodeIt != comp_nodes.end())
