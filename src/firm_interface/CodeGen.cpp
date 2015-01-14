@@ -58,61 +58,33 @@ namespace firm
 
 	void CodeGen::merge_register(size_t a, size_t b, bool add_to_free)
 	{
-		printf("\t\tmerging %zu and %zu\n", a, b);
-
 		if (a == b)
 			return;
 
 		auto& a_reg = registers[a];
 		auto& b_reg = registers[b];
 
-		printf("\t\twrites: ");
-
 		for (auto& w : b_reg.writes)
 		{
-			ir_printf("[%p %F]: ", w, w);
-
 			for (auto& ww : usage[w].first)
 			{
-				printf("%zu", ww.reg);
-
 				if (ww.reg == b)
-				{
 					ww.reg = a;
-					printf("->%zu", ww.reg);
-				}
-
-				printf(", ");
 			}
-
-			printf("; ");
 		}
 
 		a_reg.writes.insert(a_reg.writes.end(), b_reg.writes.begin(), b_reg.writes.end());
 
-		printf("\n\t\treads: ");
-
 		for (auto& r : b_reg.reads)
 		{
-			ir_printf("[%p %F]: ", r, r);
-
 			for (auto& rr : usage[r].second)
 			{
-				printf("%zu", rr.reg);
 
 				if (rr.reg == b)
-				{
 					rr.reg = a;
-					printf("->%zu", rr.reg);
-				}
-
-				printf(", ");
 			}
-
-			printf("; ");
 		}
 
-		printf("\n");
 		a_reg.reads.insert(a_reg.reads.end(), b_reg.reads.begin(), b_reg.reads.end());
 
 		if (add_to_free)
@@ -121,73 +93,39 @@ namespace firm
 
 	void CodeGen::swap_register(size_t a, size_t b)
 	{
-		printf("\t\tswapping %zu and %zu\n", a, b);
-
 		if (a == b)
 			return;
 
 		auto& a_reg = registers[a];
 		auto& b_reg = registers[b];
 
-		printf("\t\twrites: ");
 		std::vector<ir_node*> writes(a_reg.writes.size() + b_reg.writes.size());
 		writes.resize(std::distance(writes.begin(), std::set_union(a_reg.writes.begin(), a_reg.writes.end(), b_reg.writes.begin(), b_reg.writes.end(), writes.begin())));
 
 		for (auto& w : writes)
 		{
-			ir_printf("[%p %F]: ", w, w);
-
 			for (auto& ww : usage[w].first)
 			{
-				printf("%zu", ww.reg);
-
 				if (ww.reg == a)
-				{
 					ww.reg = b;
-					printf("->%zu", ww.reg);
-				}
 				else if (ww.reg == b)
-				{
 					ww.reg = a;
-					printf("->%zu", ww.reg);
-				}
-
-				printf(", ");
 			}
-
-			printf("; ");
 		}
 
-		printf("\n\t\treads: ");
 		std::vector<ir_node*> reads(a_reg.reads.size() + b_reg.reads.size());
 		reads.resize(std::distance(reads.begin(), std::set_union(a_reg.reads.begin(), a_reg.reads.end(), b_reg.reads.begin(), b_reg.reads.end(), reads.begin())));
 
 		for (auto& r : reads)
 		{
-			ir_printf("[%p %F]: ", r, r);
-
 			for (auto& rr : usage[r].second)
 			{
-				printf("%zu", rr.reg);
-
 				if (rr.reg == a)
-				{
 					rr.reg = b;
-					printf("->%zu", rr.reg);
-				}
 				else if (rr.reg == b)
-				{
 					rr.reg = a;
-					printf("->%zu", rr.reg);
-				}
-
-				printf(", ");
 			}
-
-			printf("; ");
 		}
-
-		printf("\n");
 
 		a_reg.writes.swap(b_reg.writes);
 		a_reg.reads.swap(b_reg.reads);
@@ -294,23 +232,12 @@ namespace firm
 
 		while (!workstack.empty())
 		{
-			printf("TODO: ");
-			std::stack<ir_node*> tmp = workstack;
-
-			while (!tmp.empty())
-			{
-				printf("%ld, ", get_irn_node_nr(tmp.top()));
-				tmp.pop();
-			}
-
-			printf("\n");
-
 			ir_node* irn = workstack.top();
 			workstack.pop();
 			assemble(irn);
 		}
 
-		auto regdump = [&]
+		/*auto regdump = [&]
 		{
 			printf("----------\n");
 
@@ -350,25 +277,16 @@ namespace firm
 
 				printf("\n");
 			}
-		};
-
-		regdump();
-		printf("\n----------\ncondensing\n----------\n");
+		};*/
 
 		// register condensing
 		while (!free_registers.empty())
 		{
-			printf("free: %zu\n", free_registers.size());
-
 			if (*free_registers.rbegin() == registers.size() - 1)
-			{
-				printf("\tdropping %zu at end\n", *free_registers.rbegin());
 				free_registers.erase(--free_registers.end());
-			}
 			else
 			{
 				size_t reg = *free_registers.begin();
-				printf("\tfilling %zu with last (%zu)\n", *free_registers.begin(), registers.size() - 1);
 				free_registers.erase(free_registers.begin());
 				registers[reg].writes.clear();
 				registers[reg].reads.clear();
@@ -377,8 +295,6 @@ namespace firm
 
 			registers.resize(registers.size() - 1);
 		}
-
-		regdump();
 
 		size_t args = get_method_n_params(get_entity_type(get_irg_entity(irg)));
 
@@ -404,10 +320,9 @@ namespace firm
 				if (w.constraint >= STACK)
 					swap_register(gap + w.constraint - STACK + 1, w.reg);
 			}
-
-			regdump();
 		}
 
+		//regdump();
 		output(irg);
 		edges_deactivate(irg);
 	}
@@ -429,11 +344,8 @@ namespace firm
 
 			set_irn_link(block, block);
 
-			printf("Block %ld - phis\n", get_irn_node_nr(block));
-
 			for (ir_node* phi = get_Block_phis(block); phi && is_Phi(phi); phi = get_Phi_next(phi))
 			{
-				ir_printf("\t%ld: %F\n", get_irn_node_nr(phi), phi);
 				auto it = partial.find(phi);
 
 				if (it != partial.end())
@@ -445,15 +357,9 @@ namespace firm
 			}
 
 			// take care of block parents
-			printf("Block %ld - control flow\n", get_irn_node_nr(block));
-
 			for (int i = 0; i < get_irn_arity(block); i++)
-			{
-				ir_printf("\t%ld: %F\n", get_irn_node_nr(get_irn_n(block, i)), get_irn_n(block, i));
 				workstack.push(get_irn_n(block, i));
-			}
 
-			printf("Block %ld - done\n", get_irn_node_nr(block));
 			return;
 		}
 
@@ -477,25 +383,18 @@ namespace firm
 				partial[irn] -= 2;
 		}
 
-		ir_printf("testing (%ld) %F, %zu of %zu left\n", get_irn_node_nr(irn), irn, partial[irn], children.size());
-
 		if (partial[irn] == 0 || (is_Phi(irn) && get_irn_link(irn) != irn))
 		{
 			// take care of parents
 			if (!is_Phi(irn) || (is_Phi(irn) && get_irn_link(irn) != irn))
 			{
-				printf("\tqueueing:\n");
-
 				for (int i = 0; i < get_irn_arity(irn); i++)
 				{
 					ir_node* p = get_irn_n(irn, i);
 					workstack.push(p);
-
-					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(p), p, p);
 				}
 			}
 
-			ir_printf("assembling (%ld) %F in Block %ld\n", get_irn_node_nr(irn), irn, get_irn_node_nr(block));
 			//all children seen - handle it now
 			//phis are handeled twice, first directly after generating control flow for generating code
 			//    second (like all other nodes) when all children have been handled, for merging the output registers
@@ -661,8 +560,6 @@ namespace firm
 
 				for (auto& child : children)
 				{
-					ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(child.first), child.first, child.first);
-
 					if (!is_Proj(child.first) || get_irn_mode(child.first) != mode_T || get_Proj_num(child.first) != pn_Start_T_args)
 						continue;
 
@@ -670,8 +567,6 @@ namespace firm
 
 					for (auto& used_arg : used_args)
 					{
-						ir_printf("\t\t\t(%lu) %F %p\n", get_irn_node_nr(used_arg.first), used_arg.first, used_arg.first);
-
 						if (!is_Proj(used_arg.first))
 							continue;
 
@@ -800,22 +695,15 @@ namespace firm
 			{
 				if (current_reg)
 				{
-					printf("!!!!!!!!!!!!!\n\tthis shouldn't use a register...\n");
+					ir_printf("\n!!!!!!!!!!!!!\n(%ld) %F\n\tthis shouldn't use a register...\n", get_irn_node_nr(irn), irn);
 					abort();
 				}
 			}
 			else
 			{
-				printf("\tnot implemented yet\n");
+				ir_printf("\n(%ld) %F\n\tnot implemented yet\n", get_irn_node_nr(irn), irn);
 				abort();
 			}
-		}
-		else
-		{
-			printf("\twaiting for:\n");
-
-			for (auto& child : children)
-				ir_printf("\t\t(%lu) %F %p\n", get_irn_node_nr(child.first), child.first, child.first);
 		}
 	}
 
@@ -1233,7 +1121,7 @@ namespace firm
 		}
 		else
 		{
-			ir_printf("\nNo idea how to emit code for %F\n", irn);
+			ir_printf("\nNo idea how to emit code for (%ld) %F\n", get_irn_node_nr(irn), irn);
 			abort();
 		}
 	}
