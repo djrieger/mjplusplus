@@ -21,7 +21,6 @@ namespace firm
 			void handleMinus(ir_node* node);
 			void handleMul(ir_node* node);
 			void handleDivAndMod(ir_node* node);
-			void handleCmp(ir_node* node);
 
 			bool tarvalIsZero(Tarval tarval);
 			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
@@ -32,7 +31,6 @@ namespace firm
 			void replaceMul(Node node);
 			void replaceMinus(Node node);
 			void replaceConv(Node node);
-			void replaceProj(Node node);
 		public:
 			virtual void handle(Node);
 			virtual void cleanUp(Node node);
