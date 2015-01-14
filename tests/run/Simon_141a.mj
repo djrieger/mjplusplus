@@ -1,11 +1,23 @@
 class a {
 	public static void main(String[] args) {
 		a q = new a();
-		q.print10(7,3,4,1,6,0,2,9,5,8);
+		q.print10(false, 7,3,4,1,6,0,2,9,5,8);
 	}
 	
-	public void print10(int x7, int x3, int x4, int x1, int x6,
+	public void print10(boolean doit, int x7, int x3, int x4, int x1, int x6,
 						int x0, int x2, int x9, int x5, int x8) {
-		System.out.println(x7);
+    if (doit) {
+      System.out.println(x0);
+      System.out.println(x1);
+      System.out.println(x2);
+      System.out.println(x3);
+      System.out.println(x4);
+      System.out.println(x5);
+      System.out.println(x6);
+      System.out.println(x7);
+      System.out.println(x8);
+      System.out.println(x9);
+    } else
+      print10(!doit, x7, x3, x4, x1, x6, x0, x2, x9, x5, x8);
 	}
 }

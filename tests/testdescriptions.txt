@@ -138,3 +138,4 @@ Simon_137: don't optimize 0 < X || 0 >= X for impure X
 Simon_138: don't optimize X=X for impure X
 Simon_139: don't optimize 2*X to X+X for impure X
 Simon_140: don't optimize X && false for impure X
+Simon_141: test with 10 function parameters
