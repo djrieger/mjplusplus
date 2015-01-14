@@ -776,7 +776,7 @@ namespace firm
 		//   and within these groups ordered for easy copying
 		std::sort(phis.begin(), phis.end(), [&](ir_node const * a, ir_node const * b)
 		{
-			auto foo = [&](ir_node const * phi, ir_node const * other) -> std::tuple<int, long, ir_node const*>
+			auto foo = [&](ir_node const * phi, ir_node const * other) -> std::tuple<int, long, ir_node const*, size_t>
 			{
 				bool has_circle = false;
 				bool on_circle = false;
@@ -832,7 +832,7 @@ namespace firm
 					else
 					{
 						if (has_circle)
-							return std::make_tuple(!found_other ? 0 : !on_circle ? 1 : ((count_head < count_phi) == (count_head < count_other)) ? count_phi - count_other : count_other - count_phi, min, entry);
+							return std::make_tuple(!found_other ? 0 : !on_circle ? 1 : ((count_head < count_phi) == (count_head < count_other)) ? count_phi - count_other : count_other - count_phi, min, entry, visited.size());
 
 						visited.insert(cur);
 					}
@@ -843,35 +843,43 @@ namespace firm
 					count_head++;
 				}
 
-				return std::make_tuple(found_other ? 1 : 0, head, entry);
+				return std::make_tuple(found_other ? 1 : 0, head, entry, 0U);
 			};
 
 			int ra;
 			long head_a;
 			ir_node const* entry_a;
-			std::tie(ra, head_a, entry_a) = foo(a, b);
+			size_t dist_a;
+			std::tie(ra, head_a, entry_a, dist_a) = foo(a, b);
 
-			if (ra < 0)
-				return true;
-			else if (ra > 0)
-				return false;
+			if (ra)
+				return ra < 0;
 
 			int rb;
 			long head_b;
 			ir_node const* entry_b;
-			std::tie(rb, head_b, entry_b) = foo(b, a);
+			size_t dist_b;
+			std::tie(rb, head_b, entry_b, dist_b) = foo(b, a);
 
-			if (rb < 0)
-				return false;
-			else if (rb > 0)
-				return true;
+			if (rb)
+				return rb > 0;
 
 			// cases reaching this line:
 			// different chain/loop
 			// different chains attached to same loop
 			// -> arbitrary but consistent order
 			if (head_a == head_b)
+			{
+				if (entry_a == entry_b)
+				{
+					if (dist_a == dist_b)
+						return get_irn_node_nr(a) < get_irn_node_nr(b);
+
+					return dist_a < dist_b;
+				}
+
 				return get_irn_node_nr(entry_a) < get_irn_node_nr(entry_b);
+			}
 
 			return head_a < head_b;
 		});
