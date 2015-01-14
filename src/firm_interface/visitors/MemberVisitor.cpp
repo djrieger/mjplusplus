@@ -94,7 +94,7 @@ namespace firm
 			irg_finalize_cons(irg);
 
 			// optimize Firm graph
-			dump_ir_graph(irg, "orig");
+			FirmInterface::getInstance().outputFirmGraph(irg, "orig");
 			foldConstants(irg);
 			//dump_ir_graph(irg, "it1");
 			optimizeControlFlow(irg);
@@ -110,7 +110,7 @@ namespace firm
 			foldConstants(irg);*/
 			// remove all bad nodes that might occur during optimizations
 			remove_bads(irg);
-			dump_ir_graph(irg, "final");
+			FirmInterface::getInstance().outputFirmGraph(irg, "final");
 			irg_verify(irg);
 		}
 

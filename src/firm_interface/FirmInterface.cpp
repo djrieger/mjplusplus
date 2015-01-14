@@ -38,6 +38,11 @@ namespace firm
 		out_name = out;
 	}
 
+	void FirmInterface::setFirmGraphOutput(bool output)
+	{
+		dumpFirmGraph = output;
+	}
+
 	void FirmInterface::convert(shptr<ast::Program> program)
 	{
 		visitor::ProgramVisitor v;
@@ -121,6 +126,13 @@ _COut_Mprintln:\n\
 		fprintf(o, "\t.section .rodata.str1.1,\"aMS\",@progbits,1\n.LC0:\n\t.string \"%%d\\n\"\n");
 		fclose(o);
 	}
+
+	void FirmInterface::outputFirmGraph(ir_graph* irg, std::string suffix)
+	{
+		if (dumpFirmGraph)
+			dump_ir_graph(irg, suffix.c_str());
+	}
+
 
 	ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration)
 	{
