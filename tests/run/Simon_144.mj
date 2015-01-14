@@ -1,0 +1,89 @@
+class a {
+	public static void main(String[] args) {
+		a q = new a();
+		q.phiMadness(3);
+	}
+	
+	public void phiMadness(int n) {
+		int x0 = 3;
+		int x1 = 0;
+		int x2 = 1;
+		int x3 = 2;
+		int x4 = 9;
+		int x5 = 9;
+		int x6 = 9;
+		int x7 = 9;
+		int x8 = 9;
+		int x9 = 9;
+		int x10 = 9;
+		int x11 = 4;
+		int x12 = 9;
+		int x13 = 5;
+		int x14 = 9;
+		int x15 = 91;
+		int x16 = 9;
+		int x17 = 92;
+		int x18 = 93;
+		int x19 = 94;
+		int x20 = 95;
+		int x21 = 96;
+		int x22 = 97;
+		int x23 = 98;
+		int x24 = 99;
+		while (n > 0) {
+			x20 = x16;
+			x21 = x16;
+			x22 = x16;
+			x23 = x16;
+			x24 = x16;
+			x18 = x15;
+			x19 = x15;
+			x16 = x14;
+			x17 = x14;
+			x12 = x10;
+			x10 = x9;
+			x13 = x8;
+			x11 = x8;
+			x9 = x8;
+			x8 = x6;
+			x14 = x5;
+			x15 = x5;
+			x7 = x3;
+			x6 = x2;
+			x5 = x1;
+			x4 = x0;
+			
+			int t = x0;
+			x0 = x3;
+			x3 = x2;
+			x2 = x1;
+			x1 = t;
+			n = n - 1;
+		}
+		System.out.println(x0);
+		System.out.println(x1);
+		System.out.println(x2);
+		System.out.println(x3);
+		System.out.println(x4);
+		System.out.println(x5);
+		System.out.println(x6);
+		System.out.println(x7);
+		System.out.println(x8);
+		System.out.println(x9);
+		System.out.println(x10);
+		System.out.println(x11);
+		System.out.println(x12);
+		System.out.println(x13);
+		System.out.println(x14);
+		System.out.println(x15);
+		System.out.println(x16);
+		System.out.println(x17);
+		System.out.println(x18);
+		System.out.println(x19);
+		System.out.println(x20);
+		System.out.println(x21);
+		System.out.println(x22);
+		System.out.println(x23);
+		System.out.println(x24);
+	}
+}
