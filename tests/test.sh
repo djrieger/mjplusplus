@@ -127,8 +127,9 @@ runCompileTestDiff() {
 			TEST_PASSED=false
 		fi
 	done
-	rm -f *.vcg
-
+	#vcg files are no longer created by default
+	#rm -f *.vcg
+	
 	echo "$1:" $((succeeded + failed + segfaults + asmerrors + compfailed)) "tests:\033[1;32m" $succeeded "\033[0msucceeded,\033[1;31m" $failed "\033[0mfailed with\033[1;31m" $segfaults "\033[0msegfaults,\033[1;31m" $compfailed "\033[0mcompilation errors and\033[1;31m" $asmerrors "\033[0massembler errors."
 }
 

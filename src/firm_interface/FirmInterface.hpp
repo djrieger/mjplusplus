@@ -53,6 +53,12 @@ namespace firm
 			 * Name of assembler file to generate
 			 */
 			std::string out_name;
+
+			/**
+			 * Flag for graph output
+			 */
+			bool dumpFirmGraph;
+
 			shptr<std::map<std::string, int>> var2pos;
 
 			std::unordered_map<shptr<ast::Type>, ir_type*> types;
@@ -89,6 +95,14 @@ namespace firm
 			void build();
 
 			/**
+			 * Outputs the given firm graph with the given string as suffix as vcg file, if the
+			 * graph output option is enabled.
+			 * @param irg    the given firm graph
+			 * @param suffix the given suffix
+			 */
+			void outputFirmGraph(ir_graph* irg, std::string suffix);
+
+			/**
 			 * Convert the generated Firm graphs to assembler using FIRM itself and save in file out_name
 			 */
 			void buildWithFirm();
@@ -111,6 +125,7 @@ namespace firm
 
 			void setInput(std::string const& in);
 			void setOutput(std::string const& out);
+			void setFirmGraphOutput(bool dumpFirmGraph);
 
 			shptr<std::map<std::string, int>> getVarMap();
 			void setVarMap(shptr<std::map<std::string, int>> newVar2pos);

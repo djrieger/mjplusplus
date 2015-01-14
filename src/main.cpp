@@ -56,10 +56,11 @@ bool runSemanticAnalysis(shptr<ast::Program> root, shptr<ErrorReporter> errorRep
 	return valid;
 }
 
-void runFirm(std::string file_name, std::string out_name, shptr<ast::Program> root)
+void runFirm(std::string file_name, std::string out_name, bool outputGraphs, shptr<ast::Program> root)
 {
 	firm::FirmInterface::getInstance().setInput(file_name);
 	firm::FirmInterface::getInstance().setOutput(out_name);
+	firm::FirmInterface::getInstance().setFirmGraphOutput(outputGraphs);
 	firm::FirmInterface::getInstance().convert(root);
 }
 
@@ -91,12 +92,12 @@ int removeAssembly(std::string out_name_assembly)
 
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMPLEXGRAPH, PRINT_AST, SUPPRESS_ERRORS, OUT, KEEP, COMPILE_FIRM, LEXTEST, PARSE, CHECK, FIRM, ASSEMBLY};
+	enum optionIndex {UNKNOWN, HELP, DUMP_LEX_GRAPH, DUMP_FIRM_GRAPH, PRINT_AST, SUPPRESS_ERRORS, OUT, KEEP, COMPILE_FIRM, LEXTEST, PARSE, CHECK, FIRM, ASSEMBLY};
 	static const option::Descriptor usage[] =
 	{
 		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [options] FILE\n\nOptions:"},
 		{HELP, 0, "h", "help", option::Arg::None, " -h  --help\tPrint usage and exit"},
-		{DUMPLEXGRAPH, 0, "d", "dumplexgraph", option::Arg::None, " -d  --dumplexgraph\tPrint automaton of lexer to the given file name and exit"},
+		{DUMP_LEX_GRAPH, 0, "D", "dumplexgraph", option::Arg::None, " -D  --dumplexgraph\tPrint automaton of lexer to the given file name and exit"},
 
 		{UNKNOWN, 0, "", "", option::Arg::None, "\nRun options:"},
 		{LEXTEST, 0, "l", "lextest", option::Arg::None, " -l  --lextest\tOnly run the lexer"},
@@ -111,6 +112,7 @@ int main(int argc, const char** argv)
 		{SUPPRESS_ERRORS, 0, "q", "suppress-errors", option::Arg::None, " -q  --suppress-errors \tDo not print error messages"},
 		{KEEP, 0, "k", "keep", option::Arg::None, " -k  --keep\tKeep the assembly file after compiling"},
 		{COMPILE_FIRM, 0, "f", "compile-firm", option::Arg::None, " -f  --compile-firm\tGenerate assembler using the Firm backend instead of our own codegen"},
+		{DUMP_FIRM_GRAPH, 0, "d", "dumpfirmgraph", option::Arg::None, " -d  --dumpfirmgraph\tOutput the created firm graphs as vcg-files."},
 		{OUT, 0, "o", "out", option::Arg::Required, " -o  --out FILE\tSet the output for various commands to FILE"},
 		{0, 0, 0, 0, 0, 0}
 	};
@@ -150,7 +152,7 @@ int main(int argc, const char** argv)
 
 	lexer::Stateomat stateomat;
 
-	if (options[DUMPLEXGRAPH])
+	if (options[DUMP_LEX_GRAPH])
 		return dumpLexGraph(stateomat, !options[OUT] ? "lexgraph.gml" : out_name);
 
 	try
@@ -192,7 +194,7 @@ int main(int argc, const char** argv)
 
 		//firm
 		std::string out_name_assembly = out_name + (options[OUT] && options[ASSEMBLY] ? "" : ".S");
-		runFirm(file_name, out_name_assembly, parser.getRoot());
+		runFirm(file_name, out_name_assembly, options[DUMP_FIRM_GRAPH], parser.getRoot());
 
 		if (options[FIRM])
 			return EXIT_SUCCESS;
