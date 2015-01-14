@@ -96,6 +96,22 @@ namespace firm
 						outChild.replaceWith(node.getChild(1));
 				}
 			}
+			else if (is_Const(divisor) && divisor.getValue().getLong() == -1)
+			{
+				for (auto& ne : node.getOuts())
+				{
+					Node outChild = ne.first;
+
+					if (outChild.getMode() == mode_M)
+					{
+						// Relink memory chain
+						for (auto& e : outChild.getOuts())
+							e.first.setChild(e.second, node.getChild(0));
+					}
+					else
+						outChild.replaceWith(new_r_Minus(get_nodes_block(node), node.getChild(1), node.getChild(1).getMode()));
+				}
+			}
 		}
 	}
 
