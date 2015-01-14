@@ -9,6 +9,6 @@ class a {
 			x = 4 - x; /* @old "4 - x;" @opt "2;" */
 			z = z - 1;
 		}
-		System.out.println(x); /* @old "x" @opt "4" */
+		System.out.println(x); /* @old "x" @opt "2" */
 	}
 }
