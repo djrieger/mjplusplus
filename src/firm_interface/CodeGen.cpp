@@ -310,8 +310,6 @@ namespace firm
 			assemble(irn);
 		}
 
-		edges_deactivate(irg);
-
 		auto regdump = [&]
 		{
 			printf("----------\n");
@@ -411,6 +409,7 @@ namespace firm
 		}
 
 		output(irg);
+		edges_deactivate(irg);
 	}
 
 	void CodeGen::assemble(ir_node* irn)
@@ -956,9 +955,15 @@ namespace firm
 			}
 			else
 			{
-				if (false)
-					// value is tail of a phi-loop, rescue current value
-					fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[*it].first[0].reg - 8, constraintToRegister(RDX, value_mode));
+				for (auto& child : FirmInterface::getInstance().getOuts(*it))
+				{
+					if (child.second == (unsigned) pred && is_Phi(child.first) && get_nodes_block(child.first) == phi_block && (it == phis.rbegin() || child.first != *(it - 1)))
+					{
+						// value is tail of a phi-loop, rescue current value
+						fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[*it].first[0].reg - 8, constraintToRegister(RDX, value_mode));
+						break;
+					}
+				}
 
 				fprintf(out, "\tmov%s %zd(%%rsp), %s\n", operationSuffix(value_mode), 8 * usage[*it].second[pred].reg - 8, constraintToRegister(RAX, value_mode));
 				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", operationSuffix(value_mode), constraintToRegister(RAX, value_mode), 8 * usage[*it].first[0].reg - 8);
