@@ -3,6 +3,7 @@
 #include "../ConstantFolder.hpp"
 #include "../Worklist.hpp"
 #include "../ControlFlowOptimizer.hpp"
+#include "../LocalOptimizer.hpp"
 
 namespace firm
 {
@@ -53,6 +54,16 @@ namespace firm
 			}
 		}
 
+		void MemberVisitor::optimizeLocal(ir_graph* irg)
+		{
+			LocalOptimizer localOpt(irg);
+			firm::Worklist worklist(irg, localOpt);
+
+			edges_activate(irg);
+			worklist.run();
+			edges_deactivate(irg);
+		}
+
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 		{
 			// set method start block as current block
@@ -96,6 +107,7 @@ namespace firm
 			// optimize Firm graph
 			FirmInterface::getInstance().outputFirmGraph(irg, "orig");
 			foldConstants(irg);
+			optimizeLocal(irg);
 			//dump_ir_graph(irg, "it1");
 			optimizeControlFlow(irg);
 

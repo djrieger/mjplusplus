@@ -5,6 +5,7 @@
 #include <set>
 #include "../globals.hpp"
 #include "Node.hpp"
+#include "Tarval.hpp"
 
 namespace firm
 {
@@ -23,6 +24,8 @@ namespace firm
 			virtual void handle(Node) = 0;
 			virtual void cleanUp(Node node) = 0;
 			virtual bool graphChanged();
+			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
+			bool tarvalIsZero(Tarval tarval);
 			shptr<std::set<ir_node*>> getNewNodes() const;
 	};
 }

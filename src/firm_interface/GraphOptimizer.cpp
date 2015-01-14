@@ -29,4 +29,22 @@ namespace firm
 	{
 		return false;
 	}
+
+	void GraphOptimizer::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
+	{
+		Node child1 = node.getChild(0);
+
+		if (node.getChildCount() == 1 && node.getTarval().isModeIs())
+			fun(child1, NULL);
+		else
+		{
+			Node child2 = node.getChild(1);
+			fun(child1, child2);
+		}
+	}
+
+	bool GraphOptimizer::tarvalIsZero(Tarval tarval)
+	{
+		return tarval && tarval.isNumeric() && tarval.getLong() == 0;
+	}
 }

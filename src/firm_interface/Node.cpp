@@ -17,6 +17,16 @@ namespace firm
 			return Tarval(tarval);
 	}
 
+	Tarval Node::getValue() const
+	{
+		return get_Const_tarval(node);
+	}
+
+	bool Node::isConst() const
+	{
+		return is_Const(node);
+	}
+
 	void Node::setTarval(Tarval tarval)
 	{
 		set_irn_link(node, (void*) (ir_tarval*) tarval);
