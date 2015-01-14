@@ -139,3 +139,5 @@ Simon_138: don't optimize X=X for impure X
 Simon_139: don't optimize 2*X to X+X for impure X
 Simon_140: don't optimize X && false for impure X
 Simon_141: test with 10 function parameters
+Simon_142: phi madness light
+Simon_143: phi madness
