@@ -28,6 +28,7 @@ Other options:
 - `-q  --suppress-errors`: Do not print error messages
 - `-k  --keep`: Keep the assembly file after compiling
 - `-f  --compile-firm`: Generate assembler using the Firm backend instead of our own codegen
+- `-d  --dumpfirmgraph`: Output the created firm graphs as vcg-files.
 - `-o  --out FILE`: Set the output for various commands to FILE
 
 Example: `./mj++ --out foo foo.mj`
