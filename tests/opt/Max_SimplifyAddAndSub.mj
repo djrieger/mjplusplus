@@ -1,0 +1,38 @@
+class a {
+	public static void main(String[] args) {
+		a foo = new a();
+
+
+		int z  = foo.q() - foo.p();
+		System.out.println(z);
+		int z2 = (-foo.q()) - foo.p();
+		System.out.println(z2);
+		int z3 = foo.q() - (-foo.p());
+		System.out.println(z3);
+		int z4 = (-foo.q()) - (-foo.p());
+		System.out.println(z4);
+
+		if (foo.b()) {
+			int z5 = foo.q() + foo.p();
+			System.out.println(z5);
+			int z6 = foo.q() + (-foo.p());
+			System.out.println(z6);
+			int z7 = (-foo.q()) + foo.p();
+			System.out.println(z7);
+			int z8 = -foo.q() + -foo.p();
+			System.out.println(z8);
+		}
+	}
+	
+	public int q() {
+		return 1;
+	}
+
+	public int p() {
+		return 2;
+	}
+
+	public boolean b() {
+		return true;
+	}
+}
