@@ -118,7 +118,7 @@ namespace firm
 			FirmInterface::getInstance().outputFirmGraph(irg, "orig");
 
 #ifndef MAX_OPTIMIZATION_ITERATIONS
-#define MAX_OPTIMIZATION_ITERATIONS 10
+#define MAX_OPTIMIZATION_ITERATIONS 1
 
 			bool did_change;
 			int iterations_count = 0;
@@ -131,16 +131,14 @@ namespace firm
 				did_change = did_change || optimizeLocal(irg);
 				did_change = did_change || eliminateCommonSubexpressions(irg);
 				did_change = did_change || optimizeControlFlow(irg);
-
-				// remove all bad nodes that might occur during optimizations
-				// possible streamlining: remove bads only if they might have been added.
-				if (did_change)
-					remove_bads(irg);
 			}
-			while (did_change && iterations_count++ < MAX_OPTIMIZATION_ITERATIONS);
+			while (did_change && ++iterations_count < MAX_OPTIMIZATION_ITERATIONS);
 
 #undef MAX_OPTIMIZATION_ITERATIONS
 #endif
+
+			// remove all bad nodes that might occur during optimizations
+			remove_bads(irg);
 
 			FirmInterface::getInstance().outputFirmGraph(irg, "final");
 			irg_verify(irg);
