@@ -14,6 +14,7 @@ namespace firm
 		protected:
 			ir_graph* irg;
 			shptr<std::set<ir_node*>> newNodes;
+			bool changed;
 
 			/**
 			 * add all successors to the worklist again
@@ -23,7 +24,8 @@ namespace firm
 			GraphOptimizer(ir_graph* irg);
 			virtual void handle(Node) = 0;
 			virtual void cleanUp(Node node) = 0;
-			virtual bool graphChanged();
+			void replaceNode(Node oldNode, Node newNode, bool keepTarval = false);
+			bool graphChanged() const;
 			void processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun);
 			bool tarvalIsZero(Tarval tarval);
 			shptr<std::set<ir_node*>> getNewNodes() const;

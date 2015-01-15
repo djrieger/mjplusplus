@@ -39,12 +39,10 @@ namespace firm
 			std::unordered_map<nodeInfo, Node> comp_nodes;
 			void handleConst(Node node);
 			void handleArithmetic(Node node);
-			bool changed = false;
 		public:
 			CommonSubexpressionEliminator(ir_graph* irg);
 			virtual void handle(Node);
 			virtual void cleanUp(Node node);
-			virtual bool graphChanged();
 	};
 }
 #endif

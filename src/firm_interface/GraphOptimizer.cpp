@@ -7,6 +7,7 @@ namespace firm
 	{
 
 		newNodes = std::make_shared<std::set<ir_node*>>();
+		changed = false;
 	}
 
 	void GraphOptimizer::markOutNodesAsNew(ir_node* node)
@@ -25,9 +26,15 @@ namespace firm
 		return this->newNodes;
 	}
 
-	bool GraphOptimizer::graphChanged()
+	void GraphOptimizer::replaceNode(Node oldNode, Node newNode, bool keepTarval)
 	{
-		return false;
+		changed = true;
+		oldNode.replaceWith(newNode, keepTarval);
+	}
+
+	bool GraphOptimizer::graphChanged() const
+	{
+		return changed;
 	}
 
 	void GraphOptimizer::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
