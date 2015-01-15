@@ -141,3 +141,8 @@ Simon_140: don't optimize X && false for impure X
 Simon_141: test with 10 function parameters
 Simon_142: phi madness light
 Simon_143: phi madness
+Simon_144: even more phi madness
+Simon_145: assignments in loop condition
+Simon_146: assignments in loop condition
+Simon_147: assignments in loop condition
+Simon_148: correctness after optimization of arithmetic identities
