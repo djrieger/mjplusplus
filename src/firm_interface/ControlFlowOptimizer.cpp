@@ -62,14 +62,14 @@ namespace firm
 				        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_false))
 				{
 					// Exchange the Proj with an unconditional jump.
-					exchange(node, new_r_Jmp(get_nodes_block(child_node)));
+					replaceNode(node, new_r_Jmp(get_nodes_block(child_node)));
 				}
 
 				if ((proj_num == pn_Cond_true  && relation == ir_relation::ir_relation_false)
 				        || (proj_num == pn_Cond_false && relation == ir_relation::ir_relation_true))
 				{
 					// Exchange Proj nodes leading to dead blocks with bad blocks.
-					exchange(node, new_r_Bad(irg, get_modeX()));
+					replaceNode(node, new_r_Bad(irg, get_modeX()));
 				}
 			}
 		}

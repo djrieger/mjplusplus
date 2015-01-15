@@ -306,11 +306,11 @@ namespace firm
 		Node child = node.getChild(0);
 
 		if (is_Conv(child) && node.getMode() == child.getMode())
-			node.replaceWith(child);
+			replaceNode(node, child);
 		else if (is_Const(child))
-			node.replaceWith(new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
+			replaceNode(node, new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
 		else if (is_Conv(child))
-			child.replaceWith(node);
+			replaceNode(child, node);
 	}
 
 	void ConstantFolder::replaceDivMod(Node node)
@@ -327,7 +327,7 @@ namespace firm
 						e.first.setChild(e.second, node.getChild(0));
 				}
 				else
-					outChild.replaceWith(new_r_Const_long(irg, node.getTarval().getMode(), node.getTarval().getLong()));
+					replaceNode(outChild, new_r_Const_long(irg, node.getTarval().getMode(), node.getTarval().getLong()));
 			}
 	}
 
@@ -336,7 +336,7 @@ namespace firm
 		if (!is_Const(node) && !is_Div(node) && !is_Mod(node) && node.getTarval().isNumericOrBool() && node.getMode() != mode_M)
 		{
 			ir_node* constNode = new_r_Const_long(irg, node.getMode(), node.getTarval().getLong());
-			node.replaceWith(constNode, true);
+			replaceNode(node, constNode, true);
 			return true;
 		}
 

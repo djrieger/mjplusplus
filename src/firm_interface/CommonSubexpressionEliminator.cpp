@@ -70,11 +70,6 @@ namespace firm
 			comp_nodes.emplace(elem, node);
 	}
 
-	bool CommonSubexpressionEliminator::graphChanged()
-	{
-		return changed;
-	}
-
 	void CommonSubexpressionEliminator::cleanUp(Node node)
 	{
 		Node* replacement = (Node*) get_irn_link(node);

@@ -19,10 +19,10 @@ namespace firm
 		{
 			if (leftChild.isConst() && tarvalIsZero(leftChild.getValue()))
 				// x + 0 = x
-				node.replaceWith(rightChild);
+				replaceNode(node, rightChild);
 			else if (rightChild.isConst() && tarvalIsZero(rightChild.getValue()))
 				// 0 + x = x
-				node.replaceWith(leftChild);
+				replaceNode(node, leftChild);
 			else if (is_Minus(leftChild) || is_Minus(rightChild))
 			{
 				// if one of the two operands is a minus, we probably can simplify the term
@@ -34,15 +34,15 @@ namespace firm
 						break; // we will never land here because if the else if condition
 
 					case 1:
-						node.replaceWith(new_r_Sub(get_nodes_block(node), rightChild, leftChild.getChild(0), node.getMode()));
+						replaceNode(node, new_r_Sub(get_nodes_block(node), rightChild, leftChild.getChild(0), node.getMode()));
 						break; // (-a) + b = (b-a)
 
 					case 2:
-						node.replaceWith(new_r_Sub(get_nodes_block(node), leftChild, rightChild.getChild(0), node.getMode()));
+						replaceNode(node, new_r_Sub(get_nodes_block(node), leftChild, rightChild.getChild(0), node.getMode()));
 						break; // a +(-b) = a-b
 
 					case 3:
-						node.replaceWith(new_r_Minus(get_nodes_block(node),
+						replaceNode(node, new_r_Minus(get_nodes_block(node),
 						new_r_Add(get_nodes_block(node), leftChild.getChild(0), rightChild.getChild(0), node.getMode()),
 						node.getMode()));
 						break; // -a +(-b) = -(a+b)
@@ -58,10 +58,10 @@ namespace firm
 		{
 			if (leftChild.isConst() && tarvalIsZero(leftChild.getValue()))
 				// 0 - x = -x
-				node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
+				replaceNode(node, new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
 			else if (rightChild.isConst() && tarvalIsZero(rightChild.getValue()))
 				// x - 0 =  x
-				node.replaceWith(leftChild);
+				replaceNode(node, leftChild);
 			else if (is_Minus(leftChild) || is_Minus(rightChild))
 			{
 				// if one of the two operands is a minus, we probably can simplify the term
@@ -73,17 +73,17 @@ namespace firm
 						break; // we will never land here because if the else if condition
 
 					case 1:
-						node.replaceWith(new_r_Minus(get_nodes_block(node),
+						replaceNode(node, new_r_Minus(get_nodes_block(node),
 						new_r_Add(get_nodes_block(node), leftChild.getChild(0), rightChild, node.getMode()),
 						node.getMode()));
 						break; // (-a) - b = -(a + b)  we are not sure if we want to do something here
 
 					case 2:
-						node.replaceWith(new_r_Add(get_nodes_block(node), leftChild, rightChild.getChild(0), node.getMode()));
+						replaceNode(node, new_r_Add(get_nodes_block(node), leftChild, rightChild.getChild(0), node.getMode()));
 						break; // a - (-b) = a + b
 
 					case 3:
-						node.replaceWith(new_r_Sub(get_nodes_block(node), rightChild.getChild(0), leftChild.getChild(0), node.getMode()));
+						replaceNode(node, new_r_Sub(get_nodes_block(node), rightChild.getChild(0), leftChild.getChild(0), node.getMode()));
 						break; // -a -(-b) = -(a+b)
 				}
 			}
@@ -93,7 +93,7 @@ namespace firm
 	void LocalOptimizer::replaceMinus(Node node)
 	{
 		if (is_Minus(node.getChild(0)))
-			node.replaceWith(node.getChild(0).getChild(0));
+			replaceNode(node, node.getChild(0).getChild(0));
 	}
 
 	void LocalOptimizer::replaceMul(Node node)
@@ -107,15 +107,15 @@ namespace firm
 					switch (leftChild.getValue().getLong())
 					{
 						case 0:
-							node.replaceWith(new_r_Const_long(irg, get_irn_mode(node), 0));
+							replaceNode(node, new_r_Const_long(irg, get_irn_mode(node), 0));
 							break;
 
 						case 1:
-							node.replaceWith(rightChild);
+							replaceNode(node, rightChild);
 							break;
 
 						case -1:
-							node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
+							replaceNode(node, new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
 					}
 				}
 			};
