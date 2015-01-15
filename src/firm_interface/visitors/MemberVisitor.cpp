@@ -14,7 +14,7 @@ namespace firm
 			setOwner(classVisitor.getOwner());
 		}
 
-		void MemberVisitor::foldConstants(ir_graph* irg)
+		bool MemberVisitor::foldConstants(ir_graph* irg)
 		{
 
 
@@ -25,10 +25,10 @@ namespace firm
 			worklist.run();
 			edges_deactivate(irg);
 
-
+			return constantFolder.graphChanged();
 		}
 
-		void MemberVisitor::optimizeControlFlow(ir_graph* irg)
+		bool MemberVisitor::optimizeControlFlow(ir_graph* irg)
 		{
 			ControlFlowOptimizer cfOptimizer(irg);
 			firm::Worklist worklist(irg, cfOptimizer);
@@ -36,11 +36,15 @@ namespace firm
 			edges_activate(irg);
 			worklist.run();
 			edges_deactivate(irg);
+
+			return cfOptimizer.graphChanged();
 		}
 
-		void MemberVisitor::eliminateCommonSubexpressions(ir_graph* irg)
+		bool MemberVisitor::eliminateCommonSubexpressions(ir_graph* irg)
 		{
 			bool change = true;
+
+			bool made_optimization = false;
 
 			while (change)
 			{
@@ -51,10 +55,14 @@ namespace firm
 				change = worklist.run();
 
 				edges_deactivate(irg);
+
+				made_optimization = made_optimization || commonSubexpressionEliminator.graphChanged();
 			}
+
+			return made_optimization;
 		}
 
-		void MemberVisitor::optimizeLocal(ir_graph* irg)
+		bool MemberVisitor::optimizeLocal(ir_graph* irg)
 		{
 			LocalOptimizer localOpt(irg);
 			firm::Worklist worklist(irg, localOpt);
@@ -62,6 +70,8 @@ namespace firm
 			edges_activate(irg);
 			worklist.run();
 			edges_deactivate(irg);
+
+			return localOpt.graphChanged();
 		}
 
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
@@ -106,22 +116,32 @@ namespace firm
 
 			// optimize Firm graph
 			FirmInterface::getInstance().outputFirmGraph(irg, "orig");
-			foldConstants(irg);
-			optimizeLocal(irg);
-			//dump_ir_graph(irg, "it1");
-			optimizeControlFlow(irg);
 
-			eliminateCommonSubexpressions(irg);
-			//should be done in a loop until nothing changes / threshold reached
-			/*std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			std::cout << "_________________________________________________" << std::endl;
-			foldConstants(irg);*/
-			// remove all bad nodes that might occur during optimizations
-			remove_bads(irg);
+#ifndef MAX_OPTIMIZATION_ITERATIONS
+#define MAX_OPTIMIZATION_ITERATIONS 10
+
+			bool did_change;
+			int iterations_count = 0;
+
+			do
+			{
+				did_change = false;
+
+				did_change = did_change || foldConstants(irg);
+				did_change = did_change || optimizeLocal(irg);
+				did_change = did_change || eliminateCommonSubexpressions(irg);
+				did_change = did_change || optimizeControlFlow(irg);
+
+				// remove all bad nodes that might occur during optimizations
+				// possible streamlining: remove bads only if they might have been added.
+				if (did_change)
+					remove_bads(irg);
+			}
+			while (did_change && iterations_count++ < MAX_OPTIMIZATION_ITERATIONS);
+
+#undef MAX_OPTIMIZATION_ITERATIONS
+#endif
+
 			FirmInterface::getInstance().outputFirmGraph(irg, "final");
 			irg_verify(irg);
 		}
