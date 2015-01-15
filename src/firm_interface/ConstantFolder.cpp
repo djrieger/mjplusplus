@@ -310,7 +310,7 @@ namespace firm
 		else if (is_Const(child))
 			replaceNode(node, new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
 		else if (is_Conv(child))
-			replaceNode(child, node);
+			set_irn_n(node, 0, child.getChild(0));
 	}
 
 	void ConstantFolder::replaceDivMod(Node node)
