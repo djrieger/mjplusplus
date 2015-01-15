@@ -37,18 +37,26 @@ namespace firm
 				/**
 				 * Optimize the function graph by folding the constants.
 				 * @param irg the function graph
+				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
 				 */
-				void foldConstants(ir_graph* irg);
+				bool foldConstants(ir_graph* irg);
 
-				void optimizeControlFlow(ir_graph* irg);
+				/*
+				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
+				 */
+				bool optimizeControlFlow(ir_graph* irg);
 
-				void optimizeLocal(ir_graph* irg);
+				/*
+				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
+				 */
+				bool optimizeLocal(ir_graph* irg);
 
 				/**
 				 * Optimize the function graph by eliminating common subexpressions.
 				 * @param irg the function graph
+				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
 				 */
-				void eliminateCommonSubexpressions(ir_graph* irg);
+				bool eliminateCommonSubexpressions(ir_graph* irg);
 
 			public:
 
