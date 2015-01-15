@@ -741,15 +741,64 @@ namespace firm
 		if (reg_count)
 			fprintf(out, "\tsub $%zd, %%rsp\n", 8 * reg_count);
 
-		for (auto& block : code)
+		// order blocks to remove pointless jumps
+		std::vector<std::pair<ir_node* const, Codelist>> ordered_blocks;
+		// start block must be first
+		auto current = code.find(get_irg_start_block(irg));
+		std::stack<ir_node*> workstack;
+
+		while (true)
+		{
+			ordered_blocks.push_back(*current);
+			code.erase(current);
+
+			for (auto it = ordered_blocks.back().second.control.begin() + 1; it != ordered_blocks.back().second.control.end(); it++)
+				workstack.push((ir_node*) get_irn_link(*it));
+
+			auto next = code.find((ir_node*) get_irn_link(ordered_blocks.back().second.control[0]));
+
+			if (next != code.end())
+			{
+				ordered_blocks.back().second.control.erase(ordered_blocks.back().second.control.begin());
+				current = next;
+				continue;
+			}
+
+			do
+			{
+				if (workstack.empty())
+				{
+					goto done;// == break 2; if c++ would allow that...
+				}
+
+				current = code.find(workstack.top());
+				workstack.pop();
+			}
+			while (current == code.end());
+		}
+
+	done:
+
+		if (!code.empty())
+		{
+			printf("graph with unreachable blocks?!\n");
+			abort();
+		}
+
+		for (auto& block : ordered_blocks)
 		{
 			fprintf(out, ".L_%s_%zu:\n", get_entity_name(get_irg_entity(irg)), get_irn_node_nr(block.first));
 
 			for (auto it = block.second.normal.rbegin(); it != block.second.normal.rend(); it++)
-				output(*it);
+				output_normal(*it);
 
-			for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
-				output(*it);
+			if (!block.second.control.empty())
+			{
+				for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
+					output_control(*it, block.second.phi);
+			}
+			else
+				output_phis(block.second.phi, block.first);
 		}
 
 		fprintf(out, "\t.size   %s, .-%s\n\n", name, name);
@@ -917,7 +966,7 @@ namespace firm
 		}
 	}
 
-	void CodeGen::output(ir_node* irn)
+	void CodeGen::output_control(ir_node* irn, std::vector<ir_node*>& phis)
 	{
 		ir_fprintf(out, "\t# %F\n", irn);
 
@@ -1011,17 +1060,22 @@ namespace firm
 			// sub a, b stores b - a in b, same for cmp
 			// cmp a, b  /  jl foo   jumps when b < a
 			gen_bin_op(irn, mode, "cmp");
-			output_phis(code[get_nodes_block(irn)].phi, get_nodes_block(irn));
+			output_phis(phis, get_nodes_block(irn));
 			fprintf(out, "\tj%s .L_%s_%ld\n", cond, get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
 		else if (is_Cond(irn))
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		else if (is_Jmp(irn))
 		{
-			output_phis(code[get_nodes_block(irn)].phi, get_nodes_block(irn));
+			output_phis(phis, get_nodes_block(irn));
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
-		else if (is_Start(irn))
+	}
+	void CodeGen::output_normal(ir_node* irn)
+	{
+		ir_fprintf(out, "\t# %F\n", irn);
+
+		if (is_Start(irn))
 		{
 			auto& writes = usage[irn].first;
 

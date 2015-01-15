@@ -77,7 +77,8 @@ namespace firm
 
 			void output(ir_graph* irg);
 			void output_phis(std::vector<ir_node*>& phis, ir_node const* block);
-			void output(ir_node* irn);
+			void output_control(ir_node* irn, std::vector<ir_node*>& phis);
+			void output_normal(ir_node* irn);
 
 		public:
 			static void assemble(FILE* out);
