@@ -21,9 +21,13 @@ namespace firm
 	 * For now I assume an infinite amount of registers / stack space,
 	 * nodes with register constraints are annotated with them
 	 * known constraints:
-	 *   return in RAX;
-	 *   call first args in RDI, RSI, RDX, RCX, R8, R9, remainder on stack, result in rax;
+	 *   return in rax;
+	 *   call first args in rdi, rsi, rdx, rcx, r8, r9, remainder on stack, result in rax;
 	 *   div/mod in operands in rax:rdx, any; result in rax (div), rdx (mod)
+	 *
+	 * other conventions:
+	 *   callee saved registers: rbx, rbp, r12, r13, r14, r15
+	 *   caller saved registers: r10, r11 (, rax, unused argument registers)
 	 *
 	 * each node puts it's result in a new register
 	 * nodes with multiple children merge registers
@@ -207,6 +211,8 @@ namespace firm
 		registers.clear();
 		free_registers.clear();
 		code.clear();
+
+		dump_ir_graph(irg, "gen");
 
 		// fake register for non-data parents
 		registers.push_back({{}, {}});
@@ -968,7 +974,7 @@ namespace firm
 
 	void CodeGen::output_control(ir_node* irn, std::vector<ir_node*>& phis)
 	{
-		ir_fprintf(out, "\t# %F\n", irn);
+		ir_fprintf(out, "\t# (%ld) %F\n", get_irn_node_nr(irn), irn);
 
 		if (is_Return(irn))
 		{
@@ -1073,7 +1079,7 @@ namespace firm
 	}
 	void CodeGen::output_normal(ir_node* irn)
 	{
-		ir_fprintf(out, "\t# %F\n", irn);
+		ir_fprintf(out, "\t# (%ld) %F\n", get_irn_node_nr(irn), irn);
 
 		if (is_Start(irn))
 		{
