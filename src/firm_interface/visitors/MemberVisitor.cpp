@@ -5,10 +5,6 @@
 #include "../ControlFlowOptimizer.hpp"
 #include "../LocalOptimizer.hpp"
 
-
-#define MAX_OPTIMIZATION_ITERATIONS 10
-
-
 namespace firm
 {
 	namespace visitor
@@ -50,6 +46,8 @@ namespace firm
 
 			bool made_optimization = false;
 
+#define MAX_OPTIMIZATION_ITERATIONS 10
+
 			for (int count = 0; change && count < MAX_OPTIMIZATION_ITERATIONS; count++)
 			{
 				CommonSubexpressionEliminator commonSubexpressionEliminator(irg);
@@ -63,6 +61,7 @@ namespace firm
 				made_optimization = made_optimization || commonSubexpressionEliminator.graphChanged();
 			}
 
+#undef MAX_OPTIMIZATION_ITERATIONS
 			return made_optimization;
 		}
 
@@ -124,6 +123,8 @@ namespace firm
 			bool did_change;
 			int iterations_count = 0;
 
+#define MAX_OPTIMIZATION_ITERATIONS 10
+
 			do
 			{
 				did_change = false;
@@ -135,6 +136,7 @@ namespace firm
 			}
 			while (did_change && ++iterations_count < MAX_OPTIMIZATION_ITERATIONS);
 
+#undef MAX_OPTIMIZATION_ITERATIONS
 			remove_bads(irg);
 
 			FirmInterface::getInstance().outputFirmGraph(irg, "final");
