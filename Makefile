@@ -18,26 +18,31 @@ HEADER_FILES := $(sort $(wildcard src/*.hpp)) $(sort $(wildcard src/**/*.hpp)) $
 
 all: $(TARGET)
 
-debug $(TARGET): $(SOURCE_FILES:.cpp=.o) | libfirm/build/debug/libfirm.so
+-include $(SOURCE_FILES:src/%.cpp=build/%.d)
+
+debug $(TARGET): $(SOURCE_FILES:src/%.cpp=build/%.o) | libfirm/build/debug/libfirm.so build
 	$(CPP) $(COMMON) $(DEBUGFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # analyse with gprof [options] ./mj++ gmon.out
-profile: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so
+profile: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so build
 	$(CPP) $(COMMON) $(CPPFLAGS) $(PROFILEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # no .o files in release build
-release: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so
+release: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so build
 	$(CPP) $(COMMON) $(CPPFLAGS) $(RELEASEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 libfirm/build/debug/libfirm.so:
 	git submodule update --init
-	( cd libfirm && make )
+	$(MAKE) -C libfirm
+
+build:
+	find src/ -type d | sed 's/^src/build/' | xargs mkdir
 
 clean:
-	rm -f $(TARGET) $(SOURCE_FILES:.cpp=.o) gmon.out *~
+	rm -rf $(TARGET) build gmon.out *~
 
-%.o : %.cpp | libfirm/build/debug/libfirm.so
-	$(CPP) $(COMMON) $(CPPFLAGS) $(DEBUGFLAGS) -c $< -o $(<:.cpp=.o)
+build/%.o : src/%.cpp | libfirm/build/debug/libfirm.so build
+	$(CPP) $(COMMON) $(CPPFLAGS) $(DEBUGFLAGS) -MMD -c $< -o $@
 
 style: $(SOURCE_FILES) $(HEADER_FILES)
 	$(ASTYLE) $(ASTYLEFLAGS) $^ 
