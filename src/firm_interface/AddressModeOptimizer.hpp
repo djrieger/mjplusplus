@@ -14,10 +14,10 @@ namespace firm
 			ir_node* scale;
 
 		public:
-			AddressModeOptimizer();
+			AddressModeOptimizer(ir_graph* irg);
 
-			void handle_Mul(Node node);
-			void handle_Add(Node node);
+			bool handle_Mul(Node node);
+			bool handle_Add(Node node, bool recurse);
 			virtual void handle(Node node);
 			virtual void cleanUp(Node node);
 	};
