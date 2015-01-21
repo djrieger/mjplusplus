@@ -6,6 +6,7 @@
 #include "LocalOptimizer.hpp"
 #include "Optimizer.hpp"
 #include "Worklist.hpp"
+#include "ConvHandler.hpp"
 
 namespace firm
 {
@@ -28,9 +29,10 @@ namespace firm
 
 	void Optimizer::run()
 	{
+		handleConvNodes();
+
 		if (optimizationFlag >= DEFAULT)
 		{
-			std::cout << "Optimizing with flag = " << optimizationFlag << std::endl;
 			unsigned int iterations_count = 0;
 
 			do
@@ -47,8 +49,6 @@ namespace firm
 
 			optimizeBitFiddling();
 		}
-		else
-			std::cout << "No optimization" << std::endl;
 	}
 
 	bool Optimizer::graphWasChanged() const
@@ -136,5 +136,12 @@ namespace firm
 		edges_deactivate(irg);
 
 		return bfo.graphChanged();
+	}
+
+	void Optimizer::handleConvNodes()
+	{
+		ConvHandler cv(irg);
+		firm::Worklist worklist(irg, cv);
+		worklist.run();
 	}
 }

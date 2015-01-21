@@ -352,7 +352,8 @@ namespace firm
 			//else if (is_Sub(node)) replaceSub(node);
 			//else if (is_Minus(node)) replaceMinus(node);
 			if (is_Div(node) || is_Mod(node)) replaceDivMod(node);
-			else if (is_Conv(node)) replaceConv(node);
+
+			//else if (is_Conv(node)) replaceConv(node);
 		}
 
 		// Todo: optimize booleans
