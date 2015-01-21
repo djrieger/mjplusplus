@@ -14,68 +14,6 @@ namespace firm
 			setOwner(classVisitor.getOwner());
 		}
 
-		bool MemberVisitor::foldConstants(ir_graph* irg)
-		{
-
-
-			ConstantFolder constantFolder(irg);
-			firm::Worklist worklist(irg, constantFolder);
-
-			edges_activate(irg);
-			worklist.run();
-			edges_deactivate(irg);
-
-			return constantFolder.graphChanged();
-		}
-
-		bool MemberVisitor::optimizeControlFlow(ir_graph* irg)
-		{
-			ControlFlowOptimizer cfOptimizer(irg);
-			firm::Worklist worklist(irg, cfOptimizer);
-
-			edges_activate(irg);
-			worklist.run();
-			edges_deactivate(irg);
-
-			return cfOptimizer.graphChanged();
-		}
-
-		bool MemberVisitor::eliminateCommonSubexpressions(ir_graph* irg)
-		{
-			bool change = true;
-
-			bool made_optimization = false;
-
-#define MAX_OPTIMIZATION_ITERATIONS 10
-
-			for (int count = 0; change && count < MAX_OPTIMIZATION_ITERATIONS; count++)
-			{
-				CommonSubexpressionEliminator commonSubexpressionEliminator(irg);
-				firm::Worklist worklist(irg, commonSubexpressionEliminator);
-
-				edges_activate(irg);
-				change = worklist.run();
-
-				edges_deactivate(irg);
-
-				made_optimization = made_optimization || commonSubexpressionEliminator.graphChanged();
-			}
-
-#undef MAX_OPTIMIZATION_ITERATIONS
-			return made_optimization;
-		}
-
-		bool MemberVisitor::optimizeLocal(ir_graph* irg)
-		{
-			LocalOptimizer localOpt(irg);
-			firm::Worklist worklist(irg, localOpt);
-
-			edges_activate(irg);
-			worklist.run();
-			edges_deactivate(irg);
-
-			return localOpt.graphChanged();
-		}
 
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 		{
@@ -118,28 +56,8 @@ namespace firm
 			irg_finalize_cons(irg);
 
 			// optimize Firm graph
-			FirmInterface::getInstance().outputFirmGraph(irg, "orig");
+			FirmInterface::getInstance().optimize(irg);
 
-			bool did_change;
-			int iterations_count = 0;
-
-#define MAX_OPTIMIZATION_ITERATIONS 10
-
-			do
-			{
-				did_change = false;
-
-				did_change = did_change || foldConstants(irg);
-				did_change = did_change || optimizeLocal(irg);
-				did_change = did_change || eliminateCommonSubexpressions(irg);
-				did_change = did_change || optimizeControlFlow(irg);
-			}
-			while (did_change && ++iterations_count < MAX_OPTIMIZATION_ITERATIONS);
-
-#undef MAX_OPTIMIZATION_ITERATIONS
-			remove_bads(irg);
-
-			FirmInterface::getInstance().outputFirmGraph(irg, "final");
 			irg_verify(irg);
 		}
 
