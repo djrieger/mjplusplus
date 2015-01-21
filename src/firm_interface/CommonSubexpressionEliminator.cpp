@@ -20,7 +20,7 @@ namespace firm
 		{
 			ir_mode* mode = node.getMode();
 
-			if (!is_Proj(node) && (mode == mode_Is || mode == mode_Lu))
+			if ((!is_Proj(node) && (mode == mode_Is || mode == mode_Lu)) || is_Conv(node))
 				handleArithmetic(node);
 		}
 	}
