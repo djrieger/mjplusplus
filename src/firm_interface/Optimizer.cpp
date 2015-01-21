@@ -10,22 +10,39 @@ namespace firm
 	{
 		changed = false;
 		max_iterations = 10;
+		optimizationFlag = DEFAULT;
+	}
+
+	void Optimizer::setOptimizationFlag(int flag)
+	{
+		optimizationFlag = flag;
+	}
+
+	void Optimizer::setMaxIterations(int max)
+	{
+		max_iterations = max;
 	}
 
 	void Optimizer::run()
 	{
-		unsigned int iterations_count = 0;
-
-		do
+		if (optimizationFlag >= DEFAULT)
 		{
-			changed = foldConstants() || changed;
-			changed = optimizeLocal() || changed;
-			changed = eliminateCommonSubexpressions() || changed;
-			changed = optimizeControlFlow() || changed;
-		}
-		while (changed && ++iterations_count < max_iterations);
+			std::cout << "Optimizing with flag = " << optimizationFlag << std::endl;
+			unsigned int iterations_count = 0;
 
-		remove_bads(irg);
+			do
+			{
+				changed = foldConstants() || changed;
+				changed = optimizeLocal() || changed;
+				changed = eliminateCommonSubexpressions() || changed;
+				changed = optimizeControlFlow() || changed;
+			}
+			while (changed && ++iterations_count < max_iterations);
+
+			remove_bads(irg);
+		}
+		else
+			std::cout << "No optimization" << std::endl;
 	}
 
 	bool Optimizer::graphWasChanged() const
