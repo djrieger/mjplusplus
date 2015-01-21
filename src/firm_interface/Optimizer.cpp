@@ -1,6 +1,8 @@
 #include "BitFiddlingOptimizer.hpp"
 #include "ConstantFolder.hpp"
 #include "ControlFlowOptimizer.hpp"
+#include "LoadStoreOptimizer.hpp"
+#include "CommonSubexpressionEliminator.hpp"
 #include "LocalOptimizer.hpp"
 #include "Optimizer.hpp"
 #include "Worklist.hpp"
@@ -36,6 +38,7 @@ namespace firm
 				changed = foldConstants() || changed;
 				changed = optimizeLocal() || changed;
 				changed = eliminateCommonSubexpressions() || changed;
+				changed = optimizeLoadStore() || changed;
 				changed = optimizeControlFlow() || changed;
 			}
 			while (changed && ++iterations_count < max_iterations);
@@ -97,6 +100,18 @@ namespace firm
 		}
 
 		return made_optimization;
+	}
+
+	bool Optimizer::optimizeLoadStore()
+	{
+		LoadStoreOptimizer lsOptimizer(irg);
+		firm::Worklist worklist(irg, lsOptimizer);
+
+		edges_activate(irg);
+		worklist.run();
+		edges_deactivate(irg);
+
+		return lsOptimizer.graphChanged();
 	}
 
 	bool Optimizer::optimizeLocal()
