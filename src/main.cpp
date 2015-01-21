@@ -78,7 +78,11 @@ int compileAssembly(std::string out_name_assembly, std::string out_name_file)
 {
 	std::cout << "Compiling" << std::endl;
 	//TODO: may check if "gcc" is installed...or something.
+#ifndef __APPLE__
 	std::string cmd = "gcc " + out_name_assembly + " -o " + out_name_file;
+#else
+	std::string cmd = "gcc -Wl,-no_pie " + out_name_assembly + " -o " + out_name_file;
+#endif
 	int ret = system(cmd.c_str());
 	return ret;
 }
