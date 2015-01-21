@@ -15,6 +15,7 @@
 #include "visitors/ExpressionVisitor.hpp"
 
 #include "CodeGen.hpp"
+#include "Optimizer.hpp"
 
 namespace firm
 {
@@ -135,6 +136,13 @@ _COut_Mprintln:\n\
 			dump_ir_graph(irg, suffix.c_str());
 	}
 
+	void FirmInterface::optimize(ir_graph* irg)
+	{
+		outputFirmGraph(irg, "orig");
+		Optimizer opt(irg);
+		opt.run();
+		outputFirmGraph(irg, "optimized");
+	}
 
 	ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration)
 	{

@@ -34,29 +34,6 @@ namespace firm
 				 */
 				void visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg);
 
-				/**
-				 * Optimize the function graph by folding the constants.
-				 * @param irg the function graph
-				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
-				 */
-				bool foldConstants(ir_graph* irg);
-
-				/*
-				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
-				 */
-				bool optimizeControlFlow(ir_graph* irg);
-
-				/*
-				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
-				 */
-				bool optimizeLocal(ir_graph* irg);
-
-				/**
-				 * Optimize the function graph by eliminating common subexpressions.
-				 * @param irg the function graph
-				 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
-				 */
-				bool eliminateCommonSubexpressions(ir_graph* irg);
 
 			public:
 
