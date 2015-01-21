@@ -1,9 +1,12 @@
 #include "BitFiddlingOptimizer.hpp"
 #include "ConstantFolder.hpp"
 #include "ControlFlowOptimizer.hpp"
+#include "LoadStoreOptimizer.hpp"
+#include "CommonSubexpressionEliminator.hpp"
 #include "LocalOptimizer.hpp"
 #include "Optimizer.hpp"
 #include "Worklist.hpp"
+#include "ConvHandler.hpp"
 
 namespace firm
 {
@@ -26,6 +29,8 @@ namespace firm
 
 	void Optimizer::run()
 	{
+		handleConvNodes();
+
 		if (optimizationFlag >= DEFAULT)
 		{
 			unsigned int iterations_count = 0;
@@ -35,11 +40,14 @@ namespace firm
 				changed = foldConstants() || changed;
 				changed = optimizeLocal() || changed;
 				changed = eliminateCommonSubexpressions() || changed;
+				changed = optimizeLoadStore() || changed;
 				changed = optimizeControlFlow() || changed;
 			}
 			while (changed && ++iterations_count < max_iterations);
 
 			remove_bads(irg);
+
+			optimizeBitFiddling();
 		}
 	}
 
@@ -94,6 +102,18 @@ namespace firm
 		return made_optimization;
 	}
 
+	bool Optimizer::optimizeLoadStore()
+	{
+		LoadStoreOptimizer lsOptimizer(irg);
+		firm::Worklist worklist(irg, lsOptimizer);
+
+		edges_activate(irg);
+		worklist.run();
+		edges_deactivate(irg);
+
+		return lsOptimizer.graphChanged();
+	}
+
 	bool Optimizer::optimizeLocal()
 	{
 		LocalOptimizer localOpt(irg);
@@ -116,5 +136,12 @@ namespace firm
 		edges_deactivate(irg);
 
 		return bfo.graphChanged();
+	}
+
+	void Optimizer::handleConvNodes()
+	{
+		ConvHandler cv(irg);
+		firm::Worklist worklist(irg, cv);
+		worklist.run();
 	}
 }

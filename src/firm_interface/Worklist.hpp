@@ -7,8 +7,7 @@
 #include <set>
 #include <unordered_map>
 #include "../globals.hpp"
-#include "ConstantFolder.hpp"
-#include "CommonSubexpressionEliminator.hpp"
+#include "GraphOptimizer.hpp"
 #include "Node.hpp"
 
 namespace firm
