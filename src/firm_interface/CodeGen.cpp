@@ -736,7 +736,7 @@ namespace firm
 	void CodeGen::output(ir_graph* irg)
 	{
 		char const* name = get_entity_name(get_irg_entity(irg));
-#ifndef __APPLE__		
+#ifndef __APPLE__
 		fprintf(out, "\t.p2align 4,,15\n\t.globl %s\n\t.type %s, @function\n%s:\n", name, name, name);
 #else
 		fprintf(out, "\t.p2align 4,,15\n\t.globl %s%s\n_%s:\n", std::string(name) == "main" ? "_" : "", name, name);
@@ -810,6 +810,7 @@ namespace firm
 			else
 				output_phis(block.second.phi, block.first);
 		}
+
 #ifndef __APPLE__
 		fprintf(out, "\t.size   %s, .-%s\n\n", name, name);
 #endif
@@ -1110,11 +1111,12 @@ namespace firm
 				if (i < 8)
 				{
 					// first 6 args in registers
-					if (i == 2 && is_println) {
-#ifndef __APPLE__						
+					if (i == 2 && is_println)
+					{
+#ifndef __APPLE__
 						fprintf(out, "\tmovq $.LC0, %%rdi\n");
 #else
-						fprintf(out, "\tmovabs $.LC0, %%rdi\n");					
+						fprintf(out, "\tmovabs $.LC0, %%rdi\n");
 #endif
 					}
 					else
@@ -1139,17 +1141,17 @@ namespace firm
 				}
 			}
 
-			char callNamePrefix;
+			char* callNamePrefix;
 #ifdef __APPLE__
-			callNamePrefix = '_';
+			callNamePrefix = "_";
 #else
-			callNamePrefix = '';
+			callNamePrefix = "";
 #endif
 
 			if (is_println)
 			{
 				fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
-				fprintf(out, "\tcall %cprintf\n", callNamePrefix);
+				fprintf(out, "\tcall %sprintf\n", callNamePrefix);
 				fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
 			}
 			else
@@ -1157,7 +1159,7 @@ namespace firm
 				if (get_irn_arity(irn) > 8)
 					fprintf(out, "\tsub $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
 
-				fprintf(out, "\tcall %c%s\n", callNamePrefix, get_entity_name(get_Call_callee(irn)));
+				fprintf(out, "\tcall %s%s\n", callNamePrefix, get_entity_name(get_Call_callee(irn)));
 
 				if (get_irn_arity(irn) > 8)
 					fprintf(out, "\tadd $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
