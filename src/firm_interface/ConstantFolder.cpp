@@ -300,7 +300,7 @@ namespace firm
 				handleCases(rightChild, leftChild);
 			});
 		}
-	*/
+
 	void ConstantFolder::replaceConv(Node node)
 	{
 		Node child = node.getChild(0);
@@ -311,7 +311,7 @@ namespace firm
 			replaceNode(node, new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
 		else if (is_Conv(child))
 			set_irn_n(node, 0, child.getChild(0));
-	}
+	}*/
 
 	void ConstantFolder::replaceDivMod(Node node)
 	{
