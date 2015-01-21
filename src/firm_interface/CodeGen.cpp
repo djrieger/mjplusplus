@@ -212,8 +212,6 @@ namespace firm
 		free_registers.clear();
 		code.clear();
 
-		dump_ir_graph(irg, "gen");
-
 		// fake register for non-data parents
 		registers.push_back({{}, {}});
 
