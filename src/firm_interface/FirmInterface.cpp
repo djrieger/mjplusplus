@@ -143,6 +143,7 @@ _COut_Mprintln:\n\
 	{
 		outputFirmGraph(irg, "orig");
 		Optimizer opt(irg);
+		opt.setOptimizationFlag(opt.DEFAULT);
 		opt.run();
 		outputFirmGraph(irg, "optimized");
 	}
