@@ -96,7 +96,9 @@ int removeAssembly(std::string out_name_assembly)
 
 int main(int argc, const char** argv)
 {
-	enum optionIndex {UNKNOWN, HELP, DUMP_LEX_GRAPH, DUMP_FIRM_GRAPH, PRINT_AST, SUPPRESS_ERRORS, OUT, KEEP, COMPILE_FIRM, LEXTEST, PARSE, CHECK, FIRM, ASSEMBLY};
+	enum optionIndex {UNKNOWN, HELP, DUMP_LEX_GRAPH, DUMP_FIRM_GRAPH, PRINT_AST,
+	                  SUPPRESS_ERRORS, OPTIMIZATION, OUT, KEEP, COMPILE_FIRM, LEXTEST, PARSE, CHECK, FIRM, ASSEMBLY
+	                 };
 	static const option::Descriptor usage[] =
 	{
 		{UNKNOWN, 0, "", "", option::Arg::None, "USAGE: mj++ [options] FILE\n\nOptions:"},
@@ -113,6 +115,7 @@ int main(int argc, const char** argv)
 
 		{UNKNOWN, 0, "", "", option::Arg::None, "\nOther options:"},
 		{PRINT_AST, 0, "p", "print-ast", option::Arg::None, " -p  --print-ast\tAfter parsing, pretty print the abstract syntax tree"},
+		{OPTIMIZATION, 0, "O", "optimize", option::Arg::None, " -O  --optimize X\tSet the optimization flag to X."},
 		{SUPPRESS_ERRORS, 0, "q", "suppress-errors", option::Arg::None, " -q  --suppress-errors \tDo not print error messages"},
 		{KEEP, 0, "k", "keep", option::Arg::None, " -k  --keep\tKeep the assembly file after compiling"},
 		{COMPILE_FIRM, 0, "f", "compile-firm", option::Arg::None, " -f  --compile-firm\tGenerate assembler using the Firm backend instead of our own codegen"},
