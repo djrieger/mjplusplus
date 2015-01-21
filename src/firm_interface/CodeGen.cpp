@@ -1008,6 +1008,8 @@ namespace firm
 				load_or_imm(value, usage[irn].second[1].reg);
 				fprintf(out, ", %s\n", constraintToRegister(RAX, value_mode));
 			}
+			else if (!strcmp("main", get_entity_name(get_irg_entity(get_irn_irg(irn)))))
+				fprintf(out, "\txorq %%rax, %%rax\n");
 
 			// free stack
 			if (registers.size() > 1)
