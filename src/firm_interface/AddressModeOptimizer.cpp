@@ -3,11 +3,11 @@
 
 namespace firm
 {
-	AddressModeOptimizer::AddressModeOptimizer()
+	AddressModeOptimizer::AddressModeOptimizer(ir_graph* irg) : GraphOptimizer(irg)
 	{
 	}
 
-	bool handle_Mul(Node node)
+	bool AddressModeOptimizer::handle_Mul(Node node)
 	{
 		if (x || scale)
 		{
@@ -68,7 +68,7 @@ namespace firm
 		return true;
 	}
 
-	bool handle_Add(Node node, bool recurse)
+	bool AddressModeOptimizer::handle_Add(Node node, bool recurse)
 	{
 		for (auto& child : node.getChildren())
 		{
@@ -107,7 +107,7 @@ namespace firm
 		return true;
 	}
 
-	void handle(Node node)
+	void AddressModeOptimizer::handle(Node node)
 	{
 		constant = NULL;
 		base = NULL;
@@ -126,7 +126,7 @@ namespace firm
 		ir_node* l = new_r_Lea(get_nodes_block(node), constant, base, x, scale, node.getMode());
 	}
 
-	void cleanUp(Node node)
+	void AddressModeOptimizer::cleanUp(Node node)
 	{
 		;
 	}
