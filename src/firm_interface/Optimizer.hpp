@@ -35,6 +35,8 @@ namespace firm
 			 */
 			bool optimizeLocal();
 
+			bool optimizeAddressMode();
+
 		public:
 			Optimizer(ir_graph* irg);
 			void run();
