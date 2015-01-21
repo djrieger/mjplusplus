@@ -25,13 +25,28 @@ namespace firm
 				{
 
 					int i_shr = sizeof(l_divisor) * 8 - __builtin_clzl(l_divisor) - 1;
-					ir_node* shr = new_r_Shr(get_nodes_block(node),
-					                         dividend,
-					                         new_r_Const_long(irg, mode_Iu, i_shr),
-					                         get_Div_resmode(node));
+					ir_node* shr;
 
-					if (!is_divisor_positive)
-						shr = new_r_Minus(get_nodes_block(node), shr, get_Div_resmode(node));
+					if (get_Div_resmode(node) == mode_Is)
+					{
+						shr = new_r_Shrs(get_nodes_block(node),
+						                 dividend,
+						                 new_r_Const_long(irg, mode_Iu, i_shr),
+						                 mode_Is);
+
+						if (!is_divisor_positive)
+							shr = new_r_Minus(get_nodes_block(node), shr, mode_Is);
+					}
+					else if (get_Div_resmode(node) == mode_Iu)
+						shr = new_r_Shr(get_nodes_block(node),
+						                dividend,
+						                new_r_Const_long(irg, mode_Iu, i_shr),
+						                mode_Iu);
+					else
+					{
+						printf("BitFiddlingOptimizer::cleanUp: Cannot convert division to shift because of unknown mode.\n");
+						return;
+					}
 
 					for (auto& ne : node.getOuts())
 					{

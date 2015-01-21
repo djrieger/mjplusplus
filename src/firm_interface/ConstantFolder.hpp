@@ -30,7 +30,7 @@ namespace firm
 			//void replaceSub(Node node);
 			//void replaceMul(Node node);
 			//void replaceMinus(Node node);
-			void replaceConv(Node node);
+			//void replaceConv(Node node);
 		public:
 			virtual void handle(Node);
 			virtual void cleanUp(Node node);
