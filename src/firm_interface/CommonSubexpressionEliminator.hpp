@@ -8,14 +8,17 @@
 #include "GraphOptimizer.hpp"
 #include "Node.hpp"
 
-typedef std::tuple<unsigned, unsigned, unsigned, vec<unsigned>> nodeInfo;
+namespace firm
+{
+	typedef std::tuple<unsigned, unsigned, unsigned, vec<unsigned>> nodeInfo;
+}
 
 namespace std
 {
 	template<>
-	struct hash<nodeInfo>
+	struct hash<firm::nodeInfo>
 	{
-		size_t operator ()(nodeInfo const& t) const
+		size_t operator ()(firm::nodeInfo const& t) const
 		{
 			hash<unsigned> h;
 			size_t hash = h(std::get<0>(t)) ^ h(std::get<1>(t)) ^ h(std::get<2>(t));

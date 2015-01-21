@@ -54,6 +54,8 @@ namespace firm
 			 */
 			std::string out_name;
 
+			ir_op* lea;
+
 			/**
 			 * Flag for graph output
 			 */
@@ -114,6 +116,7 @@ namespace firm
 			ir_mode* getIntegerMode();
 			ir_mode* getBooleanMode();
 			ir_mode* getReferenceMode();
+			ir_op* getLeaOp() const;
 			ir_mode* getMode(shptr<ast::Type> ast_type);
 			ir_type* getType(shptr<ast::Type> ast_type);
 			void addClassType(shptr<ast::Ident> class_ident, ir_type* class_type);
@@ -134,5 +137,8 @@ namespace firm
 			std::vector<std::pair<ir_node*, unsigned int>> getOuts(ir_node const* n);
 	};
 }
+
+ir_node* new_r_Lea(ir_node* block, ir_node* offset, ir_node* base, ir_node* x, ir_node* scale, ir_mode* mode);
+ir_node* new_Lea(ir_node* offset, ir_node* base, ir_node* x, ir_node* scale, ir_mode* mode);
 
 #endif
