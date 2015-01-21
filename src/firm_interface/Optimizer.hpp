@@ -12,6 +12,7 @@ namespace firm
 			ir_graph* irg;
 			bool changed;
 			unsigned int max_iterations;
+			int optimizationFlag;
 
 			/**
 			 * Optimize the function graph by folding the constants.
@@ -36,7 +37,13 @@ namespace firm
 			bool optimizeLocal();
 
 		public:
+
+			static const int NONE = 0;
+			static const int DEFAULT = 1;
+
 			Optimizer(ir_graph* irg);
+			void setOptimizationFlag(int flag);
+			void setMaxIterations(int max);
 			void run();
 			bool graphWasChanged() const;
 	};
