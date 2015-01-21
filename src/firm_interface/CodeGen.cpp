@@ -624,7 +624,7 @@ namespace firm
 				usage[irn] = {writes, reads};
 				code[block].normal.push_back(irn);
 			}
-			else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn))
+			else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn) || is_Shr(irn) || is_Shrs(irn) || is_Shl(irn))
 			{
 				set_irn_link(irn, irn);
 				size_t a = is_Const(get_irn_n(irn, 0)) ? 0 : new_register();
@@ -1139,11 +1139,10 @@ namespace firm
 				}
 			}
 
-			char* callNamePrefix;
 #ifdef __APPLE__
-			callNamePrefix = "_";
+			const char* const callNamePrefix = "_";
 #else
-			callNamePrefix = "";
+			const char* const callNamePrefix = "";
 #endif
 
 			if (is_println)
@@ -1168,9 +1167,9 @@ namespace firm
 			}
 
 		}
-		else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn))
+		else if (is_Add(irn) || is_Sub(irn) || is_Mul(irn) || is_Shr(irn) || is_Shrs(irn) || is_Shl(irn))
 		{
-			char const* op = is_Add(irn) ? "add" : is_Sub(irn) ? "sub" : "imul";
+			char const* op = is_Add(irn) ? "add" : is_Sub(irn) ? "sub" : is_Mul(irn) ? "imul" : is_Shr(irn) ? "shr" : is_Shrs(irn) ? "sar" : "shl";
 			ir_mode* mode = get_irn_mode(irn);
 			char const* os = operationSuffix(mode);
 			char const* rs = constraintToRegister(RAX, mode);

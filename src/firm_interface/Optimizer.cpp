@@ -41,6 +41,8 @@ namespace firm
 			while (changed && ++iterations_count < max_iterations);
 
 			remove_bads(irg);
+
+			optimizeBitFiddling();
 		}
 		else
 			std::cout << "No optimization" << std::endl;
