@@ -26,6 +26,8 @@ namespace firm
 		be_parse_arg("isa=amd64");
 		ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
 		set_modeP(modeP);
+
+		lea = new_ir_op(get_next_ir_opcodes(1), "lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
 	}
 
 	void FirmInterface::setInput(std::string const& in)
@@ -308,6 +310,11 @@ _COut_Mprintln:\n\
 		return new_Const_long(mode_P, 0);
 	}
 
+	ir_op* FirmInterface::getLeaOp() const
+	{
+		return lea;
+	}
+
 	FirmInterface::~FirmInterface()
 	{
 		ir_finish();
@@ -452,4 +459,15 @@ _COut_Mprintln:\n\
 
 		return outs;
 	}
+}
+
+ir_node* new_r_Lea(ir_node* block, ir_node* offset, ir_node* base, ir_node* x, ir_node* scale, ir_mode* mode)
+{
+	ir_node* in[4] = {offset, base, x, scale};
+	return new_ir_node(NULL, get_irn_irg(block), block, firm::FirmInterface::getInstance().getLeaOp(), mode, x ? scale ? 4 : 3 : 2, in);
+}
+
+ir_node* new_Lea(ir_node* offset, ir_node* base, ir_node* x, ir_node* scale, ir_mode* mode)
+{
+	return new_r_Lea(get_cur_block(), offset, base, x, scale, mode);
 }
