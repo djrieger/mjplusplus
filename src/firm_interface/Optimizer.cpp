@@ -1,8 +1,9 @@
-#include "Optimizer.hpp"
+#include "BitFiddlingOptimizer.hpp"
 #include "ConstantFolder.hpp"
-#include "Worklist.hpp"
 #include "ControlFlowOptimizer.hpp"
 #include "LocalOptimizer.hpp"
+#include "Optimizer.hpp"
+#include "Worklist.hpp"
 
 namespace firm
 {
@@ -108,4 +109,15 @@ namespace firm
 		return localOpt.graphChanged();
 	}
 
+	bool Optimizer::optimizeBitFiddling()
+	{
+		BitFiddlingOptimizer bfo(irg);
+		firm::Worklist worklist(irg, bfo);
+
+		edges_activate(irg);
+		worklist.run();
+		edges_deactivate(irg);
+
+		return bfo.graphChanged();
+	}
 }
