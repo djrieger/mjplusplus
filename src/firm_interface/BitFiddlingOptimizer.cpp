@@ -21,14 +21,13 @@ namespace firm
 
 				if (__builtin_popcount(l_divisor) == 1)
 				{
-					int i_shr = __builtin_ctzl(l_divisor);
 					ir_node* shr;
 
 					if (get_Div_resmode(node) == mode_Is)
 					{
 						shr = new_r_Shrs(get_nodes_block(node),
 						                 dividend,
-						                 new_r_Const_long(irg, mode_Iu, i_shr),
+						                 new_r_Const_long(irg, mode_Iu, __builtin_ctzl(l_divisor)),
 						                 mode_Is);
 
 						if (!is_divisor_positive)
@@ -37,13 +36,10 @@ namespace firm
 					else if (get_Div_resmode(node) == mode_Iu)
 						shr = new_r_Shr(get_nodes_block(node),
 						                dividend,
-						                new_r_Const_long(irg, mode_Iu, i_shr),
+						                new_r_Const_long(irg, mode_Iu, __builtin_ctzl(l_divisor)),
 						                mode_Iu);
 					else
-					{
-						printf("BitFiddlingOptimizer::cleanUp: Cannot convert division to shift because of unknown mode.\n");
 						return;
-					}
 
 					for (auto& ne : node.getOuts())
 					{
@@ -71,10 +67,9 @@ namespace firm
 
 				if (__builtin_popcount(l_factor) == 1)
 				{
-					int i_shl = __builtin_ctzl(l_factor);
 					ir_node* shl = new_r_Shl(get_nodes_block(node),
 					                         node.getChild(is_Const(node.getChild(0)) ? 1 : 0),
-					                         new_r_Const_long(irg, mode_Iu, i_shl),
+					                         new_r_Const_long(irg, mode_Iu, __builtin_ctzl(l_factor)),
 					                         node.getMode());
 
 					if (!is_factor_positive)
