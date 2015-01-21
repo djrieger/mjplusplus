@@ -42,6 +42,8 @@ namespace firm
 			 */
 			bool optimizeLocal();
 
+			bool optimizeBitFiddling();
+
 		public:
 
 			static const int NONE = 0;
