@@ -34,7 +34,6 @@ namespace firm
 
 		if (optimizationFlag >= DEFAULT)
 		{
-			std::cout << "Optimizing with flag = " << optimizationFlag << std::endl;
 			unsigned int iterations_count = 0;
 
 			do
@@ -52,8 +51,6 @@ namespace firm
 			optimizeAddressMode();
 			optimizeBitFiddling();
 		}
-		else
-			std::cout << "No optimization" << std::endl;
 	}
 
 	bool Optimizer::graphWasChanged() const
