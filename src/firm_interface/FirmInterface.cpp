@@ -28,7 +28,7 @@ namespace firm
 		ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
 		set_modeP(modeP);
 
-		lea = new_ir_op(get_next_ir_opcodes(1), "lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
+		lea = new_ir_op(get_next_ir_opcodes(1), "Lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
 	}
 
 	void FirmInterface::setInput(std::string const& in)

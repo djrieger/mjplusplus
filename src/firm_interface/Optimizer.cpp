@@ -3,6 +3,7 @@
 #include "Worklist.hpp"
 #include "ControlFlowOptimizer.hpp"
 #include "LocalOptimizer.hpp"
+#include "AddressModeOptimizer.hpp"
 
 namespace firm
 {
@@ -26,6 +27,8 @@ namespace firm
 		while (changed && ++iterations_count < max_iterations);
 
 		remove_bads(irg);
+		optimizeAddressMode();
+
 	}
 
 	bool Optimizer::graphWasChanged() const
@@ -91,4 +94,13 @@ namespace firm
 		return localOpt.graphChanged();
 	}
 
+	bool Optimizer::optimizeAddressMode()
+	{
+		AddressModeOptimizer addressModeOptimizer(irg);
+		firm::Worklist worklist(irg, addressModeOptimizer);
+
+		worklist.run();
+
+		return addressModeOptimizer.graphChanged();
+	}
 }

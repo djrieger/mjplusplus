@@ -18,8 +18,8 @@ namespace firm
 			return true;
 		}
 
-		ir_node* new_scale;
-		ir_node* new_x;
+		ir_node* new_scale = NULL;
+		ir_node* new_x = NULL;
 		bool use_base = false;
 
 		for (auto& child : node.getChildren())
@@ -65,6 +65,10 @@ namespace firm
 
 		x = new_x;
 		scale = new_scale;
+
+		if (use_base)
+			base = new_x;
+
 		return true;
 	}
 
@@ -92,14 +96,14 @@ namespace firm
 						return false;
 				}
 				else if (!base)
-					base = node;
+					base = child;
 				else
-					x = node;
+					x = child;
 			}
 			else if (!base)
-				base = node;
+				base = child;
 			else if (!x)
-				x = node;
+				x = child;
 			else
 				return false;
 		}
@@ -114,20 +118,42 @@ namespace firm
 		x = NULL;
 		scale = NULL;
 
+
 		if (node.getOpcode() != iro_Add)
 			return;
+
+		ir_printf("(%ld) %F:\n", get_irn_node_nr(node), (ir_node*) node);
 
 		if (!handle_Add(node, true))
 			return;
 
+		ir_printf("succsess? (%ld) %F, (%ld) %F, (%ld) %F, (%ld) %F\n", !constant ? 0 : get_irn_node_nr(constant), (ir_node*) constant, !base ? 0 : get_irn_node_nr(base), (ir_node*) base, !x ? 0 : get_irn_node_nr(x), (ir_node*) x, !scale ? 0 : get_irn_node_nr(scale), (ir_node*) scale);
+
 		if (!x)
 			return;
 
+		if (!constant)
+			constant = new_r_Const_long(get_irn_irg(node), node.getMode(), 0);
+
+		if (!base)
+		{
+			if (get_tarval_long(get_Const_tarval(scale)) != 2)
+				return;
+
+			base = x;
+			scale = new_r_Const_long(get_irn_irg(node), node.getMode(), 1);
+		}
+
+		ir_printf("using (%ld) %F, (%ld) %F, (%ld) %F, (%ld) %F\n", get_irn_node_nr(constant), (ir_node*) constant, get_irn_node_nr(base), (ir_node*) base, get_irn_node_nr(x), (ir_node*) x, !scale ? 0 : get_irn_node_nr(scale), (ir_node*) scale);
 		ir_node* l = new_r_Lea(get_nodes_block(node), constant, base, x, scale, node.getMode());
+		set_irn_link(node, l);
 	}
 
 	void AddressModeOptimizer::cleanUp(Node node)
 	{
-		;
+		ir_node* l = (ir_node*) get_irn_link(node);
+
+		if (l && get_irn_op(l) == FirmInterface::getInstance().getLeaOp())
+			replaceNode(node, l);
 	}
 }
