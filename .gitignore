@@ -14,4 +14,3 @@ doc/doxygen
 *.S
 *.out
 *.vcg
-*.o
