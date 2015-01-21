@@ -1,0 +1,18 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6,-7,8,-9);
+	}
+	
+	public void q(int a, int b, int c, int d) {
+		System.out.println(a*1);
+		System.out.println(b*2);
+		System.out.println(c*2*2);
+		System.out.println(d*8);
+		System.out.println(a*(-1));
+		System.out.println(a*(-2));
+		System.out.println(a*(-4));
+		System.out.println(a*(-8));
+		System.out.println((a+b)*(-32));
+		System.out.println(a*64+b*4+(-2)*c);
+	}
+}

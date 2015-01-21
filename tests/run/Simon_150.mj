@@ -1,0 +1,22 @@
+class a {
+	public static void main(String[] args) {
+		new a().q(6,-7,8,-9);
+	}
+	
+	public void q(int a, int b, int c, int d) {
+		System.out.println(a/1);
+		System.out.println(b/2);
+		System.out.println(c/4);
+		System.out.println(d/8);
+		System.out.println(a/(-1));
+		System.out.println(a/(-2));
+		System.out.println(a/(-4));
+		System.out.println(a/(-8));
+		System.out.println((a+b)/(-32));
+		System.out.println(a/2+seven()/4+c/(-2)/2+d/2);
+	}
+	
+	public int seven() {
+		return 7;
+	}
+}
