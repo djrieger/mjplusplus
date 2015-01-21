@@ -105,6 +105,12 @@ namespace firm
 			void outputFirmGraph(ir_graph* irg, std::string suffix);
 
 			/**
+			 * Optimize the given firm graph using the optimization flags.
+			 * @param irg the given firm graph
+			 */
+			void optimize(ir_graph* irg);
+
+			/**
 			 * Convert the generated Firm graphs to assembler using FIRM itself and save in file out_name
 			 */
 			void buildWithFirm();
