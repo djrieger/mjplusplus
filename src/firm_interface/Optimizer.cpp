@@ -1,12 +1,13 @@
+#include "AddressModeOptimizer.hpp"
 #include "BitFiddlingOptimizer.hpp"
+#include "CommonSubexpressionEliminator.hpp"
 #include "ConstantFolder.hpp"
 #include "ControlFlowOptimizer.hpp"
-#include "LoadStoreOptimizer.hpp"
-#include "CommonSubexpressionEliminator.hpp"
+#include "ConvHandler.hpp"
 #include "LocalOptimizer.hpp"
+#include "LoadStoreOptimizer.hpp"
 #include "Optimizer.hpp"
 #include "Worklist.hpp"
-#include "ConvHandler.hpp"
 
 namespace firm
 {
@@ -47,6 +48,7 @@ namespace firm
 
 			remove_bads(irg);
 
+			optimizeAddressMode();
 			optimizeBitFiddling();
 		}
 	}
@@ -124,6 +126,16 @@ namespace firm
 		edges_deactivate(irg);
 
 		return localOpt.graphChanged();
+	}
+
+	bool Optimizer::optimizeAddressMode()
+	{
+		AddressModeOptimizer addressModeOptimizer(irg);
+		firm::Worklist worklist(irg, addressModeOptimizer);
+
+		worklist.run();
+
+		return addressModeOptimizer.graphChanged();
 	}
 
 	bool Optimizer::optimizeBitFiddling()

@@ -668,6 +668,24 @@ namespace firm
 				usage[irn] = {{{(is_Div(irn) ? RAX : RDX), current_reg}}, {{NONE, 0}, {RAX, a}, {NONE, b}}};
 				code[block].normal.push_back(irn);
 			}
+			else if (is_Lea(irn))
+			{
+				set_irn_link(irn, irn);
+				registers[current_reg].writes.push_back(irn);
+				std::vector<Access> reads;
+
+				for (int i = 0; i < get_irn_arity(irn); i++)
+				{
+					size_t r = is_Const(get_irn_n(irn, i)) ? 0 : new_register();
+					reads.push_back({NONE, r});
+
+					if (r)
+						registers[r].reads.push_back(irn);
+				}
+
+				usage[irn] = {{{NONE, current_reg}}, reads};
+				code[block].normal.push_back(irn);
+			}
 			else if (is_Load(irn))
 			{
 				if (!current_reg)
@@ -1140,9 +1158,9 @@ namespace firm
 			}
 
 #ifdef __APPLE__
-			const char* const callNamePrefix = "_";
+			char const* callNamePrefix = "_";
 #else
-			const char* const callNamePrefix = "";
+			char const* callNamePrefix = "";
 #endif
 
 			if (is_println)
@@ -1234,6 +1252,28 @@ namespace firm
 			load_or_imm(get_irn_n(irn, 0), usage[irn].second[0].reg);
 			fprintf(out, ", %s\n\tmov%cx %s, %s\n", old_rs, get_mode_sign(old_mode) ? 's' : 'z', old_rs, rs);
 			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", operationSuffix(mode), rs, 8 * usage[irn].first[0].reg - 8);
+		}
+		else if (is_Lea(irn))
+		{
+			ir_mode* mode = get_irn_mode(irn);
+			char const* os = operationSuffix(mode);
+			char const* rs = constraintToRegister(RAX, mode);
+			char const* rs2 = constraintToRegister(RDX, mode);
+
+			fprintf(out, "\tmov%s %zd(%%rsp), %s\n", os, 8 * usage[irn].second[1].reg - 8, rs);
+
+			if (get_irn_arity(irn) >= 3)
+				fprintf(out, "\tmov%s %zd(%%rsp), %s\n", os, 8 * usage[irn].second[2].reg - 8, rs2);
+
+			fprintf(out, "\tlea%s %ld(%s", os, get_tarval_long(get_Const_tarval(get_irn_n(irn, 0))), rs);
+
+			if (get_irn_arity(irn) == 3)
+				fprintf(out, ", %s", rs2);
+			else if (get_irn_arity(irn) == 4)
+				fprintf(out, ", %s, %ld", rs2, get_tarval_long(get_Const_tarval(get_irn_n(irn, 3))));
+
+			fprintf(out, "), %s\n", rs);
+			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs, 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Load(irn))
 		{

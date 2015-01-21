@@ -152,5 +152,6 @@ namespace firm
 
 ir_node* new_r_Lea(ir_node* block, ir_node* offset, ir_node* base, ir_node* x, ir_node* scale, ir_mode* mode);
 ir_node* new_Lea(ir_node* offset, ir_node* base, ir_node* x, ir_node* scale, ir_mode* mode);
+int is_Lea(ir_node const* node);
 
 #endif
