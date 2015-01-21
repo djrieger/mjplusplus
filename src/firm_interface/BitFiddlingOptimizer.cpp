@@ -9,7 +9,7 @@ namespace firm
 
 	void BitFiddlingOptimizer::cleanUp(Node node)
 	{
-		if (is_Div(node))
+		/*if (is_Div(node))
 		{
 			Node dividend = node.getChild(1);
 			Node divisor = node.getChild(2);
@@ -56,7 +56,8 @@ namespace firm
 				}
 			}
 		}
-		else if (is_Mul(node))
+		else if (is_Mul(node))*/
+		if (is_Mul(node))
 		{
 			Node factor = node.getChild(is_Const(node.getChild(0)) ? 0 : 1);
 
