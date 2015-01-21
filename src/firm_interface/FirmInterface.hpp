@@ -57,6 +57,11 @@ namespace firm
 			ir_op* lea;
 
 			/**
+			 * Flag used for the optimization 0=OFF,1=ON
+			 */
+			int optimizationFlag;
+
+			/**
 			 * Flag for graph output
 			 */
 			bool dumpFirmGraph;
@@ -134,6 +139,7 @@ namespace firm
 
 			void setInput(std::string const& in);
 			void setOutput(std::string const& out);
+			void setOptimizationFlag(int flag);
 			void setFirmGraphOutput(bool dumpFirmGraph);
 
 			shptr<std::map<std::string, int>> getVarMap();

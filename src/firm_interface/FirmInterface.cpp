@@ -28,6 +28,7 @@ namespace firm
 		ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
 		set_modeP(modeP);
 
+		optimizationFlag = Optimizer::DEFAULT;
 		lea = new_ir_op(get_next_ir_opcodes(1), "lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
 	}
 
@@ -44,6 +45,11 @@ namespace firm
 	void FirmInterface::setFirmGraphOutput(bool output)
 	{
 		dumpFirmGraph = output;
+	}
+
+	void FirmInterface::setOptimizationFlag(int flag)
+	{
+		optimizationFlag = flag;
 	}
 
 	void FirmInterface::convert(shptr<ast::Program> program)
@@ -143,7 +149,7 @@ _COut_Mprintln:\n\
 	{
 		outputFirmGraph(irg, "orig");
 		Optimizer opt(irg);
-		opt.setOptimizationFlag(opt.DEFAULT);
+		opt.setOptimizationFlag(optimizationFlag);
 		opt.run();
 		outputFirmGraph(irg, "optimized");
 	}

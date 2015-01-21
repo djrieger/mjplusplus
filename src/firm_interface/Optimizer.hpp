@@ -44,6 +44,8 @@ namespace firm
 
 			bool optimizeBitFiddling();
 
+			void handleConvNodes();
+
 		public:
 
 			static const int NONE = 0;
