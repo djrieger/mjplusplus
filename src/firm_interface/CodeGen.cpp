@@ -736,7 +736,11 @@ namespace firm
 	void CodeGen::output(ir_graph* irg)
 	{
 		char const* name = get_entity_name(get_irg_entity(irg));
+#ifndef __APPLE__
 		fprintf(out, "\t.p2align 4,,15\n\t.globl %s\n\t.type %s, @function\n%s:\n", name, name, name);
+#else
+		fprintf(out, "\t.p2align 4,,15\n\t.globl %s%s\n_%s:\n", std::string(name) == "main" ? "_" : "", name, name);
+#endif
 
 		// adjust stack
 		size_t reg_count = registers.size() - 1;
@@ -807,7 +811,9 @@ namespace firm
 				output_phis(block.second.phi, block.first);
 		}
 
+#ifndef __APPLE__
 		fprintf(out, "\t.size   %s, .-%s\n\n", name, name);
+#endif
 	}
 
 	void CodeGen::output_phis(std::vector<ir_node*>& phis, ir_node const* block)
@@ -1106,7 +1112,13 @@ namespace firm
 				{
 					// first 6 args in registers
 					if (i == 2 && is_println)
+					{
+#ifndef __APPLE__
 						fprintf(out, "\tmovq $.LC0, %%rdi\n");
+#else
+						fprintf(out, "\tmovabs $.LC0, %%rdi\n");
+#endif
+					}
 					else
 					{
 						fprintf(out, "\tmov%s ", os);
@@ -1129,10 +1141,17 @@ namespace firm
 				}
 			}
 
+			char* callNamePrefix;
+#ifdef __APPLE__
+			callNamePrefix = "_";
+#else
+			callNamePrefix = "";
+#endif
+
 			if (is_println)
 			{
 				fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
-				fprintf(out, "\tcall printf\n");
+				fprintf(out, "\tcall %sprintf\n", callNamePrefix);
 				fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
 			}
 			else
@@ -1140,7 +1159,7 @@ namespace firm
 				if (get_irn_arity(irn) > 8)
 					fprintf(out, "\tsub $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
 
-				fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
+				fprintf(out, "\tcall %s%s\n", callNamePrefix, get_entity_name(get_Call_callee(irn)));
 
 				if (get_irn_arity(irn) > 8)
 					fprintf(out, "\tadd $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));

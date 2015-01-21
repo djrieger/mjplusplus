@@ -126,7 +126,10 @@ _COut_Mprintln:\n\
 			throw;
 		}
 
-		fprintf(o, "\t.section .rodata.str1.1,\"aMS\",@progbits,1\n.LC0:\n\t.string \"%%d\\n\"\n");
+#ifndef __APPLE__
+		fprintf(o, "\t.section .rodata.str1.1,\"aMS\",@progbits,1\n");
+#endif
+		fprintf(o, ".LC0:\n\t.string \"%%d\\n\"\n");
 		fclose(o);
 	}
 
