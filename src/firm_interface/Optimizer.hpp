@@ -26,12 +26,18 @@ namespace firm
 			bool optimizeControlFlow();
 
 			/**
+			 * Optimize the function graph by eliminating common subexpressions.
 			 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
 			 */
 			bool eliminateCommonSubexpressions();
 
 			/**
-			 * Optimize the function graph by eliminating common subexpressions.
+			 * Optimize the function graph by performing load-store optimization.
+			 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
+			 */
+			bool optimizeLoadStore();
+
+			/**
 			 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
 			 */
 			bool optimizeLocal();
