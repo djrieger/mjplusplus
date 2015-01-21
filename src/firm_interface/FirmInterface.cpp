@@ -486,3 +486,8 @@ ir_node* new_Lea(ir_node* offset, ir_node* base, ir_node* x, ir_node* scale, ir_
 {
 	return new_r_Lea(get_cur_block(), offset, base, x, scale, mode);
 }
+
+int is_Lea(ir_node const* node)
+{
+	return get_irn_op(node) == firm::FirmInterface::getInstance().getLeaOp();
+}

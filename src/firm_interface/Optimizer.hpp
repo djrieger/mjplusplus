@@ -13,6 +13,7 @@ namespace firm
 			bool changed;
 			unsigned int max_iterations;
 			int optimizationFlag;
+			>>> >>> > 7b54fdb6d95d3be1d126b7d54c8237ece29bce0a
 
 			/**
 			 * Optimize the function graph by folding the constants.
@@ -42,8 +43,11 @@ namespace firm
 			 */
 			bool optimizeLocal();
 
-			bool optimizeBitFiddling();
+			bool optimizeAddressMode();
 
+		public:
+			Optimizer(ir_graph* irg);
+			bool optimizeBitFiddling();
 			void handleConvNodes();
 
 		public:

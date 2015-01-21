@@ -22,7 +22,7 @@ namespace firm
 			void markOutNodesAsNew(ir_node* node);
 		public:
 			GraphOptimizer(ir_graph* irg);
-			virtual void handle(Node) = 0;
+			virtual void handle(Node node) = 0;
 			virtual void cleanUp(Node node) = 0;
 			void replaceNode(Node oldNode, Node newNode, bool keepTarval = false);
 			bool graphChanged() const;
