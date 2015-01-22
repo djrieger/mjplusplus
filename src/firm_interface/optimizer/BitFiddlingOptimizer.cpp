@@ -1,9 +1,10 @@
 #include "BitFiddlingOptimizer.hpp"
 
+#include <cstdlib>
 
 namespace firm
 {
-	BitFiddlingOptimizer::BitFiddlingOptimizer(ir_graph* irg) : GraphOptimizer(irg) {}
+	BitFiddlingOptimizer::BitFiddlingOptimizer(ir_graph* irg) : GraphHandler(irg) {}
 
 	void BitFiddlingOptimizer::handle(Node) {}
 

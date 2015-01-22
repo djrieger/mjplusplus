@@ -1,9 +1,5 @@
 #include "MemberVisitor.hpp"
 #include "StatementVisitor.hpp"
-#include "../ConstantFolder.hpp"
-#include "../Worklist.hpp"
-#include "../ControlFlowOptimizer.hpp"
-#include "../LocalOptimizer.hpp"
 
 namespace firm
 {
@@ -54,6 +50,9 @@ namespace firm
 			mature_immBlock(get_irg_end_block(irg));
 
 			irg_finalize_cons(irg);
+
+			// handle the Conv nodes of the graph
+			FirmInterface::getInstance().handleConvNodes(irg);
 
 			// optimize Firm graph
 			FirmInterface::getInstance().optimize(irg);

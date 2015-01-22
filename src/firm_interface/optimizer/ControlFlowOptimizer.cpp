@@ -2,7 +2,7 @@
 
 namespace firm
 {
-	ControlFlowOptimizer::ControlFlowOptimizer(ir_graph* irg) : GraphOptimizer(irg)
+	ControlFlowOptimizer::ControlFlowOptimizer(ir_graph* irg) : GraphHandler(irg)
 	{
 
 	}

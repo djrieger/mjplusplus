@@ -1,11 +1,11 @@
 #ifndef ADDRESSMODEOPTIMIZER_HPP
 #define ADDRESSMODEOPTIMIZER_HPP
 
-#include "GraphOptimizer.hpp"
+#include "../GraphHandler.hpp"
 
 namespace firm
 {
-	class AddressModeOptimizer : public GraphOptimizer
+	class AddressModeOptimizer : public GraphHandler
 	{
 		private:
 			ir_node* constant;
