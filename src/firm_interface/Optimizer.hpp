@@ -44,6 +44,12 @@ namespace firm
 
 			bool optimizeAddressMode();
 
+			/**
+			 * Optimize the function graph by inlining called functions where appropriate
+			 * @return true if some optimization was made, false if no optimization was made and the graph didn't change
+			 */
+			bool inlineFunctions();
+
 		public:
 
 			static const int NONE = 0;

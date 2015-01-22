@@ -6,6 +6,7 @@
 #include "ConvHandler.hpp"
 #include "LocalOptimizer.hpp"
 #include "LoadStoreOptimizer.hpp"
+#include "FunctionInliner.hpp"
 #include "Optimizer.hpp"
 #include "Worklist.hpp"
 
@@ -38,6 +39,7 @@ namespace firm
 
 			do
 			{
+				changed |= inlineFunctions();
 				changed = foldConstants() || changed;
 				changed = optimizeLocal() || changed;
 				changed = eliminateCommonSubexpressions() || changed;
@@ -155,5 +157,13 @@ namespace firm
 		ConvHandler cv(irg);
 		firm::Worklist worklist(irg, cv);
 		worklist.run();
+	}
+
+	bool Optimizer::inlineFunctions()
+	{
+		FunctionInliner fi(irg);
+		firm::Worklist worklist(irg, fi);
+		worklist.run();
+		return fi.graphChanged();
 	}
 }
