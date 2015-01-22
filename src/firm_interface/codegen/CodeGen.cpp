@@ -3,7 +3,7 @@
 
 #include "CodeGen.hpp"
 
-#include "FirmInterface.hpp"
+#include "../FirmInterface.hpp"
 
 namespace firm
 {
@@ -1235,12 +1235,55 @@ namespace firm
 					break;
 			}
 
-			fprintf(out, "\tmov%s ", os);
-			load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
-			fprintf(out, ", %s\n\tmov%s ", constraintToRegister(RAX, mode), os);
-			load_or_imm(get_irn_n(irn, 2), usage[irn].second[2].reg);
-			fprintf(out, ", %s\n\tc%s\n\tidiv%s %s\n", rs, conv, os, rs);
-			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
+			ir_node* dividend_node = get_irn_n(irn, 2);
+
+			if (is_Const(dividend_node) && __builtin_popcount(std::abs(get_tarval_long(get_Const_tarval(dividend_node)))) == 1)
+			{
+				char const* rs2 = constraintToRegister(RAX, mode);
+				fprintf(out, "\tmov%s ", os);
+				load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+				fprintf(out, ", %s\n", rs2);
+
+				long dividend = get_tarval_long(get_Const_tarval(dividend_node));
+
+				if (get_mode_sign(mode))
+				{
+					unsigned long abs_dividend = std::abs(dividend);
+
+					if (is_Div(irn))
+					{
+						fprintf(out, "\tlea%s %ld(%s), %s\n", os, abs_dividend - 1, rs2, rs);
+						fprintf(out, "\ttest%s %s, %s\n", os, rs2, rs2);
+						fprintf(out, "\tcmovs%s %s, %s\n", os, rs, rs2);
+						fprintf(out, "\tsar%s $%d, %s\n", os, __builtin_ctzl(abs_dividend), rs2);
+
+						if (dividend < 0)
+							fprintf(out, "\tneg%s %s\n", os, rs2);
+					}
+					else
+					{
+						char const* rs = constraintToRegister(RDX, mode);
+						fprintf(out, "\tc%s\n", conv);
+						fprintf(out, "\tshr%s $%d, %s\n", os, get_mode_size_bits(mode) - __builtin_ctzl(abs_dividend), rs);
+						fprintf(out, "\tadd%s %s, %s\n", os, rs, rs2);
+						fprintf(out, "\tand%s $%ld, %s\n", os, abs_dividend - 1, rs2);
+						fprintf(out, "\tsub%s %s, %s\n", os, rs, rs2);
+					}
+				}
+				else
+					fprintf(out, "\t%s%s $%ld, %s\n", is_Div(irn) ? "shr" : "and", os, is_Div(irn) ? __builtin_ctzl(dividend) : dividend - 1, rs2);
+
+				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs2, 8 * usage[irn].first[0].reg - 8);
+			}
+			else
+			{
+				fprintf(out, "\tmov%s ", os);
+				load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+				fprintf(out, ", %s\n\tmov%s ", constraintToRegister(RAX, mode), os);
+				load_or_imm(get_irn_n(irn, 2), usage[irn].second[2].reg);
+				fprintf(out, ", %s\n\tc%s\n\tidiv%s %s\n", rs, conv, os, rs);
+				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
+			}
 		}
 		else if (is_Conv(irn))
 		{

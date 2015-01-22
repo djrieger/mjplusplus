@@ -1,16 +1,16 @@
-#include "GraphOptimizer.hpp"
+#include "GraphHandler.hpp"
 
 namespace firm
 {
 
-	GraphOptimizer::GraphOptimizer(ir_graph* irg): irg(irg)
+	GraphHandler::GraphHandler(ir_graph* irg): irg(irg)
 	{
 
 		newNodes = std::make_shared<std::set<ir_node*>>();
 		changed = false;
 	}
 
-	void GraphOptimizer::markOutNodesAsNew(ir_node* node)
+	void GraphHandler::markOutNodesAsNew(ir_node* node)
 	{
 		ir_edge_t* edge = NULL;
 		foreach_out_edge(node, edge)
@@ -21,23 +21,23 @@ namespace firm
 		}
 	}
 
-	shptr<std::set<ir_node*>> GraphOptimizer::getNewNodes() const
+	shptr<std::set<ir_node*>> GraphHandler::getNewNodes() const
 	{
 		return this->newNodes;
 	}
 
-	void GraphOptimizer::replaceNode(Node oldNode, Node newNode, bool keepTarval)
+	void GraphHandler::replaceNode(Node oldNode, Node newNode, bool keepTarval)
 	{
 		changed = true;
 		oldNode.replaceWith(newNode, keepTarval);
 	}
 
-	bool GraphOptimizer::graphChanged() const
+	bool GraphHandler::graphChanged() const
 	{
 		return changed;
 	}
 
-	void GraphOptimizer::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
+	void GraphHandler::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
 	{
 		Node child1 = node.getChild(0);
 
@@ -50,7 +50,7 @@ namespace firm
 		}
 	}
 
-	bool GraphOptimizer::tarvalIsZero(Tarval tarval)
+	bool GraphHandler::tarvalIsZero(Tarval tarval)
 	{
 		return tarval && tarval.isNumeric() && tarval.getLong() == 0;
 	}

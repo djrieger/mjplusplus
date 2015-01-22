@@ -1,9 +1,9 @@
 #include "LocalOptimizer.hpp"
-#include "Tarval.hpp"
+#include "../Tarval.hpp"
 
 namespace firm
 {
-	LocalOptimizer::LocalOptimizer(ir_graph* irg) : GraphOptimizer(irg)
+	LocalOptimizer::LocalOptimizer(ir_graph* irg) : GraphHandler(irg)
 	{
 
 	}

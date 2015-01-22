@@ -3,12 +3,12 @@
 
 #include <libfirm/firm.h>
 #include <iostream>
-#include "../globals.hpp"
-#include "GraphOptimizer.hpp"
+#include "../../globals.hpp"
+#include "../GraphHandler.hpp"
 
 namespace firm
 {
-	class FunctionInliner : public GraphOptimizer
+	class FunctionInliner : public GraphHandler
 	{
 		public:
 			virtual void handle(Node node);

@@ -14,8 +14,10 @@
 #include "visitors/MemberVisitor.hpp"
 #include "visitors/ExpressionVisitor.hpp"
 
-#include "CodeGen.hpp"
-#include "Optimizer.hpp"
+#include "codegen/CodeGen.hpp"
+#include "optimizer/Optimizer.hpp"
+#include "ConvHandler.hpp"
+#include "Worklist.hpp"
 
 namespace firm
 {
@@ -152,6 +154,13 @@ _COut_Mprintln:\n\
 		opt.setOptimizationFlag(optimizationFlag);
 		opt.run();
 		outputFirmGraph(irg, "optimized");
+	}
+
+	void FirmInterface::handleConvNodes(ir_graph* irg)
+	{
+		ConvHandler cv(irg);
+		firm::Worklist worklist(irg, cv);
+		worklist.run();
 	}
 
 	ir_entity* FirmInterface::createMethodEntity(ir_type* owner, shptr<ast::MethodDeclaration const> methodDeclaration)

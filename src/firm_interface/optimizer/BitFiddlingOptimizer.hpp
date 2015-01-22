@@ -2,15 +2,15 @@
 #define BITFIDDLINGOPTIMIZER_HPP
 
 
-#include "../globals.hpp"
-#include "GraphOptimizer.hpp"
-#include "Node.hpp"
+#include "../../globals.hpp"
+#include "../GraphHandler.hpp"
+#include "../Node.hpp"
 #include <libfirm/firm.h>
 
 
 namespace firm
 {
-	class BitFiddlingOptimizer : public GraphOptimizer
+	class BitFiddlingOptimizer : public GraphHandler
 	{
 		public:
 			virtual void handle(Node node);
