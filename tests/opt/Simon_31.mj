@@ -1,0 +1,18 @@
+class a {
+	public static void main(String[] a)
+	{
+		new a().q();
+	}
+	
+	public void q() {
+		int[] c = new int[4];
+		int q = 0;
+		int iterations = 1000000000;
+		while (q < iterations) {
+			c[3] = q;
+			q = c[3] + 1; /* @comment "no need to read c[3] again" */
+		}
+		System.out.println(iterations);
+		System.out.println(q);
+	}
+}
