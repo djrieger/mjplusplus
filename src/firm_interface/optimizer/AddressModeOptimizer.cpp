@@ -1,9 +1,9 @@
 #include "AddressModeOptimizer.hpp"
-#include "FirmInterface.hpp"
+#include "../FirmInterface.hpp"
 
 namespace firm
 {
-	AddressModeOptimizer::AddressModeOptimizer(ir_graph* irg) : GraphOptimizer(irg)
+	AddressModeOptimizer::AddressModeOptimizer(ir_graph* irg) : GraphHandler(irg)
 	{
 	}
 

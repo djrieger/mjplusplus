@@ -3,11 +3,10 @@
 #include "CommonSubexpressionEliminator.hpp"
 #include "ConstantFolder.hpp"
 #include "ControlFlowOptimizer.hpp"
-#include "ConvHandler.hpp"
 #include "LocalOptimizer.hpp"
 #include "LoadStoreOptimizer.hpp"
 #include "Optimizer.hpp"
-#include "Worklist.hpp"
+#include "../Worklist.hpp"
 
 namespace firm
 {
@@ -30,8 +29,6 @@ namespace firm
 
 	void Optimizer::run()
 	{
-		handleConvNodes();
-
 		if (optimizationFlag >= DEFAULT)
 		{
 			unsigned int iterations_count = 0;
@@ -148,12 +145,5 @@ namespace firm
 		edges_deactivate(irg);
 
 		return bfo.graphChanged();
-	}
-
-	void Optimizer::handleConvNodes()
-	{
-		ConvHandler cv(irg);
-		firm::Worklist worklist(irg, cv);
-		worklist.run();
 	}
 }

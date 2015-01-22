@@ -1,11 +1,11 @@
 #ifndef LOCALOPTIMIZER_H
 #define LOCALOPTIMIZER_H
 
-#include "GraphOptimizer.hpp"
+#include "../GraphHandler.hpp"
 
 namespace firm
 {
-	class LocalOptimizer : public GraphOptimizer
+	class LocalOptimizer : public GraphHandler
 	{
 		private:
 			void replaceAdd(Node node);

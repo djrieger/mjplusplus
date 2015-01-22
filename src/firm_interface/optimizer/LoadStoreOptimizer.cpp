@@ -1,11 +1,11 @@
 #include "LoadStoreOptimizer.hpp"
-#include "FirmInterface.hpp"
+#include "../FirmInterface.hpp"
 #include <iostream>
 #include <algorithm>
 
 namespace firm
 {
-	LoadStoreOptimizer::LoadStoreOptimizer(ir_graph* irg): GraphOptimizer(irg)
+	LoadStoreOptimizer::LoadStoreOptimizer(ir_graph* irg): GraphHandler(irg)
 	{
 
 	}

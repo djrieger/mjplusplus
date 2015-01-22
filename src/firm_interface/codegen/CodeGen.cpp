@@ -3,7 +3,7 @@
 
 #include "CodeGen.hpp"
 
-#include "FirmInterface.hpp"
+#include "../FirmInterface.hpp"
 
 namespace firm
 {
