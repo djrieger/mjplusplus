@@ -1,11 +1,11 @@
 #include "CommonSubexpressionEliminator.hpp"
-#include "FirmInterface.hpp"
+#include "../FirmInterface.hpp"
 #include <iostream>
 #include <algorithm>
 
 namespace firm
 {
-	CommonSubexpressionEliminator::CommonSubexpressionEliminator(ir_graph* irg): GraphOptimizer(irg)
+	CommonSubexpressionEliminator::CommonSubexpressionEliminator(ir_graph* irg): GraphHandler(irg)
 	{
 
 	}

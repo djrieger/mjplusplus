@@ -4,9 +4,9 @@
 #include <libfirm/firm.h>
 #include <unordered_map>
 #include <tuple>
-#include "../globals.hpp"
-#include "GraphOptimizer.hpp"
-#include "Node.hpp"
+#include "../../globals.hpp"
+#include "../GraphHandler.hpp"
+#include "../Node.hpp"
 
 namespace firm
 {
@@ -33,7 +33,7 @@ namespace std
 
 namespace firm
 {
-	class CommonSubexpressionEliminator : public GraphOptimizer
+	class CommonSubexpressionEliminator : public GraphHandler
 	{
 
 		protected:

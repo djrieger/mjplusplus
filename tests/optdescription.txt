@@ -28,3 +28,5 @@ Simon_27: "i=1;i=2-i"-loop and constant optimization
 Simon_28: combination of constant optimization and "i=1;i=2-i"-loop
 Simon_29: offset addition of zero is unnecessary (field access)
 Simon_30: offset addition of zero is unnecessary (array access)
+Simon_31: load-store optimization
+Simon_32: non-constant inlining

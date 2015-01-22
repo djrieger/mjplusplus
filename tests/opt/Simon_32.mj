@@ -1,0 +1,32 @@
+class a {
+	public static void main(String[] a)
+	{
+		new a().q();
+	}
+	
+	public void q() {
+		int q = 0;
+		int i = 27;
+		int iterations = 1000000000;
+		while (q < iterations) {
+			i = step(i); /* @comment "can be inlined" */
+			q = q + 1;
+		}
+		System.out.println(i);
+	}
+	
+	public int step(int x) {
+		if (x % 2 == 0)
+			return half(x); /* @comment "can be inlined" */
+		else
+			return times3plus1(x); /* @comment "can be inlined" */
+	}
+	
+	public int half(int x) {
+		return x/2;
+	}
+	
+	public int times3plus1(int x) {
+		return 3*x+1;
+	}
+}

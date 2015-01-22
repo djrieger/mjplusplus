@@ -116,6 +116,12 @@ namespace firm
 			void optimize(ir_graph* irg);
 
 			/**
+			 * Replaces chains of Conv nodes with a single node.
+			 * @param irg the given firm graph
+			 */
+			void handleConvNodes(ir_graph* irg);
+
+			/**
 			 * Convert the generated Firm graphs to assembler using FIRM itself and save in file out_name
 			 */
 			void buildWithFirm();

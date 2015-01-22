@@ -1,10 +1,10 @@
 #ifndef CONVHANDLER_H
 #define CONVHANDLER_H
-#include "GraphOptimizer.hpp"
+#include "GraphHandler.hpp"
 
 namespace firm
 {
-	class ConvHandler : public GraphOptimizer
+	class ConvHandler : public GraphHandler
 	{
 		public:
 			virtual void handle(Node node);

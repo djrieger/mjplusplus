@@ -2,7 +2,7 @@
 
 namespace firm
 {
-	ConvHandler::ConvHandler(ir_graph* irg) : GraphOptimizer(irg)
+	ConvHandler::ConvHandler(ir_graph* irg) : GraphHandler(irg)
 	{
 
 	}

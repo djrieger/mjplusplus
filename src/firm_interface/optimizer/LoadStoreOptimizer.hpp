@@ -2,13 +2,13 @@
 #define LOAD_STORE_OPTIMIZER_HPP
 
 #include <libfirm/firm.h>
-#include "../globals.hpp"
-#include "GraphOptimizer.hpp"
-#include "Node.hpp"
+#include "../../globals.hpp"
+#include "../GraphHandler.hpp"
+#include "../Node.hpp"
 
 namespace firm
 {
-	class LoadStoreOptimizer : public GraphOptimizer
+	class LoadStoreOptimizer : public GraphHandler
 	{
 
 		protected:
