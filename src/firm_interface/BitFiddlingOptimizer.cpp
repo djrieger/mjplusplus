@@ -1,5 +1,6 @@
 #include "BitFiddlingOptimizer.hpp"
 
+#include <cstdlib>
 
 namespace firm
 {
