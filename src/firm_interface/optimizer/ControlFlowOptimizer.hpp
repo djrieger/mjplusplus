@@ -5,13 +5,13 @@
 #include <set>
 #include <queue>
 #include <iostream>
-#include "../globals.hpp"
-#include "GraphOptimizer.hpp"
-#include "Node.hpp"
+#include "../../globals.hpp"
+#include "../GraphHandler.hpp"
+#include "../Node.hpp"
 
 namespace firm
 {
-	class ControlFlowOptimizer : public GraphOptimizer
+	class ControlFlowOptimizer : public GraphHandler
 	{
 		public:
 			virtual void handle(Node node);

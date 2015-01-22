@@ -1,9 +1,9 @@
 #include "ConstantFolder.hpp"
-#include "FirmInterface.hpp"
+#include "../FirmInterface.hpp"
 
 namespace firm
 {
-	ConstantFolder::ConstantFolder(ir_graph* irg): GraphOptimizer(irg)
+	ConstantFolder::ConstantFolder(ir_graph* irg): GraphHandler(irg)
 	{
 
 	}

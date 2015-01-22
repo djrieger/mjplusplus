@@ -2,7 +2,7 @@
 #define OPTIMIZER_HPP
 
 #include <libfirm/firm.h>
-#include "../globals.hpp"
+#include "../../globals.hpp"
 
 namespace firm
 {
@@ -43,6 +43,7 @@ namespace firm
 			bool optimizeLocal();
 
 			bool optimizeAddressMode();
+			bool optimizeBitFiddling();
 
 		public:
 
@@ -50,8 +51,6 @@ namespace firm
 			static const int DEFAULT = 1;
 
 			Optimizer(ir_graph* irg);
-			bool optimizeBitFiddling();
-			void handleConvNodes();
 			void setOptimizationFlag(int flag);
 			void setMaxIterations(int max);
 			void run();
