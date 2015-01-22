@@ -1120,6 +1120,7 @@ namespace firm
 		{
 			auto& reads = usage[irn].second;
 			bool is_println = !strcmp("_COut_Mprintln", get_entity_name(get_Call_callee(irn)));
+			bool is_calloc = !strcmp("calloc", get_entity_name(get_Call_callee(irn)));
 
 			for (int i = 2; i < get_irn_arity(irn); i++)
 			{
@@ -1165,10 +1166,10 @@ namespace firm
 			char const* callNamePrefix = "";
 #endif
 
-			if (is_println)
+			if (is_println || is_calloc)
 			{
 				fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
-				fprintf(out, "\tcall %sprintf\n", callNamePrefix);
+				fprintf(out, "\tcall %s%s\n", callNamePrefix, is_println ? "printf" : "calloc");
 				fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
 			}
 			else
