@@ -62,7 +62,7 @@ class Complex {
 
   public void mul(Complex c) {
     Fixed re = this.re.clone();
-    Fixed c_re = c.re.clone(); // could be aliased to this.re
+    Fixed c_re = c.re.clone(); /* could be aliased to this.re */
     Fixed im = this.im.clone();
     re.mul(c.im);
     im.mul(c.im);
