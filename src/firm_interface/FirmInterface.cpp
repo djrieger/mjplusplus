@@ -31,7 +31,7 @@ namespace firm
 		set_modeP(modeP);
 
 		optimizationFlag = Optimizer::DEFAULT;
-		lea = new_ir_op(get_next_ir_opcodes(1), "lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
+		lea = new_ir_op(get_next_ir_opcodes(1), "Lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
 	}
 
 	void FirmInterface::setInput(std::string const& in)

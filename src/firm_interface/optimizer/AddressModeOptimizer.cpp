@@ -122,10 +122,15 @@ namespace firm
 		if (node.getOpcode() != iro_Add)
 			return;
 
+		//ir_printf("(%ld) %F:\n", get_irn_node_nr(node), (ir_node*) node);
+
 		if (!handle_Add(node, true))
 			return;
 
-		if (!x)
+		//ir_printf("succsess? (%ld) %F, (%ld) %F, (%ld) %F, (%ld) %F\n", !constant ? 0 : get_irn_node_nr(constant), (ir_node*) constant, !base ? 0 : get_irn_node_nr(base), (ir_node*) base, !x ? 0 : get_irn_node_nr(x), (ir_node*) x, !scale ? 0 : get_irn_node_nr(scale), (ir_node*) scale);
+
+		if (!x || (!constant && !scale))
+			//simple add
 			return;
 
 		if (!constant)
@@ -139,6 +144,8 @@ namespace firm
 			base = x;
 			scale = new_r_Const_long(get_irn_irg(node), node.getMode(), 1);
 		}
+
+		//ir_printf("using (%ld) %F, (%ld) %F, (%ld) %F, (%ld) %F\n", get_irn_node_nr(constant), (ir_node*) constant, get_irn_node_nr(base), (ir_node*) base, get_irn_node_nr(x), (ir_node*) x, !scale ? 0 : get_irn_node_nr(scale), (ir_node*) scale);
 
 		ir_node* l = new_r_Lea(get_nodes_block(node), constant, base, x, scale, node.getMode());
 		set_irn_link(node, l);
