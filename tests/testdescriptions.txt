@@ -148,3 +148,5 @@ Simon_147: assignments in loop condition
 Simon_148: correctness after optimization of arithmetic identities
 Simon_149: correctness after optimization of mul to shift
 Simon_150: correctness after optimization of div to shift
+Simon_151: correctness after optimization of mod bit fiddling
+Simon_152: lea fun
