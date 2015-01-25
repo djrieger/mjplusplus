@@ -39,7 +39,7 @@ namespace firm
 
 	bool Tarval::isNumeric() const
 	{
-		return isModeLu() || isModeIs();
+		return get_mode_arithmetic(get_tarval_mode(tarval)) == irma_twos_complement;
 	}
 
 	bool Tarval::isBad() const

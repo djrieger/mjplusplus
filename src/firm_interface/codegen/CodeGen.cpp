@@ -693,8 +693,11 @@ namespace firm
 				else
 				{
 					set_irn_link(irn, irn);
-					size_t addr = new_register();
-					registers[addr].reads.push_back(irn);
+					size_t addr = is_Const(get_irn_n(irn, 1)) ? 0 : new_register();
+
+					if (addr)
+						registers[addr].reads.push_back(irn);
+
 					registers[current_reg].writes.push_back(irn);
 					usage[irn] = {{{NONE, current_reg}}, {{NONE, 0}, {NONE, addr}}};
 					code[block].normal.push_back(irn);
@@ -703,9 +706,11 @@ namespace firm
 			else if (is_Store(irn))
 			{
 				set_irn_link(irn, irn);
-				size_t addr = new_register();
+				size_t addr = is_Const(get_irn_n(irn, 1)) ? 0 : new_register();
 				size_t val = is_Const(get_irn_n(irn, 2)) ? 0 : new_register();
-				registers[addr].reads.push_back(irn);
+
+				if (addr)
+					registers[addr].reads.push_back(irn);
 
 				if (val)
 					registers[val].reads.push_back(irn);
@@ -1325,8 +1330,9 @@ namespace firm
 			ir_mode* mode = get_Load_mode(irn);
 			char const* os = operationSuffix(mode);
 			char const* rs = constraintToRegister(RAX, mode);
-			fprintf(out, "\tmov %zd(%%rsp), %%rax\n", 8 * usage[irn].second[1].reg - 8);
-			fprintf(out, "\tmov%s (%%rax), %s\n", os, rs);
+			fprintf(out, "\tmovq ");
+			load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+			fprintf(out, ", %%rax\n\tmov%s (%%rax), %s\n", os, rs);
 			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs, 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Store(irn))
@@ -1334,7 +1340,9 @@ namespace firm
 			ir_mode* mode = get_irn_mode(get_irn_n(irn, 2));
 			char const* os = operationSuffix(mode);
 			char const* rs = constraintToRegister(RBX, mode);
-			fprintf(out, "\tmov %zd(%%rsp), %%rax\n\tmov%s ", 8 * usage[irn].second[1].reg - 8, os);
+			fprintf(out, "\tmovq ");
+			load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+			fprintf(out, ", %%rax\n\tmov%s ", os);
 			load_or_imm(get_irn_n(irn, 2), usage[irn].second[2].reg);
 			fprintf(out, ", %s\n\tmov%s %s, (%%rax)\n", rs, os, rs);
 		}

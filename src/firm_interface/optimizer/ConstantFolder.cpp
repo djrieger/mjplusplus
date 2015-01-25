@@ -225,93 +225,6 @@ namespace firm
 		if (node.getTarval() != oldTarval)
 			markOutNodesAsNew(node);
 	}
-	/*
-		void ConstantFolder::processChildren(Node node, std::function<void (Node leftChild, Node rightChild)> fun)
-		{
-			Node child1 = node.getChild(0);
-
-			if (node.getChildCount() == 1 && node.getTarval().isModeIs())
-				fun(child1, NULL);
-			else
-			{
-				Node child2 = node.getChild(1);
-				fun(child1, child2);
-			}
-		}
-
-		bool ConstantFolder::tarvalIsZero(Tarval tarval)
-		{
-			return tarval && tarval.isNumeric() && tarval.getLong() == 0;
-		}
-
-		void ConstantFolder::replaceAdd(Node node)
-		{
-			processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-			{
-				if (tarvalIsZero(leftChild.getTarval()))
-					node.replaceWith(rightChild);
-				else if (tarvalIsZero(rightChild.getTarval()))
-					node.replaceWith(leftChild);
-
-			});
-		}
-
-		void ConstantFolder::replaceSub(Node node)
-		{
-			processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-			{
-				if (tarvalIsZero(leftChild.getTarval()))
-					node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, get_irn_mode(node)));
-				else if (tarvalIsZero(rightChild.getTarval()))
-					node.replaceWith(leftChild);
-			});
-		}
-
-		void ConstantFolder::replaceMinus(Node node)
-		{
-			if (is_Minus(node.getChild(0)))
-				node.replaceWith(node.getChild(0).getChild(0));
-		}
-
-		void ConstantFolder::replaceMul(Node node)
-		{
-			processChildren(node, [&] (Node leftChild, Node rightChild) -> void
-			{
-				auto handleCases = [&] (Node leftChild, Node rightChild) -> void
-				{
-					if (leftChild.getTarval() && leftChild.getTarval().isNumeric())
-					{
-						switch (leftChild.getTarval().getLong())
-						{
-							case 0:
-								node.replaceWith(new_r_Const_long(irg, get_irn_mode(node), 0));
-								break;
-
-							case 1:
-								node.replaceWith(rightChild);
-								break;
-
-							case -1:
-								node.replaceWith(new_r_Minus(get_nodes_block(node), rightChild, node.getMode()));
-						}
-					}
-				};
-				handleCases(leftChild, rightChild);
-				handleCases(rightChild, leftChild);
-			});
-		}
-
-	void ConstantFolder::replaceConv(Node node)
-	{
-		Node child = node.getChild(0);
-
-		if (is_Conv(child) && node.getMode() == child.getMode())
-			replaceNode(node, child);
-		else if (is_Const(child))
-			replaceNode(node, new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
-		else if (is_Conv(child))
-			set_irn_n(node, 0, child.getChild(0));
-	}*/
 
 	void ConstantFolder::replaceDivMod(Node node)
 	{
@@ -347,13 +260,7 @@ namespace firm
 	{
 		if (!replaceGeneric(node))
 		{
-			//if (is_Add(node)) replaceAdd(node);
-			//else if (is_Mul(node)) replaceMul(node);
-			//else if (is_Sub(node)) replaceSub(node);
-			//else if (is_Minus(node)) replaceMinus(node);
 			if (is_Div(node) || is_Mod(node)) replaceDivMod(node);
-
-			//else if (is_Conv(node)) replaceConv(node);
 		}
 
 		// Todo: optimize booleans
