@@ -78,10 +78,12 @@ namespace firm
 		{
 			if (child.getOpcode() == iro_Const)
 			{
+				// merge constants
 				if (constant)
-					return false;
+					// due to merging we can afford to see another node
+					recurse = true;
 
-				constant = child;
+				constant = !constant ? static_cast<ir_node*>(child) : new_r_Const_long(get_irn_irg(node), node.getMode(), child.getValue().getLong() + get_tarval_long(get_Const_tarval(constant)));
 			}
 			else if (child.getOpcode() == iro_Mul)
 			{
