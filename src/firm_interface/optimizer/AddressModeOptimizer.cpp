@@ -88,17 +88,10 @@ namespace firm
 				if (!handle_Mul(child))
 					return false;
 			}
-			else if (child.getOpcode() == iro_Add)
+			else if (child.getOpcode() == iro_Add && recurse)
 			{
-				if (recurse)
-				{
-					if (!handle_Add(child, false))
-						return false;
-				}
-				else if (!base)
-					base = child;
-				else
-					x = child;
+				if (!handle_Add(child, false))
+					return false;
 			}
 			else if (!base)
 				base = child;
