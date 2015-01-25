@@ -60,20 +60,8 @@ namespace firm
 		edges_deactivate(callerIrg);
 	}
 
-	bool FunctionInliner::inlineFunction(Node callNode, ir_graph* calleeIrg)
+	ir_node* FunctionInliner::createArgumentsTuple(ir_node* callNode, ir_graph* callerIrg, ir_graph* calleeIrg)
 	{
-		ir_graph* callerIrg = get_irn_irg(callNode); // irg
-
-		if (calleeIrg == callerIrg)
-		{
-			ir_printf("Cannot inline recursive call %+F (%+F) into %+F\n", callNode, calleeIrg, callerIrg);
-			return false;
-		}
-
-		ir_printf("Inlining %+F (%+F) into %+F\n", callNode, calleeIrg, callerIrg);
-
-		relaxGraphStates(callerIrg, calleeIrg);
-
 		/* If the call has parameters, copy all parameter entities */
 		ir_entity *calleeEntity = get_irg_entity(calleeIrg); // ent
 		ir_type *calleeType = get_entity_type(calleeEntity); // mtp
@@ -84,6 +72,7 @@ namespace firm
 		}
 
 		/* create the argument tuple */
+
 		ir_node **args_in = new ir_node*[n_params]; // ALLOCAN(ir_node*, n_params);
 
 		ir_node *callingBlock = get_nodes_block(callNode); // block, post_bl
@@ -110,12 +99,26 @@ namespace firm
 		in[pn_Start_T_args]         = new_r_Tuple(callingBlock, n_params, args_in);
 		ir_node *pre_call = new_r_Tuple(callingBlock, pn_Start_max+1, in);
 
-		// TODO: move further down?
 		delete[] args_in;
 
+		return pre_call;
+	}
 
+	bool FunctionInliner::inlineFunction(Node callNode, ir_graph* calleeIrg)
+	{
+		ir_graph* callerIrg = get_irn_irg(callNode); // irg
 
+		if (calleeIrg == callerIrg)
+		{
+			ir_printf("Cannot inline recursive call %+F (%+F) into %+F\n", callNode, calleeIrg, callerIrg);
+			return false;
+		}
 
+		ir_printf("Inlining %+F (%+F) into %+F\n", callNode, calleeIrg, callerIrg);
+
+		relaxGraphStates(callerIrg, calleeIrg);
+		ir_node *pre_call = createArgumentsTuple(callNode, callerIrg, calleeIrg);
+		
 		/* --
 		   The new block gets the ins of the old block, pre_call and all its
 		   predecessors and all Phi nodes. -- */

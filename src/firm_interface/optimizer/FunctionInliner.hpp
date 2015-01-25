@@ -20,6 +20,7 @@ namespace firm
 			void set_preds_inline(ir_node *node, void *env);
 			ir_node *irn_copy_into_irg(const ir_node *node, ir_graph *irg);
 			void irn_rewire_inputs(ir_node *node);
+			ir_node* createArgumentsTuple(ir_node* callNode, ir_graph* callerIrg, ir_graph* calleeIrg);
 			bool inlineFunction(Node callNode, ir_graph* calleeIrg);
 		public:
 			void run();
