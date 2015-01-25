@@ -1,0 +1,31 @@
+class a {
+	public static void main(String[] args) {
+		new a().q();
+		return;
+	}
+	
+	public boolean c_false() {
+		int i = 7;
+		int w = 9;
+		while (w < 200) {
+			i = i * i;
+			w = w * 2;
+		}
+		return i % 5 == 1;
+	}
+	
+	public int q() {
+		int[] c_null = null;
+		if (c_false()) {
+			int y = c_null[92];
+			c_null[23] = c_null[1] - 2;
+			System.out.println(c_null[92]);
+			return c_null[42];
+		}
+		if (!c_false()) {
+			return 2;
+		}
+		int w = c_null[0];
+		return w;
+	}
+}

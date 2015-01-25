@@ -150,3 +150,11 @@ Simon_149: correctness after optimization of mul to shift
 Simon_150: correctness after optimization of div to shift
 Simon_151: correctness after optimization of mod bit fiddling
 Simon_152: lea fun
+Simon_153: empty statements and expression statements
+Simon_154: div and mod by zero (in unreachable code, so no undefined behaviour)
+Simon_155: null array access (in unreachable code, so no undefined behaviour)
+Simon_156: null field access (in unreachable code, so no undefined behaviour)
+Simon_157: null method invocation (in unreachable code, so no undefined behaviour)
+Simon_158: index out of bounds (in unreachable code, so no undefined behaviour)
+Simon_159: negative length array (in unreachable code, so no undefined behaviour)
+Simon_160: mix of code that would produce undefined behaviour if executed
