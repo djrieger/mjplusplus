@@ -36,7 +36,6 @@ namespace firm
 
 			do
 			{
-				changed |= inlineFunctions();
 				changed = foldConstants() || changed;
 				changed = optimizeLocal() || changed;
 				changed = eliminateCommonSubexpressions() || changed;
@@ -147,13 +146,5 @@ namespace firm
 		edges_deactivate(irg);
 
 		return bfo.graphChanged();
-	}
-
-	bool Optimizer::inlineFunctions()
-	{
-		FunctionInliner fi(irg);
-		firm::Worklist worklist(irg, fi);
-		worklist.run();
-		return fi.graphChanged();
 	}
 }

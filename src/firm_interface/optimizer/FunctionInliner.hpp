@@ -3,17 +3,20 @@
 
 #include <libfirm/firm.h>
 #include <iostream>
+#include "../Node.hpp"
 #include "../../globals.hpp"
-#include "../GraphHandler.hpp"
 
 namespace firm
 {
-	class FunctionInliner : public GraphHandler
+	class FunctionInliner
 	{
+		private:
+			void recurse(Node node);
+			void handle(Node node);
+			void inlineFunction(Node callNode, ir_graph* calleeIrg);
 		public:
-			virtual void handle(Node node);
-			virtual void cleanUp(Node node);
-			FunctionInliner(ir_graph* irg);
+			void run();
+			// FunctionInliner();
 	};
 }
 

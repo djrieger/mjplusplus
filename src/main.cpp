@@ -13,6 +13,8 @@
 
 #include "firm_interface/FirmInterface.hpp"
 
+#include "firm_interface/optimizer/FunctionInliner.hpp"
+
 
 int dumpLexGraph(lexer::Stateomat stateomat, std::string out_name)
 {
@@ -226,6 +228,9 @@ int main(int argc, const char** argv)
 		}
 
 		runFirm(file_name, out_name_assembly, options[DUMP_FIRM_GRAPH], parser.getRoot());
+
+		firm::FunctionInliner fi;
+		fi.run();
 
 		if (options[FIRM])
 			return EXIT_SUCCESS;
