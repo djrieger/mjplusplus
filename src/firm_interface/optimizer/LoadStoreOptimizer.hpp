@@ -13,6 +13,13 @@ namespace firm
 
 		protected:
 			void handleLoad(Node node);
+			void handleStore(Node node);
+			void handleLoadStore(Node node1, Node node2);
+			void handleLoadLoad(Node node1, Node node2);
+			void handleStoreStore(Node node1, Node node2);
+			void handleStoreLoad(Node node1, Node node2);
+			Node getLoadRes(Node node);
+			void removeLoad(Node node);
 		public:
 			LoadStoreOptimizer(ir_graph* irg);
 			virtual void handle(Node);
