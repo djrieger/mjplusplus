@@ -1,0 +1,46 @@
+class a {
+	public static void main(String[] args) {
+		new a().q();
+		new a().w();
+	}
+	
+	public void q() {
+		int[] c = new int[12];
+		c[4] = 4;
+		int r = c[4];
+		int qw = c[0] + c[1] + c[2] + c[4];
+		c[4] = c[c[4]] = c[c[4]=c[c[4]=c[4]]] = r;
+		System.out.println(c[4]);
+		System.out.println(f(c));
+		System.out.println(c[7]);
+	}
+	
+	public int f(int[] c) {
+		c[3] = 2;
+		c[3] = 3;
+		System.out.println(c[c[c[3]]]);
+		int e = c[5];
+		System.out.println(c[5]);
+		System.out.println(e);
+		c[7] = -13;
+		return c[7];
+	}
+	
+	public void w() {
+		int[] c = new int[5];
+		c[0] = 12;
+		int q = 0;
+		c[3] = q;
+		q = c[3] + 1;
+		System.out.println(q);
+		int y = c[1];
+		c[2] = 3;
+		c[2] = 2;
+		int w = c[0];
+		System.out.println(c[0]);
+		System.out.println(w);
+		int z = c[4];
+		c[4] = z;
+		System.out.println(z);
+	}
+}
