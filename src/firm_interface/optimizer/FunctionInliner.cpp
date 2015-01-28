@@ -1,5 +1,14 @@
 #include <cassert>
+#include <libfirm/adt/array.h>
 #include "FunctionInliner.hpp"
+
+/**
+ * Returns size of a static array. Warning: This returns invalid values for
+ * dynamically allocated arrays.
+ *
+ * @param a    static array
+ */
+#define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))
 
 namespace firm
 {
@@ -70,15 +79,15 @@ namespace firm
 
 		if (n_params != 0)
 		{
-			// TODO: necessary? and if, for what exactly?
-			//copy_parameter_entities(callNode, calleeIrg);
+			// TODO: what does this do exactly?
+			copy_parameter_entities(callNode, calleeIrg);
 		}
 
 		/* create the argument tuple */
 
-		ir_node** args_in = new ir_node*[n_params]; // ALLOCAN(ir_node*, n_params);
+		ir_node** args_in = ALLOCAN(ir_node*, n_params); // maybe better new ir_node*[n_params];  ??
 
-		ir_node* callingBlock = get_nodes_block(callNode); // block, post_bl
+		ir_node* callingBlock = get_nodes_block(callNode); // block, callingBlock
 
 		for (int i = n_params - 1; i >= 0; --i)
 		{
@@ -104,7 +113,7 @@ namespace firm
 		in[pn_Start_T_args]         = new_r_Tuple(callingBlock, n_params, args_in);
 		ir_node* pre_call = new_r_Tuple(callingBlock, pn_Start_max + 1, in);
 
-		delete[] args_in;
+		//delete[] args_in;
 
 		return pre_call;
 	}
@@ -122,6 +131,25 @@ namespace firm
 		ir_printf("Inlining %+F (%+F) into %+F\n", callNode, calleeIrg, callerIrg);
 
 		relaxGraphStates(callerIrg, calleeIrg);
+
+		/* -- Decide how to handle exception control flow: Is there a handler
+		   for the Call node, or do we branch directly to End on an exception?
+		   exc_handling:
+		   0 There is a handler.
+		   2 Exception handling not represented in Firm. -- */
+		ir_node *Xproj = NULL;
+		for (ir_node *proj = (ir_node*)get_irn_link(callNode); proj != NULL;
+			 proj = (ir_node*)get_irn_link(proj)) {
+			unsigned proj_nr = get_Proj_num(proj);
+			if (proj_nr == pn_Call_X_except) Xproj = proj;
+		}
+		//enum exc_mode exc_handling = Xproj != NULL ? exc_handler : exc_no_handler;
+
+		/* entity link is used to link entities on old stack frame to the
+		 * new stack frame */
+		irp_reserve_resources(irp, IRP_RESOURCE_ENTITY_LINK);
+
+
 		ir_node* pre_call = createArgumentsTuple(callNode, callerIrg, calleeIrg);
 
 		/* --
@@ -158,6 +186,122 @@ namespace firm
 
 		irp_free_resources(irp, IRP_RESOURCE_ENTITY_LINK);
 
+
+		/* -- Merge the end of the inlined procedure with the call site -- */
+		/* We will turn the old Call node into a Tuple with the following
+		   predecessors:
+		   -1:  Block of Tuple.
+		   0: Phi of all Memories of Return statements.
+		   1: Jmp from new Block that merges the control flow from all exception
+		   predecessors of the old end block.
+		   2: Tuple of all arguments.
+		   3: Phi of Exception memories.
+		   In case the old Call directly branches to End on an exception we don't
+		   need the block merging all exceptions nor the Phi of the exception
+		   memories.
+		*/
+
+		/* Precompute some values */
+		ir_node *end_bl = (ir_node*)get_irn_link(get_irg_end_block(calleeIrg));
+		ir_node *end    = (ir_node*)get_irn_link(get_irg_end(calleeIrg));
+		int      arity  = get_Block_n_cfgpreds(end_bl); /* arity = n_exc + n_ret  */
+		int      n_res  = get_method_n_ress(get_Call_type(callNode));
+
+		ir_node **res_pred = XMALLOCN(ir_node*, n_res);
+		ir_node **cf_pred  = XMALLOCN(ir_node*, arity);
+
+		/* archive keepalives */
+		int irn_arity = get_irn_arity(end);
+		for (int i = 0; i < irn_arity; i++) {
+			ir_node *ka = get_End_keepalive(end, i);
+			if (!is_Bad(ka))
+				add_End_keepalive(get_irg_end(callerIrg), ka);
+		}
+
+		/* replace Return nodes by Jump nodes */
+		int n_ret = 0;
+		for (int i = 0; i < arity; i++) {
+			ir_node *ret = get_Block_cfgpred(end_bl, i);
+			if (is_Return(ret)) {
+				ir_node *block = get_nodes_block(ret);
+				cf_pred[n_ret] = new_r_Jmp(block);
+				n_ret++;
+			}
+		}
+		/* avoid blocks without any inputs */
+		ir_node* callingBlock = get_nodes_block(callNode);
+		if (n_ret == 0) {
+			ir_node *in[] = { new_r_Bad(callerIrg, mode_X) };
+			set_irn_in(callingBlock, ARRAY_SIZE(in), in);
+			set_irn_in(callingBlock, 1, in);
+		} else {
+			set_irn_in(callingBlock, n_ret, cf_pred);
+		}
+
+		/* build a Tuple for all results of the method.
+		 * add Phi node if there was more than one Return. */
+		/* First the Memory-Phi */
+		int n_mem_phi = 0;
+		for (int i = 0; i < arity; i++) {
+			ir_node *ret = get_Block_cfgpred(end_bl, i);
+			if (is_Return(ret)) {
+				cf_pred[n_mem_phi++] = get_Return_mem(ret);
+			}
+			/* memory output for some exceptions is directly connected to End */
+			if (is_Call(ret)) {
+				cf_pred[n_mem_phi++] = new_r_Proj(ret, mode_M, 3);
+			} else if (is_fragile_op(ret)) {
+				/* We rely that all cfops have the memory output at the same
+				 * position. */
+				cf_pred[n_mem_phi++] = new_r_Proj(ret, mode_M, 0);
+			} else if (is_Raise(ret)) {
+				cf_pred[n_mem_phi++] = new_r_Proj(ret, mode_M, 1);
+			}
+		}
+		ir_node *const call_mem =
+			n_mem_phi > 0 ? new_r_Phi(callingBlock, n_mem_phi, cf_pred, mode_M)
+			              : new_r_Bad(callerIrg, mode_M);
+		/* Conserve Phi-list for further inlining -- but might be optimized */
+		if (get_nodes_block(call_mem) == callingBlock) {
+			set_irn_link(call_mem, get_irn_link(callingBlock));
+			set_irn_link(callingBlock, call_mem);
+		}
+		/* Now the real results */
+		ir_type *ctp      = get_Call_type(callNode);
+		ir_node *call_res;
+		if (n_res > 0) {
+			for (int j = 0; j < n_res; j++) {
+				ir_type *res_type     = get_method_res_type(ctp, j);
+				//bool     is_aggregate = is_aggregate_type(res_type);
+				ir_mode *res_mode     = get_type_mode(res_type);
+				int n_ret = 0;
+				for (int i = 0; i < arity; i++) {
+					ir_node *ret = get_Block_cfgpred(end_bl, i);
+					if (is_Return(ret)) {
+						ir_node *res = get_Return_res(ret, j);
+						if (get_irn_mode(res) != res_mode) {
+							ir_node *block = get_nodes_block(res);
+							res = new_r_Conv(block, res, res_mode);
+						}
+						cf_pred[n_ret] = res;
+						n_ret++;
+					}
+				}
+				ir_node *const phi = n_ret > 0
+					? new_r_Phi(callingBlock, n_ret, cf_pred, res_mode)
+					: new_r_Bad(callerIrg, res_mode);
+				res_pred[j] = phi;
+				/* Conserve Phi-list for further inlining -- but might be
+				 * optimized */
+				if (get_nodes_block(phi) == callingBlock) {
+					set_Phi_next(phi, get_Block_phis(callingBlock));
+					set_Block_phis(callingBlock, phi);
+				}
+			}
+			call_res = new_r_Tuple(callingBlock, n_res, res_pred);
+		} else {
+			call_res = new_r_Bad(callerIrg, mode_T);
+		}
 		// continue with https://github.com/MatzeB/libfirm/blob/master/ir/opt/opt_inline.c#L444
 		// FIXME: determine correct return value!!!
 		return true;
@@ -287,57 +431,57 @@ namespace firm
 
 
 	/* Copies parameter entities from the given called graph */
-	// void FunctionInliner::copy_parameter_entities(ir_node *call, ir_graph *called_graph)
-	// {
-	// 	dbg_info *dbgi         = get_irn_dbg_info(call);
-	// 	ir_graph *irg          = get_irn_irg(call);
-	// 	ir_node  *frame        = get_irg_frame(irg);
-	// 	ir_node  *block        = get_nodes_block(call);
-	// 	ir_type  *called_frame = get_irg_frame_type(called_graph);
-	// 	ir_type  *frame_type   = get_irg_frame_type(irg);
-	// 	ir_node  *call_mem     = get_Call_mem(call);
-	// 	ir_node **sync_mem     = NULL;
+	void FunctionInliner::copy_parameter_entities(ir_node *call, ir_graph *calleeIrg)
+	{
+		dbg_info *dbgi         = get_irn_dbg_info(call);
+		ir_graph *irg          = get_irn_irg(call);
+		ir_node  *frame        = get_irg_frame(irg);
+		ir_node  *block        = get_nodes_block(call);
+		ir_type  *called_frame = get_irg_frame_type(calleeIrg);
+		ir_type  *frame_type   = get_irg_frame_type(irg);
+		ir_node  *call_mem     = get_Call_mem(call);
+		ir_node **sync_mem     = NULL;
 
-	// 	for (size_t i = 0, n_entities = get_class_n_members(called_frame);
-	// 	     i < n_entities; ++i) {
-	// 		ir_entity *old_entity = get_class_member(called_frame, i);
-	// 		if (!is_parameter_entity(old_entity))
-	// 			continue;
+		for (size_t i = 0, n_entities = get_class_n_members(called_frame);
+		     i < n_entities; ++i) {
+			ir_entity *old_entity = get_class_member(called_frame, i);
+			if (!is_parameter_entity(old_entity))
+				continue;
 
-	// 		ir_type   *old_type    = get_entity_type(old_entity);
-	// 		dbg_info  *entity_dbgi = get_entity_dbg_info(old_entity);
-	// 		ident     *old_name    = get_entity_ident(old_entity);
-	// 		ident     *name        = id_mangle3("", old_name, "$inlined");
-	// 		ir_entity *new_ent     = new_entity(frame_type, name, old_type);
-	// 		set_entity_dbg_info(new_ent, entity_dbgi);
-	// 		set_entity_link(old_entity, new_ent);
+			ir_type   *old_type    = get_entity_type(old_entity);
+			dbg_info  *entity_dbgi = get_entity_dbg_info(old_entity);
+			ident     *old_name    = get_entity_ident(old_entity);
+			ident     *name        = id_mangle3("", old_name, "$inlined");
+			ir_entity *new_ent     = new_entity(frame_type, name, old_type);
+			set_entity_dbg_info(new_ent, entity_dbgi);
+			set_entity_link(old_entity, new_ent);
 
-	// 		size_t   n_param_pos = get_entity_parameter_number(old_entity);
-	// 		ir_node *param       = get_Call_param(call, n_param_pos);
-	// 		ir_node *sel         = new_rd_Member(dbgi, block, frame, new_ent);
-	// 		ir_node *new_mem;
+			size_t   n_param_pos = get_entity_parameter_number(old_entity);
+			ir_node *param       = get_Call_param(call, n_param_pos);
+			ir_node *sel         = new_rd_Member(dbgi, block, frame, new_ent);
+			ir_node *new_mem;
 
-	// 			/* Store the parameter onto the frame */
-	// 			ir_node *store = new_rd_Store(dbgi, block, call_mem, sel, param, old_type, cons_none);
-	// 			new_mem = new_r_Proj(store, mode_M, pn_Store_M);
+				/* Store the parameter onto the frame */
+				ir_node *store = new_rd_Store(dbgi, block, call_mem, sel, param, old_type, cons_none);
+				new_mem = new_r_Proj(store, mode_M, pn_Store_M);
 
-	// 		if (sync_mem) {
-	// 			ARR_APP1(ir_node*, sync_mem, new_mem);
-	// 		} else {
-	// 			sync_mem = NEW_ARR_F(ir_node*, 1);
-	// 			sync_mem[0] = new_mem;
-	// 		}
-	// 	}
+			if (sync_mem) {
+				ARR_APP1(ir_node*, sync_mem, new_mem);
+			} else {
+				sync_mem = NEW_ARR_F(ir_node*, 1);
+				sync_mem[0] = new_mem;
+			}
+		}
 
-	// 	if (sync_mem != NULL) {
-	// 		int sync_arity = (int)ARR_LEN(sync_mem);
-	// 		if (sync_arity > 1) {
-	// 			ir_node *sync = new_r_Sync(block, sync_arity, sync_mem);
-	// 			set_Call_mem(call, sync);
-	// 		} else {
-	// 			set_Call_mem(call, sync_mem[0]);
-	// 		}
-	// 		DEL_ARR_F(sync_mem);
-	// 	}
-	// }
+		if (sync_mem != NULL) {
+			int sync_arity = (int)ARR_LEN(sync_mem);
+			if (sync_arity > 1) {
+				ir_node *sync = new_r_Sync(block, sync_arity, sync_mem);
+				set_Call_mem(call, sync);
+			} else {
+				set_Call_mem(call, sync_mem[0]);
+			}
+			DEL_ARR_F(sync_mem);
+		}
+	}
 }
