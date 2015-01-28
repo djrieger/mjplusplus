@@ -2,13 +2,40 @@ class a {
 	public static void main(String[] a)
 	{
 		new a().q();
+		new a().p();
 	}
 	
 	public void q() {
-		int[] c = new int[4];
+		int[] c = new int[5];
 		int q = 0;
 		c[3] = q;
-		q = c[3] + 1; /* @comment "no need to read c[3] again" */
+		q = c[3] + 1; /* @comment "Store-Load: no need to read c[3] again" */
 		System.out.println(q);
+		int y = c[1]; /* @comment "Unused Load: no need to read c[1]" */
+		c[2] = 3; /* @comment "Store-Store: no need to write c[2]" */
+		c[2] = 2;
+		int w = c[0];
+		System.out.println(c[0]); /* @comment "Load-Load: no need to read c[0] again" */
+		System.out.println(w);
+		int z = c[4];
+		c[4] = z; /* @comment "Load-Store: no need to write c[4]" */
+		System.out.println(z);
+	}
+	
+	public void p() {
+		int[] c = new int[5];
+		int q = 0;
+		c[0] = q;
+		q = c[0] + 1; /* @comment "Store-Load: no need to read c[0] again" */
+		int y = c[0]; /* @comment "Unused Load: no need to read c[0]" */
+		c[0] = 3; /* @comment "Store-Store: no need to write c[0]" */
+		c[0] = 2;
+		int z = c[0]; /* @comment "Store-Load: no need to read c[0] again" */
+		c[0] = z; /* @comment "Load-Store: no need to write c[0]" */
+		int w = c[0]; /* @comment "Store-Load: no need to read c[0] again" */
+		System.out.println(c[0]); /* @comment "Load-Load: no need to read c[0] again" */
+		System.out.println(w);
+		System.out.println(q);
+		System.out.println(z);
 	}
 }

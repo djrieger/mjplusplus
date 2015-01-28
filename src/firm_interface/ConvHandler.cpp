@@ -7,7 +7,7 @@ namespace firm
 
 	}
 
-	void ConvHandler::handle(Node node)
+	void ConvHandler::handle(Node)
 	{
 
 	}
@@ -18,7 +18,7 @@ namespace firm
 		{
 			Node child = node.getChild(0);
 
-			if (is_Conv(child) && node.getMode() == child.getMode())
+			if (/*is_Conv(child) && */ node.getMode() == child.getMode())
 				replaceNode(node, child);
 			else if (is_Const(child))
 				replaceNode(node, new_r_Const_long(irg, node.getMode(), child.getTarval().getLong()));
