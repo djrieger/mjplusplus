@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <string>
+#include <set>
 
 #include "CodeGen.hpp"
 
@@ -212,8 +213,8 @@ namespace firm
 		free_registers.clear();
 		code.clear();
 
-		// fake register for non-data parents
-		registers.push_back({{}, {}});
+		// fake register for non-data parents and actual cpu registers
+		registers.insert(registers.end(), 17, {{}, {}});
 
 		edges_activate(irg);
 
@@ -260,13 +261,6 @@ namespace firm
 				printf("\n\n");
 			}
 
-			printf("free: ");
-
-			for (size_t f : free_registers)
-				printf("%zu, ", f);
-
-			printf("\n\n");
-
 			for (auto& u : usage)
 			{
 				ir_printf("(%ld) %F:\n\twrites: ", get_irn_node_nr(u.first), u.first);
@@ -284,7 +278,7 @@ namespace firm
 
 			printf("\n\n");
 
-			for (auto& block : code)
+			/*for (auto& block : code)
 			{
 				ir_printf("Block %ld:\n", get_irn_node_nr(block.first));
 
@@ -301,8 +295,8 @@ namespace firm
 				for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
 					ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
 
-				printf("\n");
-			}
+				printf("\n\n");
+			}*/
 
 		};
 
@@ -350,8 +344,132 @@ namespace firm
 		}
 
 		regdump();
+		auto live_intervals = compute_live_intervals(irg);
+		allocate(irg, live_intervals);
+
+		regdump();
+
+		// register condensing
+		while (!free_registers.empty())
+		{
+			if (*free_registers.rbegin() == registers.size() - 1)
+				free_registers.erase(--free_registers.end());
+			else
+			{
+				size_t reg = *free_registers.begin();
+				free_registers.erase(free_registers.begin());
+				registers[reg].writes.clear();
+				registers[reg].reads.clear();
+				merge_register(reg, registers.size() - 1, false);
+			}
+
+			registers.resize(registers.size() - 1);
+		}
+
+		regdump();
+
+		printf("\n=======================\n\n");
+
 		output(irg);
 		edges_deactivate(irg);
+	}
+
+	std::vector<std::pair<size_t, size_t>> CodeGen::compute_live_intervals(ir_graph* irg)
+	{
+		std::vector<std::pair<size_t, size_t>> live_intervals(registers.size());
+		size_t pos = 1;
+
+		for (auto& block : code)
+		{
+			auto handle_list = [&](std::vector<ir_node*> const & list, size_t& pos)
+			{
+				for (auto it = list.rbegin(); it != list.rend(); it++, pos++)
+				{
+					for (auto& w : usage[*it].first)
+					{
+						if (!live_intervals[w.reg].first)
+							live_intervals[w.reg].first = pos;
+					}
+
+					for (auto& r : usage[*it].second)
+						live_intervals[r.reg].second = pos;
+				}
+			};
+			handle_list(block.second.normal, pos);
+			handle_list(block.second.phi, pos);
+			handle_list(block.second.control, pos);
+		}
+
+		/*for (auto& live : live_intervals)
+		{
+			printf("(%zu, %zu)\n", live.first, live.second);
+		}*/
+		return live_intervals;
+	}
+
+	void CodeGen::allocate(ir_graph* irg, std::vector<std::pair<size_t, size_t>> const& live_intervals)
+	{
+		std::set<std::pair<size_t, size_t>> active;
+		std::vector<std::pair<std::pair<size_t, size_t>, std::pair<size_t, Constraint>>> sorted_live;
+
+		for (size_t i = 17; i < live_intervals.size(); i++)
+		{
+			sorted_live.push_back({live_intervals[i], {i, NONE}});
+		}
+
+		std::sort(sorted_live.begin(), sorted_live.end());
+
+		std::set<Constraint> free_regs = {/*RAX, RCX, RDX,*/ RBX, /*RSP,*/ RBP, /*RSI, RDI, R8, R9,*/ R10, R11, R12, R13, R14, R15};
+		size_t num_regs = free_regs.size();
+
+		auto expire_old_intervals = [&](size_t i)
+		{
+			for (auto it = active.begin(); it != active.end(); it++)
+			{
+				if (it->first >= sorted_live[i].first.first)
+					return;
+
+				free_regs.insert(sorted_live[it->second].second.second);
+				active.erase(it);
+			}
+		};
+
+		auto spill_at_interval = [&](size_t i)
+		{
+			auto spill_it = --active.end();
+
+			if (spill_it->first > sorted_live[i].first.second)
+			{
+				sorted_live[i].second.second = sorted_live[spill_it->second].second.second;
+				sorted_live[spill_it->second].second.second = NONE;
+				active.erase(spill_it);
+				active.insert({sorted_live[i].first.second, i});
+			}
+			else
+				sorted_live[i].second.second = NONE;
+		};
+
+		for (size_t i = 0; i < sorted_live.size(); i++)
+		{
+			expire_old_intervals(i);
+
+			if (active.size() == num_regs)
+				spill_at_interval(i);
+			else
+			{
+				Constraint reg = *free_regs.begin();
+				free_regs.erase(free_regs.begin());
+				sorted_live[i].second.second = reg;
+				active.insert({sorted_live[i].first.second, i});
+			}
+
+		}
+
+		for (auto& reg : sorted_live)
+		{
+			if (reg.second.second != NONE)
+				merge_register(reg.second.second, reg.second.first);
+		}
 	}
 
 	void CodeGen::assemble(ir_node* irn)
