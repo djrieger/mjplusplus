@@ -1,0 +1,88 @@
+class Fixed {
+  public int val; /* scaled by 1000000 */
+
+  public Fixed init(int val) {
+    this.val = val;
+    return this;
+  }
+
+  public Fixed add(Fixed f) {
+    return new Fixed().init(this.val + f.val);
+  }
+
+  public Fixed neg() {
+    return new Fixed().init(-this.val);
+  }
+
+  public Fixed abs() {
+    if (this.val < 0)
+      return this.neg();
+    else
+      return this;
+  }
+
+  public Fixed sub(Fixed f) { return this.add(f.neg()); }
+
+  public Fixed mul(Fixed f) {
+    Fixed ret = new Fixed();
+    int i1 = this.val / 1000000;
+    int f1 = this.val % 1000000;
+    int i2 = f.val / 1000000;
+    int f2 = f.val % 1000000;
+    ret.val = /* (i1 + f1 / scale) * (i2 + f2 / scale) * scale */
+      i1 * i2 * 1000000 +
+      i1 * f2 +
+      i2 * f1 +
+      /* (f1 / scale) * (f2 / scale) * scale */
+      (f1 / 1000) * (f2 / 1000) + (f1 / 1000) * (f2 % 1000) / 1000 + (f1 % 1000) * (f2 / 1000) / 1000;
+    return ret;
+  }
+
+  public Fixed inv() {
+    Fixed ret = new Fixed();
+    Fixed mid = new Fixed();
+    int lo = 0;
+    int hi = 2147483646;
+    while (lo < hi) {
+      mid.val = (lo+hi+1) / 2;
+      Fixed mul = mid.mul(this);
+      if (mul.val < 0 || mul.val > 1000000)
+        hi = mid.val-1;
+      else
+        lo = mid.val;
+    }
+    ret.val = lo;
+    return ret;
+  }
+
+  public Fixed idiv(int d) {
+    return new Fixed().init(this.val / d);
+  }
+
+  public Fixed div(Fixed d) {
+    return this.mul(d.inv());
+  }
+
+  public boolean equals(Fixed f) {
+    return f != null && this.val == f.val;
+  }
+
+  public Fixed sqrt() {
+    Fixed ret = this;
+    Fixed last = null;
+    while (!ret.equals(last)) {
+      last = ret;
+      ret = ret.add(this.div(ret)).idiv(2);
+    }
+    return ret;
+  }
+}
+
+class Main {
+  public static void main(String[] args) {
+    Fixed f = new Fixed();
+    f.val = 2000000;
+    f = f.sqrt();
+    System.out.println(f.val);
+  }
+}

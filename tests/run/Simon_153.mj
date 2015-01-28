@@ -1,0 +1,16 @@
+class a {
+	public static void main(String[] args) {
+		;;;new a().q(6);;
+	}
+	
+	public void q(int a) {
+		ignore();
+		new a();
+		ignore().ignore();
+	}
+	
+	public a ignore() {
+		System.out.println(4);
+		return new a();
+	}
+}

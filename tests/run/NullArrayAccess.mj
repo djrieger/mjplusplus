@@ -1,0 +1,14 @@
+class Test {
+  public boolean foo() {
+    return false;
+  }
+
+  /* This should generate valid code, with or without inlining */
+  public static void main(String[] args) {
+    Test self = new Test();
+    int[] a = null;
+    if (self.foo())
+      System.out.println(a[8]);
+  }
+
+}

@@ -1,0 +1,117 @@
+/* To turn into pretty ASCII art (using pythonpy):
+ * ./a.out | py -l "''.join(map(lambda x: chr(int(x)), l))"
+ */
+class Fixed {
+  public int val; /* scaled by 1000000 */
+
+  public Fixed init(int val) {
+    this.val = val;
+    return this;
+  }
+
+  public Fixed clone() { return new Fixed().init(this.val); }
+
+  public void add(Fixed f) {
+    this.val = this.val + f.val;
+  }
+
+  public void neg() {
+    this.val = -this.val;
+  }
+
+  public Fixed abs() {
+    if (this.val < 0)
+      this.neg();
+    return this;
+  }
+
+  public void sub(Fixed f) {
+    this.val = this.val - f.val;
+  }
+
+  public void mul(Fixed f) {
+    int i1 = this.val / 1000000;
+    int f1 = this.val % 1000000;
+    int i2 = f.val / 1000000;
+    int f2 = f.val % 1000000;
+    this.val = /* (i1 + f1 / scale) * (i2 + f2 / scale) * scale */
+      i1 * i2 * 1000000 +
+      i1 * f2 +
+      i2 * f1 +
+      /* (f1 / scale) * (f2 / scale) * scale */
+      (f1 / 1000) * (f2 / 1000) + (f1 / 1000) * (f2 % 1000) / 1000 + (f1 % 1000) * (f2 / 1000) / 1000;
+  }
+}
+
+class Complex {
+  public Fixed re;
+  public Fixed im;
+
+  public Complex init(Fixed re, Fixed im) {
+    this.re = re;
+    this.im = im;
+    return this;
+  }
+
+  public Complex clone() { return new Complex().init(this.re.clone(), this.im.clone()); }
+
+  public void add(Complex c) {
+    this.re.add(c.re);
+    this.im.add(c.im);
+  }
+
+  public void mul(Complex c) {
+    Fixed re = this.re.clone();
+    Fixed c_re = c.re.clone(); /* could be aliased to this.re */
+    Fixed im = this.im.clone();
+    re.mul(c.im);
+    im.mul(c.im);
+
+    this.re.mul(c.re);
+    this.re.sub(im);
+
+    this.im.mul(c_re);
+    this.im.add(re);
+  }
+
+  public void conj() {
+    this.im.neg();
+  }
+
+  public Fixed norm() {
+    Fixed re = this.re.clone();
+    Fixed im = this.im.clone();
+    re.mul(re);
+    im.mul(im);
+    re.add(im);
+    return re;
+  }
+}
+
+class Main {
+  public static void main(String[] args) {
+    int maxiter = 2000;
+    Complex c = new Complex().init(new Fixed(), new Fixed().init(-1000000));
+
+    while (c.im.val < 1000000) {
+      c.re.val = -2000000;
+      while (c.re.val < 500000) {
+        Complex z = new Complex().init(new Fixed(), new Fixed());
+        int iter = 0;
+        while (iter < maxiter && z.norm().abs().val < 16000000) {
+          z.mul(z);
+          z.add(c);
+          iter = iter + 1;
+        }
+        if (iter == maxiter)
+          System.out.println(35);
+        else
+          System.out.println(46);
+
+        c.re.val = c.re.val + 15000;
+      }
+      c.im.val = c.im.val + 30000;
+      System.out.println(10);
+    }
+  }
+}
