@@ -270,8 +270,13 @@ namespace firm
 		ir_node*  block = op != op_Block ? get_nodes_block(node) : NULL;
 		dbg_info* dbgi  = get_irn_dbg_info(node);
 		ir_mode*  mode  = get_irn_mode(node);
-		ir_node** ins   = get_irn_in(node) + 1;
+
 		int       arity = get_irn_arity(node);
+		ir_node** ins   = new ir_node*[arity - 1];
+
+		for (int i = 1; i < arity; ++i)
+			ins[i - 1] = get_irn_n(node, i);
+
 		ir_node*  res   = new_ir_node(dbgi, irg, block, op, mode, arity, ins);
 
 		/* copy the attributes */
