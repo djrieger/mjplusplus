@@ -55,9 +55,10 @@
 
 % the presentation starts here
 
-\title[MJ++]{MJ++:\\ All the dirty little secrets}
+\title[]{mj++}
 \subtitle{Compilerpraktikum WS 2014/15}
-\author{Gruppe 5: Mj++}
+\author{Gruppe 5: mj++}
+\date{10. Februar 2015}
 
 \institute{Institut für Programmstrukturen und Datenorganistation}
 
@@ -67,77 +68,107 @@
 %\addbibresource{templates/example.bib}
 %\bibhang1em
 
+\usepackage{courier}
+\usepackage{listings}
+\lstset{frame=single,basicstyle=\small\ttfamily,language=Java}
+
+\usepackage{xcolor}
+\definecolor{lightgray}{gray}{0.9}
+\definecolor{kitblue}{RGB}{227, 232, 242}
+\newcommand{\code}[1]{\colorbox{lightgray}{\texttt{\upshape #1}}}
+\newcommand{\token}[1]{\colorbox{kitblue}{\texttt{\upshape #1}}}
+
 \begin{document}
 
-% change the following line to "ngerman" for German style date and logos
 \selectlanguage{ngerman}
 
-%title page
 \begin{frame}
 \titlepage
 \end{frame}
 
-%table of contents
-\begin{frame}{Outline/Gliederung}
+\begin{frame}{Outline}
 \tableofcontents
 \end{frame}
 
-\section{Section 1}
-\subsection{Subsection 1.1}
-\begin{frame}{Example slide A}
-\begin{itemize}
-\item Bullet point 1
-\pause
-\item Bullet point 2
-\item \dots
-\end{itemize}
+\section{MiniJava}
+
+\begin{frame}
+    \frametitle{MiniJava}
+    \begin{itemize}
+        \item MiniJava $\subsetneq$ Java
+        \item Typen: \code{int}, \code{boolean}, Arrays, Objekte
+            \begin{itemize}
+                \item \emph{nicht}: \code{String}, \code{double}, \code{float}, \ldots
+            \end{itemize}
+        \item keine Vererbung, Interfaces, Exceptions, \ldots
+        \item nur \code{public}-Member
+        \item keine \code{static}-Methoden
+        \item nicht alle Operatoren (z.B.\ \code{++})
+    \end{itemize}
+    \vskip 1cm
+    \begin{center}
+        Ziel: MiniJava auf x86\_64 kompilieren
+    \end{center}
 \end{frame}
 
-\subsection{Subsection 1.2}
-\begin{frame}{Example slide B}
-\begin{block}{Block 1}
-\begin{itemize}
-\item Bullet point 1
-\pause
-\item Bullet point 2
-\item \dots
-\end{itemize}
-\end{block}
+\section{Lexikalische Analyse}
+
+\begin{frame}
+    \frametitle{Lexikalische Analyse}
+    \framesubtitle{Überblick}
+    \lstinputlisting{foo.mj}
+    \token{class}, \token{Foo}, \token{\{}, \token{public}, \token{int}, \token{bar}, \token{(}, \token{)}, \token{\{}, \ldots \\
+            \texttt{KEYWORD\_CLASS}, \texttt{IDENT}, \texttt{L\_BRACE}, \ldots
 \end{frame}
 
-\section{Section 2}
-\begin{frame}{Example slide C}
-\begin{exampleblock}{Example 1}
-\begin{itemize}
-\item Bullet point 1
-\pause
-\item Bullet point 2
-\item \dots
-\end{itemize}
-\end{exampleblock}
+\begin{frame}
+    \frametitle{Lexikalische Analyse}
+    \framesubtitle{Ansätze}
+    \begin{itemize}
+        \item Push-Interface mit Callbacks
+        \item Pull-Ansatz mit \code{get\_next\_token()}
+    \end{itemize}
+    Endlicher Automat
+    \begin{itemize}
+        \item Ausprogrammieren (z.B.\ mit \code{switch})
+        \item Tabelle
+    \end{itemize}
+    \vskip 1cm
+    \begin{center}
+        mj++: Pull-Ansatz und Tabelle
+    \end{center}
 \end{frame}
 
-\begin{frame}{Example slide D}
-\begin{alertblock}{Alert 1}
-\begin{itemize}
-\item Bullet point 1
-\pause
-\item Bullet point 2
-\item \dots
-\end{itemize}
-\end{alertblock}
+\begin{frame}
+    \frametitle{Lexikalische Analyse}
+    \framesubtitle{Graph}
+    \begin{itemize}
+        \item Graph zusammenklicken
+        \item daraus Tabelle \code{transition} bauen
+        \item aktueller Zustand \code{i}, Eingabezeichen \code{c} \\[3pt] \hskip .5cm $\Rightarrow$ nächster Zustand \code{transitions[i][c]}
+    \end{itemize}
 \end{frame}
 
-\appendix
-\beginbackup
 
-%Backup slides go here!
+\begin{frame}
+    \frametitle{Lexikalische Analyse}
+    \framesubtitle{Erfahrung}
+    \begin{itemize}
+        \item ohne Keyword-Unterscheidung sehr schnell
+        \item Keyword-Unterscheidung aufwändig\\[1pt]
+            \hskip .5cm $\Rightarrow$ dedizierte Keyword-Tabelle
+        \item für Operatoren kleine Maps
+        \item Graph-Dumping sinnvoll
+    \end{itemize}
+\end{frame}
 
-%\begin{frame}[allowframebreaks]{References}
-%\printbibliography
-%\end{frame}
 
-\backupend
+\section{Syntaktische Analyse}
+\begin{frame}
+\end{frame}
+
+\section{mj++ Besonderheiten}
+\begin{frame}
+\end{frame}
 
 \end{document}
-
