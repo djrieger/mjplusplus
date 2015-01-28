@@ -72,6 +72,9 @@ namespace firm
 			void assemble(ir_graph* irg);
 			void assemble(ir_node* irn);
 
+			std::vector<std::pair<size_t, size_t>> compute_live_intervals(ir_graph* irg);
+			void allocate(ir_graph* irg, std::vector<std::pair<size_t, size_t>> const& live_intervals);
+
 			void load_or_imm(ir_node* node, size_t reg);
 			void gen_bin_op(ir_node* irn, ir_mode* mode, char const* op);
 
