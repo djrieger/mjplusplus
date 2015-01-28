@@ -7,6 +7,7 @@
 #include "LoadStoreOptimizer.hpp"
 #include "Optimizer.hpp"
 #include "../Worklist.hpp"
+#include "../FirmInterface.hpp"
 
 namespace firm
 {
@@ -37,6 +38,7 @@ namespace firm
 			{
 				changed = foldConstants() || changed;
 				changed = optimizeLocal() || changed;
+				FirmInterface::getInstance().handleConvNodes(irg);
 				changed = eliminateCommonSubexpressions() || changed;
 				changed = optimizeLoadStore() || changed;
 				changed = optimizeControlFlow() || changed;
