@@ -183,5 +183,5 @@ void ast::MethodDeclaration::accept(ASTVisitor& visitor) const
 
 std::string ast::MethodDeclaration::mangle() const
 {
-	return ClassMember::mangle() + "_M" + getName();
+	return ClassMember::mangle() + "_M" + firm::FirmInterface::replaceDollarAndUnderscores(getName());
 }
