@@ -255,7 +255,7 @@ namespace lexer
 				auto kw_pair = kw_vector[state - CHECK_ABSTRACT];
 
 				//compare s to keyword
-				if (strcmp(kw_pair.first, s) == 0)
+				if (strcmp(kw_pair.first + i, s + i) == 0)
 					return kw_pair.second;//we have found our keyword
 				else
 					return Token::Token_type::TOKEN_IDENT;//we have an ident
@@ -288,7 +288,7 @@ namespace lexer
 		int state = STATE_START;
 
 		//run the automaton
-		while (1)
+		while (true)
 		{
 			int new_state = stateomat.transitions[state][c == EOF ? 128 : c];
 
