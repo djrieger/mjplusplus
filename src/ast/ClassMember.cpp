@@ -13,5 +13,5 @@ shptr<ast::ClassDeclaration const> ast::ClassMember::getDeclaration() const
 
 std::string ast::ClassMember::mangle() const
 {
-	return firm::FirmInterface::replace_dollar(declaration->getName());
+	return firm::FirmInterface::replaceDollarAndUnderscores(declaration->getName());
 }
