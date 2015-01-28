@@ -433,17 +433,19 @@ _COut_Mprintln:\n\
 		return classFieldEntities[ {class_type, field_name}];
 	}
 
-	std::string FirmInterface::replace_dollar(std::string name)
+	std::string FirmInterface::replaceDollarAndUnderscores(std::string name)
 	{
-		std::string s = name;
-
-		for (size_t i = 0; i < s.size(); ++i)
+		auto replace_string = [] (std::string& str, const std::string& from, const std::string& to)
 		{
-			if (s[i] == '$')
-				s = s.substr(0, i) + "_C" + s.substr(i + 1, s.size() - i - 1);
-		}
+			size_t start_pos = str.find(from);
+		    if(start_pos != std::string::npos)
+		    	str.replace(start_pos, from.length(), to);
+		};
 
-		return s;
+		replace_string(name, "_", "__");
+		replace_string(name, "$", "_C");
+
+		return name;
 	}
 
 	shptr<std::map<std::string, int>> FirmInterface::getVarMap()
