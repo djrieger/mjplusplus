@@ -158,3 +158,4 @@ Simon_157: null method invocation (in unreachable code, so no undefined behaviou
 Simon_158: index out of bounds (in unreachable code, so no undefined behaviour)
 Simon_159: negative length array (in unreachable code, so no undefined behaviour)
 Simon_160: mix of code that would produce undefined behaviour if executed
+Simon_161: load/store test
