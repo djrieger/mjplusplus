@@ -128,7 +128,7 @@ namespace firm
 			/**
 			 * Replace all dollar signs in name with _C
 			 */
-			static std::string replace_dollar(std::string name);
+			static std::string replaceDollarAndUnderscores(std::string name);
 			// Get Firm type modes
 			ir_mode* getIntegerMode();
 			ir_mode* getBooleanMode();

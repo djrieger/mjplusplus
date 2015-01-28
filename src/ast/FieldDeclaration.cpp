@@ -77,5 +77,5 @@ shptr<ast::Type> ast::FieldDeclaration::getType() const
 
 std::string ast::FieldDeclaration::mangle() const
 {
-	return ClassMember::mangle() + "_F" + getName();
+	return ClassMember::mangle() + "_F" + firm::FirmInterface::replaceDollarAndUnderscores(getName());
 }

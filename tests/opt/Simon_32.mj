@@ -16,10 +16,26 @@ class a {
 	}
 	
 	public int step(int x) {
-		if (x % 2 == 0)
+		if (even(x))
 			return half(x); /* @comment "can be inlined" */
 		else
 			return times3plus1(x); /* @comment "can be inlined" */
+	}
+	
+	public boolean even(int x) {
+		return isZero(mod2(x)); /* @comment "can be inlined" */
+	}
+	
+	public boolean isZero(int x) {
+		return eq(x,0); /* @comment "can be inlined" */
+	}
+	
+	public boolean eq(int x, int y) {
+		return x==y;
+	}
+	
+	public int mod2(int x) {
+		return x%2;
 	}
 	
 	public int half(int x) {
@@ -27,6 +43,14 @@ class a {
 	}
 	
 	public int times3plus1(int x) {
-		return 3*x+1;
+		return inc(times3(x)); /* @comment "can be inlined" */
+	}
+	
+	public int times3(int x) {
+		return 3*x;
+	}
+	
+	public int inc(int x) {
+		return x+1;
 	}
 }
