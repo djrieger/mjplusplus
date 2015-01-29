@@ -26,3 +26,5 @@ doc/doxygen
 *.snm
 *.toc
 *.synctex.gz
+
+!doc/slides/images/*
