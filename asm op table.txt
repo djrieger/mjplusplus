@@ -1,0 +1,71 @@
+by operands
+
+i r r		i r1 r2		i r m		i m r		i m m		i m1 m2		(i i r)		(i1 i2 r)	(i i m)		(i1 i2 m) 	(last four never occur due to constant folding)
+---------------------------------------------------------------------------------------------------------------------
+cop i, r	mov i, r2	mov i, a	mov i, r	cop i, m	mov i, a	mov i, r	mov i1, r	mov i, a	mov i1, a
+			op r1, r2	op r, a		op m, r					op m1, a	op i, r		op i2, r	op i, a		op i2, a	
+mov r, a				mov a, m				mov i, a	mov a, m2							mov a, m	mov a, m
+mov i, r										op m, a
+op a, r											mov a, m
+
+r i r		r1 i r2		r i m		r r r		r1 r1 r2	r1 r2 r2	r1 r2 r1	r1 r2 r3	r r m		r1 r2 m		r m r		r1 m r2		r m m		r m1 m2
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+op i, r		mov r1, r2	mov r, a	op r, r		mov r1, r2	cop r1, r2	op r2, r1	mov r1, r3	mov r, a	mov r1, a	op m, r		mov r1, r2	cop r, m	mov r, a
+			op i, r2	op i, a					op r1, r2							op r2, r3	op r, a		op r2, a				op m, r2				op m1, a
+						mov a, m							mov r2, a							mov a, m	mov a, m							mov r, a	mov a, m2
+															mov r1, r2																			op m, a
+															op a, r2																			mov a, m
+
+m i r		m i m		m1 i m2		m r r		m r1 r2		m r m		m1 r m2		m m r		m1 m2 r		m m m		m1 m1 m2	m1 m2 m2	m1 m2 m1	m1 m2 m3
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mov m, r	op i, m		mov m1, a	cop m, r	mov m, r2	op r, m		mov m1, a	mov m, r	mov m1, r	mov m1, a	mov m1, a	mov m1, a	mov m2, a	mov m1, a
+op i, r					op i, a					op r1, r2				op r, a		op m, r		op m2, r	op a, m1	op a, a		cop a, m2	op a, m1	op m2, a
+						mov a, m2	mov m, a							mov a, m2										mov a, m2							mov a, m3
+									op r, a																							mov m1, a
+									mov a, r																						op m2, a
+																																	mov a, m2
+
+by emited code
+
+1=3			x!=3;3=r	x!=3;3=m	1=3=m;2=m	2=3=r;1!=m	2=3			2=3=m;1=m
+---------------------------------------------------------------------------------------------
+r i r		i r1 r2		i r m		m m m		i r r		i m m		m1 m2 m2	m1 m1 m2
+r r r		i m r		i m1 m2		m1 m2 m1	r1 r2 r2	r m m
+r1 r2 r1	r1 i r2		r i m								m r r
+r m r		r1 r1 r2	r r m
+m i m		r1 r2 r3	r1 r2 m
+m r	m		r1 m r2		r m1 m2
+			m i r		m1 i m2
+			m r1 r2		m1 r m2
+			m m r		m1 m2 m3
+			m1 m2 r
+---------------------------------------------------------------------------------------------
+op 2, 1		mov 1, 3	mov 1, a	mov 2, a	cop 1, 2	cop 1, 2	mov 1, a	mov 1, a
+			op 2, 3		op 2, a		op a, 1								cop a, 2	op a, a
+						mov a, 3				mov 2, a	mov 1, a				mov a, 2
+												mov 1, 2	op 2, a		mov 1, a
+												op a, 2		mov a, 2	op 2, a
+																		mov a, 2
+
+1=3?
+	1=m & 2=m?
+		c4
+	:
+		c1
+:
+	2=3?
+		2=r & 1!=m?
+			c5
+		:
+			1=m | 2=r?
+				c6
+			:
+				c7
+	:
+		3=r?
+			c2
+		:
+			1=2=m?
+				c8
+			:
+				c3
