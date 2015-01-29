@@ -12,7 +12,7 @@ namespace firm
 		ir_tarval* tarval = (ir_tarval*)get_irn_link(node);
 
 		if (!tarval)
-			return NULL;
+			return Tarval();
 		else
 			return Tarval(tarval);
 	}
