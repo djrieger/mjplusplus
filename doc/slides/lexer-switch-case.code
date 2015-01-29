@@ -1,0 +1,11 @@
+int lex(int state, int c) {
+    switch (state) {
+        case IDENT:
+            return lex_ident(c);
+        ...
+    }
+}
+
+int lex_ident(c) {
+    switch (c) { ... }
+}

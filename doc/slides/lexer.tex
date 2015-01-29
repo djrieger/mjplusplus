@@ -2,38 +2,58 @@
     \frametitle{Lexikalische Analyse}
     \framesubtitle{Überblick}
     \lstinputlisting{foo.mj}
-    \token{class}, \token{Foo}, \token{\{}, \token{public}, \token{int}, \token{bar}, \token{(}, \token{)}, \token{\{}, \ldots \\
-            \texttt{KEYWORD\_CLASS}, \texttt{IDENT}, \texttt{L\_BRACE}, \ldots
+    \pause
+     \begin{tabular}{lllllll}
+         \visible<2->{\token{class}} & \visible<3->{\token{Foo}} & \visible<4->{\token{\{}} & \visible<5->{\token{public}} & \visible<6->{\token{int}} & \visible<7->{\token{bar}} & \visible<8->{\token{(}}\\
+         \only<2>{\texttt{KEYWORD\_CLASS}} & \only<3>{\texttt{IDENT}} & \only<4>{\texttt{L\_BRACE}} & \only<5>{\texttt{KEYWORD\_PUBLIC}} & \only<6>{\texttt{KEYWORD\_INT}} & \only<7>{\texttt{IDENT}} & \only<8>{\texttt{L\_PAREN}}
+     \end{tabular}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[t]
     \frametitle{Lexikalische Analyse}
     \framesubtitle{Ansätze}
-    \begin{itemize}
-        \item Push-Interface mit Callbacks
-        \item Pull-Ansatz mit \code{get\_next\_token()}
-    \end{itemize}
+    \vskip .4cm
     Endlicher Automat
     \begin{itemize}
-        \item Ausprogrammieren (z.B.\ mit \code{switch})
-        \item Tabelle
+        \item<2-> Ausprogrammieren
+            \only<2>{
+                \lstinputlisting[basicstyle=\ttfamily\scriptsize,language=C]{lexer-switch-case.code}
+            }
+        \item<3-> Tabelle
+            \only<4->{
+            \begin{tikzpicture}[overlay]
+                \node at (.8,.2) {\includegraphics[angle=15,origin=c,width=1.5cm,keepaspectratio=true]{logos/mj++logo.png}};
+            \end{tikzpicture}
+        }
+            \lstinputlisting[basicstyle=\ttfamily\scriptsize,language=C]{lexer-table.code}
+        \item<5-> woher kommt die Tabelle?
+            \begin{itemize}
+                \item<6-> Graph zusammenklicken $\Rightarrow$ daraus Tabelle bauen
+            \end{itemize}
     \end{itemize}
-    \vskip 1cm
-    \begin{center}
-        mj++: Pull-Ansatz und Tabelle
-    \end{center}
 \end{frame}
 
 \begin{frame}
     \frametitle{Lexikalische Analyse}
-    \framesubtitle{Graph}
-    \begin{itemize}
-        \item Graph zusammenklicken
-        \item daraus Tabelle \code{transition} bauen
-        \item aktueller Zustand \code{i}, Eingabezeichen \code{c} \\[3pt] \hskip .5cm $\Rightarrow$ nächster Zustand \code{transitions[i][c]}
-    \end{itemize}
+    hier Bild vom Graph + Dumping sinnvoll
 \end{frame}
 
+\begin{frame}[t]
+    \frametitle{Lexikalische Analyse}
+    \vskip 1.8cm
+    Zwei Ansätze:
+    \begin{itemize}
+        \item<1-> Push-Interface
+            \only<1>{
+                \\[3pt] \code{void handle\_token(token t);}
+                \\[3pt] \code{void lex(F callback);}
+            }
+        \item<2-> Pull-Ansatz
+            \only<2>{
+                \\[3pt] \code{token get\_next\_token();}
+            }
+    \end{itemize}
+\end{frame}
 
 \begin{frame}
     \frametitle{Lexikalische Analyse}
