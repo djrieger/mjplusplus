@@ -256,10 +256,14 @@ namespace firm
 		auto regdump = [&]
 		{
 			printf("----------\n");
+			size_t i = 0;
 
 			for (auto& reg : registers)
 			{
-				printf("writes: ");
+				if (i <= 16)
+					printf("%s writes: ", constraintToRegister((Constraint)i, mode_P));
+				else
+					printf("%zu writes: ", i - 16);
 
 				for (ir_node* w : reg.writes)
 					ir_printf("(%ld) %F, ", get_irn_node_nr(w), w);
@@ -270,6 +274,7 @@ namespace firm
 					ir_printf("(%ld) %F, ", get_irn_node_nr(r), r);
 
 				printf("\n\n");
+				++i;
 			}
 
 			for (auto& u : usage)
@@ -358,8 +363,6 @@ namespace firm
 		auto live_intervals = compute_live_intervals(irg);
 		allocate(irg, live_intervals);
 
-		regdump();
-
 		// register condensing
 		while (!free_registers.empty())
 		{
@@ -390,12 +393,60 @@ namespace firm
 		std::vector<std::pair<size_t, size_t>> live_intervals(registers.size());
 		size_t pos = 1;
 
+		auto isInLoopHeader = [&](ir_node * node)
+		{
+			auto block = get_nodes_block(node);
+
+			if (get_irn_arity(block) > 1)
+			{
+				auto endNode = get_irg_end(irg);
+
+				for (int i = 0; i < get_irn_arity(endNode); ++i)
+				{
+					if (get_irn_n(endNode, i) == block)
+						return true;
+				}
+
+				return false;
+			}
+			else
+				return false;
+		};
+
+		auto getPred = [&](ir_node * node)
+		{
+			auto block = get_nodes_block(node);
+			ir_node* ret = NULL;
+
+			if (get_irn_arity(block) > 1)
+				return get_irn_n(block, 1);
+
+			return ret;
+
+		};
+
+
+		std::vector<std::pair<ir_node*, ir_node*>> postprocessing;
+		std::set<ir_node*> endNodes;
+		std::unordered_map<ir_node*, size_t> loopEndPos;
+		printf("program order:\n");
+
 		for (auto& block : code)
 		{
 			auto handle_list = [&](std::vector<ir_node*> const & list, size_t& pos)
 			{
 				for (auto it = list.rbegin(); it != list.rend(); it++, pos++)
 				{
+					if (isInLoopHeader(*it))
+					{
+						auto endNode = getPred(*it);
+						postprocessing.push_back({*it, endNode});
+						endNodes.insert(endNode);
+					}
+
+					if (endNodes.find(*it) != endNodes.end())
+						loopEndPos[*it] = pos;
+
 					for (auto& w : usage[*it].first)
 					{
 						if (!live_intervals[w.reg].first)
@@ -404,6 +455,8 @@ namespace firm
 
 					for (auto& r : usage[*it].second)
 						live_intervals[r.reg].second = pos;
+
+					ir_printf("%zu: %F (%d); %s\n", pos, *it, get_irn_node_nr(*it), isInLoopHeader(*it) ? "is in loop header" : "");
 				}
 			};
 			handle_list(block.second.normal, pos);
@@ -411,10 +464,17 @@ namespace firm
 			handle_list(block.second.control, pos);
 		}
 
-		/*for (auto& live : live_intervals)
+		for (auto& head : postprocessing)
 		{
-			printf("(%zu, %zu)\n", live.first, live.second);
-		}*/
+			for (auto& r : usage[head.first].second)
+				live_intervals[r.reg].second = loopEndPos[head.second];
+		}
+
+		printf("live intervals of virtual registers:\n");
+
+		for (auto& live : live_intervals)
+			printf("(%zu, %zu) \tis ok? %s\n", live.first, live.second, (live.second < live.first) ? "no" : "yes");
+
 		return live_intervals;
 	}
 
@@ -437,7 +497,7 @@ namespace firm
 		{
 			for (auto it = active.begin(); it != active.end(); it++)
 			{
-				if (it->first >= sorted_live[i].first.first)
+				if (it->first > sorted_live[i].first.first)
 					return;
 
 				free_regs.insert(sorted_live[it->second].second.second);
@@ -449,6 +509,8 @@ namespace firm
 		{
 			auto spill_it = --active.end();
 
+			// paper states ">=" instead of ">"
+			// probably because of different interpretation of live intervals
 			if (spill_it->first > sorted_live[i].first.second)
 			{
 				sorted_live[i].second.second = sorted_live[spill_it->second].second.second;
