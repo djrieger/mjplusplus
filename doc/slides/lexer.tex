@@ -35,7 +35,23 @@
 
 \begin{frame}
     \frametitle{Lexikalische Analyse}
-    hier Bild vom Graph + Dumping sinnvoll
+    \begin{tikzpicture}
+        \node[diamond,draw=black,fill=green!40] (0) at (0,0) {0};
+        \node[diamond,draw=black,fill=green!40] (1) at (-2,2) {1};
+        \node[diamond,draw=black,fill=green!40] (2) at (-4,0) {2};
+        \node[diamond,draw=black,fill=green!40] (4) at (-2,-2) {4};
+        \node[diamond,draw=black,fill=green!40] (3) at (5,2) {3};
+        \node[diamond,draw=black,fill=green!40] (20) at (5,-2) {20};
+        \draw[->] (0) to              node[midway,anchor=north west] {\texttt{/}} (4);
+        \draw[->] (4) to              node[midway,anchor=north east] {\texttt{*}} (2);
+        \draw[->] (2) to [bend right] node[midway,anchor=north west] {\texttt{*}} (1);
+        \draw[->] (1) to [bend right] node[midway,anchor=north west] {}           (2);
+        \draw[->] (1) to              node[midway,anchor=south west] {\texttt{/}} (0);
+        \draw[->] (0) to              node[very near end,anchor=north east] {\texttt{[a..g]ilnprstvw}} (20);
+        \draw[->] (0) to node[very near end,anchor=south east] {\texttt{[A-Z]\_hjkmoquxyz}} (3);
+        \draw[->] (20) to node[midway,anchor=east] {\texttt{[0-9][A-Z]\_jq}} (3);
+        \draw[->] (3) to [loop above] node {\texttt{[0-9][A-Z]\_[a-z]}} (3);
+    \end{tikzpicture}
 \end{frame}
 
 \begin{frame}[t]
@@ -49,7 +65,12 @@
                 \\[3pt] \code{void lex(F callback);}
             }
         \item<2-> Pull-Ansatz
-            \only<2>{
+            \only<3>{
+                \begin{tikzpicture}[overlay]
+                    \node at (.8,.2) {\includegraphics[angle=10,origin=c,width=1.5cm,keepaspectratio=true]{logos/mj++logo.png}};
+                \end{tikzpicture}
+            }
+            \only<2->{
                 \\[3pt] \code{token get\_next\_token();}
             }
     \end{itemize}
