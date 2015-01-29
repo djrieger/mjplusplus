@@ -112,63 +112,12 @@
 \end{frame}
 
 \section{Lexikalische Analyse}
-
-\begin{frame}
-    \frametitle{Lexikalische Analyse}
-    \framesubtitle{Überblick}
-    \lstinputlisting{foo.mj}
-    \token{class}, \token{Foo}, \token{\{}, \token{public}, \token{int}, \token{bar}, \token{(}, \token{)}, \token{\{}, \ldots \\
-            \texttt{KEYWORD\_CLASS}, \texttt{IDENT}, \texttt{L\_BRACE}, \ldots
-\end{frame}
-
-\begin{frame}
-    \frametitle{Lexikalische Analyse}
-    \framesubtitle{Ansätze}
-    \begin{itemize}
-        \item Push-Interface mit Callbacks
-        \item Pull-Ansatz mit \code{get\_next\_token()}
-    \end{itemize}
-    Endlicher Automat
-    \begin{itemize}
-        \item Ausprogrammieren (z.B.\ mit \code{switch})
-        \item Tabelle
-    \end{itemize}
-    \vskip 1cm
-    \begin{center}
-        mj++: Pull-Ansatz und Tabelle
-    \end{center}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Lexikalische Analyse}
-    \framesubtitle{Graph}
-    \begin{itemize}
-        \item Graph zusammenklicken
-        \item daraus Tabelle \code{transition} bauen
-        \item aktueller Zustand \code{i}, Eingabezeichen \code{c} \\[3pt] \hskip .5cm $\Rightarrow$ nächster Zustand \code{transitions[i][c]}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Lexikalische Analyse}
-    \framesubtitle{Erfahrung}
-    \begin{itemize}
-        \item ohne Keyword-Unterscheidung sehr schnell
-        \item Keyword-Unterscheidung aufwändig\\[1pt]
-            \hskip .5cm $\Rightarrow$ dedizierte Keyword-Tabelle
-        \item für Operatoren kleine Maps
-        \item Graph-Dumping sinnvoll
-    \end{itemize}
-\end{frame}
-
+\include{lexer}
 
 \section{Syntaktische Analyse}
-\begin{frame}
-\end{frame}
+\include{parser}
 
 \section{mj++ Besonderheiten}
-\begin{frame}
-\end{frame}
+\include{specialities}
 
 \end{document}
