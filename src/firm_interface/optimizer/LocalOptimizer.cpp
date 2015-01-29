@@ -8,7 +8,7 @@ namespace firm
 
 	}
 
-	void LocalOptimizer::handle(Node node)
+	void LocalOptimizer::handle(Node)
 	{
 
 	}
