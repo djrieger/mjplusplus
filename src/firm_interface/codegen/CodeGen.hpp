@@ -67,6 +67,7 @@ namespace firm
 			void swap_register(size_t a, size_t b);
 
 			char const* constraintToRegister(Constraint c, ir_mode* mode);
+			char const* constraintToRegister(size_t c, ir_mode* mode);
 			char const* operationSuffix(ir_mode* mode);
 
 			void assemble(ir_graph* irg);
@@ -76,7 +77,9 @@ namespace firm
 			void allocate(ir_graph* irg, std::vector<std::pair<size_t, size_t>> const& live_intervals);
 
 			void load_or_imm(ir_node* node, size_t reg);
-			void gen_bin_op(ir_node* irn, ir_mode* mode, char const* op);
+			void load_or_reg(ir_mode* mode, size_t reg);
+			void gen_mov(ir_mode* mode, ir_node* node, size_t src, size_t dst);
+			void gen_binary_op(ir_node* irn, ir_mode* mode, char const* op, bool commutative);
 
 			void output(ir_graph* irg);
 			void output_phis(std::vector<ir_node*>& phis, ir_node const* block);
