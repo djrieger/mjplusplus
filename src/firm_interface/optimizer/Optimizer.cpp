@@ -5,6 +5,7 @@
 #include "ControlFlowOptimizer.hpp"
 #include "LocalOptimizer.hpp"
 #include "LoadStoreOptimizer.hpp"
+#include "JumpChainOptimizer.hpp"
 #include "Optimizer.hpp"
 #include "../Worklist.hpp"
 #include "../FirmInterface.hpp"
@@ -44,6 +45,7 @@ namespace firm
 				changed = eliminateCommonSubexpressions() || changed;
 				changed = optimizeLoadStore() || changed;
 				changed = optimizeControlFlow() || changed;
+				changed = optimizeJumpChains() || changed;
 			}
 			while (changed && ++iterations_count < max_iterations);
 
@@ -151,5 +153,17 @@ namespace firm
 		edges_deactivate(irg);
 
 		return bfo.graphChanged();
+	}
+
+	bool Optimizer::optimizeJumpChains()
+	{
+		JumpChainOptimizer jco(irg);
+		firm::Worklist worklist(irg, jco);
+
+		edges_activate(irg);
+		worklist.run();
+		edges_deactivate(irg);
+
+		return jco.graphChanged();
 	}
 }
