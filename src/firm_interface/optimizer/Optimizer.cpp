@@ -45,10 +45,10 @@ namespace firm
 				changed = eliminateCommonSubexpressions() || changed;
 				changed = optimizeLoadStore() || changed;
 				changed = optimizeControlFlow() || changed;
-				changed = optimizeJumpChains() || changed;
 			}
 			while (changed && ++iterations_count < max_iterations);
-
+			
+			optimizeJumpChains();
 			remove_bads(irg);
 
 			if (!(optimizationFlag & FirmInterface::OptimizationFlags::FIRM_COMPATIBLE))

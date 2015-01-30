@@ -81,7 +81,7 @@ namespace firm
 
 			if (jumpTarget.getChildren().size() > 1)
 				for (auto &pred: jumpTarget.getChildren()) {
-					if (pred != node) {
+					if (pred != node && !is_Bad(pred)) {
 						ir_printf("pred = %F (%d)\n", pred, get_irn_node_nr(pred));
 						ir_node* predBlock = get_nodes_block(pred);
 						ir_printf("trying to get child 0 of block %F (%d)\n", predBlock, get_irn_node_nr(predBlock));
