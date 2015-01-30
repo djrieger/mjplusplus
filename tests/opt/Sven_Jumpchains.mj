@@ -1,0 +1,38 @@
+class a
+{
+	public int i(int x)
+	{
+		return x;
+	}
+
+	public static void main(String[] args)
+	{
+		a aa = new a();
+		int x = aa.i(5);
+		System.out.println(x);
+		int y = 0;
+		
+		/* expensive condition for next if */
+		int r = 10000000;
+		while(r != 3)
+		{
+			r = r - 1;
+		}
+
+		if(x > r)
+		{
+			y = 123;
+		}
+		else
+		{
+			y = 456;
+		}
+		
+		if(false)
+		{
+			/* force phi creation, should be optimized away */
+			System.out.println(y);
+		}
+		System.out.println(x);
+	}
+}
