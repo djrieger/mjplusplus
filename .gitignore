@@ -28,3 +28,4 @@ doc/doxygen
 *.synctex.gz
 
 !doc/slides/images/*
+foo.mj
