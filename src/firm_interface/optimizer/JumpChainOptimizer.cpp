@@ -85,9 +85,11 @@ namespace firm
 						ir_printf("pred = %F (%d)\n", pred, get_irn_node_nr(pred));
 						ir_node* predBlock = get_nodes_block(pred);
 						ir_printf("trying to get child 0 of block %F (%d)\n", predBlock, get_irn_node_nr(predBlock));
-						proj = get_irn_n(predBlock, 0);
-						if (is_Proj(proj) && is_Proj(blockPred) && get_irn_n(proj, 0) == get_irn_n(blockPred, 0))
-							return false;
+						if (get_irn_arity(predBlock) > 0) {
+							proj = get_irn_n(predBlock, 0);
+							if (is_Proj(proj) && is_Proj(blockPred) && get_irn_n(proj, 0) == get_irn_n(blockPred, 0))
+								return false;
+						}
 					}
 				}
 			else

@@ -48,7 +48,7 @@ namespace firm
 			}
 			while (changed && ++iterations_count < max_iterations);
 			
-			optimizeJumpChains();
+			 optimizeJumpChains();
 			remove_bads(irg);
 
 			if (!(optimizationFlag & FirmInterface::OptimizationFlags::FIRM_COMPATIBLE))
