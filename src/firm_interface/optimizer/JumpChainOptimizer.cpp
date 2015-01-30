@@ -29,6 +29,7 @@ namespace firm
 				ir_printf("Optimizing %F (%d)\n", node, get_irn_node_nr(node));
 				Node jumpTarget = getJumpTarget(node);
 				int childIndex = 0;
+
 				for (auto &pred: jumpTarget.getChildren()) {
 					if (pred == node)
 						jumpTarget.setChild(childIndex, get_irn_n(get_nodes_block(node), 0));
@@ -65,7 +66,28 @@ namespace firm
 		for (auto &x:res) {
 			ir_printf("%F (%d)\n",x.first,get_irn_node_nr(x.first));
 		}
-		return res.size() == 1 && res[0].first == node;
+		if(res.size() == 1 && res[0].first == node)
+		{
+			Node jumpTarget = getJumpTarget(node);
+			ir_printf("jumpTarget = %F (%d)\n", jumpTarget, get_irn_node_nr(jumpTarget));
+			ir_node* proj;
+			ir_node* blockPred = get_irn_n(block, 0);
+
+			if (jumpTarget.getChildren().size() > 1)
+				for (auto &pred: jumpTarget.getChildren()) {
+					if (pred != node) {
+						ir_printf("pred = %F (%d)\n", pred, get_irn_node_nr(pred));
+						ir_node* predBlock = get_nodes_block(pred);
+						ir_printf("trying to get child 0 of block %F (%d)\n", predBlock, get_irn_node_nr(predBlock));
+						proj = get_irn_n(predBlock, 0);
+						if (is_Proj(proj) && is_Proj(blockPred) && get_irn_n(proj, 0) == get_irn_n(blockPred, 0))
+							return false;
+					}
+				}
+			else
+				return true;
+		}
+		return false;
 	}
 
 	void JumpChainOptimizer::cleanUp(Node node)
