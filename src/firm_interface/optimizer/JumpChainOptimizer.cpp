@@ -58,6 +58,12 @@ namespace firm
 	bool JumpChainOptimizer::isOnlyNodeInBlock(ir_node* node)
 	{
 		ir_node* block = get_nodes_block(node);
+
+		// check if we have any bad predecessors
+		for (auto &child: Node(block).getChildren())
+			if (is_Bad(child))
+				return false;
+
 		//ir_printf("Block of jump is %F (%d)\n", block, get_irn_node_nr(block));
 		auto res = FirmInterface::getInstance().getOuts(block);
 		//ir_printf("Block of jump is %F (%d) and has child %F (%d), %d children, 1st child == jmp? %d\n", 
