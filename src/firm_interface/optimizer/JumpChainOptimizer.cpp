@@ -26,22 +26,21 @@ namespace firm
 			ir_printf("Found jump %F (%d)\n", node, get_irn_node_nr(node));
 			if (isOnlyNodeInBlock(node))
 			{
-				ir_printf("Optimizing %F (%d)\n", node, get_irn_node_nr(node));
-				Node jumpTarget = getJumpTarget(node);
-				int childIndex = 0;
+				set_irn_link(node, node);
+				// ir_printf("Optimizing %F (%d)\n", node, get_irn_node_nr(node));
+				// Node jumpTarget = getJumpTarget(node);
+				// int childIndex = 0;
 
-				for (auto &pred: jumpTarget.getChildren()) {
-					if (pred == node)
-						jumpTarget.setChild(childIndex, get_irn_n(get_nodes_block(node), 0));
-					childIndex++;
-				}
-				ir_node* block = get_nodes_block(node);
-				ir_node* badNode = new_r_Bad(irg, mode_X);
-				set_irn_n(block,0,badNode);
+				// for (auto &pred: jumpTarget.getChildren()) {
+				// 	if (pred == node)
+				// 		jumpTarget.setChild(childIndex, get_irn_n(get_nodes_block(node), 0));
+				// 	childIndex++;
+				// }
+				// ir_node* block = get_nodes_block(node);
+				// ir_node* badNode = new_r_Bad(irg, mode_X);
+				// set_irn_n(block,0,badNode);
 			}
 
-			// ir_node* jumpPred = get_irn_n(node, 0);
-			// ir_printf("%F (%d), pred %F (%d) \n", node, get_irn_node_nr(node), jumpPred, get_irn_node_nr(jumpPred));
 		}
 	}
 
@@ -79,7 +78,7 @@ namespace firm
 			ir_node* proj;
 			ir_node* blockPred = get_irn_n(block, 0);
 
-			if (jumpTarget.getChildren().size() > 1)
+			if (jumpTarget.getChildren().size() > 1) {
 				for (auto &pred: jumpTarget.getChildren()) {
 					if (pred != node && !is_Bad(pred)) {
 						ir_printf("pred = %F (%d)\n", pred, get_irn_node_nr(pred));
@@ -92,6 +91,8 @@ namespace firm
 						}
 					}
 				}
+				return true;
+			}
 			else
 				return true;
 		}
@@ -100,7 +101,10 @@ namespace firm
 
 	void JumpChainOptimizer::cleanUp(Node node)
 	{
-
+		if (is_Jmp(node) && (ir_node*)get_irn_link(node) == node)
+		{
+			ir_printf("Jmp opt candidate found: %F (%d)\n", node, get_irn_node_nr(node));
+		}
 	}
 
 }
