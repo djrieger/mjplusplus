@@ -15,7 +15,7 @@ namespace firm
 	{
 		changed = false;
 		max_iterations = 10;
-		optimizationFlag = DEFAULT;
+		optimizationFlag = FirmInterface::OptimizationFlags::DEFAULT;
 	}
 
 	void Optimizer::setOptimizationFlag(int flag)
@@ -30,7 +30,9 @@ namespace firm
 
 	void Optimizer::run()
 	{
-		if (optimizationFlag >= DEFAULT)
+		printf("opt flag: %d\n", optimizationFlag);
+
+		if (optimizationFlag != FirmInterface::OptimizationFlags::NONE)
 		{
 			unsigned int iterations_count = 0;
 
@@ -47,7 +49,9 @@ namespace firm
 
 			remove_bads(irg);
 
-			optimizeAddressMode();
+			if (!(optimizationFlag & FirmInterface::OptimizationFlags::FIRM_COMPATIBLE))
+				optimizeAddressMode();
+
 			optimizeBitFiddling();
 		}
 	}

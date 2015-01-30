@@ -145,6 +145,12 @@ namespace firm
 
 			void setInput(std::string const& in);
 			void setOutput(std::string const& out);
+			enum OptimizationFlags
+			{
+				NONE = 0,
+				DEFAULT = 1 << 0,
+				FIRM_COMPATIBLE = 1 << 1
+			};
 			void setOptimizationFlag(int flag);
 			void setFirmGraphOutput(bool dumpFirmGraph);
 

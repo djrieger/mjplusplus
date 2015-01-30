@@ -30,7 +30,7 @@ namespace firm
 		ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
 		set_modeP(modeP);
 
-		optimizationFlag = Optimizer::DEFAULT;
+		optimizationFlag = OptimizationFlags::DEFAULT;
 		lea = new_ir_op(get_next_ir_opcodes(1), "Lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
 	}
 
@@ -435,11 +435,12 @@ _COut_Mprintln:\n\
 
 	std::string FirmInterface::replaceDollarAndUnderscores(std::string name)
 	{
-		auto replace_string = [] (std::string& str, const std::string& from, const std::string& to)
+		auto replace_string = [] (std::string & str, const std::string & from, const std::string & to)
 		{
 			size_t start_pos = str.find(from);
-		    if(start_pos != std::string::npos)
-		    	str.replace(start_pos, from.length(), to);
+
+			if (start_pos != std::string::npos)
+				str.replace(start_pos, from.length(), to);
 		};
 
 		replace_string(name, "_", "__");
