@@ -71,4 +71,19 @@ namespace firm
 	{
 		return isNumeric() && getLong() == val;
 	}
+
+	std::string Tarval::toString() const
+	{
+		if (isNumericOrBool()) {
+			std::stringstream s;
+			s << getLong();
+			return s.str();
+		}
+		else if (isBad())
+			return "Bad";
+		else if (isUnknown())
+			return "Unknown";
+		else 
+			throw "Error";
+	}
 }
