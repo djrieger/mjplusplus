@@ -48,8 +48,8 @@ namespace firm
 				changed = optimizeControlFlow() || changed;
 				remove_unreachable_code(irg);
 				remove_bads(irg);
-				//optimizeJumpChains();
-				FirmInterface::getInstance().outputFirmGraph(irg, "during_opt");
+				//FirmInterface::getInstance().outputFirmGraph(irg, "during_opt");
+				optimizeJumpChains();
 			}
 			while (changed && ++iterations_count < max_iterations);
 
