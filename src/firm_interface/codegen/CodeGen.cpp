@@ -1403,6 +1403,15 @@ namespace firm
 			ir_mode* mode = get_irn_mode(get_irn_n(irn, 0));
 			char const* cond;
 
+			if (is_Const(get_irn_n(irn, 1)))
+			{
+				ir_node* tmp = get_irn_n(irn, 1);
+				set_irn_n(irn, 1, get_irn_n(irn, 0));
+				set_irn_n(irn, 0, tmp);
+				set_Cmp_relation(irn, get_inversed_relation(get_Cmp_relation(irn)));
+				std::swap(usage[irn].second[0], usage[irn].second[1]);
+			}
+
 			switch (get_Cmp_relation(irn))
 			{
 				case ir_relation_unordered:
@@ -1715,6 +1724,7 @@ namespace firm
 
 				fprintf(out, "\tc%s\n\t%sdiv%s ", conv, get_mode_sign(mode) ? "i" : "", os);
 				load_or_reg(mode, usage[irn].second[2].reg ? usage[irn].second[2].reg : (size_t) RCX);
+				fprintf(out, "\n");
 				gen_mov(mode, NULL, is_Div(irn) ? RAX : RDX, usage[irn].first[0].reg);
 			}
 		}
