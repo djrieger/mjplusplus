@@ -349,8 +349,8 @@ namespace firm
 			}
 		}
 
-		regdump();
-		output(irg);
+		//regdump();
+		//output(irg);
 		edges_deactivate(irg);
 	}
 
