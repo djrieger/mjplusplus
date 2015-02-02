@@ -204,6 +204,22 @@ namespace firm
 		}
 		else if (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Div(node) || is_Mod(node))
 			changed = updateTarvalForArithmeticNode(node);
+		else if (is_Return(node))
+		{
+			for (Node child : node.getChildren())
+			{
+				// ir_printf("// Child of return node: %F (%d) with mode %F\n", child, get_irn_node_nr(child), child.getMode());
+				// Ignore memory projections/nodes attached to return nodes
+				if (child.getMode() != mode_M && child.getTarval().isNumericOrBool())
+				{
+					// now that we have found a non-memory child node with a constant tarval,
+					// copy its tarval to this return node and abort the loop
+					node.setTarval(child.getTarval());
+					changed = true;
+					break;
+				}
+			}
+		}
 
 		bool hasBadChildren = false;
 
@@ -246,7 +262,7 @@ namespace firm
 
 	bool ConstantFolder::replaceGeneric(Node node)
 	{
-		if (!is_Const(node) && !is_Div(node) && !is_Mod(node) && node.getTarval().isNumericOrBool() && node.getMode() != mode_M)
+		if (!is_Return(node) && !is_Const(node) && !is_Div(node) && !is_Mod(node) && node.getTarval().isNumericOrBool() && node.getMode() != mode_M)
 		{
 			ir_node* constNode = new_r_Const_long(irg, node.getMode(), node.getTarval().getLong());
 			replaceNode(node, constNode, true);
