@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <string>
 #include <set>
+#include <queue>
 
 #include "CodeGen.hpp"
 
@@ -429,10 +430,43 @@ namespace firm
 		std::vector<std::pair<ir_node*, ir_node*>> postprocessing;
 		std::set<ir_node*> endNodes;
 		std::unordered_map<ir_node*, size_t> loopEndPos;
+		//printf("program order by graph walker:\n");
+		std::queue<ir_node*> dom_top_down_block_order;
+		/*struct counter {
+			size_t i = 0;
+		} myCounter;
+		auto print_ir = [](ir_node* node, void* env) {
+			auto filter = [](ir_node* node) {
+				//if(!is_Address(node) && !is_Block(node) && !is_Proj(node) && !is_Const(node) && !is_Block(node))
+				//	return true;
+				//else
+				//	return false;
+				return is_Block(node);
+			};
+			counter* c = (counter*) env;
+			if (filter(node)) ir_printf("%zu: %F (%d)\n",c->i++,node,get_irn_node_nr(node));
+		};*/
+		auto addBlockToQueue = [](ir_node * node, void* env)
+		{
+			if (is_Block(node))
+			{
+				std::queue<ir_node*>* q = (std::queue<ir_node*>*)env;
+				q->push(node);
+			}
+		};
+		irg_walk_blkwise_dom_top_down(irg, NULL, addBlockToQueue, &dom_top_down_block_order);
 		printf("program order:\n");
 
-		for (auto& block : code)
+		while (!dom_top_down_block_order.empty())
 		{
+			auto blockNode = dom_top_down_block_order.front();
+			dom_top_down_block_order.pop();
+
+			if (code.count(blockNode) == 0) continue;
+
+			auto block = code[blockNode];
+
+			//ir_printf("%zu: %F (%d)\n",pos,blockNode,get_irn_node_nr(blockNode));
 			auto handle_list = [&](std::vector<ir_node*> const & list, size_t& pos)
 			{
 				for (auto it = list.rbegin(); it != list.rend(); it++, pos++)
@@ -459,9 +493,9 @@ namespace firm
 					ir_printf("%zu: %F (%d); %s\n", pos, *it, get_irn_node_nr(*it), isInLoopHeader(*it) ? "is in loop header" : "");
 				}
 			};
-			handle_list(block.second.normal, pos);
-			handle_list(block.second.phi, pos);
-			handle_list(block.second.control, pos);
+			handle_list(block.normal, pos);
+			handle_list(block.phi, pos);
+			handle_list(block.control, pos);
 		}
 
 		for (auto& head : postprocessing)
