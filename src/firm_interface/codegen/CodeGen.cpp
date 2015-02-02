@@ -350,7 +350,7 @@ namespace firm
 		}
 
 		//regdump();
-		//output(irg);
+		output(irg);
 		edges_deactivate(irg);
 	}
 
