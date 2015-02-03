@@ -13,6 +13,9 @@ namespace firm
 
 		void MemberVisitor::visitMethodBodyAndFinalize(shptr<const ast::MethodDeclaration> methodDeclaration, ir_graph* irg)
 		{
+			// set link field of this method's graph to unknown
+			set_irg_link(irg, tarval_unknown);
+
 			// set method start block as current block
 			set_cur_block(get_irg_start_block(irg));
 

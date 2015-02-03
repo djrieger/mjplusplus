@@ -215,6 +215,7 @@ namespace firm
 					// now that we have found a non-memory child node with a constant tarval,
 					// copy its tarval to this return node and abort the loop
 					node.setTarval(child.getTarval());
+					set_irg_link(irg, (ir_tarval*)child.getTarval());
 					changed = true;
 					break;
 				}
@@ -274,6 +275,12 @@ namespace firm
 
 	void ConstantFolder::cleanUp(Node node)
 	{
+		// if (is_Return(node))
+		// // {
+		// 	ir_printf("-- %F (%d): ", node, get_irn_node_nr(node));
+		// 	std::cout << node.getTarval().toString() << std::endl;
+		// }
+
 		if (!replaceGeneric(node))
 		{
 			if (is_Div(node) || is_Mod(node)) replaceDivMod(node);

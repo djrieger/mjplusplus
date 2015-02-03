@@ -243,65 +243,65 @@ namespace firm
 
 		auto regdump = [&]
 		{
-			printf("----------\n");
+			// printf("----------\n");
 
 			for (auto& reg : registers)
 			{
-				printf("writes: ");
+				// printf("writes: ");
 
-				for (ir_node* w : reg.writes)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(w), w);
+				// for (ir_node* w : reg.writes)
+					// ir_printf("(%ld) %F, ", get_irn_node_nr(w), w);
 
-				printf("\nreads: ");
+				// printf("\nreads: ");
 
-				for (ir_node* r : reg.reads)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(r), r);
+				// for (ir_node* r : reg.reads)
+					// ir_printf("(%ld) %F, ", get_irn_node_nr(r), r);
 
-				printf("\n\n");
+				// printf("\n\n");
 			}
 
-			printf("free: ");
+			// printf("free: ");
 
 			for (size_t f : free_registers)
-				printf("%zu, ", f);
+				// printf("%zu, ", f);
 
-			printf("\n\n");
+			// printf("\n\n");
 
 			for (auto& u : usage)
 			{
-				ir_printf("(%ld) %F:\n\twrites: ", get_irn_node_nr(u.first), u.first);
+				// ir_printf("(%ld) %F:\n\twrites: ", get_irn_node_nr(u.first), u.first);
 
-				for (auto& w : u.second.first)
-					printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
+				// for (auto& w : u.second.first)
+					// printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
 
-				printf("\n\treads: ");
+				// printf("\n\treads: ");
 
-				for (auto& r : u.second.second)
-					printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
+				// for (auto& r : u.second.second)
+					// printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
 
-				printf("\n");
+				// printf("\n");
 			}
 
-			printf("\n\n");
+			// printf("\n\n");
 
 			for (auto& block : code)
 			{
-				ir_printf("Block %ld:\n", get_irn_node_nr(block.first));
+				// ir_printf("Block %ld:\n", get_irn_node_nr(block.first));
 
-				for (auto it = block.second.normal.rbegin(); it != block.second.normal.rend(); it++)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
+				// for (auto it = block.second.normal.rbegin(); it != block.second.normal.rend(); it++)
+					// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
 
-				printf("\n");
+				// printf("\n");
 
-				for (auto it = block.second.phi.rbegin(); it != block.second.phi.rend(); it++)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
+				// for (auto it = block.second.phi.rbegin(); it != block.second.phi.rend(); it++)
+					// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
 
-				printf("\n");
+				// printf("\n");
 
-				for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
+				// for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
+					// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
 
-				printf("\n");
+				// printf("\n");
 			}
 
 		};
@@ -745,13 +745,13 @@ namespace firm
 			{
 				if (current_reg)
 				{
-					ir_printf("\n!!!!!!!!!!!!!\n(%ld) %F\n\tthis shouldn't use a register...\n", get_irn_node_nr(irn), irn);
+					// ir_printf("\n!!!!!!!!!!!!!\n(%ld) %F\n\tthis shouldn't use a register...\n", get_irn_node_nr(irn), irn);
 					abort();
 				}
 			}
 			else
 			{
-				ir_printf("\n(%ld) %F\n\tnot implemented yet\n", get_irn_node_nr(irn), irn);
+				// ir_printf("\n(%ld) %F\n\tnot implemented yet\n", get_irn_node_nr(irn), irn);
 				abort();
 			}
 		}
@@ -1371,7 +1371,7 @@ namespace firm
 		}
 		else
 		{
-			ir_printf("\nNo idea how to emit code for (%ld) %F\n", get_irn_node_nr(irn), irn);
+			// ir_printf("\nNo idea how to emit code for (%ld) %F\n", get_irn_node_nr(irn), irn);
 			abort();
 		}
 	}
