@@ -427,9 +427,7 @@ namespace firm
 		};
 
 
-		std::vector<std::pair<ir_node*, ir_node*>> postprocessing;
-		std::set<ir_node*> endNodes;
-		std::unordered_map<ir_node*, size_t> loopEndPos;
+
 		//printf("program order by graph walker:\n");
 		std::queue<ir_node*> dom_top_down_block_order;
 		/*struct counter {
@@ -457,6 +455,12 @@ namespace firm
 		irg_walk_blkwise_dom_top_down(irg, NULL, addBlockToQueue, &dom_top_down_block_order);
 		printf("program order:\n");
 
+		std::vector<std::pair<ir_node*, ir_node*>> postprocessing;
+		std::set<ir_node*> endNodes;
+		std::unordered_map<ir_node*, size_t> loopEndPos;
+		// we have to add a special case for this pointer and parameters
+		size_t lastPos = 0;
+
 		while (!dom_top_down_block_order.empty())
 		{
 			auto blockNode = dom_top_down_block_order.front();
@@ -471,6 +475,8 @@ namespace firm
 			{
 				for (auto it = list.rbegin(); it != list.rend(); it++, pos++)
 				{
+					lastPos = pos;
+
 					if (isInLoopHeader(*it))
 					{
 						auto endNode = getPred(*it);
@@ -503,6 +509,17 @@ namespace firm
 			for (auto& r : usage[head.first].second)
 				live_intervals[r.reg].second = loopEndPos[head.second];
 		}
+
+		ir_node* start = get_irg_start(irg);
+		ir_printf("last pos is %zu; %F (%d)'s live intervals get altered:\t", lastPos, start, get_irn_node_nr(start));
+
+		for (auto& w : usage[start].first)
+		{
+			ir_printf("[%zu(%zu,%zu to %zu)]\t", w.reg, live_intervals[w.reg].first, live_intervals[w.reg].second, lastPos);
+			live_intervals[w.reg].second = lastPos;
+		}
+
+		printf("\n");
 
 		printf("live intervals of virtual registers:\n");
 
