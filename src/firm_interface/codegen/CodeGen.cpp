@@ -1437,7 +1437,7 @@ namespace firm
 			ir_mode* mode = get_irn_mode(get_irn_n(irn, 0));
 			char const* cond;
 
-			if (is_Const(get_irn_n(irn, 1)))
+			if (is_Const(get_irn_n(irn, 0)))
 			{
 				ir_node* tmp = get_irn_n(irn, 1);
 				set_irn_n(irn, 1, get_irn_n(irn, 0));
@@ -1504,13 +1504,13 @@ namespace firm
 				gen_mov(mode, get_irn_n(irn, 1), usage[irn].second[1].reg, RAX);
 
 			fprintf(out, "\tcmp%s ", operationSuffix(mode));
-			load_or_imm(get_irn_n(irn, 0), usage[irn].second[0].reg);
+			load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
 			fprintf(out, ", ");
 
 			if (usage[irn].second[0].reg > 16 && usage[irn].second[1].reg > 16)
 				fprintf(out, "%s", constraintToRegister(RAX, mode));
 			else
-				load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+				load_or_imm(get_irn_n(irn, 0), usage[irn].second[0].reg);
 
 			fprintf(out, "\n");
 			output_phis(phis, get_nodes_block(irn));
