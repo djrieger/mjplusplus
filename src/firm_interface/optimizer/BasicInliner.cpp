@@ -84,9 +84,10 @@ namespace firm
 			{
 				auto callOutEdges = callNode.getOuts();
 				for (auto edge: callOutEdges) {
-					Node parentProj = edge.first;
+					// M or T projection succeeding the call node
+					Node succProj = edge.first;
 					ir_printf("%d: %F (%d)\n", edge.second, edge.first, get_irn_node_nr(edge.first));
-					if (parentProj.getMode() == mode_M) {
+					if (succProj.getMode() == mode_M) {
 						// memory projection found
 						// rewire to child of child of old memory projection of Call node
 						Node oldMemoryProj = get_Call_mem(callNode);
@@ -94,13 +95,13 @@ namespace firm
 						Node oldMemProjChild = get_Proj_pred(oldMemoryProj);
 						ir_printf("old mem proj child: %F (%d)\n", oldMemProjChild, get_irn_node_nr(oldMemProjChild));
 
-						set_Proj_pred(parentProj, oldMemProjChild);
-					} else if (parentProj.getMode() == mode_T) {
+						set_Proj_pred(succProj, oldMemProjChild);
+					} else if (succProj.getMode() == mode_T) {
 						// return value projection found
 						// replace with new Const node
-						Node grandparentProj = parentProj.getOuts()[0].first;
+						Node grandparentProj = succProj.getOuts()[0].first;
 						ir_printf("grandparent %F (%d)\n", grandparentProj, get_irn_node_nr(grandparentProj));
-						parentProj.replaceWith(new_r_Const_long(callerIrg, returnValue.getMode(), returnValue.getLong()));
+						grandparentProj.replaceWith(new_r_Const_long(callerIrg, returnValue.getMode(), returnValue.getLong()));
 					}
 				}
 			}
