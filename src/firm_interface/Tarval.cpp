@@ -74,7 +74,8 @@ namespace firm
 
 	std::string Tarval::toString() const
 	{
-		if (isNumericOrBool()) {
+		if (isNumericOrBool())
+		{
 			std::stringstream s;
 			s << getLong();
 			return s.str();
@@ -83,7 +84,7 @@ namespace firm
 			return "Bad";
 		else if (isUnknown())
 			return "Unknown";
-		else 
+		else
 			throw "Error";
 	}
 }

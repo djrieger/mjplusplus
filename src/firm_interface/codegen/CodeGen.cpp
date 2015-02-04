@@ -250,12 +250,12 @@ namespace firm
 				// printf("writes: ");
 
 				// for (ir_node* w : reg.writes)
-					// ir_printf("(%ld) %F, ", get_irn_node_nr(w), w);
+				// ir_printf("(%ld) %F, ", get_irn_node_nr(w), w);
 
 				// printf("\nreads: ");
 
 				// for (ir_node* r : reg.reads)
-					// ir_printf("(%ld) %F, ", get_irn_node_nr(r), r);
+				// ir_printf("(%ld) %F, ", get_irn_node_nr(r), r);
 
 				// printf("\n\n");
 			}
@@ -265,22 +265,22 @@ namespace firm
 			for (size_t f : free_registers)
 				// printf("%zu, ", f);
 
-			// printf("\n\n");
+				// printf("\n\n");
 
-			for (auto& u : usage)
-			{
-				// ir_printf("(%ld) %F:\n\twrites: ", get_irn_node_nr(u.first), u.first);
+				for (auto& u : usage)
+				{
+					// ir_printf("(%ld) %F:\n\twrites: ", get_irn_node_nr(u.first), u.first);
 
-				// for (auto& w : u.second.first)
+					// for (auto& w : u.second.first)
 					// printf("[%s, %zu], ", constraintToRegister(w.constraint, mode_P), w.reg);
 
-				// printf("\n\treads: ");
+					// printf("\n\treads: ");
 
-				// for (auto& r : u.second.second)
+					// for (auto& r : u.second.second)
 					// printf("[%s, %zu], ", constraintToRegister(r.constraint, mode_P), r.reg);
 
-				// printf("\n");
-			}
+					// printf("\n");
+				}
 
 			// printf("\n\n");
 
@@ -289,17 +289,17 @@ namespace firm
 				// ir_printf("Block %ld:\n", get_irn_node_nr(block.first));
 
 				// for (auto it = block.second.normal.rbegin(); it != block.second.normal.rend(); it++)
-					// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
+				// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
 
 				// printf("\n");
 
 				// for (auto it = block.second.phi.rbegin(); it != block.second.phi.rend(); it++)
-					// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
+				// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
 
 				// printf("\n");
 
 				// for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
-					// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
+				// ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
 
 				// printf("\n");
 			}
