@@ -1159,11 +1159,15 @@ namespace firm
 					// first 6 args in registers
 					if (i == 2 && is_println)
 					{
+						if (!(FirmInterface::getInstance().getOptimizationFlag()
+						        & FirmInterface::OptimizationFlags::CUSTOM_PRINT))
+						{
 #ifndef __APPLE__
-						fprintf(out, "\tmovq $.LC0, %%rdi\n");
+							fprintf(out, "\tmovq $.LC0, %%rdi\n");
 #else
-						fprintf(out, "\tmovabs $.LC0, %%rdi\n");
+							fprintf(out, "\tmovabs $.LC0, %%rdi\n");
 #endif
+						}
 					}
 					else
 					{
@@ -1195,9 +1199,15 @@ namespace firm
 
 			if (is_println)
 			{
-				fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
-				fprintf(out, "\tcall %sprintf\n", callNamePrefix);
-				fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
+				if (FirmInterface::getInstance().getOptimizationFlag()
+				        & FirmInterface::OptimizationFlags::CUSTOM_PRINT)
+					fprintf(out, "\tcall printf\n");
+				else
+				{
+					fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
+					fprintf(out, "\tcall %sprintf\n", callNamePrefix);
+					fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
+				}
 			}
 			else
 			{
