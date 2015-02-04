@@ -160,3 +160,4 @@ Simon_159: negative length array (in unreachable code, so no undefined behaviour
 Simon_160: mix of code that would produce undefined behaviour if executed
 Simon_161: load/store test
 Simon_162: return of null
+Simon_163: functions doing nothing and functions with ignored return value
