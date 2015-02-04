@@ -294,27 +294,6 @@ namespace firm
 			}
 
 			printf("\n\n");
-
-			/*for (auto& block : code)
-			{
-				ir_printf("Block %ld:\n", get_irn_node_nr(block.first));
-
-				for (auto it = block.second.normal.rbegin(); it != block.second.normal.rend(); it++)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
-
-				printf("\n");
-
-				for (auto it = block.second.phi.rbegin(); it != block.second.phi.rend(); it++)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
-
-				printf("\n");
-
-				for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
-					ir_printf("(%ld) %F, ", get_irn_node_nr(*it), *it);
-
-				printf("\n\n");
-			}*/
-
 		};
 
 		// register condensing
@@ -336,30 +315,6 @@ namespace firm
 
 		size_t args = get_method_n_params(get_entity_type(get_irg_entity(irg)));
 
-		if (args > 6)
-		{
-			// if arguments are passed on the stack:
-			// - filter out stack arguments and move them to the end of the register vector
-			// - seperate them from the remaining registers with an additional dummy register
-			//     (actually the gap is used for the return address pushed by call)
-			// if some stack arguments are unused we'll use their registers for other variables
-			size_t last = new_register();
-
-			while (last <= args - 6)
-				// ensure register allocation for stack arguments
-				last = new_register();
-
-			size_t gap = last - (args - 6);
-			swap_register(gap, last);
-			auto& writes = usage[get_irg_start(irg)].first;
-
-			for (auto& w : writes)
-			{
-				if (w.constraint >= STACK)
-					swap_register(gap + w.constraint - STACK + 1, w.reg);
-			}
-		}
-
 		regdump();
 		auto live_intervals = compute_live_intervals(irg);
 		allocate(irg, live_intervals);
@@ -379,6 +334,32 @@ namespace firm
 			}
 
 			registers.resize(registers.size() - 1);
+		}
+
+		regdump();
+
+		if (args > 6)
+		{
+			// if arguments are passed on the stack:
+			// - filter out stack arguments and move them to the end of the register vector
+			// - seperate them from the remaining registers with an additional dummy register
+			//     (actually the gap is used for the return address pushed by call)
+			// if some stack arguments are unused we'll use their registers for other variables
+			size_t last = new_register();
+
+			while (last <= args - 6 + 16)
+				// ensure register allocation for stack arguments
+				last = new_register();
+
+			size_t gap = last - (args - 6 + 16);
+			swap_register(gap, last);
+			auto& writes = usage[get_irg_start(irg)].first;
+
+			for (auto& w : writes)
+			{
+				if (w.constraint >= STACK)
+					swap_register(gap + w.constraint - STACK + 1, w.reg);
+			}
 		}
 
 		regdump();
@@ -476,45 +457,19 @@ namespace firm
 			}
 		};
 
-
-
-		//printf("program order by graph walker:\n");
-		std::queue<ir_node*> dom_top_down_block_order;
-		/*struct counter {
-			size_t i = 0;
-		} myCounter;
-		auto print_ir = [](ir_node* node, void* env) {
-			auto filter = [](ir_node* node) {
-				//if(!is_Address(node) && !is_Block(node) && !is_Proj(node) && !is_Const(node) && !is_Block(node))
-				//	return true;
-				//else
-				//	return false;
-				return is_Block(node);
-			};
-			counter* c = (counter*) env;
-			if (filter(node)) ir_printf("%zu: %F (%d)\n",c->i++,node,get_irn_node_nr(node));
-		};*/
-		/*auto addBlockToQueue = [](ir_node * node, void* env)
-		{
-			if (is_Block(node))
-			{
-				ir_printf("%F (%d)\n",node,get_irn_node_nr(node));
-				std::queue<ir_node*>* q = (std::queue<ir_node*>*)env;
-				q->push(node);
-			}
-		};*/
-
 		compute_doms(irg);
 		compute_postdoms(irg);
 
-		std::vector<ir_node*> foo;
+		std::vector<ir_node*> ordered_blocks;
 
-		for (auto& blubb : code)
-			foo.push_back(blubb.first);
+		for (auto& block : code)
+			ordered_blocks.push_back(block.first);
 
-		std::sort(foo.begin(), foo.end(), [](ir_node const * a, ir_node const * b)
+		std::sort(ordered_blocks.begin(), ordered_blocks.end(), [](ir_node const * a, ir_node const * b)
 		{
-			if (block_dominates(a, b) || block_postdominates(b, a))
+			ir_printf("cmp %+F %+F: %d %d, %d %d\n", a, b, block_dominates(a, b), block_postdominates(b, a), block_dominates(b, a), block_postdominates(a, b));
+
+			if (block_dominates(a, b) || (block_postdominates(b, a) && !block_dominates(b, a)))
 				return true;
 			else if (block_dominates(b, a) || block_postdominates(a, b))
 				return false;
@@ -522,7 +477,8 @@ namespace firm
 				return get_irn_node_nr(a) < get_irn_node_nr(b);
 		});
 
-		//irg_walk_blkwise_dom_top_down(irg, NULL, addBlockToQueue, &dom_top_down_block_order);
+		for (auto& b : ordered_blocks)
+			ir_printf("%+F\n", b);
 
 		printf("program order:\n");
 
@@ -532,7 +488,7 @@ namespace firm
 		// we have to add a special case for this pointer and parameters
 		size_t lastPos = 0;
 
-		for (auto& blockNode : foo)
+		for (auto& blockNode : ordered_blocks)
 		{
 			auto& block = code[blockNode];
 
