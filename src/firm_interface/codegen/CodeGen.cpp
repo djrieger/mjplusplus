@@ -423,7 +423,57 @@ namespace firm
 				return get_irn_n(block, 1);
 
 			return ret;
+		};
 
+		auto handlePreLoopOperands = [&](ir_node * node, ir_node * block)
+		{
+			std::vector<ir_node*> ret;
+
+			for (int i = 0; i < get_irn_arity(node); ++i)
+			{
+				ir_node* child = get_irn_n(node, i);
+
+				if (is_Const(child))
+					continue;
+
+				while (is_Conv(child)) child = get_irn_n(child, 0);
+
+				ir_node* childBlock = get_nodes_block(child);
+
+				if (block != childBlock)
+				{
+					//ir_printf("%F (%d) has operand out of loop ",node,get_irn_node_nr(node));
+					if (get_irn_node_nr(childBlock) < get_irn_node_nr(block))
+					{
+						//ir_printf(" and it's before the loop; child: %F (%d)",child,get_irn_node_nr(child));
+						ret.push_back(child);
+					}
+
+					//printf("\n");
+				}
+			}
+
+			return ret;
+		};
+
+		std::function<ir_node*(ir_node*)> traverseUntilLoopHead = [&](ir_node * node) -> ir_node*
+		{
+			if (isInLoopHeader(node))
+				return node;
+			else if (get_irg_start_block(irg) == get_nodes_block(node))
+				return NULL;
+			else {
+				ir_node* block = get_nodes_block(node);
+
+				for (int i = 0; i < get_irn_arity(block); ++i)
+				{
+					ir_node* res = traverseUntilLoopHead(get_irn_n(block, i));
+
+					if (res) return res;
+				}
+
+				return NULL;
+			}
 		};
 
 
@@ -444,15 +494,36 @@ namespace firm
 			counter* c = (counter*) env;
 			if (filter(node)) ir_printf("%zu: %F (%d)\n",c->i++,node,get_irn_node_nr(node));
 		};*/
-		auto addBlockToQueue = [](ir_node * node, void* env)
+		/*auto addBlockToQueue = [](ir_node * node, void* env)
 		{
 			if (is_Block(node))
 			{
+				ir_printf("%F (%d)\n",node,get_irn_node_nr(node));
 				std::queue<ir_node*>* q = (std::queue<ir_node*>*)env;
 				q->push(node);
 			}
-		};
-		irg_walk_blkwise_dom_top_down(irg, NULL, addBlockToQueue, &dom_top_down_block_order);
+		};*/
+
+		compute_doms(irg);
+		compute_postdoms(irg);
+
+		std::vector<ir_node*> foo;
+
+		for (auto& blubb : code)
+			foo.push_back(blubb.first);
+
+		std::sort(foo.begin(), foo.end(), [](ir_node const * a, ir_node const * b)
+		{
+			if (block_dominates(a, b) || block_postdominates(b, a))
+				return true;
+			else if (block_dominates(b, a) || block_postdominates(a, b))
+				return false;
+			else
+				return get_irn_node_nr(a) < get_irn_node_nr(b);
+		});
+
+		//irg_walk_blkwise_dom_top_down(irg, NULL, addBlockToQueue, &dom_top_down_block_order);
+
 		printf("program order:\n");
 
 		std::vector<std::pair<ir_node*, ir_node*>> postprocessing;
@@ -461,14 +532,9 @@ namespace firm
 		// we have to add a special case for this pointer and parameters
 		size_t lastPos = 0;
 
-		while (!dom_top_down_block_order.empty())
+		for (auto& blockNode : foo)
 		{
-			auto blockNode = dom_top_down_block_order.front();
-			dom_top_down_block_order.pop();
-
-			if (code.count(blockNode) == 0) continue;
-
-			auto block = code[blockNode];
+			auto& block = code[blockNode];
 
 			//ir_printf("%zu: %F (%d)\n",pos,blockNode,get_irn_node_nr(blockNode));
 			auto handle_list = [&](std::vector<ir_node*> const & list, size_t& pos)
@@ -477,9 +543,28 @@ namespace firm
 				{
 					lastPos = pos;
 
+					auto cand = handlePreLoopOperands(*it, blockNode);
+
+					if (cand.size() > 0)
+					{
+						for (auto& x : cand)
+						{
+							ir_node* loopHeadNode = traverseUntilLoopHead(*it);
+
+							if (!loopHeadNode) continue;
+
+							auto endNode = getPred(loopHeadNode);
+							//ir_printf("%F (%d)\t%F (%d)\t%F (%d)\n",x,get_irn_node_nr(x),loopHeadNode,get_irn_node_nr(loopHeadNode),endNode,get_irn_node_nr(endNode));
+							postprocessing.push_back({x, endNode});
+							endNodes.insert(endNode);
+						}
+					}
+
 					if (isInLoopHeader(*it))
 					{
+
 						auto endNode = getPred(*it);
+						ir_printf("%F (%d)\t%F (%d)\n", *it, get_irn_node_nr(*it), endNode, get_irn_node_nr(endNode));
 						postprocessing.push_back({*it, endNode});
 						endNodes.insert(endNode);
 					}
@@ -506,8 +591,11 @@ namespace firm
 
 		for (auto& head : postprocessing)
 		{
-			for (auto& r : usage[head.first].second)
+			for (auto& r : usage[head.first].first)
 				live_intervals[r.reg].second = loopEndPos[head.second];
+
+			for (auto& r : usage[head.first].second)
+				live_intervals[r.reg].second = std::max(live_intervals[r.reg].second, loopEndPos[head.second]);
 		}
 
 		ir_node* start = get_irg_start(irg);
@@ -522,9 +610,10 @@ namespace firm
 		printf("\n");
 
 		printf("live intervals of virtual registers:\n");
+		int i = 0;
 
 		for (auto& live : live_intervals)
-			printf("(%zu, %zu) \tis ok? %s\n", live.first, live.second, (live.second < live.first) ? "no" : "yes");
+			if (i++ > 16)printf("(%zu, %zu) \tis ok? %s\n", live.first, live.second, (live.second < live.first) ? "no" : "yes");
 
 		return live_intervals;
 	}
