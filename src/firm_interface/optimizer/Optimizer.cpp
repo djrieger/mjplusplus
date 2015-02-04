@@ -51,15 +51,10 @@ namespace firm
 					FirmInterface::getInstance().handleConvNodes(irg);
 					changed = eliminateCommonSubexpressions() || changed;
 					changed = optimizeLoadStore() || changed;
-					FirmInterface::getInstance().outputFirmGraph(irg, "ctrlflow");
 					changed = optimizeControlFlow() || changed;
-					FirmInterface::getInstance().outputFirmGraph(irg, "postctrlflow");
 					remove_bads(irg);
 					remove_unreachable_code(irg);
-					FirmInterface::getInstance().outputFirmGraph(irg, "beforebad");
 					
-					std::cout << "--- Iteration " << i << std::endl;
-					FirmInterface::getInstance().outputFirmGraph(irg, "it");
 					irg_verify(irg);
 				}
 			}

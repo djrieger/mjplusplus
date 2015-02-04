@@ -32,9 +32,9 @@ namespace firm
 	// 	}
 	// }
 
-	bool BasicInliner::canInline(Node callNode, ir_graph* calleeIrg, long* constReturnValue)
+	bool BasicInliner::canInline(ir_graph* calleeIrg, long* constReturnValue)
 	{
-		ir_printf("[Proc %F] Checking if %F (%d) to %s can be inlined...\n", irg, callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
+		// ir_printf("[Proc %F] Checking if %F (%d) to %s can be inlined...\n", irg, callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
 
 		typedef void (*ir_func)(ir_node*, void*);
 		ir_func countReturnNodes = [](ir_node * node, void* env)
@@ -70,7 +70,7 @@ namespace firm
 
 		unsigned int returnNodesCount = 0;
 		Worklist::walk_topological(calleeIrg, countReturnNodes, &returnNodesCount);
-		ir_printf("-> %d return nodes found\n", returnNodesCount);
+		// ir_printf("-> %d return nodes found\n", returnNodesCount);
 
 		if (returnNodesCount == 1)
 		{
@@ -79,7 +79,7 @@ namespace firm
 
 			if (tar != tarval_bad && tarval_is_long(tar))
 			{
-				ir_printf("-> valid memory chain found\n");
+				// ir_printf("-> valid memory chain found\n");
 				*constReturnValue = Tarval(tar).getLong();
 				return true;
 			}
@@ -92,13 +92,13 @@ namespace firm
 	{
 		long returnValue;
 
-		if (canInline(callNode, calleeIrg, &returnValue))
+		if (canInline(calleeIrg, &returnValue))
 		{
 			for (auto edge : callNode.getOuts())
 			{
 				// M or T projection succeeding the call node
 				Node succProj = edge.first;
-				ir_printf("%d: %F (%d)\n", edge.second, edge.first, get_irn_node_nr(edge.first));
+				// ir_printf("%d: %F (%d)\n", edge.second, edge.first, get_irn_node_nr(edge.first));
 
 				if (succProj.getMode() == mode_M)
 				{

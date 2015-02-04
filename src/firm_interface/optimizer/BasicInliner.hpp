@@ -12,7 +12,7 @@ namespace firm
 	class BasicInliner : public GraphHandler
 	{
 		private:
-			bool canInline(Node callNode, ir_graph* calleeIrg, long* constReturnValue);
+			bool canInline(ir_graph* calleeIrg, long* constReturnValue);
 			void inlineFunction(Node callNode, ir_graph* calleeIrg);
 		public:
 			BasicInliner(ir_graph* irg);
