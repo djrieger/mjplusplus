@@ -14,6 +14,9 @@ namespace firm
 			edges_activate(irg);
 			recurse(Node(get_irg_end_block(irg)));
 			edges_deactivate(irg);
+
+			// irg_verify(irg);
+			
 		}
 	}
 
@@ -71,16 +74,16 @@ namespace firm
 			ir_func walkNodes = [](ir_node * node, void* env)
 			{
 				// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
-				if (is_Jmp(node) || is_Cond(node)) {
-					auto ctrlFlowNodes = (unsigned int*)env;
-					*ctrlFlowNodes += 1;
+				if (is_Return(node)) {
+					auto returnNodesCount = (unsigned int*)env;
+					*returnNodesCount += 1;
 				}
 			};
 
-			unsigned int ctrlFlowNodes = 0;
-			Worklist::walk_topological(calleeIrg, walkNodes, &ctrlFlowNodes);
-			ir_printf("-> %d control flow nodes found\n", ctrlFlowNodes);
-			if (ctrlFlowNodes == 0)
+			unsigned int returnNodesCount = 0;
+			Worklist::walk_topological(calleeIrg, walkNodes, &returnNodesCount);
+			ir_printf("-> %d return nodes found\n", returnNodesCount);
+			if (returnNodesCount == 1)
 			{
 				auto callOutEdges = callNode.getOuts();
 				for (auto edge: callOutEdges) {

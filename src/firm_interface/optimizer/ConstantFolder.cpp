@@ -214,8 +214,13 @@ namespace firm
 				{
 					// now that we have found a non-memory child node with a constant tarval,
 					// copy its tarval to this return node and abort the loop
-					node.setTarval(child.getTarval());
-					set_irg_link(irg, (ir_tarval*)child.getTarval());
+					 node.setTarval(child.getTarval());
+					//ir_tarval* irgLink = (ir_tarval*)get_irg_link(irg);
+					// if (tarval_is_constant(irgLink) && tarval_is_long(irgLink))
+					// 	// link was already set from another Return node -> bad
+					// 	set_irg_link(irg, tarval_bad);
+					// else
+						set_irg_link(irg, (ir_tarval*)child.getTarval());
 					changed = true;
 					break;
 				}
