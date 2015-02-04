@@ -238,6 +238,13 @@ int main(int argc, const char** argv)
 
 		runFirm(file_name, out_name_assembly, options[DUMP_FIRM_GRAPH], parser.getRoot());
 
+		for (size_t i = 0; i < get_irp_n_irgs(); i++)
+		{
+			ir_graph* irg = get_irp_irg(i);
+			firm::FirmInterface::getInstance().optimize(irg);
+			irg_verify(irg);
+		}
+
 		if (options[FIRM])
 			return EXIT_SUCCESS;
 
