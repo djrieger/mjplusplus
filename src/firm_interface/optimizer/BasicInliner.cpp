@@ -5,7 +5,7 @@
 
 namespace firm
 {
-	BasicInliner::BasicInliner(ir_graph* irg): GraphHandler(irg) 
+	BasicInliner::BasicInliner(ir_graph* irg): GraphHandler(irg)
 	{
 		ir_printf("[Proc %F]\n", irg);
 		// irg_verify(irg);
@@ -24,7 +24,7 @@ namespace firm
 			std::cout << "-> Constant return value " << returnValue.toString() << std::endl;
 
 			typedef void (*ir_func)(ir_node*, void*);
-			ir_func walkNodes = [](ir_node * node, void* env)
+			ir_func countReturnNodes = [](ir_node * node, void* env)
 			{
 				// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
 				if (is_Return(node))
@@ -47,7 +47,7 @@ namespace firm
 			};
 
 			unsigned int returnNodesCount = 0;
-			Worklist::walk_topological(calleeIrg, walkNodes, &returnNodesCount);
+			Worklist::walk_topological(calleeIrg, countReturnNodes, &returnNodesCount);
 			ir_printf("-> %d return nodes found\n", returnNodesCount);
 
 			if (returnNodesCount == 1)
@@ -69,14 +69,11 @@ namespace firm
 
 	void BasicInliner::inlineFunction(Node callNode, ir_graph* calleeIrg)
 	{
-		ir_graph* callerIrg = get_irn_irg(callNode); // irg
 		long returnValue;
 
 		if (canInline(callNode, calleeIrg, &returnValue))
 		{
-			auto callOutEdges = callNode.getOuts();
-
-			for (auto edge : callOutEdges)
+			for (auto edge : callNode.getOuts())
 			{
 				// M or T projection succeeding the call node
 				Node succProj = edge.first;
@@ -84,27 +81,15 @@ namespace firm
 
 				if (succProj.getMode() == mode_M)
 				{
-					for (auto projChild: succProj.getOuts())
-					{
+					for (auto projChild : succProj.getOuts())
 						projChild.first.setChild(projChild.second, get_Call_mem(callNode));
-					}
-					// memory projection found
-					// rewire to child of child of old memory projection of Call node
-					// Node oldMemoryProj = get_Call_mem(callNode);
-					// ir_printf("old mem proj of call node: %F (%d)\n", oldMemoryProj, get_irn_node_nr(oldMemoryProj));
-					// Node oldMemProjChild = get_Proj_pred(oldMemoryProj);
-					// ir_printf("old mem proj child: %F (%d)\n", oldMemProjChild, get_irn_node_nr(oldMemProjChild));
-
-					// set_Proj_pred(succProj, oldMemoryProj);
 				}
 				else if (succProj.getMode() == mode_T)
 				{
 					// return value projection found
 					// replace with new Const node
 					Node grandparentProj = succProj.getOuts()[0].first;
-					ir_printf("grandparent %F (%d)\n", grandparentProj, get_irn_node_nr(grandparentProj));
-					// grandparentProj.replaceWith(new_r_Const_long(callerIrg, mode_Is, returnValue));
-					replaceNode(grandparentProj, new_r_Const_long(callerIrg, mode_Is, returnValue));
+					replaceNode(grandparentProj, new_r_Const_long(irg, mode_Is, returnValue));
 				}
 			}
 		}
@@ -115,7 +100,7 @@ namespace firm
 
 	}
 
-	void BasicInliner::handle(Node node) 
+	void BasicInliner::handle(Node node)
 	{
 		// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
 		if (is_Call(node))
