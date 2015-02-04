@@ -4,7 +4,7 @@ class a {
 	}
 	
 	public void q() {
-		System.out.println(g()); /* @old "g()" @opt "72" */
+		System.out.println(g()); /* @old "g()" @opt "36" */
 	}
 	
 	public int f(int e) {
@@ -15,6 +15,6 @@ class a {
 	public int g() {
 		int x = f(2)+2; /* @old "f(2)+2" @opt "4" */
 		int y = x*2; /* @old "x*2" @opt "8" */
-		return y*x+x; /* @old "y*x+x" @opt "72" */
+		return y*x+x; /* @old "y*x+x" @opt "36" */
 	}
 }
