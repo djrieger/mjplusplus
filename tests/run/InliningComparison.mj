@@ -1,0 +1,93 @@
+class Sum {
+
+  public int sum(int data, int sInd, int eInd) {
+    if (sInd >= eInd) {
+      return sInd;
+    }
+
+    int half = sInd + (eInd - sInd) / 2;
+
+    int res1 = sum(data, sInd, half);
+    int res2 = sum(data, half + 1, eInd);
+
+    return res1 + res2;
+  }
+
+  public static void main(String[] args) {
+    Sum sum = new Sum();
+
+    int arrSum = sum.sum_inlined(0, 0, 100);
+    int arrSum2 = sum.sum(0, 0, 100);
+    System.out.println(arrSum);
+    System.out.println(arrSum2);
+
+  }
+
+  public int sum_inlined(int data, int sInd, int eInd) {
+    int a_0__1 = sInd;
+    int a_0__2 = eInd;
+    if (a_0__1 >= a_0__2) {
+      return a_0__1;
+    } else {
+
+      int half = a_0__1 + (a_0__2 - a_0__1) / 2;
+
+      int res1;
+              {
+
+                  int a_1__1 = a_0__1;
+                  int a_1__2 = half;
+                  if (a_1__1 >= a_1__2) {
+                    res1 = a_1__1;
+                  } else {
+
+                    int half_1 = a_1__1 + (a_1__2 - a_1__1) / 2;
+
+                    int res1_1 = sum_inlined(data, a_1__1, half_1);
+                    int res2_1;
+                            {
+                                int a_4__1 = half_1 + 1;
+                                int a_4__2 = a_1__2;
+
+                                if (a_4__1 >= a_4__2) {
+                                  res2_1 = a_4__1;
+                                } else {
+
+                                  int half_4 = a_4__1 + (a_4__2 - a_4__1) / 2;
+
+                                  int res1_4 = sum_inlined(data, a_4__1, half_4);
+                                  int res2_4 = sum_inlined(data, half_4 + 1, a_4__2);
+
+                                  res2_1 = res1_4 + res2_4;
+                                }
+
+                            }
+
+
+                    res1 = res1_1 + res2_1;
+                  }
+              }
+
+      int res2;
+              {
+                  int a_2__1 = half + 1;
+                  int a_2__2 = a_0__2;
+
+                  if (a_2__1 >= a_2__2) {
+                    res2 = a_2__1;
+                  } else {
+
+                    int half_3 = a_2__1 + (a_2__2 - a_2__1) / 2;
+
+                    int res1_3 = sum_inlined(data, a_2__1, half_3);
+                    int res2_3 = sum_inlined(data, half_3 + 1, a_2__2);
+
+                    res2 = res1_3 + res2_3;
+                  }
+
+              }
+
+      return res1 + res2;
+    }
+  }
+}

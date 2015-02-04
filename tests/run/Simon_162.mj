@@ -1,0 +1,46 @@
+class a {
+	public int y;
+	public int x;
+	public int c;
+	public static void main(String[] args) {
+		new a().q();
+		return;
+	}
+	
+	public boolean c_false() {
+		int i = 7;
+		int w = 9;
+		while (w < 200) {
+			i = i * i;
+			w = w * 2;
+		}
+		return i % 5 == 1;
+	}
+	
+	public void q() {
+		if (c_null() == null) {
+			System.out.println(3);
+		}
+		if (c_false()) {
+			System.out.println(crazy());
+			System.out.println(crazy2());
+		}
+	}
+	
+	public a c_null() {
+		return null;
+	}
+	
+	public int[] c_null2() {
+		return null;
+	}
+	
+	public int crazy() {
+		return c_null2()[2];
+	}
+	
+	public int crazy2() {
+		a c_null = null;
+		return c_null.x;
+	}
+}
