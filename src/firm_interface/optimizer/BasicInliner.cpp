@@ -9,48 +9,16 @@ namespace firm
 	{
 	}
 
-	// else if (is_Return(node))
-	// {
-	// 	for (Node child : node.getChildren())
-	// 	{
-	// 		// ir_printf("// Child of return node: %F (%d) with mode %F\n", child, get_irn_node_nr(child), child.getMode());
-	// 		// Ignore memory projections/nodes attached to return nodes
-	// 		if (child.getMode() != mode_M && child.getTarval().isNumericOrBool())
-	// 		{
-	// 			// now that we have found a non-memory child node with a constant tarval,
-	// 			// copy its tarval to this return node and abort the loop
-	// 			node.setTarval(child.getTarval());
-	// 			//ir_tarval* irgLink = (ir_tarval*)get_irg_link(irg);
-	// 			// if (tarval_is_constant(irgLink) && tarval_is_long(irgLink))
-	// 			// 	// link was already set from another Return node -> bad
-	// 			// 	set_irg_link(irg, tarval_bad);
-	// 			// else
-	// 			set_irg_link(irg, (ir_tarval*)child.getTarval());
-	// 			changed = true;
-	// 			break;
-	// 		}
-	// 	}
-	// }
-
-	bool BasicInliner::canInline(ir_graph* calleeIrg, long* constReturnValue)
+	static void countReturnNodesCallback(ir_node* node, void* env)
 	{
-		// ir_printf("[Proc %F] Checking if %F (%d) to %s can be inlined...\n", irg, callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
-
-		typedef void (*ir_func)(ir_node*, void*);
-		ir_func countReturnNodes = [](ir_node * node, void* env)
+		if (is_Return(node))
 		{
-			// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
-			if (is_Return(node))
-			{
-				auto returnNodesCount = (unsigned int*)env;
-				*returnNodesCount += 1;
-			}
-		};
+			auto returnNodesCount = (unsigned int*)env;
+			*returnNodesCount += 1;
+		}
+	}
 
-		// After walking with this function, env is a ir_tarval* with value
-		//   tarval_bad			if the memory chain cannot be inlined
-		//   constant tarval 	if the memory chain was valid and the return node had a single Const child
-		ir_func validateMemoryChainAndGetReturnValue = [](ir_node * node, void* env)
+	static void validateMemoryChainAndGetReturnValueCallback(ir_node* node, void* env)
 		{
 			auto returnValue = (ir_tarval**)env;
 
@@ -60,26 +28,31 @@ namespace firm
 
 				if (is_Proj(returnMemPred) && is_Start(get_Proj_pred(returnMemPred)))
 				{
-					ir_node* returnChild = get_Return_res(node, 0);
+					if (get_Return_n_ress(node) > 0) {
+						ir_node* returnChild = get_Return_res(node, 0);
 
-					if (is_Const(returnChild))
-						*returnValue = get_Const_tarval(returnChild);
+						if (is_Const(returnChild))
+							*returnValue = get_Const_tarval(returnChild);
+					} else {
+						*returnValue = new_tarval_from_long(0, mode_Is);
+					}
 				}
 			}
 		};
 
-		unsigned int returnNodesCount = 0;
-		Worklist::walk_topological(calleeIrg, countReturnNodes, &returnNodesCount);
-		// ir_printf("-> %d return nodes found\n", returnNodesCount);
+	bool BasicInliner::canInline(ir_graph* calleeIrg, long* constReturnValue)
+	{
+		// ir_printf("[Proc %F] Checking if %F (%d) to %s can be inlined...\n", irg, callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
 
+		unsigned int returnNodesCount = 0;
+		Worklist::walk_topological(calleeIrg, &countReturnNodesCallback, &returnNodesCount);
 		if (returnNodesCount == 1)
 		{
 			ir_tarval* tar = tarval_bad;
-			Worklist::walk_topological(calleeIrg, validateMemoryChainAndGetReturnValue, &tar);
-
+			Worklist::walk_topological(calleeIrg, &validateMemoryChainAndGetReturnValueCallback, &tar);
 			if (tar != tarval_bad && tarval_is_long(tar))
 			{
-				// ir_printf("-> valid memory chain found\n");
+				// we have a valid memory chain
 				*constReturnValue = Tarval(tar).getLong();
 				return true;
 			}
@@ -91,24 +64,24 @@ namespace firm
 	void BasicInliner::inlineFunction(Node callNode, ir_graph* calleeIrg)
 	{
 		long returnValue;
-
 		if (canInline(calleeIrg, &returnValue))
 		{
-			for (auto edge : callNode.getOuts())
+			for (auto outEdge : callNode.getOuts())
 			{
 				// M or T projection succeeding the call node
-				Node succProj = edge.first;
-				// ir_printf("%d: %F (%d)\n", edge.second, edge.first, get_irn_node_nr(edge.first));
+				Node succProj = outEdge.first;
 
+				// memory projection
 				if (succProj.getMode() == mode_M)
 				{
+					// rewire each successor of the memory projection to the memory projection above the call node
 					for (auto projChild : succProj.getOuts())
 						projChild.first.setChild(projChild.second, get_Call_mem(callNode));
 				}
+				// projection for return value from call
 				else if (succProj.getMode() == mode_T)
 				{
-					// return value projection found
-					// replace with new Const node
+					// replace this projection's successor with new Const node for the return value 
 					Node grandparentProj = succProj.getOuts()[0].first;
 					replaceNode(grandparentProj, new_r_Const_long(irg, mode_Is, returnValue));
 				}
@@ -123,7 +96,6 @@ namespace firm
 
 	void BasicInliner::handle(Node node)
 	{
-		// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
 		if (is_Call(node))
 		{
 			ir_entity* callee = get_Call_callee(node);
