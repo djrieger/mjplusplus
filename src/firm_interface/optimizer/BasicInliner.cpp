@@ -28,7 +28,7 @@ namespace firm
 
 				if (is_Proj(returnMemPred) && is_Start(get_Proj_pred(returnMemPred)))
 				{
-					if (get_Return_n_ress > 0) {
+					if (get_Return_n_ress(node) > 0) {
 						ir_node* returnChild = get_Return_res(node, 0);
 
 						if (is_Const(returnChild))
