@@ -204,28 +204,6 @@ namespace firm
 		}
 		else if (is_Add(node) || is_Sub(node) || is_Mul(node) || is_Div(node) || is_Mod(node))
 			changed = updateTarvalForArithmeticNode(node);
-		else if (is_Return(node))
-		{
-			for (Node child : node.getChildren())
-			{
-				// ir_printf("// Child of return node: %F (%d) with mode %F\n", child, get_irn_node_nr(child), child.getMode());
-				// Ignore memory projections/nodes attached to return nodes
-				if (child.getMode() != mode_M && child.getTarval().isNumericOrBool())
-				{
-					// now that we have found a non-memory child node with a constant tarval,
-					// copy its tarval to this return node and abort the loop
-					node.setTarval(child.getTarval());
-					//ir_tarval* irgLink = (ir_tarval*)get_irg_link(irg);
-					// if (tarval_is_constant(irgLink) && tarval_is_long(irgLink))
-					// 	// link was already set from another Return node -> bad
-					// 	set_irg_link(irg, tarval_bad);
-					// else
-					set_irg_link(irg, (ir_tarval*)child.getTarval());
-					changed = true;
-					break;
-				}
-			}
-		}
 
 		bool hasBadChildren = false;
 

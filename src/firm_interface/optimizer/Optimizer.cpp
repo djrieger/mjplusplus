@@ -5,6 +5,7 @@
 #include "ControlFlowOptimizer.hpp"
 #include "LocalOptimizer.hpp"
 #include "LoadStoreOptimizer.hpp"
+#include "BasicInliner.hpp"
 #include "Optimizer.hpp"
 #include "../Worklist.hpp"
 #include "../FirmInterface.hpp"
@@ -39,6 +40,7 @@ namespace firm
 			do
 			{
 				changed = foldConstants() || changed;
+				changed = optimizeInlining() || changed;
 				changed = optimizeLocal() || changed;
 				FirmInterface::getInstance().handleConvNodes(irg);
 				changed = eliminateCommonSubexpressions() || changed;
@@ -151,5 +153,17 @@ namespace firm
 		edges_deactivate(irg);
 
 		return bfo.graphChanged();
+	}
+
+	bool Optimizer::optimizeInlining()
+	{
+		BasicInliner bi(irg);
+		firm::Worklist worklist(irg, bi);
+
+		edges_activate(irg);
+		worklist.run();
+		edges_deactivate(irg);
+
+		return bi.graphChanged();
 	}
 }
