@@ -238,9 +238,6 @@ int main(int argc, const char** argv)
 
 		runFirm(file_name, out_name_assembly, options[DUMP_FIRM_GRAPH], parser.getRoot());
 
-		firm::BasicInliner bi;
-		bi.run();
-
 		if (options[FIRM])
 			return EXIT_SUCCESS;
 
