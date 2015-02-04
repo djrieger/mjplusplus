@@ -76,6 +76,11 @@ namespace firm
 			        shptr<ast::Arguments const> arguments,
 			        shptr<ast::MethodDeclaration const> methodDeclaration);
 
+			/**
+			 * Optimize the given firm graph using the optimization flags.
+			 * @param irg the given firm graph
+			 */
+			void optimize(ir_graph* irg);
 		public:
 			static FirmInterface& getInstance()
 			{
@@ -110,10 +115,10 @@ namespace firm
 			void outputFirmGraph(ir_graph* irg, std::string suffix);
 
 			/**
-			 * Optimize the given firm graph using the optimization flags.
-			 * @param irg the given firm graph
+			 * Optimize all firm graphs using the optimization flags.
+			 * Calls optimize(ir_graph*)
 			 */
-			void optimize(ir_graph* irg);
+			void optimizeGraphs();
 
 			/**
 			 * Replaces chains of Conv nodes with a single node.
