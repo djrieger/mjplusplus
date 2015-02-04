@@ -147,6 +147,16 @@ _COut_Mprintln:\n\
 			dump_ir_graph(irg, suffix.c_str());
 	}
 
+	void FirmInterface::optimizeGraphs()
+	{
+		for (size_t i = 0; i < get_irp_n_irgs(); i++)
+		{
+			ir_graph* irg = get_irp_irg(i);
+			optimize(irg);
+			irg_verify(irg);
+		}
+	}
+
 	void FirmInterface::optimize(ir_graph* irg)
 	{
 		outputFirmGraph(irg, "orig");
