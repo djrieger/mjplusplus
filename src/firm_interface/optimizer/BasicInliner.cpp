@@ -15,31 +15,35 @@ namespace firm
 			recurse(Node(get_irg_end_block(irg)));
 			edges_deactivate(irg);
 
-			// irg_verify(irg);
-			
+			irg_verify(irg);
+			FirmInterface::getInstance().outputFirmGraph(irg, "INLINING");
 		}
 	}
 
 	void BasicInliner::recurse(Node node)
 	{
-		if (is_Call(node))
+		// typedef void (*ir_func)(ir_node*, void*);
+		auto walkNodes = [this](ir_node * node, void* env)
 		{
-			ir_entity* callee = get_Call_callee(node);
-			std::string calleeName(get_entity_name(callee));
-
-			if (calleeName != "calloc" && calleeName != "_COut_Mprintln")
+			// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
+			if (is_Call(node))
 			{
-				ir_graph* calleeIrg = get_entity_irg(callee);
+				ir_entity* callee = get_Call_callee(node);
+				std::string calleeName(get_entity_name(callee));
 
-				if (!calleeIrg)
-					ir_printf("Callee uninitialized\n");
-				else
-					inlineFunction(node, calleeIrg);
+				if (calleeName != "calloc" && calleeName != "_COut_Mprintln")
+				{
+					ir_graph* calleeIrg = get_entity_irg(callee);
+
+					if (!calleeIrg)
+						ir_printf("Callee uninitialized\n");
+					else
+						inlineFunction(node, calleeIrg);
+				}
 			}
-		}
+		};
 
-		for (firm::Node child : node.getChildren())
-			recurse(child);
+		Worklist::walk_topological(get_irn_irg(node), walkNodes, NULL);
 	}
 
 	// bool BasicInliner::hasControlFlow(Node node)
@@ -108,8 +112,6 @@ namespace firm
 					}
 				}
 			}
-
-			FirmInterface::getInstance().outputFirmGraph(callerIrg, "INLINING");
 		}
 		//   only one return node?
 		//   no memory nodes?
