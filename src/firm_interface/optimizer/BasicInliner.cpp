@@ -7,16 +7,35 @@ namespace firm
 {
 	BasicInliner::BasicInliner(ir_graph* irg): GraphHandler(irg)
 	{
-		ir_printf("[Proc %F]\n", irg);
-		// irg_verify(irg);
-		// FirmInterface::getInstance().outputFirmGraph(irg, "INLINING");
 	}
+
+	// else if (is_Return(node))
+	// {
+	// 	for (Node child : node.getChildren())
+	// 	{
+	// 		// ir_printf("// Child of return node: %F (%d) with mode %F\n", child, get_irn_node_nr(child), child.getMode());
+	// 		// Ignore memory projections/nodes attached to return nodes
+	// 		if (child.getMode() != mode_M && child.getTarval().isNumericOrBool())
+	// 		{
+	// 			// now that we have found a non-memory child node with a constant tarval,
+	// 			// copy its tarval to this return node and abort the loop
+	// 			node.setTarval(child.getTarval());
+	// 			//ir_tarval* irgLink = (ir_tarval*)get_irg_link(irg);
+	// 			// if (tarval_is_constant(irgLink) && tarval_is_long(irgLink))
+	// 			// 	// link was already set from another Return node -> bad
+	// 			// 	set_irg_link(irg, tarval_bad);
+	// 			// else
+	// 			set_irg_link(irg, (ir_tarval*)child.getTarval());
+	// 			changed = true;
+	// 			break;
+	// 		}
+	// 	}
+	// }
 
 	bool BasicInliner::canInline(Node callNode, ir_graph* calleeIrg, long* constReturnValue)
 	{
-		ir_printf("Checking if %F (%d) %s can be inlined...\n", callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
+		ir_printf("[Proc %F] Checking if %F (%d) to %s can be inlined...\n", irg, callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
 		// checks to perform:
-		Tarval returnValue((ir_tarval*)get_irg_link(calleeIrg));
 
 		//  has constant return value?
 		if (tarval_is_constant(returnValue) && tarval_is_long(returnValue))
@@ -34,15 +53,26 @@ namespace firm
 				}
 			};
 
-			ir_func validateMemoryChain = [](ir_node * node, void* env)
+			// After walking with this function, env is a ir_tarval* with value
+			//   tarval_bad			if the memory chain cannot be inlined
+			//   constant tarval 	if the memory chain was valid and the return node had a single Const child
+			ir_func validateMemoryChainAndGetReturnValue = [](ir_node * node, void* env)
 			{
+				auto returnValue = (ir_tarval*)env;
+
 				if (is_Return(node))
 				{
 					ir_node* returnMemPred = get_Return_mem(node);
 					auto valid = (bool*)env;
 
 					if (!is_Proj(returnMemPred) || !is_Start(get_Proj_pred(returnMemPred)))
-						*valid = false;
+						*returnValue = tarval_bad;
+					else {
+						ir_node* returnChild = get_Return_res(node, 0);
+						if (is_Const(returnChild)) {
+							returnValue* = get_Const_tarval(returnChild);
+						}
+					}
 				}
 			};
 
@@ -52,13 +82,13 @@ namespace firm
 
 			if (returnNodesCount == 1)
 			{
-				bool validMemoryChain = true;
-				Worklist::walk_topological(calleeIrg, validateMemoryChain, &validMemoryChain);
+				ir_tarval* tar;
+				Worklist::walk_topological(calleeIrg, validateMemoryChainAndGetReturnValue, tar);
 
 				if (validMemoryChain)
 				{
 					ir_printf("-> valid memory chain found\n");
-					*constReturnValue = returnValue.getLong();
+					*constReturnValue = Tarval(tar).getLong();
 					return true;
 				}
 			}

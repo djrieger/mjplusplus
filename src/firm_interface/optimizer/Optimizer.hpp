@@ -45,6 +45,8 @@ namespace firm
 			bool optimizeAddressMode();
 			bool optimizeBitFiddling();
 
+			bool optimizeInlining();
+
 		public:
 
 			Optimizer(ir_graph* irg);
