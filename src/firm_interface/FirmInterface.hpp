@@ -75,12 +75,7 @@ namespace firm
 			std::tuple<ir_node*, ir_type*> createNodeForMethodCall(ir_node* caller,
 			        shptr<ast::Arguments const> arguments,
 			        shptr<ast::MethodDeclaration const> methodDeclaration);
-
-			/**
-			 * Optimize the given firm graph using the optimization flags.
-			 * @param irg the given firm graph
-			 */
-			void optimize(ir_graph* irg);
+			
 		public:
 			static FirmInterface& getInstance()
 			{
