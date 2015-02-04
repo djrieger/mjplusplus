@@ -1,65 +1,17 @@
 #include "BasicInliner.hpp"
 #include "../Worklist.hpp"
 #include "../FirmInterface.hpp"
+#include "ConstantFolder.hpp"
 
 namespace firm
 {
-
-	void BasicInliner::run()
+	BasicInliner::BasicInliner(ir_graph* irg): GraphHandler(irg) 
 	{
-		for (size_t i = 0; i < get_irp_n_irgs(); i++)
-		{
-			ir_graph* irg = get_irp_irg(i);
-			ir_printf("[Proc %F]\n", irg);
-			edges_activate(irg);
-			recurse(Node(get_irg_end_block(irg)));
-			edges_deactivate(irg);
-
-			irg_verify(irg);
-			FirmInterface::getInstance().outputFirmGraph(irg, "INLINING");
-		}
+		ir_printf("[Proc %F]\n", irg);
+		// irg_verify(irg);
+		// FirmInterface::getInstance().outputFirmGraph(irg, "INLINING");
 	}
 
-	void BasicInliner::recurse(Node node)
-	{
-		// typedef void (*ir_func)(ir_node*, void*);
-		auto walkNodes = [this](ir_node * node, void*)
-		{
-			// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
-			if (is_Call(node))
-			{
-				ir_entity* callee = get_Call_callee(node);
-				std::string calleeName(get_entity_name(callee));
-
-				if (calleeName != "calloc" && calleeName != "_COut_Mprintln")
-				{
-					ir_graph* calleeIrg = get_entity_irg(callee);
-
-					if (!calleeIrg)
-						ir_printf("Callee uninitialized\n");
-					else
-						inlineFunction(node, calleeIrg);
-				}
-			}
-		};
-
-		Worklist::walk_topological(get_irn_irg(node), walkNodes, NULL);
-	}
-
-	// bool BasicInliner::hasControlFlow(Node node)
-	// {
-	// 	ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
-
-	// 	if (is_Jmp(node) || is_Cond(node))
-	// 		return true;
-
-	// 	for (firm::Node child : node.getChildren())
-	// 		if (hasControlFlow(child))
-	// 			return true;
-
-	// 	return false;
-	// }
-	//
 	bool BasicInliner::canInline(Node callNode, ir_graph* calleeIrg, long* constReturnValue)
 	{
 		ir_printf("Checking if %F (%d) %s can be inlined...\n", callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
@@ -151,12 +103,35 @@ namespace firm
 					// replace with new Const node
 					Node grandparentProj = succProj.getOuts()[0].first;
 					ir_printf("grandparent %F (%d)\n", grandparentProj, get_irn_node_nr(grandparentProj));
-					grandparentProj.replaceWith(new_r_Const_long(callerIrg, mode_Is, returnValue));
+					// grandparentProj.replaceWith(new_r_Const_long(callerIrg, mode_Is, returnValue));
+					replaceNode(grandparentProj, new_r_Const_long(callerIrg, mode_Is, returnValue));
 				}
 			}
 		}
 	}
+
+	void BasicInliner::cleanUp(Node )
+	{
+
+	}
+
+	void BasicInliner::handle(Node node) 
+	{
+		// ir_printf("Visiting %F (%d)\n", node, get_irn_node_nr(node));
+		if (is_Call(node))
+		{
+			ir_entity* callee = get_Call_callee(node);
+			std::string calleeName(get_entity_name(callee));
+
+			if (calleeName != "calloc" && calleeName != "_COut_Mprintln")
+			{
+				ir_graph* calleeIrg = get_entity_irg(callee);
+
+				if (!calleeIrg)
+					throw "Callee uninitialized";
+				else
+					inlineFunction(node, calleeIrg);
+			}
+		}
+	}
 }
-//   only one return node?
-//   no memory nodes?
-//   what else?
