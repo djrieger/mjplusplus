@@ -116,6 +116,7 @@ namespace firm
 		{
 			// Relink memory chain
 			node2.setChild(0, prevMemNode);
+			changed = true;
 		}
 	}
 
@@ -138,6 +139,8 @@ namespace firm
 						Node outChild2 = ne2.first;
 						outChild2.setChild(ne2.second, node2.getChild(0));
 					}
+
+					changed = true;
 				}
 			}
 		}
@@ -159,6 +162,8 @@ namespace firm
 				}
 			}
 		}
+
+		changed = true;
 	}
 
 
