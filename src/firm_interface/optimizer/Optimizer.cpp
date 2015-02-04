@@ -15,7 +15,7 @@ namespace firm
 	Optimizer::Optimizer(ir_graph* irg): irg(irg)
 	{
 		changed = false;
-		max_iterations = 10;
+		max_iterations = 100;
 		optimizationFlag = FirmInterface::OptimizationFlags::DEFAULT;
 	}
 
@@ -31,14 +31,13 @@ namespace firm
 
 	void Optimizer::run()
 	{
-		printf("opt flag: %d\n", optimizationFlag);
-
-		if (optimizationFlag != FirmInterface::OptimizationFlags::NONE)
+		if (optimizationFlag >= FirmInterface::OptimizationFlags::DEFAULT)
 		{
 			unsigned int iterations_count = 0;
 
 			do
 			{
+				changed = false;
 				changed = foldConstants() || changed;
 				changed = optimizeInlining() || changed;
 				changed = optimizeLocal() || changed;
@@ -46,21 +45,21 @@ namespace firm
 				changed = eliminateCommonSubexpressions() || changed;
 				changed = optimizeLoadStore() || changed;
 				changed = optimizeControlFlow() || changed;
+				remove_unreachable_code(irg);
+				remove_bads(irg);
 			}
 			while (changed && ++iterations_count < max_iterations);
 
-			remove_bads(irg);
-
 			if (!(optimizationFlag & FirmInterface::OptimizationFlags::FIRM_COMPATIBLE))
 				optimizeAddressMode();
-
+			
 			optimizeBitFiddling();
 		}
 	}
 
 	bool Optimizer::graphWasChanged() const
 	{
-		return  changed;
+		return changed;
 	}
 
 	bool Optimizer::foldConstants()
