@@ -1,0 +1,35 @@
+class Loop {
+  public static void main(String[] args) {
+  }
+
+  public boolean l1() {
+    while (_true()) {}
+    return false;
+  }
+
+  /* some compilers reject trivial infinite loops */
+  public boolean _true() {
+    return true;
+  }
+
+  public void l2() {
+    while (_true()) {}
+  }
+
+  public void l3() {
+    while (_true()) {
+      while (_true()) {
+        System.out.println(42);
+      }
+    }
+  }
+
+  public void l4() {
+    while (_true());
+    System.out.println(1);
+    System.out.println(1);
+    System.out.println(1);
+    System.out.println(1);
+    System.out.println(1);
+  }
+}
