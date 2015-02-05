@@ -75,7 +75,7 @@ namespace firm
 			std::tuple<ir_node*, ir_type*> createNodeForMethodCall(ir_node* caller,
 			        shptr<ast::Arguments const> arguments,
 			        shptr<ast::MethodDeclaration const> methodDeclaration);
-			
+
 		public:
 			static FirmInterface& getInstance()
 			{

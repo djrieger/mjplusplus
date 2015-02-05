@@ -6,7 +6,8 @@
 namespace firm
 {
 
-	struct CopyNodeInfo {
+	struct CopyNodeInfo
+	{
 		ir_graph* destIrg;
 		ir_node* callNode;
 	};
@@ -66,7 +67,8 @@ namespace firm
 				if (info.noMem)
 					inlinePureFunction(callNode, calleeIrg, Tarval(tar));
 			}
-			else {
+			else
+			{
 				if (info.noMem)
 					inlineSimpleFunction(callNode, calleeIrg);
 			}
@@ -106,7 +108,7 @@ namespace firm
 	static void copyNodesToNewGraphCallback(Node node, void* env)
 	{
 		// return;
-		CopyNodeInfo *info = (CopyNodeInfo*)env;
+		CopyNodeInfo* info = (CopyNodeInfo*)env;
 		Node callNode = Node(info->callNode);
 		ir_node* destBlock = get_nodes_block(callNode);
 		ir_graph* irg = info->destIrg;
@@ -122,34 +124,36 @@ namespace firm
 
 			case iro_Proj:
 				if (node.getMode() != mode_M && node.getMode() != mode_T
-						&& get_irn_mode(get_Proj_pred(node)) == mode_T
-						&& is_Start(get_Proj_pred(get_Proj_pred(node))))
+				        && get_irn_mode(get_Proj_pred(node)) == mode_T
+				        && is_Start(get_Proj_pred(get_Proj_pred(node))))
 				{
 					// found argument
 					ir_printf("Found argument %F (%d)\n", node, get_irn_node_nr(node));
 					set_irn_link(node, get_Call_param(callNode, get_Proj_num(node)));
 				}
+
 				break;
 
 			case iro_Add:
 			case iro_Mul:
 			case iro_Sub:
-			 {
-			 	ir_node** inputs = new ir_node*[2];
-			 	inputs[0] = (ir_node*)get_irn_link(node.getChild(0));
-			 	inputs[1] = (ir_node*)get_irn_link(node.getChild(1));
-			 	ir_node* newNode = new_ir_node(get_irn_dbg_info(node), irg, destBlock, get_irn_op(node), node.getMode(), 2, inputs);
+			{
+				ir_node** inputs = new ir_node*[2];
+				inputs[0] = (ir_node*)get_irn_link(node.getChild(0));
+				inputs[1] = (ir_node*)get_irn_link(node.getChild(1));
+				ir_node* newNode = new_ir_node(get_irn_dbg_info(node), irg, destBlock, get_irn_op(node), node.getMode(), 2, inputs);
 				set_irn_link(node, newNode);
 			}
-				break;
+			break;
 
 			case iro_Minus:
-			case iro_Conv: {
-				 	ir_node* input = (ir_node*)get_irn_link(node.getChild(0));
-				 	ir_node* newNode = new_ir_node(get_irn_dbg_info(node), irg, destBlock, get_irn_op(node), node.getMode(), 1, &input);
-					set_irn_link(node, newNode);
-				}
-				break;
+			case iro_Conv:
+			{
+				ir_node* input = (ir_node*)get_irn_link(node.getChild(0));
+				ir_node* newNode = new_ir_node(get_irn_dbg_info(node), irg, destBlock, get_irn_op(node), node.getMode(), 1, &input);
+				set_irn_link(node, newNode);
+			}
+			break;
 
 			case iro_Const:
 			{
@@ -161,16 +165,17 @@ namespace firm
 			break;
 
 			case iro_Return:
-				for (auto child: node.getChildren()) 
+				for (auto child : node.getChildren())
 				{
 					// get result child
 					if (child.getMode() != mode_M)
 					{
-						
+
 						for (auto outEdge : callNode.getOuts())
 						{
 							// M or T projection succeeding the call node
 							Node succProj = outEdge.first;
+
 							if (succProj.getMode() == mode_T)
 							{
 								// replace this projection's successor with new Const node for the return value
@@ -180,6 +185,7 @@ namespace firm
 						}
 					}
 				}
+
 				break;
 
 			default:
@@ -196,7 +202,8 @@ namespace firm
 		bool hasPhis = false;
 		Worklist::walk_topological(calleeIrg, &checkForPhisCallback, &hasPhis);
 
-		if (!hasPhis) {
+		if (!hasPhis)
+		{
 			ir_printf("Success, no phis\n");
 			changed = true;
 
@@ -220,9 +227,10 @@ namespace firm
 			info.callNode = callNode;
 			Worklist::walk_topological(calleeIrg, &copyNodesToNewGraphCallback, &info);
 
-			for (auto outEdge: callNode.getOuts())
+			for (auto outEdge : callNode.getOuts())
 			{
 				Node succProj = outEdge.first;
+
 				// memory projection
 				if (succProj.getMode() == mode_M)
 				{
@@ -233,6 +241,7 @@ namespace firm
 			}
 
 		}
+
 		edges_deactivate(calleeIrg);
 	}
 
