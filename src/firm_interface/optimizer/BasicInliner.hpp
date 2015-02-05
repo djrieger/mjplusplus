@@ -14,6 +14,7 @@ namespace firm
 		private:
 			void tryInline(Node callNode, ir_graph* calleeIrg);
 			void inlinePureFunction(Node callNode, ir_graph* calleeIrg, Tarval returnValue);
+			void inlineSimpleFunction(Node callNode, ir_graph* calleeIrg);
 		public:
 			BasicInliner(ir_graph* irg);
 			void run();
