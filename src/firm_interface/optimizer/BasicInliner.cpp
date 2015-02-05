@@ -19,26 +19,27 @@ namespace firm
 	}
 
 	static void validateMemoryChainAndGetReturnValueCallback(ir_node* node, void* env)
+	{
+		auto returnValue = (BasicInliner::inlineInfo*) env;
+
+		if (is_Return(node))
 		{
-			auto returnValue = (ir_tarval**)env;
+			ir_node* returnMemPred = get_Return_mem(node);
 
-			if (is_Return(node))
+			if (get_Return_n_ress(node) > 0)
 			{
-				ir_node* returnMemPred = get_Return_mem(node);
+				ir_node* returnChild = get_Return_res(node, 0);
 
-				if (is_Proj(returnMemPred) && is_Start(get_Proj_pred(returnMemPred)))
-				{
-					if (get_Return_n_ress(node) > 0) {
-						ir_node* returnChild = get_Return_res(node, 0);
-
-						if (is_Const(returnChild))
-							*returnValue = get_Const_tarval(returnChild);
-					} else {
-						*returnValue = new_tarval_from_long(0, mode_Is);
-					}
-				}
+				if (is_Const(returnChild))
+					returnValue->tar = get_Const_tarval(returnChild);
 			}
-		};
+			else
+				returnValue->tar = new_tarval_from_long(0, mode_Is);
+
+			if (is_Proj(returnMemPred) && is_Start(get_Proj_pred(returnMemPred)))
+				returnValue->noMem = true;
+		}
+	}
 
 	bool BasicInliner::canInline(ir_graph* calleeIrg, long* constReturnValue)
 	{
@@ -46,15 +47,21 @@ namespace firm
 
 		unsigned int returnNodesCount = 0;
 		Worklist::walk_topological(calleeIrg, &countReturnNodesCallback, &returnNodesCount);
+
 		if (returnNodesCount == 1)
 		{
-			ir_tarval* tar = tarval_bad;
-			Worklist::walk_topological(calleeIrg, &validateMemoryChainAndGetReturnValueCallback, &tar);
+			inlineInfo info;
+			Worklist::walk_topological(calleeIrg, &validateMemoryChainAndGetReturnValueCallback, &info);
+			ir_tarval* tar = info.tar;
+
 			if (tar != tarval_bad && tarval_is_long(tar))
 			{
 				// we have a valid memory chain
-				*constReturnValue = Tarval(tar).getLong();
-				return true;
+				if (info.noMem)
+				{
+					*constReturnValue = Tarval(tar).getLong();
+					return true;
+				}
 			}
 		}
 
@@ -64,6 +71,7 @@ namespace firm
 	void BasicInliner::inlineFunction(Node callNode, ir_graph* calleeIrg)
 	{
 		long returnValue;
+
 		if (canInline(calleeIrg, &returnValue))
 		{
 			for (auto outEdge : callNode.getOuts())
@@ -81,7 +89,7 @@ namespace firm
 				// projection for return value from call
 				else if (succProj.getMode() == mode_T)
 				{
-					// replace this projection's successor with new Const node for the return value 
+					// replace this projection's successor with new Const node for the return value
 					Node grandparentProj = succProj.getOuts()[0].first;
 					replaceNode(grandparentProj, new_r_Const_long(irg, mode_Is, returnValue));
 				}
