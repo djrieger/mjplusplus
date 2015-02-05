@@ -19,6 +19,12 @@ namespace firm
 			void run();
 			virtual void cleanUp(Node node);
 			virtual void handle(Node node);
+
+			struct inlineInfo
+			{
+				ir_tarval* tar = tarval_bad;
+				bool noMem = false;
+			};
 	};
 }
 
