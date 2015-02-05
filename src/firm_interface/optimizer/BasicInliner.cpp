@@ -58,9 +58,9 @@ namespace firm
 			{
 				// we have a valid memory chain
 				if (info.noMem)
-				{
 					inlinePureFunction(callNode, calleeIrg, Tarval(tar));
-				}
+				else
+					inlineImpureFunction(callNode, calleeIrg, Tarval(tar));
 			}
 		}
 	}
@@ -84,6 +84,28 @@ namespace firm
 				}
 				// projection for return value from call
 				else if (succProj.getMode() == mode_T)
+				{
+					// replace this projection's successor with new Const node for the return value
+					Node grandparentProj = succProj.getOuts()[0].first;
+					replaceNode(grandparentProj, new_r_Const(irg, returnValue));
+				}
+			}
+		}
+	}
+
+	void BasicInliner::inlineImpureFunction(Node callNode, ir_graph*, Tarval returnValue)
+	{
+		std::cerr << "Inlinining impure" << std::endl;
+		// if (canInline(calleeIrg, &returnValue))
+		{
+			for (auto outEdge : callNode.getOuts())
+			{
+				// M or T projection succeeding the call node
+				// we leave the memory chain alone
+				Node succProj = outEdge.first;
+
+				// projection for return value from call
+				if (succProj.getMode() == mode_T)
 				{
 					// replace this projection's successor with new Const node for the return value
 					Node grandparentProj = succProj.getOuts()[0].first;
