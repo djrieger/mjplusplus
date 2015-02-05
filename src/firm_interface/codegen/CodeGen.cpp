@@ -402,9 +402,9 @@ namespace firm
 				return false;
 		};
 
-		auto getPred = [&](ir_node * node)
+		auto getPred = [&](ir_node * block)
 		{
-			auto block = get_nodes_block(node);
+			//auto block = get_nodes_block(node);
 			ir_node* ret = NULL;
 
 			if (get_irn_arity(block) > 1)
@@ -413,9 +413,29 @@ namespace firm
 			return ret;
 		};
 
+		std::function<ir_node*(ir_node*)> traverseUntilLoopHead = [&](ir_node * node) -> ir_node*
+		{
+			if (isInLoopHeader(node))
+				return get_nodes_block(node);
+			else if (get_irg_start_block(irg) == get_nodes_block(node))
+				return NULL;
+			else {
+				ir_node* block = get_nodes_block(node);
+
+				for (int i = 0; i < get_irn_arity(block); ++i)
+				{
+					ir_node* res = traverseUntilLoopHead(get_irn_n(block, i));
+
+					if (res) return res;
+				}
+
+				return NULL;
+			}
+		};
+
 		auto handlePreLoopOperands = [&](ir_node * node, ir_node * block)
 		{
-			std::vector<ir_node*> ret;
+			std::vector<std::pair<ir_node*, ir_node*>> ret;
 
 			for (int i = 0; i < get_irn_arity(node); ++i)
 			{
@@ -434,7 +454,7 @@ namespace firm
 					if (get_irn_node_nr(childBlock) < get_irn_node_nr(block))
 					{
 						//ir_printf(" and it's before the loop; child: %F (%d)",child,get_irn_node_nr(child));
-						ret.push_back(child);
+						ret.push_back({child, traverseUntilLoopHead(child)});
 					}
 
 					//printf("\n");
@@ -442,26 +462,6 @@ namespace firm
 			}
 
 			return ret;
-		};
-
-		std::function<ir_node*(ir_node*)> traverseUntilLoopHead = [&](ir_node * node) -> ir_node*
-		{
-			if (isInLoopHeader(node))
-				return node;
-			else if (get_irg_start_block(irg) == get_nodes_block(node))
-				return NULL;
-			else {
-				ir_node* block = get_nodes_block(node);
-
-				for (int i = 0; i < get_irn_arity(block); ++i)
-				{
-					ir_node* res = traverseUntilLoopHead(get_irn_n(block, i));
-
-					if (res) return res;
-				}
-
-				return NULL;
-			}
 		};
 
 		compute_doms(irg);
@@ -472,7 +472,7 @@ namespace firm
 		for (auto& block : code)
 			ordered_blocks.push_back(block.first);
 
-		std::sort(ordered_blocks.begin(), ordered_blocks.end(), [](ir_node const * a, ir_node const * b)
+		std::sort(ordered_blocks.begin(), ordered_blocks.end(), [&](ir_node const * a, ir_node const * b)
 		{
 			ir_printf("cmp %+F %+F: %d %d, %d %d\n", a, b, block_dominates(a, b), block_postdominates(b, a), block_dominates(b, a), block_postdominates(a, b));
 
@@ -481,7 +481,24 @@ namespace firm
 			else if (block_dominates(b, a) || block_postdominates(a, b))
 				return false;
 			else
+			{
+				ir_node* head = ir_deepest_common_dominator((ir_node*) a, (ir_node*) b);
+				ir_node* rep_0 = (ir_node*) get_irn_link(code[head].control[0]);
+				ir_node* rep_1 = (ir_node*) get_irn_link(code[head].control[1]);
+
+				if (block_dominates(rep_0, a) && block_dominates(rep_1, b))
+				{
+					a = rep_0;
+					b = rep_1;
+				}
+				else if (block_dominates(rep_1, a) && block_dominates(rep_0, b))
+				{
+					a = rep_1;
+					b = rep_0;
+				}
+
 				return get_irn_node_nr(a) < get_irn_node_nr(b);
+			}
 		});
 
 		for (auto& b : ordered_blocks)
@@ -512,21 +529,32 @@ namespace firm
 					{
 						for (auto& x : cand)
 						{
-							ir_node* loopHeadNode = traverseUntilLoopHead(*it);
+							ir_node* loopHeadNode = traverseUntilLoopHead(block.control[0]);
+							ir_printf("x.s: %+F  lHN: %+F\n", x.second, loopHeadNode);
 
-							if (!loopHeadNode) continue;
+							if (loopHeadNode != x.second)
+							{
+								ir_node* lastLoopHead = loopHeadNode;
 
-							auto endNode = getPred(loopHeadNode);
-							//ir_printf("%F (%d)\t%F (%d)\t%F (%d)\n",x,get_irn_node_nr(x),loopHeadNode,get_irn_node_nr(loopHeadNode),endNode,get_irn_node_nr(endNode));
-							postprocessing.push_back({x, endNode});
-							endNodes.insert(endNode);
+								while (loopHeadNode != x.second)
+								{
+									lastLoopHead = loopHeadNode;
+									loopHeadNode = traverseUntilLoopHead(get_irn_n(loopHeadNode, 0));
+									ir_printf("-- x.s: %+F  lHN: %+F  last: %+F\n", x.second, loopHeadNode, lastLoopHead);
+								}
+
+								auto endNode = getPred(lastLoopHead);
+								//ir_printf("%+F\t%F (%d)\t%F (%d)\n",x.first, loopHeadNode,get_irn_node_nr(loopHeadNode),endNode,get_irn_node_nr(endNode));
+								postprocessing.push_back({x.first, endNode});
+								endNodes.insert(endNode);
+							}
 						}
 					}
 
 					if (isInLoopHeader(*it))
 					{
 
-						auto endNode = getPred(*it);
+						auto endNode = getPred(get_nodes_block(*it));
 						ir_printf("%F (%d)\t%F (%d)\n", *it, get_irn_node_nr(*it), endNode, get_irn_node_nr(endNode));
 						postprocessing.push_back({*it, endNode});
 						endNodes.insert(endNode);
@@ -1580,7 +1608,7 @@ namespace firm
 			// sub a, b stores b - a in b, same for cmp
 			// cmp a, b  /  jl foo   jumps when b < a
 			if (usage[irn].second[0].reg > 16 && usage[irn].second[1].reg > 16)
-				gen_mov(mode, get_irn_n(irn, 1), usage[irn].second[1].reg, RAX);
+				gen_mov(mode, get_irn_n(irn, 0), usage[irn].second[0].reg, RAX);
 
 			fprintf(out, "\tcmp%s ", operationSuffix(mode));
 			load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
@@ -1589,7 +1617,7 @@ namespace firm
 			if (usage[irn].second[0].reg > 16 && usage[irn].second[1].reg > 16)
 				fprintf(out, "%s", constraintToRegister(RAX, mode));
 			else
-				load_or_imm(get_irn_n(irn, 0), usage[irn].second[0].reg);
+				load_or_reg(mode, usage[irn].second[0].reg);
 
 			fprintf(out, "\n");
 			output_phis(block.phi, block);
@@ -1646,13 +1674,13 @@ namespace firm
 #endif
 					}
 					else
-						gen_mov(arg_mode, get_irn_n(irn, i), reads[i].reg, reads[i].constraint);
+						gen_mov(arg_mode, get_irn_n(irn, i), reads[i].reg + (reads[i].reg <= 16 ? 0 : 8), reads[i].constraint);
 				}
 				else
 				{
 					// remaining args on stack
 					fprintf(out, "\tmov%s ", os);
-					load_or_imm(get_irn_n(irn, i), reads[i].reg);
+					load_or_imm(get_irn_n(irn, i), reads[i].reg + (reads[i].reg <= 16 ? 0 : 8));
 
 					if (reads[i].reg > 16)
 					{
@@ -1902,7 +1930,7 @@ namespace firm
 
 			fprintf(out, "\tmov%s (%s), %s\n", os, !usage[irn].second[1].reg || usage[irn].second[1].reg > 16 ? rax : constraintToRegister(usage[irn].second[1].reg, mode_P), usage[irn].first[0].reg > 16 ? rdx : constraintToRegister(usage[irn].first[0].reg, mode));
 
-			if (usage[irn].second[1].reg > 16)
+			if (usage[irn].first[0].reg > 16)
 				gen_mov(mode, NULL, RDX, usage[irn].first[0].reg);
 		}
 		else if (is_Store(irn))
