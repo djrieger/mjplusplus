@@ -61,19 +61,10 @@ namespace firm
 			Worklist::walk_topological(calleeIrg, &validateMemoryChainAndGetReturnValueCallback, &info);
 			ir_tarval* tar = info.tar;
 
-			if (tarval_is_constant(tar))
-			{
-				// we have a valid memory chain
-				if (info.noMem)
-					inlinePureFunction(callNode, calleeIrg, Tarval(tar));
-				else
-					inlineImpureFunction(callNode, calleeIrg, Tarval(tar));
-			}
-			else
-			{
-				if (info.noMem)
-					inlineSimpleFunction(callNode, calleeIrg);
-			}
+			if (info.noMem)
+				inlineSimpleFunction(callNode, calleeIrg);
+			else if (tarval_is_constant(tar))
+				inlineImpureFunction(callNode, calleeIrg, Tarval(tar));
 		}
 	}
 
@@ -86,30 +77,8 @@ namespace firm
 		}
 	}
 
-	static ir_node* irn_copy_into_irg(ir_node* node, ir_graph* irg)
-	{
-		ir_op*    op    = get_irn_op(node);
-		ir_node*  block = op != op_Block ? get_nodes_block(node) : NULL;
-		dbg_info* dbgi  = get_irn_dbg_info(node);
-		ir_mode*  mode  = get_irn_mode(node);
-
-		int       arity = get_irn_arity(node);
-		ir_node** ins   = new ir_node*[arity - 1];
-
-		for (int i = 1; i < arity; ++i)
-			ins[i - 1] = get_irn_n(node, i);
-
-		ir_node*  res   = new_ir_node(dbgi, irg, block, op, mode, arity, ins);
-
-		/* copy the attributes */
-		copy_node_attr(irg, node, res);
-
-		return res;
-	}
-
 	static void copyNodesToNewGraphCallback(Node node, void* env)
 	{
-		// return;
 		CopyNodeInfo* info = (CopyNodeInfo*)env;
 		Node callNode = Node(info->callNode);
 		ir_node* destBlock = get_nodes_block(callNode);
@@ -172,7 +141,6 @@ namespace firm
 					// get result child
 					if (child.getMode() != mode_M)
 					{
-
 						for (auto outEdge : callNode.getOuts())
 						{
 							// M or T projection succeeding the call node
@@ -209,31 +177,18 @@ namespace firm
 			ir_printf("Success, no phis\n");
 			changed = true;
 
-			ir_entity* calleeEntity = get_irg_entity(calleeIrg);
-			ir_type* calleeType = get_entity_type(calleeEntity);
-			int paramsCount = get_method_n_params(calleeType);
-			ir_printf("Callee has %d params\n", paramsCount);
-
-			for (int i = 0; i < paramsCount; i++)
-			{
-				ir_node* argument = get_Call_param(callNode, i);
-				ir_type* parameterType = get_method_param_type(calleeType, i);
-				ir_mode* parameterMode = get_type_mode(parameterType);
-
-				ir_printf("arg %d = %F (%d), type %F, mode %F\n", i, argument, get_irn_node_nr(argument), parameterType, parameterMode);
-
-			}
-
+			// Copy nodes to new (calling) graph
 			CopyNodeInfo info;
 			info.destIrg = irg;
 			info.callNode = callNode;
 			Worklist::walk_topological(calleeIrg, &copyNodesToNewGraphCallback, &info);
 
+			// "Delete" old Call node (rewiring memory chain)
 			for (auto outEdge : callNode.getOuts())
 			{
 				Node succProj = outEdge.first;
 
-				// memory projection
+				// got a memory projection
 				if (succProj.getMode() == mode_M)
 				{
 					// rewire each successor of the memory projection to the memory projection above the call node
@@ -247,50 +202,20 @@ namespace firm
 		edges_deactivate(calleeIrg);
 	}
 
-	void BasicInliner::inlinePureFunction(Node callNode, ir_graph* calleeIrg, Tarval returnValue)
-	{
-		// if (canInline(calleeIrg, &returnValue))
-		{
-			for (auto outEdge : callNode.getOuts())
-			{
-				// M or T projection succeeding the call node
-				Node succProj = outEdge.first;
-
-				// memory projection
-				if (succProj.getMode() == mode_M)
-				{
-					// rewire each successor of the memory projection to the memory projection above the call node
-					for (auto projChild : succProj.getOuts())
-						projChild.first.setChild(projChild.second, get_Call_mem(callNode));
-				}
-				// projection for return value from call
-				else if (succProj.getMode() == mode_T)
-				{
-					// replace this projection's successor with new Const node for the return value
-					Node grandparentProj = succProj.getOuts()[0].first;
-					replaceNode(grandparentProj, new_r_Const(irg, returnValue));
-				}
-			}
-		}
-	}
-
 	void BasicInliner::inlineImpureFunction(Node callNode, ir_graph*, Tarval returnValue)
 	{
-		// if (canInline(calleeIrg, &returnValue))
+		for (auto outEdge : callNode.getOuts())
 		{
-			for (auto outEdge : callNode.getOuts())
-			{
-				// M or T projection succeeding the call node
-				// we leave the memory chain alone
-				Node succProj = outEdge.first;
+			// M or T projection succeeding the call node
+			// we leave the memory chain alone
+			Node succProj = outEdge.first;
 
-				// projection for return value from call
-				if (succProj.getMode() == mode_T)
-				{
-					// replace this projection's successor with new Const node for the return value
-					Node grandparentProj = succProj.getOuts()[0].first;
-					replaceNode(grandparentProj, new_r_Const(irg, returnValue));
-				}
+			// projection for return value from call
+			if (succProj.getMode() == mode_T)
+			{
+				// replace this projection's successor with new Const node for the return value
+				Node grandparentProj = succProj.getOuts()[0].first;
+				replaceNode(grandparentProj, new_r_Const(irg, returnValue));
 			}
 		}
 	}
