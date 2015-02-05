@@ -168,7 +168,7 @@ printf:\n\
 \tsub %%rcx,%%rax\n\
 \tadd $48, %%rax\n\
 \n\
-\tsubq $1, %%r8\n\
+\tdec %%r8\n\
 \tmovb %%al, (%%rsp, %%r8)\n\
 \n\
 \tmov %%rsi,%%rax\n\
@@ -184,7 +184,7 @@ printf:\n\
 \n\
 \ttest %%r10, %%r10\n\
 \tjns .write\n\
-\tsubq $1, %%r8\n\
+\tdec %%r8\n\
 \tmovb  $45, (%%rsp, %%r8)\n\
 \n\
 .write:\n\

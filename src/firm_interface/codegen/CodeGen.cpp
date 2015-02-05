@@ -1313,6 +1313,96 @@ namespace firm
 
 				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs2, 8 * usage[irn].first[0].reg - 8);
 			}
+			else if (is_Div(irn) && is_Const(dividend_node))
+			{
+				fprintf(out, "\tmov%s ", os);
+				load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+				fprintf(out, ", %s\n\tmov%s ", constraintToRegister(RAX, mode), os);
+				load_or_imm(get_irn_n(irn, 2), usage[irn].second[2].reg);
+				fprintf(out, ", %s\n\tc%s\n", rs, conv);
+				fprintf(out, "\tmov%s %%eax, %s\n", os, rs);
+
+				/*
+				 * Taken from http://www.hackersdelight.org/magic.htm
+				 */
+				auto hackers_delight = [] (int d) -> std::pair<int, unsigned int>
+				{
+					unsigned p;
+					unsigned ad, anc, delta, q1, r1, q2, r2, t;
+					const unsigned two31 = 0x80000000; // 2**31.
+					ad = abs(d);
+					t = two31 + ((unsigned)d >> 31);
+					anc = t - 1 - t % ad; // Absolute value of nc.
+					p = 31; // Init. p.
+					q1 = two31 / anc; // Init. q1 = 2**p/|nc|.
+					r1 = two31 - q1 * anc; // Init. r1 = rem(2**p, |nc|).
+					q2 = two31 / ad; // Init. q2 = 2**p/|d|.
+					r2 = two31 - q2 * ad; // Init. r2 = rem(2**p, |d|).
+
+					do {
+						p = p + 1;
+						q1 = 2 * q1; // Update q1 = 2**p/|nc|.
+						r1 = 2 * r1; // Update r1 = rem(2**p, |nc|.
+
+						if (r1 >= anc)   // (Must be an unsigned
+						{
+							q1 = q1 + 1; // comparison here).
+							r1 = r1 - anc;
+						}
+
+						q2 = 2 * q2; // Update q2 = 2**p/|d|.
+						r2 = 2 * r2; // Update r2 = rem(2**p, |d|.
+
+						if (r2 >= ad)   // (Must be an unsigned
+						{
+							q2 = q2 + 1; // comparison here).
+							r2 = r2 - ad;
+						}
+
+						delta = ad - r2;
+					}
+					while (q1 < delta || (q1 == delta && r1 == 0));
+
+					int M = q2 + 1;
+					return std::make_pair(M, p - 32);
+				};
+
+				auto foo = hackers_delight((int) get_tarval_long(get_Const_tarval(dividend_node)));
+				fprintf(out, "# begin \"smart\" div\n");
+				fprintf(out, "# replacing idiv%s %s\n", os, rs);
+				fprintf(out, "    mov    $0x%X, %%edx\n", foo.first);
+
+				// If foo.first is less than 0, we need an extra add instruction.
+				// The imul and sar instructions are the same, although ordered
+				// differently (the order is copied from gcc output).
+				if (foo.first < 0)
+				{
+					fprintf(out, "    imul   %%edx\n");
+					fprintf(out, "    add    %s, %%edx\n", rs);
+					fprintf(out, "    sar    $0x1f, %s\n", rs);
+				}
+				else
+				{
+					fprintf(out, "    sar    $0x1f, %s\n", rs);
+					fprintf(out, "    imul   %%edx\n");
+				}
+
+				fprintf(out, "    sar    $0x%X, %%edx\n", foo.second);
+
+				if (get_tarval_long(get_Const_tarval(dividend_node)) >= 0)
+				{
+					fprintf(out, "    mov    %%edx, %%eax\n");
+					fprintf(out, "    sub    %s, %%eax\n", rs);
+				}
+				else
+				{
+					fprintf(out, "    mov    %s, %%eax\n", rs);
+					fprintf(out, "    sub    %%edx, %%eax\n");
+				}
+
+				fprintf(out, "# end \"smart\" div\n");
+				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
+			}
 			else
 			{
 				fprintf(out, "\tmov%s ", os);
