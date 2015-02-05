@@ -41,7 +41,7 @@ namespace firm
 		}
 	}
 
-	bool BasicInliner::canInline(ir_graph* calleeIrg, long* constReturnValue)
+	void BasicInliner::tryInline(Node callNode, ir_graph* calleeIrg)
 	{
 		// ir_printf("[Proc %F] Checking if %F (%d) to %s can be inlined...\n", irg, callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
 
@@ -54,25 +54,21 @@ namespace firm
 			Worklist::walk_topological(calleeIrg, &validateMemoryChainAndGetReturnValueCallback, &info);
 			ir_tarval* tar = info.tar;
 
-			if (tar != tarval_bad && tarval_is_long(tar))
+			if (tarval_is_constant(tar))
 			{
 				// we have a valid memory chain
 				if (info.noMem)
 				{
-					*constReturnValue = Tarval(tar).getLong();
-					return true;
+					inlinePureFunction(callNode, calleeIrg, Tarval(tar));
 				}
 			}
 		}
-
-		return false;
 	}
 
-	void BasicInliner::inlineFunction(Node callNode, ir_graph* calleeIrg)
+	void BasicInliner::inlinePureFunction(Node callNode, ir_graph* calleeIrg, Tarval returnValue)
 	{
-		long returnValue;
-
-		if (canInline(calleeIrg, &returnValue))
+		std::cerr << "Inlinining" << std::endl;
+		// if (canInline(calleeIrg, &returnValue))
 		{
 			for (auto outEdge : callNode.getOuts())
 			{
@@ -91,7 +87,7 @@ namespace firm
 				{
 					// replace this projection's successor with new Const node for the return value
 					Node grandparentProj = succProj.getOuts()[0].first;
-					replaceNode(grandparentProj, new_r_Const_long(irg, mode_Is, returnValue));
+					replaceNode(grandparentProj, new_r_Const(irg, returnValue));
 				}
 			}
 		}
@@ -116,7 +112,7 @@ namespace firm
 				if (!calleeIrg)
 					throw "Callee uninitialized";
 				else
-					inlineFunction(node, calleeIrg);
+					tryInline(node, calleeIrg);
 			}
 		}
 	}
