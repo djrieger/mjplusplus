@@ -316,6 +316,10 @@ namespace firm
 		size_t args = get_method_n_params(get_entity_type(get_irg_entity(irg)));
 
 		regdump();
+
+		for (auto& block : code)
+			sort_phis(block.second.phi, block.first);
+
 		auto live_intervals = compute_live_intervals(irg);
 		allocate(irg, live_intervals);
 
@@ -340,6 +344,9 @@ namespace firm
 
 		if (args > 6)
 		{
+			printf("more than 6 args currently broken\n");
+			abort();
+			/*
 			// if arguments are passed on the stack:
 			// - filter out stack arguments and move them to the end of the register vector
 			// - seperate them from the remaining registers with an additional dummy register
@@ -357,9 +364,9 @@ namespace firm
 
 			for (auto& w : writes)
 			{
-				if (w.constraint >= STACK)
+				if (w.constraint >= STACK && w.reg > 16)
 					swap_register(gap + w.constraint - STACK + 1, w.reg);
-			}
+			}*/
 		}
 
 		regdump();
@@ -548,7 +555,7 @@ namespace firm
 		for (auto& head : postprocessing)
 		{
 			for (auto& r : usage[head.first].first)
-				live_intervals[r.reg].second = loopEndPos[head.second];
+				live_intervals[r.reg].second = std::max(live_intervals[r.reg].second, loopEndPos[head.second]);
 
 			for (auto& r : usage[head.first].second)
 				live_intervals[r.reg].second = std::max(live_intervals[r.reg].second, loopEndPos[head.second]);
@@ -1291,10 +1298,10 @@ namespace firm
 			if (!block.second.control.empty())
 			{
 				for (auto it = block.second.control.rbegin(); it != block.second.control.rend(); it++)
-					output_control(*it, block.second.phi);
+					output_control(*it, block.second);
 			}
 			else
-				output_phis(block.second.phi, block.first);
+				output_phis(block.second.phi, block.second);
 		}
 
 #ifndef __APPLE__
@@ -1302,7 +1309,7 @@ namespace firm
 #endif
 	}
 
-	void CodeGen::output_phis(std::vector<ir_node*>& phis, ir_node const* block)
+	void CodeGen::sort_phis(std::vector<ir_node*>& phis, ir_node* block)
 	{
 		if (phis.empty())
 			return;
@@ -1317,7 +1324,8 @@ namespace firm
 				break;
 		}
 
-		std::set<ir_node const*> circle_nodes;
+		code[block].phi_pred = pred;
+		auto& circle_nodes = code[block].circle_nodes;
 
 		// sort phis: phis belonging to the same loop or chain are grouped together
 		//   and within these groups ordered for easy copying
@@ -1430,6 +1438,15 @@ namespace firm
 
 			return head_a < head_b;
 		});
+	}
+
+	void CodeGen::output_phis(std::vector<ir_node*> const& phis, Codelist const& block)
+	{
+		if (phis.empty())
+			return;
+
+		auto const& pred = block.phi_pred;
+		auto const& circle_nodes = block.circle_nodes;
 
 		for (auto it = phis.rbegin() ; it != phis.rend(); it++)
 		{
@@ -1461,7 +1478,7 @@ namespace firm
 		}
 	}
 
-	void CodeGen::output_control(ir_node* irn, std::vector<ir_node*>& phis)
+	void CodeGen::output_control(ir_node* irn, Codelist const& block)
 	{
 		ir_fprintf(out, "\t# (%ld) %F\n", get_irn_node_nr(irn), irn);
 
@@ -1575,14 +1592,14 @@ namespace firm
 				load_or_imm(get_irn_n(irn, 0), usage[irn].second[0].reg);
 
 			fprintf(out, "\n");
-			output_phis(phis, get_nodes_block(irn));
+			output_phis(block.phi, block);
 			fprintf(out, "\tj%s .L_%s_%ld\n", cond, get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
 		else if (is_Cond(irn))
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		else if (is_Jmp(irn))
 		{
-			output_phis(phis, get_nodes_block(irn));
+			output_phis(block.phi, block);
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
 	}

@@ -49,6 +49,9 @@ namespace firm
 				std::vector<ir_node*> normal;
 				std::vector<ir_node*> phi;
 				std::vector<ir_node*> control;
+				//phi special
+				std::set<ir_node const*> circle_nodes;
+				int phi_pred;
 			};
 
 			static const Constraint arg_order[];
@@ -82,8 +85,9 @@ namespace firm
 			void gen_binary_op(ir_node* irn, ir_mode* mode, char const* op, bool commutative);
 
 			void output(ir_graph* irg);
-			void output_phis(std::vector<ir_node*>& phis, ir_node const* block);
-			void output_control(ir_node* irn, std::vector<ir_node*>& phis);
+			void sort_phis(std::vector<ir_node*>& phis, ir_node* block);
+			void output_phis(std::vector<ir_node*> const& phis, Codelist const& block);
+			void output_control(ir_node* irn, Codelist const& block);
 			void output_normal(ir_node* irn);
 
 		public:
