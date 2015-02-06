@@ -1409,15 +1409,16 @@ namespace firm
 					fprintf(out, "    sub    %%edx, %%eax\n");
 				}
 
-                // add mod code here
-                if (is_Mod(irn)) {
-                    fprintf(out, "    imul   $0x%lX, %%eax, %%eax\n", get_tarval_long(get_Const_tarval(dividend_node)));
-                    fprintf(out, "\tmov%s ", os);
-                    load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
-                    fprintf(out, ", %%edx # improve this with registers!\n");
-                    fprintf(out, "    sub    %%eax, %%edx\n");
-                }
-                fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
+				if (is_Mod(irn))
+				{
+					fprintf(out, "    imul   $0x%lX, %%eax, %%eax\n", get_tarval_long(get_Const_tarval(dividend_node)));
+					fprintf(out, "\tmov%s ", os);
+					load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+					fprintf(out, ", %%edx # improve this with registers!\n");
+					fprintf(out, "    sub    %%eax, %%edx\n");
+				}
+
+				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
 			}
 			else
 			{
