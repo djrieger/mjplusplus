@@ -1326,12 +1326,12 @@ namespace firm
 
 				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs2, 8 * usage[irn].first[0].reg - 8);
 			}
-			else if (is_Div(irn) && is_Const(dividend_node))
+			else if (is_Const(dividend_node))
 			{
 				fprintf(out, "\tmov%s ", os);
 				load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
-				fprintf(out, ", %s #foo\n", constraintToRegister(RAX, mode));
-				fprintf(out, "\tmov%s %%eax, %s #baz\n", os, rs);
+				fprintf(out, ", %s\n", constraintToRegister(RAX, mode));
+				fprintf(out, "\tmov%s %%eax, %s\n", os, rs);
 
 				/*
 				 * Taken from http://www.hackersdelight.org/magic.htm
@@ -1379,8 +1379,6 @@ namespace firm
 				};
 
 				auto foo = hackers_delight((int) get_tarval_long(get_Const_tarval(dividend_node)));
-				fprintf(out, "# begin \"smart\" div\n");
-				fprintf(out, "# replacing idiv%s %s\n", os, rs);
 				fprintf(out, "    mov    $0x%X, %%edx\n", foo.first);
 
 				// If foo.first is less than 0, we need an extra add instruction.
@@ -1411,8 +1409,15 @@ namespace firm
 					fprintf(out, "    sub    %%edx, %%eax\n");
 				}
 
-				fprintf(out, "# end \"smart\" div\n");
-				fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
+                // add mod code here
+                if (is_Mod(irn)) {
+                    fprintf(out, "    imul   $0x%lX, %%eax, %%eax\n", get_tarval_long(get_Const_tarval(dividend_node)));
+                    fprintf(out, "\tmov%s ", os);
+                    load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
+                    fprintf(out, ", %%edx # improve this with registers!\n");
+                    fprintf(out, "    sub    %%eax, %%edx\n");
+                }
+                fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, constraintToRegister(is_Div(irn) ? RAX : RDX, mode), 8 * usage[irn].first[0].reg - 8);
 			}
 			else
 			{
