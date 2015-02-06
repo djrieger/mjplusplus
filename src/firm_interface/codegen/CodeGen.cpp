@@ -1231,8 +1231,21 @@ namespace firm
 			ir_mode* mode = get_irn_mode(irn);
 			char const* os = operationSuffix(mode);
 			char const* rs = constraintToRegister(RAX, mode);
-			//sub a, b stores b - a in b -> output "op second first"
-			gen_bin_op(irn, mode, op);
+
+			ir_node* right = get_irn_n(irn, 1);
+
+			if (is_Add(irn) && is_Const(right) && get_tarval_long(get_Const_tarval(right)) == 1)
+			{
+				fprintf(out, "\tmov%s ", os);
+				load_or_imm(get_irn_n(irn, 0), usage[irn].second[0].reg);
+				fprintf(out, ", %s\n\t%s%s %s\n", rs, "inc", os, rs);
+			}
+			else
+			{
+				//sub a, b stores b - a in b -> output "op second first"
+				gen_bin_op(irn, mode, op);
+			}
+
 			fprintf(out, "\tmov%s %s, %zd(%%rsp)\n", os, rs, 8 * usage[irn].first[0].reg - 8);
 		}
 		else if (is_Minus(irn))
