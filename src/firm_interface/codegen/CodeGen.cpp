@@ -2,6 +2,7 @@
 #include <string>
 #include <set>
 #include <queue>
+#include <cassert>
 
 #include "CodeGen.hpp"
 
@@ -472,6 +473,60 @@ namespace firm
 		for (auto& block : code)
 			ordered_blocks.push_back(block.first);
 
+		std::function<bool(ir_node*, ir_node*)> followControlFlowUntil = [&](ir_node * srcBlock, ir_node * targetBlock) -> bool
+		{
+			assert(is_Block(srcBlock));
+			assert(is_Block(targetBlock));
+			bool targetBlockFound = false;
+			size_t i = 0;
+			auto& controlFlowNodes = code[srcBlock].control;
+			ir_printf("%+F has %zu control flow nodes\n", srcBlock, controlFlowNodes.size());
+			// if we have only one control flow node, it must be either a jmp or a return node.
+			if (controlFlowNodes.size() == 1)
+			{
+				assert(is_Jmp(controlFlowNodes[0]) || is_Return(controlFlowNodes[0]));
+				ir_node* block = FirmInterface::getInstance().getOuts(controlFlowNodes[i])[0].first;
+				block = (!is_Block(block)) ? get_nodes_block(block) : block;
+				targetBlockFound = followControlFlowUntil(block, targetBlock);
+			}
+			else if (controlFlowNodes.size() > 1)
+			{
+				// there might be cmp and cond nodes, only care about successors of conds
+				while (!targetBlockFound && i < controlFlowNodes.size())
+				{
+					if (is_Cond(controlFlowNodes[i]))
+					{
+						auto projs = FirmInterface::getInstance().getOuts(controlFlowNodes[i]);
+
+						//ir_printf("%+F with succ:\t",controlFlowNodes[i]);
+						for (auto& proj : projs)
+						{
+							auto succ = FirmInterface::getInstance().getOuts(proj.first)[0].first;
+							// make sure that this is really a block
+							succ = (!is_Block(succ)) ? get_nodes_block(succ) : succ;
+
+							//ir_printf("%+F, ",succ.first);
+							// if the successor is the end block, we look at the other successors
+							if (succ == get_irg_end_block(irg)) continue;
+
+							// call recursively on the successor node.
+							if (followControlFlowUntil(succ, targetBlock))
+							{
+								targetBlockFound = true;
+								break;
+							}
+						}
+
+						//ir_printf("\n");
+					}
+
+					++i;
+				}
+			}
+
+			return targetBlockFound;
+		};
+
 		std::sort(ordered_blocks.begin(), ordered_blocks.end(), [&](ir_node const * a, ir_node const * b)
 		{
 			ir_printf("cmp %+F %+F: %d %d, %d %d\n", a, b, block_dominates(a, b), block_postdominates(b, a), block_dominates(b, a), block_postdominates(a, b));
@@ -495,6 +550,25 @@ namespace firm
 				{
 					a = rep_1;
 					b = rep_0;
+				}
+
+				// the following two for-loops are there to check if one rep precedes the other.
+				// then we know that one block belongs to the loop condition.
+				for (int i = 0; i < get_irn_arity(a); ++i)
+				{
+					if (get_irn_n(a, i) == b) return false;
+				}
+
+				for (int i = 0; i < get_irn_arity(b); ++i)
+				{
+					if (get_irn_n(b, i) == a) return true;
+				}
+
+				// another criterion to identify loop bodies is, whether the block's control flow ends
+				// in a jump targeting the deepest common dominator (i.e. the loop head in this case)
+				if (isInLoopHeader(code[head].control[0]))
+				{
+					//return followControlFlowUntil((ir_node*)a,head);
 				}
 
 				return get_irn_node_nr(a) < get_irn_node_nr(b);
@@ -555,7 +629,7 @@ namespace firm
 					{
 
 						auto endNode = getPred(get_nodes_block(*it));
-						ir_printf("%F (%d)\t%F (%d)\n", *it, get_irn_node_nr(*it), endNode, get_irn_node_nr(endNode));
+						//ir_printf("%F (%d)\t%F (%d)\n", *it, get_irn_node_nr(*it), endNode, get_irn_node_nr(endNode));
 						postprocessing.push_back({*it, endNode});
 						endNodes.insert(endNode);
 					}
@@ -604,7 +678,7 @@ namespace firm
 		int i = 0;
 
 		for (auto& live : live_intervals)
-			if (i++ > 16)printf("(%zu, %zu) \tis ok? %s\n", live.first, live.second, (live.second < live.first) ? "no" : "yes");
+			if (i > 16)printf("%d: (%zu, %zu) \tis ok? %s\n", i++, live.first, live.second, (live.second < live.first) ? "no" : "yes");
 
 		return live_intervals;
 	}
