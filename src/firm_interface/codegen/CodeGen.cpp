@@ -473,105 +473,100 @@ namespace firm
 		for (auto& block : code)
 			ordered_blocks.push_back(block.first);
 
-		std::function<bool(ir_node*, ir_node*)> followControlFlowUntil = [&](ir_node * srcBlock, ir_node * targetBlock) -> bool
-		{
-			assert(is_Block(srcBlock));
-			assert(is_Block(targetBlock));
-			bool targetBlockFound = false;
-			size_t i = 0;
-			auto& controlFlowNodes = code[srcBlock].control;
-			ir_printf("%+F has %zu control flow nodes\n", srcBlock, controlFlowNodes.size());
-			// if we have only one control flow node, it must be either a jmp or a return node.
-			if (controlFlowNodes.size() == 1)
-			{
-				assert(is_Jmp(controlFlowNodes[0]) || is_Return(controlFlowNodes[0]));
-				ir_node* block = FirmInterface::getInstance().getOuts(controlFlowNodes[i])[0].first;
-				block = (!is_Block(block)) ? get_nodes_block(block) : block;
-				targetBlockFound = followControlFlowUntil(block, targetBlock);
-			}
-			else if (controlFlowNodes.size() > 1)
-			{
-				// there might be cmp and cond nodes, only care about successors of conds
-				while (!targetBlockFound && i < controlFlowNodes.size())
-				{
-					if (is_Cond(controlFlowNodes[i]))
-					{
-						auto projs = FirmInterface::getInstance().getOuts(controlFlowNodes[i]);
-
-						//ir_printf("%+F with succ:\t",controlFlowNodes[i]);
-						for (auto& proj : projs)
-						{
-							auto succ = FirmInterface::getInstance().getOuts(proj.first)[0].first;
-							// make sure that this is really a block
-							succ = (!is_Block(succ)) ? get_nodes_block(succ) : succ;
-
-							//ir_printf("%+F, ",succ.first);
-							// if the successor is the end block, we look at the other successors
-							if (succ == get_irg_end_block(irg)) continue;
-
-							// call recursively on the successor node.
-							if (followControlFlowUntil(succ, targetBlock))
-							{
-								targetBlockFound = true;
-								break;
-							}
-						}
-
-						//ir_printf("\n");
-					}
-
-					++i;
-				}
-			}
-
-			return targetBlockFound;
-		};
-
 		std::sort(ordered_blocks.begin(), ordered_blocks.end(), [&](ir_node const * a, ir_node const * b)
 		{
-			ir_printf("cmp %+F %+F: %d %d, %d %d\n", a, b, block_dominates(a, b), block_postdominates(b, a), block_dominates(b, a), block_postdominates(a, b));
+			ir_printf("cmp %+F %+F: %d %d, %d %d", a, b, block_dominates(a, b), block_postdominates(b, a), block_dominates(b, a), block_postdominates(a, b));
 
 			if (block_dominates(a, b) || (block_postdominates(b, a) && !block_dominates(b, a)))
+			{
+				printf("\n");
 				return true;
+			}
 			else if (block_dominates(b, a) || block_postdominates(a, b))
+			{
+				printf("\n");
 				return false;
+			}
 			else
 			{
+				// neither block (post)domionates the other -> different branches of an if or while, but blocks might also be additional condition blocks
 				ir_node* head = ir_deepest_common_dominator((ir_node*) a, (ir_node*) b);
-				ir_node* rep_0 = (ir_node*) get_irn_link(code[head].control[0]);
-				ir_node* rep_1 = (ir_node*) get_irn_link(code[head].control[1]);
 
-				if (block_dominates(rep_0, a) && block_dominates(rep_1, b))
+				// try picking a better representant for the blocks
+				ir_node* rep_a = get_nodes_block(get_irn_n(a, 0));
+
+				while (rep_a != head)
 				{
-					a = rep_0;
-					b = rep_1;
-				}
-				else if (block_dominates(rep_1, a) && block_dominates(rep_0, b))
-				{
-					a = rep_1;
-					b = rep_0;
+					if (block_dominates(rep_a, a))
+						a = rep_a;
+
+					rep_a = get_nodes_block(get_irn_n(rep_a, 0));
 				}
 
-				// the following two for-loops are there to check if one rep precedes the other.
-				// then we know that one block belongs to the loop condition.
-				for (int i = 0; i < get_irn_arity(a); ++i)
+				ir_node* rep_b = get_nodes_block(get_irn_n(b, 0));
+
+				while (rep_b != head)
 				{
-					if (get_irn_n(a, i) == b) return false;
+					if (block_dominates(rep_b, b))
+						b = rep_b;
+
+					rep_b = get_nodes_block(get_irn_n(rep_b, 0));
 				}
 
-				for (int i = 0; i < get_irn_arity(b); ++i)
-				{
-					if (get_irn_n(b, i) == a) return true;
-				}
+				ir_printf("  head: %+F, rep: %+F %+F", head, a, b);
 
-				// another criterion to identify loop bodies is, whether the block's control flow ends
-				// in a jump targeting the deepest common dominator (i.e. the loop head in this case)
-				if (isInLoopHeader(code[head].control[0]))
+				// from these representants try finding the other one between itself and head
+				auto find = [&](ir_node const * start, ir_node const * search)
 				{
-					//return followControlFlowUntil((ir_node*)a,head);
-				}
+					std::stack<ir_node const*> work;
+					std::set<ir_node const*> visited;
+					work.push(start);
+					visited.insert(start);
+					printf(" --");
 
-				return get_irn_node_nr(a) < get_irn_node_nr(b);
+					while (!work.empty())
+					{
+						ir_node const* current = work.top();
+						printf(" %zd", get_irn_node_nr(current));
+						work.pop();
+
+						if (current == search)
+							return true;
+						else if (current == head)
+							continue;
+
+						for (int i = 0; i < get_irn_arity(current); i++)
+						{
+							ir_node const* next = get_nodes_block(get_irn_n(current, i));
+
+							if (!visited.count(next))
+							{
+								work.push(next);
+								visited.insert(next);
+							}
+						}
+					}
+
+					return false;
+				};
+
+				// if found we have a defined order
+				if (find(a, b))
+				{
+					ir_printf("  1\n");
+					return false;
+				}
+				else if (find(b, a))
+				{
+					ir_printf("  0\n");
+					return true;
+				}
+				else
+				{
+					// otherwise order is arbitrary, pick node nr for consistency
+					ir_printf("  < %d\n", get_irn_node_nr(a) < get_irn_node_nr(b));
+					return get_irn_node_nr(a) < get_irn_node_nr(b);
+				}
 			}
 		});
 
@@ -678,7 +673,12 @@ namespace firm
 		int i = 0;
 
 		for (auto& live : live_intervals)
-			if (i > 16)printf("%d: (%zu, %zu) \tis ok? %s\n", i++, live.first, live.second, (live.second < live.first) ? "no" : "yes");
+		{
+			if (i > 16)
+				printf("%d/%2d: (%zu, %zu) \tis ok? %s\n", i, i - 16, live.first, live.second, (live.second < live.first) ? "no" : "yes");
+
+			i++;
+		}
 
 		return live_intervals;
 	}
