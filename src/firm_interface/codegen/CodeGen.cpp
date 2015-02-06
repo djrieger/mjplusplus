@@ -1330,10 +1330,8 @@ namespace firm
 			{
 				fprintf(out, "\tmov%s ", os);
 				load_or_imm(get_irn_n(irn, 1), usage[irn].second[1].reg);
-				fprintf(out, ", %s\n\tmov%s ", constraintToRegister(RAX, mode), os);
-				load_or_imm(get_irn_n(irn, 2), usage[irn].second[2].reg);
-				fprintf(out, ", %s\n\tc%s\n", rs, conv);
-				fprintf(out, "\tmov%s %%eax, %s\n", os, rs);
+				fprintf(out, ", %s #foo\n", constraintToRegister(RAX, mode));
+				fprintf(out, "\tmov%s %%eax, %s #baz\n", os, rs);
 
 				/*
 				 * Taken from http://www.hackersdelight.org/magic.htm
