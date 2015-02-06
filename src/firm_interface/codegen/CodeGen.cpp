@@ -345,29 +345,24 @@ namespace firm
 
 		if (args > 6)
 		{
-			printf("more than 6 args currently broken\n");
-			abort();
-			/*
 			// if arguments are passed on the stack:
 			// - filter out stack arguments and move them to the end of the register vector
 			// - seperate them from the remaining registers with an additional dummy register
 			//     (actually the gap is used for the return address pushed by call)
 			// if some stack arguments are unused we'll use their registers for other variables
-			size_t last = new_register();
+			size_t gap = new_register();
 
-			while (last <= args - 6 + 16)
+			for (size_t i = 0; i < args - 6; i++)
 				// ensure register allocation for stack arguments
-				last = new_register();
+				new_register();
 
-			size_t gap = last - (args - 6 + 16);
-			swap_register(gap, last);
 			auto& writes = usage[get_irg_start(irg)].first;
 
 			for (auto& w : writes)
 			{
 				if (w.constraint >= STACK && w.reg > 16)
 					swap_register(gap + w.constraint - STACK + 1, w.reg);
-			}*/
+			}
 		}
 
 		regdump();
@@ -1705,6 +1700,7 @@ namespace firm
 			fprintf(out, "\tjmp .L_%s_%ld\n", get_entity_name(get_irg_entity(get_irn_irg(irn))), get_irn_node_nr((ir_node*) get_irn_link(irn)));
 		}
 	}
+
 	void CodeGen::output_normal(ir_node* irn)
 	{
 		ir_fprintf(out, "\t# (%ld) %F\n", get_irn_node_nr(irn), irn);
@@ -1715,9 +1711,14 @@ namespace firm
 
 			for (auto& w : writes)
 			{
-				if (w.reg && w.constraint < STACK)
+				if (w.reg)
+				{
 					//TODO: get actual mode (from start <- proj T args <- proj wanted_mode arg_n ?)
-					gen_mov(mode_P, NULL, w.constraint, w.reg);
+					if (w.constraint < STACK)
+						gen_mov(mode_P, NULL, w.constraint, w.reg);
+					else if (w.reg <= 16)
+						gen_mov(mode_P, NULL, w.constraint + registers.size() - 17 - get_method_n_params(get_entity_type(get_irg_entity(get_irn_irg(irn)))) + 6, w.reg);
+				}
 			}
 		}
 		else if (is_Call(irn))
