@@ -255,7 +255,7 @@ namespace firm
 			assemble(irn);
 		}
 
-		auto regdump = [&]
+		/*auto regdump = [&]
 		{
 			printf("----------\n");
 			size_t i = 0;
@@ -295,7 +295,7 @@ namespace firm
 			}
 
 			printf("\n\n");
-		};
+		};*/
 
 		// register condensing
 		while (!free_registers.empty())
@@ -316,7 +316,7 @@ namespace firm
 
 		size_t args = get_method_n_params(get_entity_type(get_irg_entity(irg)));
 
-		regdump();
+		//regdump();
 
 		for (auto& block : code)
 			sort_phis(block.second.phi, block.first);
@@ -341,7 +341,7 @@ namespace firm
 			registers.resize(registers.size() - 1);
 		}
 
-		regdump();
+		//regdump();
 
 		if (args > 6)
 		{
@@ -365,9 +365,9 @@ namespace firm
 			}
 		}
 
-		regdump();
+		//regdump();
 
-		printf("\n=======================\n\n");
+		//printf("\n=======================\n\n");
 
 		output(irg);
 		edges_deactivate(irg);
@@ -436,13 +436,13 @@ namespace firm
 			if (!head)
 				return head;
 
-			ir_printf(" tulh: %+F pred: %+F dom: %+F", head, head ? getPred(head) : NULL, head ? ir_deepest_common_dominator(get_nodes_block(node), get_nodes_block(getPred(head))) : NULL);
+			//ir_printf(" tulh: %+F pred: %+F dom: %+F", head, head ? getPred(head) : NULL, head ? ir_deepest_common_dominator(get_nodes_block(node), get_nodes_block(getPred(head))) : NULL);
 			ir_node* dom = ir_deepest_common_dominator(get_nodes_block(node), get_nodes_block(getPred(head)));
 
 			if (dom != head)
 				return head;
 
-			ir_printf(" next: %+F", get_irn_n(head, 0));
+			//ir_printf(" next: %+F", get_irn_n(head, 0));
 			return traverseUntilAndVerifyLoopHead(get_irn_n(head, 0));
 		};
 
@@ -487,16 +487,16 @@ namespace firm
 
 		std::sort(ordered_blocks.begin(), ordered_blocks.end(), [&](ir_node const * a, ir_node const * b)
 		{
-			ir_printf("cmp %+F %+F: %d %d, %d %d", a, b, block_dominates(a, b), block_postdominates(b, a), block_dominates(b, a), block_postdominates(a, b));
+			//ir_printf("cmp %+F %+F: %d %d, %d %d", a, b, block_dominates(a, b), block_postdominates(b, a), block_dominates(b, a), block_postdominates(a, b));
 
 			if (block_dominates(a, b) || (block_postdominates(b, a) && !block_dominates(b, a)))
 			{
-				printf("\n");
+				//printf("\n");
 				return true;
 			}
 			else if (block_dominates(b, a) || block_postdominates(a, b))
 			{
-				printf("\n");
+				//printf("\n");
 				return false;
 			}
 			else
@@ -525,7 +525,7 @@ namespace firm
 					rep_b = get_nodes_block(get_irn_n(rep_b, 0));
 				}
 
-				ir_printf("  head: %+F, rep: %+F %+F", head, a, b);
+				//ir_printf("  head: %+F, rep: %+F %+F", head, a, b);
 
 				// from these representants try finding the other one between itself and head
 				auto find = [&](ir_node const * start, ir_node const * search)
@@ -534,12 +534,12 @@ namespace firm
 					std::set<ir_node const*> visited;
 					work.push(start);
 					visited.insert(start);
-					printf(" --");
+					//printf(" --");
 
 					while (!work.empty())
 					{
 						ir_node const* current = work.top();
-						printf(" %zd", get_irn_node_nr(current));
+						//printf(" %zd", get_irn_node_nr(current));
 						work.pop();
 
 						if (current == search)
@@ -565,27 +565,28 @@ namespace firm
 				// if found we have a defined order
 				if (find(a, b))
 				{
-					ir_printf("  1\n");
+					//ir_printf("  1\n");
 					return false;
 				}
 				else if (find(b, a))
 				{
-					ir_printf("  0\n");
+					//ir_printf("  0\n");
 					return true;
 				}
 				else
 				{
 					// otherwise order is arbitrary, pick node nr for consistency
-					ir_printf("  < %d\n", get_irn_node_nr(a) < get_irn_node_nr(b));
+					//ir_printf("  < %d\n", get_irn_node_nr(a) < get_irn_node_nr(b));
 					return get_irn_node_nr(a) < get_irn_node_nr(b);
 				}
 			}
 		});
 
-		for (auto& b : ordered_blocks)
+		/*for (auto& b : ordered_blocks)
 			ir_printf("%+F\n", b);
 
 		printf("program order:\n");
+		*/
 
 		std::vector<std::pair<ir_node*, ir_node*>> postprocessing;
 		std::set<ir_node*> endNodes;
@@ -602,7 +603,7 @@ namespace firm
 			{
 				for (auto it = list.rbegin(); it != list.rend(); it++, pos++)
 				{
-					ir_printf("%+F:\n", *it);
+					//ir_printf("%+F:\n", *it);
 					lastPos = pos;
 
 					auto cand = handlePreLoopOperands(*it, blockNode);
@@ -612,7 +613,7 @@ namespace firm
 						for (auto& x : cand)
 						{
 							ir_node* loopHeadNode = traverseUntilAndVerifyLoopHead(block.control[0]);
-							ir_printf("x.s: %+F  lHN: %+F\n", x.second, loopHeadNode);
+							//ir_printf("x.s: %+F  lHN: %+F\n", x.second, loopHeadNode);
 
 							if (loopHeadNode != x.second)
 							{
@@ -622,7 +623,7 @@ namespace firm
 								{
 									lastLoopHead = loopHeadNode;
 									loopHeadNode = traverseUntilAndVerifyLoopHead(get_irn_n(loopHeadNode, 0));
-									ir_printf("-- x.s: %+F  lHN: %+F  last: %+F\n", x.second, loopHeadNode, lastLoopHead);
+									//ir_printf("-- x.s: %+F  lHN: %+F  last: %+F\n", x.second, loopHeadNode, lastLoopHead);
 								}
 
 								auto endNode = getPred(lastLoopHead);
@@ -651,10 +652,15 @@ namespace firm
 							live_intervals[w.reg].first = pos;
 					}
 
-					for (auto& r : usage[*it].second)
-						live_intervals[r.reg].second = pos;
+					if (is_Phi(*it))
+						live_intervals[usage[*it].second[block.phi_pred].reg].second = pos;
+					else
+					{
+						for (auto& r : usage[*it].second)
+							live_intervals[r.reg].second = pos;
+					}
 
-					ir_printf("%zu: %F (%d); %s\n", pos, *it, get_irn_node_nr(*it), isInLoopHeader(*it) ? "is in loop header" : "");
+					//ir_printf("%zu: %F (%d); %s\n", pos, *it, get_irn_node_nr(*it), isInLoopHeader(*it) ? "is in loop header" : "");
 				}
 			};
 			handle_list(block.normal, pos);
@@ -672,14 +678,15 @@ namespace firm
 		}
 
 		ir_node* start = get_irg_start(irg);
-		ir_printf("last pos is %zu; %F (%d)'s live intervals get altered:\t", lastPos, start, get_irn_node_nr(start));
+		//ir_printf("last pos is %zu; %F (%d)'s live intervals get altered:\t", lastPos, start, get_irn_node_nr(start));
 
 		for (auto& w : usage[start].first)
 		{
-			ir_printf("[%zu(%zu,%zu to %zu)]\t", w.reg, live_intervals[w.reg].first, live_intervals[w.reg].second, lastPos);
+			//ir_printf("[%zu(%zu,%zu to %zu)]\t", w.reg, live_intervals[w.reg].first, live_intervals[w.reg].second, lastPos);
 			live_intervals[w.reg].second = lastPos;
 		}
 
+		/*
 		printf("\n");
 
 		printf("live intervals of virtual registers:\n");
@@ -692,6 +699,7 @@ namespace firm
 
 			i++;
 		}
+		*/
 
 		return live_intervals;
 	}
