@@ -1,0 +1,7 @@
+int transitions[][] = {{0, 0, 0, 7, 7, 7, 0, 0, ... },
+                       {0, 0, 2, 2, 2, 2, 2, 2, ... },
+                       ... };
+
+int lex(int state, int c) {
+    return transitions[state][c];
+}

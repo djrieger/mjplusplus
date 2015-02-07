@@ -5,14 +5,12 @@ namespace firm
 
 	GraphHandler::GraphHandler(ir_graph* irg): irg(irg)
 	{
-
 		newNodes = std::make_shared<std::set<ir_node*>>();
 		changed = false;
 	}
 
 	void GraphHandler::markOutNodesAsNew(ir_node* node)
 	{
-		ir_edge_t* edge = NULL;
 		foreach_out_edge(node, edge)
 		{
 			ir_node* srcNode = get_edge_src_irn(edge);

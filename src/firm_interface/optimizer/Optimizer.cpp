@@ -5,17 +5,18 @@
 #include "ControlFlowOptimizer.hpp"
 #include "LocalOptimizer.hpp"
 #include "LoadStoreOptimizer.hpp"
+#include "BasicInliner.hpp"
 #include "Optimizer.hpp"
 #include "../Worklist.hpp"
 #include "../FirmInterface.hpp"
 
 namespace firm
 {
-	Optimizer::Optimizer(ir_graph* irg): irg(irg)
+	Optimizer::Optimizer()
 	{
 		changed = false;
 		max_iterations = 100;
-		optimizationFlag = DEFAULT;
+		optimizationFlag = FirmInterface::OptimizationFlags::DEFAULT;
 	}
 
 	void Optimizer::setOptimizationFlag(int flag)
@@ -30,26 +31,47 @@ namespace firm
 
 	void Optimizer::run()
 	{
-		if (optimizationFlag >= DEFAULT)
+		if (optimizationFlag >= FirmInterface::OptimizationFlags::DEFAULT)
 		{
 			unsigned int iterations_count = 0;
 
 			do
 			{
 				changed = false;
-				changed = foldConstants() || changed;
-				changed = optimizeLocal() || changed;
-				FirmInterface::getInstance().handleConvNodes(irg);
-				changed = eliminateCommonSubexpressions() || changed;
-				changed = optimizeLoadStore() || changed;
-				changed = optimizeControlFlow() || changed;
-				remove_unreachable_code(irg);
-				remove_bads(irg);
+
+				for (size_t i = 0; i < get_irp_n_irgs(); i++)
+				{
+					irg = get_irp_irg(i);
+
+					if (iterations_count == 0)
+						FirmInterface::getInstance().outputFirmGraph(irg, "orig");
+
+					changed = foldConstants() || changed;
+					changed = optimizeInlining() || changed;
+					changed = optimizeLocal() || changed;
+					FirmInterface::getInstance().handleConvNodes(irg);
+					changed = eliminateCommonSubexpressions() || changed;
+					changed = optimizeLoadStore() || changed;
+					changed = optimizeControlFlow() || changed;
+					remove_bads(irg);
+					remove_unreachable_code(irg);
+
+					irg_verify(irg);
+				}
 			}
 			while (changed && ++iterations_count < max_iterations);
 
-			optimizeAddressMode();
-			optimizeBitFiddling();
+			for (size_t i = 0; i < get_irp_n_irgs(); i++)
+			{
+				irg = get_irp_irg(i);
+
+				if (!(optimizationFlag & FirmInterface::OptimizationFlags::FIRM_COMPATIBLE))
+					optimizeAddressMode();
+
+				optimizeBitFiddling();
+
+				FirmInterface::getInstance().outputFirmGraph(irg, "optimized");
+			}
 		}
 	}
 
@@ -148,5 +170,17 @@ namespace firm
 		edges_deactivate(irg);
 
 		return bfo.graphChanged();
+	}
+
+	bool Optimizer::optimizeInlining()
+	{
+		BasicInliner bi(irg);
+		firm::Worklist worklist(irg, bi);
+
+		edges_activate(irg);
+		worklist.run();
+		edges_deactivate(irg);
+
+		return bi.graphChanged();
 	}
 }

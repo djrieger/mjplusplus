@@ -45,12 +45,11 @@ namespace firm
 			bool optimizeAddressMode();
 			bool optimizeBitFiddling();
 
+			bool optimizeInlining();
+
 		public:
 
-			static const int NONE = 0;
-			static const int DEFAULT = 1;
-
-			Optimizer(ir_graph* irg);
+			Optimizer();
 			void setOptimizationFlag(int flag);
 			void setMaxIterations(int max);
 			void run();

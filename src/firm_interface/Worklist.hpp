@@ -25,6 +25,8 @@ namespace firm
 			Worklist(ir_graph* functionGraph, GraphHandler& handler);
 			//returns whether optimization happend
 			bool run();
+
+			static void walk_topological(ir_graph* irg, std::function<void (ir_node*, void*)> walker, void* env);
 	};
 }
 

@@ -246,7 +246,7 @@ namespace firm
 
 	bool ConstantFolder::replaceGeneric(Node node)
 	{
-		if (!is_Const(node) && !is_Div(node) && !is_Mod(node) && node.getTarval().isNumericOrBool() && node.getMode() != mode_M)
+		if (!is_Return(node) && !is_Const(node) && !is_Div(node) && !is_Mod(node) && node.getTarval().isNumericOrBool() && node.getMode() != mode_M)
 		{
 			ir_node* constNode = new_r_Const_long(irg, node.getMode(), node.getTarval().getLong());
 			replaceNode(node, constNode, true);
@@ -258,6 +258,12 @@ namespace firm
 
 	void ConstantFolder::cleanUp(Node node)
 	{
+		// if (is_Return(node))
+		// // {
+		// 	ir_printf("-- %F (%d): ", node, get_irn_node_nr(node));
+		// 	std::cout << node.getTarval().toString() << std::endl;
+		// }
+
 		if (!replaceGeneric(node))
 		{
 			if (is_Div(node) || is_Mod(node)) replaceDivMod(node);

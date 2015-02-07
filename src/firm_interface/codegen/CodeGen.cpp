@@ -1154,13 +1154,13 @@ namespace firm
 			{
 				if (current_reg)
 				{
-					ir_printf("\n!!!!!!!!!!!!!\n(%ld) %F\n\tthis shouldn't use a register...\n", get_irn_node_nr(irn), irn);
+					// ir_printf("\n!!!!!!!!!!!!!\n(%ld) %F\n\tthis shouldn't use a register...\n", get_irn_node_nr(irn), irn);
 					abort();
 				}
 			}
 			else
 			{
-				ir_printf("\n(%ld) %F\n\tnot implemented yet\n", get_irn_node_nr(irn), irn);
+				// ir_printf("\n(%ld) %F\n\tnot implemented yet\n", get_irn_node_nr(irn), irn);
 				abort();
 			}
 		}
@@ -1760,11 +1760,15 @@ namespace firm
 					// first 6 args in registers
 					if (i == 2 && is_println)
 					{
+						if (!(FirmInterface::getInstance().getOptimizationFlag()
+						        & FirmInterface::OptimizationFlags::CUSTOM_PRINT))
+						{
 #ifndef __APPLE__
-						fprintf(out, "\tmovq $.LC0, %%rdi\n");
+							fprintf(out, "\tmovq $.LC0, %%rdi\n");
 #else
-						fprintf(out, "\tmovabs $.LC0, %%rdi\n");
+							fprintf(out, "\tmovabs $.LC0, %%rdi\n");
 #endif
+						}
 					}
 					else
 						gen_mov(arg_mode, get_irn_n(irn, i), reads[i].reg + (reads[i].reg <= 16 ? 0 : 8), reads[i].constraint);
@@ -1785,15 +1789,23 @@ namespace firm
 				}
 			}
 
+#ifdef __APPLE__
+# define PREFIX "_"
+#else
+# define PREFIX ""
+#endif
+
 			if (is_println)
 			{
-				fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
-#ifdef __APPLE__
-				fprintf(out, "\tcall _printf\n");
-#else
-				fprintf(out, "\tcall printf\n");
-#endif
-				fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
+				if (FirmInterface::getInstance().getOptimizationFlag()
+				        & FirmInterface::OptimizationFlags::CUSTOM_PRINT)
+					fprintf(out, "\tcall printf\n");
+				else
+				{
+					fprintf(out, "\tpushq %%rsp\n\tpushq (%%rsp)\n\tandq $-16, %%rsp\n");
+					fprintf(out, "\tcall " PREFIX "printf\n");
+					fprintf(out, "\tmovq 8(%%rsp), %%rsp\n");
+				}
 
 				//restore registers
 				for (auto it = to_push.rbegin(); it != to_push.rend(); it++)
@@ -1804,11 +1816,7 @@ namespace firm
 				if (get_irn_arity(irn) > 8)
 					fprintf(out, "\tsub $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
 
-#ifdef __APPLE__
-				fprintf(out, "\tcall _%s\n", get_entity_name(get_Call_callee(irn)));
-#else
-				fprintf(out, "\tcall %s\n", get_entity_name(get_Call_callee(irn)));
-#endif
+				fprintf(out, "\tcall " PREFIX "%s\n", get_entity_name(get_Call_callee(irn)));
 
 				if (get_irn_arity(irn) > 8)
 					fprintf(out, "\tadd $%zd, %%rsp\n", (ssize_t) 8 * (get_irn_arity(irn) - 8));
@@ -1949,6 +1957,100 @@ namespace firm
 					}
 				}
 			}
+			else if (is_Const(dividend_node))
+			{
+				gen_mov(mode, get_irn_n(irn, 1), usage[irn].second[1].reg, RAX);
+				gen_mov(mode, NULL, RAX, RCX);
+
+				char const* rax = constraintToRegister(RAX, mode);
+				char const* rcx = constraintToRegister(RCX, mode);
+				char const* rdx = constraintToRegister(RDX, mode);
+
+				/*
+				 * Taken from http://www.hackersdelight.org/magic.htm
+				 */
+				auto hackers_delight = [] (int d) -> std::pair<int, unsigned int>
+				{
+					unsigned p;
+					unsigned ad, anc, delta, q1, r1, q2, r2, t;
+					const unsigned two31 = 0x80000000; // 2**31.
+					ad = abs(d);
+					t = two31 + ((unsigned)d >> 31);
+					anc = t - 1 - t % ad; // Absolute value of nc.
+					p = 31; // Init. p.
+					q1 = two31 / anc; // Init. q1 = 2**p/|nc|.
+					r1 = two31 - q1 * anc; // Init. r1 = rem(2**p, |nc|).
+					q2 = two31 / ad; // Init. q2 = 2**p/|d|.
+					r2 = two31 - q2 * ad; // Init. r2 = rem(2**p, |d|).
+
+					do {
+						p = p + 1;
+						q1 = 2 * q1; // Update q1 = 2**p/|nc|.
+						r1 = 2 * r1; // Update r1 = rem(2**p, |nc|.
+
+						if (r1 >= anc)   // (Must be an unsigned
+						{
+							q1 = q1 + 1; // comparison here).
+							r1 = r1 - anc;
+						}
+
+						q2 = 2 * q2; // Update q2 = 2**p/|d|.
+						r2 = 2 * r2; // Update r2 = rem(2**p, |d|.
+
+						if (r2 >= ad)   // (Must be an unsigned
+						{
+							q2 = q2 + 1; // comparison here).
+							r2 = r2 - ad;
+						}
+
+						delta = ad - r2;
+					}
+					while (q1 < delta || (q1 == delta && r1 == 0));
+
+					int M = q2 + 1;
+					return std::make_pair(M, p - 32);
+				};
+
+				auto foo = hackers_delight((int) get_tarval_long(get_Const_tarval(dividend_node)));
+				fprintf(out, "\tmov%s $%d, %s\n", os, foo.first, rdx);
+
+				// If foo.first is less than 0, we need an extra add instruction.
+				// The imul and sar instructions are the same, although ordered
+				// differently (the order is copied from gcc output).
+				if (foo.first < 0)
+				{
+					fprintf(out, "\timul%s %s\n", os, rdx);
+					fprintf(out, "\tadd%s %s, %s\n", os, rcx, rdx);
+					fprintf(out, "\tsar%s $%u, %s\n", os, get_mode_size_bits(mode) - 1, rcx);
+				}
+				else
+				{
+					fprintf(out, "\tsar%s $%u, %s\n", os, get_mode_size_bits(mode) - 1, rcx);
+					fprintf(out, "\timul%s %s\n", os, rdx);
+				}
+
+				fprintf(out, "\tsar%s $%u, %s\n", os, foo.second, rdx);
+
+				if (get_tarval_long(get_Const_tarval(dividend_node)) >= 0)
+				{
+					fprintf(out, "\tmov%s %s, %s\n", os, rdx, rax);
+					fprintf(out, "\tsub%s %s, %s\n", os, rcx, rax);
+				}
+				else
+				{
+					fprintf(out, "\tmov%s %s, %s\n", os, rcx, rax);
+					fprintf(out, "\tsub%s %s, %s\n", os, rdx, rax);
+				}
+
+				if (is_Mod(irn))
+				{
+					fprintf(out, "\timul%s $%ld, %s, %s\n", os, get_tarval_long(get_Const_tarval(dividend_node)), rax, rax);
+					gen_mov(mode, get_irn_n(irn, 1), usage[irn].second[1].reg, RDX);
+					fprintf(out, "\tsub%s %s, %s\n", os, rax, rdx);
+				}
+
+				gen_mov(mode, NULL, is_Div(irn) ? RAX : RDX, usage[irn].first[0].reg);
+			}
 			else
 			{
 				gen_mov(mode, get_irn_n(irn, 1), usage[irn].second[1].reg, RAX);
@@ -2051,7 +2153,7 @@ namespace firm
 		}
 		else
 		{
-			ir_printf("\nNo idea how to emit code for (%ld) %F\n", get_irn_node_nr(irn), irn);
+			// ir_printf("\nNo idea how to emit code for (%ld) %F\n", get_irn_node_nr(irn), irn);
 			abort();
 		}
 	}

@@ -30,7 +30,7 @@ namespace firm
 		ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
 		set_modeP(modeP);
 
-		optimizationFlag = Optimizer::DEFAULT;
+		optimizationFlag = OptimizationFlags::DEFAULT;
 		lea = new_ir_op(get_next_ir_opcodes(1), "Lea", op_pin_state_floats, irop_flag_none, oparity_variable, 0, 0);
 	}
 
@@ -52,6 +52,11 @@ namespace firm
 	void FirmInterface::setOptimizationFlag(int flag)
 	{
 		optimizationFlag = flag;
+	}
+
+	int FirmInterface::getOptimizationFlag() const
+	{
+		return optimizationFlag;
 	}
 
 	void FirmInterface::convert(shptr<ast::Program> program)
@@ -134,10 +139,77 @@ _COut_Mprintln:\n\
 			throw;
 		}
 
+		if (optimizationFlag & OptimizationFlags::CUSTOM_PRINT)
+		{
+			fprintf(o,
+			        "\t.p2align 4,,15\n\
+\t.globl printf\n\
+\t.type printf. @function\n\
+printf:\n\
+\n\
+\tsub $12, %%rsp\n\
+\tmov $11, %%r8\n\
+\tmovb $10, (%%rsp, %%r8)\n\
+\tmovsxl %%esi, %%r10\n\
+\tmovsxl %%esi, %%rsi\n\
+\ttest %%rsi, %%rsi\n\
+\tjns .do\n\
+\timul $-1, %%rsi\n\
+\n\
+.do:\n\
+\n\
+\tmov %%rsi, %%rax\n\
+\timul $0x66666667,%%rax,%%rcx\n\
+\tmov %%rcx,%%rdx\n\
+\tshr $0x3f,%%rdx\n\
+\tsar $0x22,%%rcx\n\
+\tadd %%rdx,%%rcx\n\
+\timul $0xa,%%rcx,%%rcx\n\
+\tsub %%rcx,%%rax\n\
+\tadd $48, %%rax\n\
+\n\
+\tdec %%r8\n\
+\tmovb %%al, (%%rsp, %%r8)\n\
+\n\
+\tmov %%rsi,%%rax\n\
+\timul $0x66666667,%%rax,%%rax\n\
+\tmov %%rax,%%rcx\n\
+\tshr $0x3f,%%rcx\n\
+\tsar $0x22,%%rax\n\
+\tadd %%rcx,%%rax\n\
+\tmov %%rax,%%rsi\n\
+\n\
+\tcmp $0, %%rsi\n\
+\tjg .do\n\
+\n\
+\ttest %%r10, %%r10\n\
+\tjns .write\n\
+\tdec %%r8\n\
+\tmovb  $45, (%%rsp, %%r8)\n\
+\n\
+.write:\n\
+\tmovq $1, %%rax\n\
+\tmovq $1, %%rdi\n\
+\tleaq (%%rsp, %%r8), %%rsi\n\
+\tmovq $12, %%rdx\n\
+\tsub %%r8, %%rdx\n\
+\tsyscall\n\
+\n\
+\tadd $12, %%rsp\n\
+\tret\n\
+\t.size printf, .-printf\n\
+"
+			       );
+		}
+		else
+		{
 #ifndef __APPLE__
-		fprintf(o, "\t.section .rodata.str1.1,\"aMS\",@progbits,1\n");
+			fprintf(o, "\t.section .rodata.str1.1,\"aMS\",@progbits,1\n");
 #endif
-		fprintf(o, ".LC0:\n\t.string \"%%d\\n\"\n");
+			fprintf(o, ".LC0:\n\t.string \"%%d\\n\"\n");
+		}
+
+
 		fclose(o);
 	}
 
@@ -147,13 +219,11 @@ _COut_Mprintln:\n\
 			dump_ir_graph(irg, suffix.c_str());
 	}
 
-	void FirmInterface::optimize(ir_graph* irg)
+	void FirmInterface::optimizeGraphs()
 	{
-		outputFirmGraph(irg, "orig");
-		Optimizer opt(irg);
+		Optimizer opt;
 		opt.setOptimizationFlag(optimizationFlag);
 		opt.run();
-		outputFirmGraph(irg, "optimized");
 	}
 
 	void FirmInterface::handleConvNodes(ir_graph* irg)
