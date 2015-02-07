@@ -429,6 +429,23 @@ namespace firm
 			}
 		};
 
+		std::function<ir_node*(ir_node*)> traverseUntilAndVerifyLoopHead = [&](ir_node * node)
+		{
+			ir_node* head = traverseUntilLoopHead(node);
+
+			if (!head)
+				return head;
+
+			ir_printf(" tulh: %+F pred: %+F dom: %+F", head, head ? getPred(head) : NULL, head ? ir_deepest_common_dominator(get_nodes_block(node), get_nodes_block(getPred(head))) : NULL);
+			ir_node* dom = ir_deepest_common_dominator(get_nodes_block(node), get_nodes_block(getPred(head)));
+
+			if (dom != head)
+				return head;
+
+			ir_printf(" next: %+F", get_irn_n(head, 0));
+			return traverseUntilAndVerifyLoopHead(get_irn_n(head, 0));
+		};
+
 		auto handlePreLoopOperands = [&](ir_node * node, ir_node * block)
 		{
 			std::vector<std::pair<ir_node*, ir_node*>> ret;
@@ -450,7 +467,7 @@ namespace firm
 					if (get_irn_node_nr(childBlock) < get_irn_node_nr(block))
 					{
 						//ir_printf(" and it's before the loop; child: %F (%d)",child,get_irn_node_nr(child));
-						ret.push_back({child, traverseUntilLoopHead(child)});
+						ret.push_back({child, traverseUntilAndVerifyLoopHead(child)});
 					}
 
 					//printf("\n");
@@ -585,6 +602,7 @@ namespace firm
 			{
 				for (auto it = list.rbegin(); it != list.rend(); it++, pos++)
 				{
+					ir_printf("%+F:\n", *it);
 					lastPos = pos;
 
 					auto cand = handlePreLoopOperands(*it, blockNode);
@@ -593,7 +611,7 @@ namespace firm
 					{
 						for (auto& x : cand)
 						{
-							ir_node* loopHeadNode = traverseUntilLoopHead(block.control[0]);
+							ir_node* loopHeadNode = traverseUntilAndVerifyLoopHead(block.control[0]);
 							ir_printf("x.s: %+F  lHN: %+F\n", x.second, loopHeadNode);
 
 							if (loopHeadNode != x.second)
@@ -603,7 +621,7 @@ namespace firm
 								while (loopHeadNode != x.second)
 								{
 									lastLoopHead = loopHeadNode;
-									loopHeadNode = traverseUntilLoopHead(get_irn_n(loopHeadNode, 0));
+									loopHeadNode = traverseUntilAndVerifyLoopHead(get_irn_n(loopHeadNode, 0));
 									ir_printf("-- x.s: %+F  lHN: %+F  last: %+F\n", x.second, loopHeadNode, lastLoopHead);
 								}
 
