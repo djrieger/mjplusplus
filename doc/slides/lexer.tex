@@ -1,0 +1,89 @@
+\begin{frame}
+    \frametitle{Lexikalische Analyse}
+    \framesubtitle{Überblick}
+    \lstinputlisting{foo.mj}
+    \pause
+     \begin{tabular}{lllllll}
+         \visible<2->{\token{class}} & \visible<3->{\token{Foo}} & \visible<4->{\token{\{}} & \visible<5->{\token{public}} & \visible<6->{\token{int}} & \visible<7->{\token{bar}} & \visible<8->{\token{(}}\\
+         \only<2>{\texttt{KEYWORD\_CLASS}} & \only<3>{\texttt{IDENT}} & \only<4>{\texttt{L\_BRACE}} & \only<5>{\texttt{KEYWORD\_PUBLIC}} & \only<6>{\texttt{KEYWORD\_INT}} & \only<7>{\texttt{IDENT}} & \only<8>{\texttt{L\_PAREN}}
+     \end{tabular}
+\end{frame}
+
+\begin{frame}[t]
+    \frametitle{Lexikalische Analyse}
+    \framesubtitle{Ansätze}
+    \vskip .4cm
+    Endlicher Automat
+    \begin{itemize}
+        \item<2-> Ausprogrammieren
+            \only<2>{
+                \lstinputlisting[basicstyle=\ttfamily\scriptsize,language=C]{lexer-switch-case.code}
+            }
+        \item<3-> Tabelle
+            \only<4->{
+            \begin{tikzpicture}[overlay]
+                \node at (.8,.2) {\includegraphics[angle=15,origin=c,width=1.5cm,keepaspectratio=true]{logos/mj++logo.png}};
+            \end{tikzpicture}
+        }
+            \lstinputlisting[basicstyle=\ttfamily\scriptsize,language=C]{lexer-table.code}
+        \item<5-> woher kommt die Tabelle?
+            \begin{itemize}
+                \item<6-> Graph zusammenklicken $\Rightarrow$ daraus Tabelle bauen
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Lexikalische Analyse}
+    \begin{tikzpicture}
+        \node[diamond,draw=black,fill=green!40] (0) at (0,0) {0};
+        \node[diamond,draw=black,fill=green!40] (1) at (-2,2) {1};
+        \node[diamond,draw=black,fill=green!40] (2) at (-4,0) {2};
+        \node[diamond,draw=black,fill=green!40] (4) at (-2,-2) {4};
+        \node[diamond,draw=black,fill=green!40] (3) at (5,2) {3};
+        \node[diamond,draw=black,fill=green!40] (20) at (5,-2) {20};
+        \draw[->] (0) to              node[midway,anchor=north west] {\texttt{/}} (4);
+        \draw[->] (4) to              node[midway,anchor=north east] {\texttt{*}} (2);
+        \draw[->] (2) to [bend right] node[midway,anchor=north west] {\texttt{*}} (1);
+        \draw[->] (1) to [bend right] node[midway,anchor=north west] {}           (2);
+        \draw[->] (1) to              node[midway,anchor=south west] {\texttt{/}} (0);
+        \draw[->] (0) to              node[very near end,anchor=north east] {\texttt{[a..g]ilnprstvw}} (20);
+        \draw[->] (0) to node[very near end,anchor=south east] {\texttt{[A-Z]\_hjkmoquxyz}} (3);
+        \draw[->] (20) to node[midway,anchor=east] {\texttt{[0-9][A-Z]\_jq}} (3);
+        \draw[->] (3) to [loop above] node {\texttt{[0-9][A-Z]\_[a-z]}} (3);
+    \end{tikzpicture}
+\end{frame}
+
+\begin{frame}[t]
+    \frametitle{Lexikalische Analyse}
+    \vskip 1.8cm
+    Zwei Ansätze:
+    \begin{itemize}
+        \item<1-> Push-Interface
+            \only<1>{
+                \\[3pt] \code{void handle\_token(token t);}
+                \\[3pt] \code{void lex(F callback);}
+            }
+        \item<2-> Pull-Ansatz
+            \only<3>{
+                \begin{tikzpicture}[overlay]
+                    \node at (.8,.2) {\includegraphics[angle=10,origin=c,width=1.5cm,keepaspectratio=true]{logos/mj++logo.png}};
+                \end{tikzpicture}
+            }
+            \only<2->{
+                \\[3pt] \code{token get\_next\_token();}
+            }
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Lexikalische Analyse}
+    \framesubtitle{Erfahrung}
+    \begin{itemize}
+        \item ohne Keyword-Unterscheidung sehr schnell
+        \item Keyword-Unterscheidung aufwändig\\[1pt]
+            \hskip .5cm $\Rightarrow$ dedizierte Keyword-Tabelle
+        \item für Operatoren kleine Maps
+        \item Graph-Dumping zum Debuggen sinnvoll
+    \end{itemize}
+\end{frame}

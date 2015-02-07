@@ -53,11 +53,6 @@ namespace firm
 
 			// handle the Conv nodes of the graph
 			FirmInterface::getInstance().handleConvNodes(irg);
-
-			// optimize Firm graph
-			FirmInterface::getInstance().optimize(irg);
-
-			irg_verify(irg);
 		}
 
 		void MemberVisitor::visit(shptr<const ast::MethodDeclaration> methodDeclaration)

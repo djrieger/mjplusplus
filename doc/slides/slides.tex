@@ -1,0 +1,134 @@
+%% LaTeX-Beamer template for KIT design
+%% by Erik Burger, Christian Hammer
+%% title picture by Klaus Krogmann
+%%
+%% version 2.1
+%%
+%% mostly compatible to KIT corporate design v2.0
+%% http://intranet.kit.edu/gestaltungsrichtlinien.php
+%%
+%% Problems, bugs and comments to
+%% burger@kit.edu
+
+\documentclass[18pt]{beamer}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+%% SLIDE FORMAT
+
+% use 'beamerthemekit' for standard 4:3 ratio
+% for widescreen slides (16:9), use 'beamerthemekitwide'
+
+\usepackage{templates/beamerthemekit}
+% \usepackage{templates/beamerthemekitwide}
+
+% DEUTSCHE SPRACHE EINBINDEN
+\usepackage[utf8]{inputenc}
+
+% Deutsche Ausgabe anpassen
+\usepackage[T1]{fontenc}
+
+%% TITLE PICTURE
+
+% if a custom picture is to be used on the title page, copy it into the 'logos'
+% directory, in the line below, replace 'mypicture' with the 
+% filename (without extension) and uncomment the following line
+% (picture proportions: 63 : 20 for standard, 169 : 40 for wide
+% *.eps format if you use latex+dvips+ps2pdf, 
+% *.jpg/*.png/*.pdf if you use pdflatex)
+
+%\titleimage{mypicture}
+
+%% TITLE LOGO
+
+% for a custom logo on the front page, copy your file into the 'logos'
+% directory, insert the filename in the line below and uncomment it
+
+\titlelogo{mj++logo}
+
+% (*.eps format if you use latex+dvips+ps2pdf,
+% *.jpg/*.png/*.pdf if you use pdflatex)
+
+%% TikZ INTEGRATION
+
+% use these packages for PCM symbols and UML classes
+% \usepackage{templates/tikzkit}
+% \usepackage{templates/tikzuml}
+
+% the presentation starts here
+
+\title[]{mj++}
+\subtitle{Compilerpraktikum WS 2014/15}
+\author{Gruppe 5: mj++}
+\date{10. Februar 2015}
+
+\institute{Institut für Programmstrukturen und Datenorganistation}
+
+% Bibliography
+
+%\usepackage[citestyle=authoryear,bibstyle=numeric,hyperref,backend=biber]{biblatex}
+%\addbibresource{templates/example.bib}
+%\bibhang1em
+
+\usepackage{courier}
+\usepackage{listings}
+\lstset{frame=single,basicstyle=\small\ttfamily,language=Java}
+
+\usepackage{xcolor}
+\definecolor{lightgray}{gray}{0.9}
+\definecolor{kitblue}{RGB}{227, 232, 242}
+\newcommand{\code}[1]{\colorbox{lightgray}{\texttt{\upshape #1}}}
+\newcommand{\token}[1]{\colorbox{kitblue}{\texttt{\upshape #1}}}
+
+\begin{document}
+
+\selectlanguage{ngerman}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+%\begin{frame}{Outline}
+%\tableofcontents
+%\end{frame}
+
+\section{MiniJava}
+
+\begin{frame}
+    \frametitle{MiniJava}
+    \begin{itemize}
+        \item MiniJava $\subsetneq$ Java
+        \item Typen: \code{int}, \code{boolean}, Arrays, Objekte
+            \begin{itemize}
+                \item \emph{nicht}: \code{String}, \code{double}, \code{float}, \ldots
+            \end{itemize}
+        \item keine Vererbung, Interfaces, Exceptions, \ldots
+        \item nur \code{public}-Member
+        \item keine \code{static}-Methoden
+        \item nicht alle Operatoren (z.B.\ \code{++})
+    \end{itemize}
+    \vskip 1cm
+    \begin{center}
+        Ziel: MiniJava auf x86\_64 kompilieren
+    \end{center}
+\end{frame}
+
+\section{Lexikalische Analyse}
+\include{lexer}
+
+\section{Syntaktische Analyse}
+\include{parser}
+
+\section{Zusammenfassung}
+\include{specialities}
+
+\begin{frame}
+	\frametitle{Ende}
+	\Large
+	\centerline{\textbf{Danke für Eure Aufmerksamkeit!}}
+	\vspace{1cm}
+	\centerline{\textbf{Fragen?}}
+\end{frame}
+
+\end{document}

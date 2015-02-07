@@ -2,6 +2,8 @@
 #define TARVAL_HPP
 
 #include <libfirm/firm.h>
+#include <string>
+#include <sstream>
 #include "../globals.hpp"
 
 namespace firm
@@ -27,6 +29,7 @@ namespace firm
 			long getLong() const;
 			bool isNumWithVal(long val) const;
 			void setValue(ir_tarval* tarval);
+			std::string toString() const;
 			operator ir_tarval* ()
 			{
 				return tarval;

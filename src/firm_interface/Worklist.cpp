@@ -34,7 +34,7 @@ namespace firm
 		mark_irn_visited(irn);
 	}
 
-	static void walk_topological(ir_graph* irg, std::function<void (ir_node*, void*)> walker, void* env)
+	void Worklist::walk_topological(ir_graph* irg, std::function<void (ir_node*, void*)> walker, void* env)
 	{
 		inc_irg_visited(irg);
 		walk_topo_helper(get_irg_end(irg), walker, env);

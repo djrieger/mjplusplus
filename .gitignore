@@ -25,3 +25,7 @@ doc/doxygen
 *.run.xml
 *.snm
 *.toc
+*.synctex.gz
+
+!doc/slides/images/*
+foo.mj

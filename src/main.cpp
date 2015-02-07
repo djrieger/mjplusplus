@@ -13,6 +13,8 @@
 
 #include "firm_interface/FirmInterface.hpp"
 
+#include "firm_interface/optimizer/BasicInliner.hpp"
+
 
 int dumpLexGraph(lexer::Stateomat stateomat, std::string out_name)
 {
@@ -216,7 +218,14 @@ int main(int argc, const char** argv)
 			std::string flag = options[OPTIMIZATION].arg;
 
 			if (isNumber(flag))
-				firm::FirmInterface::getInstance().setOptimizationFlag(std::stoi(flag));
+			{
+				int flags = std::stoi(flag);
+
+				if (flags && options[COMPILE_FIRM])
+					flags |= firm::FirmInterface::OptimizationFlags::FIRM_COMPATIBLE;
+
+				firm::FirmInterface::getInstance().setOptimizationFlag(flags);
+			}
 			else
 			{
 				std::cerr << "Invalid optimization flag" << std::endl << std::endl;
@@ -224,8 +233,12 @@ int main(int argc, const char** argv)
 				return EXIT_FAILURE;
 			}
 		}
+		else
+			firm::FirmInterface::getInstance().setOptimizationFlag(firm::FirmInterface::OptimizationFlags::FIRM_COMPATIBLE);
 
 		runFirm(file_name, out_name_assembly, options[DUMP_FIRM_GRAPH], parser.getRoot());
+
+		firm::FirmInterface::getInstance().optimizeGraphs();
 
 		if (options[FIRM])
 			return EXIT_SUCCESS;
