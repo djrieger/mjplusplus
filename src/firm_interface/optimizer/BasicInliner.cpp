@@ -83,7 +83,7 @@ namespace firm
 		Node callNode = Node(info->callNode);
 		ir_node* destBlock = get_nodes_block(callNode);
 		ir_graph* irg = info->destIrg;
-		ir_printf("Copying %F (%d) to main graph...\n", node, get_irn_node_nr(node));
+		//ir_printf("Copying %F (%d) to main graph...\n", node, get_irn_node_nr(node));
 
 		switch (node.getOpcode())
 		{
@@ -99,7 +99,7 @@ namespace firm
 				        && is_Start(get_Proj_pred(get_Proj_pred(node))))
 				{
 					// found argument
-					ir_printf("Found argument %F (%d)\n", node, get_irn_node_nr(node));
+					//ir_printf("Found argument %F (%d)\n", node, get_irn_node_nr(node));
 					set_irn_link(node, get_Call_param(callNode, get_Proj_num(node)));
 				}
 
@@ -165,7 +165,7 @@ namespace firm
 
 	void BasicInliner::inlineSimpleFunction(Node callNode, ir_graph* calleeIrg)
 	{
-		ir_printf("Got %F (%d) to simple function %F\n", callNode, get_irn_node_nr(callNode), calleeIrg);
+		//ir_printf("Got %F (%d) to simple function %F\n", callNode, get_irn_node_nr(callNode), calleeIrg);
 		edges_activate(calleeIrg);
 
 		// make sure we don't have phis
@@ -174,7 +174,7 @@ namespace firm
 
 		if (!hasPhis)
 		{
-			ir_printf("Success, no phis\n");
+			//ir_printf("Success, no phis\n");
 			changed = true;
 
 			// Copy nodes to new (calling) graph
