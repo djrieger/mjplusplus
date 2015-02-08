@@ -25,7 +25,7 @@ namespace firm
 	{
 		ir_init();
 		all_optimizations_off();
-		printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
+		//printf("Initialized libFirm Version: %d.%d\n", ir_get_version_major(), ir_get_version_minor());
 		be_parse_arg("isa=amd64");
 		ir_mode* modeP = new_reference_mode("P64", irma_twos_complement, 64, 64);
 		set_modeP(modeP);
@@ -76,7 +76,7 @@ namespace firm
 
 	void FirmInterface::buildWithFirm()
 	{
-		std::cout << "Building with FIRM" << std::endl;
+		//std::cout << "Building with FIRM" << std::endl;
 		FILE* o = fopen(out_name.c_str(), "w");
 
 		try
@@ -126,7 +126,7 @@ _COut_Mprintln:\n\
 
 	void FirmInterface::build()
 	{
-		std::cout << "Building" << std::endl;
+		//std::cout << "Building" << std::endl;
 		FILE* o = fopen(out_name.c_str(), "w");
 
 		try
@@ -412,7 +412,7 @@ printf:\n\
 	FirmInterface::~FirmInterface()
 	{
 		ir_finish();
-		std::cout << "Destroyed FirmInterface instance" << std::endl;
+		//std::cout << "Destroyed FirmInterface instance" << std::endl;
 	}
 
 	ir_mode* FirmInterface::getIntegerMode()
