@@ -46,9 +46,11 @@ namespace firm
 			bool optimizeBitFiddling();
 
 			bool optimizeJumpChains();
+			bool optimizeInlining();
+
 		public:
 
-			Optimizer(ir_graph* irg);
+			Optimizer();
 			void setOptimizationFlag(int flag);
 			void setMaxIterations(int max);
 			void run();

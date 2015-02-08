@@ -1,0 +1,10 @@
+class Test {
+  public int foo(int a_0, int a_1, int a_2, int a_3, int a_4, int a_5, int a_6, int a_7, int a_8, int a_9, int a_10, int a_11, int a_12, int a_13, int a_14, int a_15, int a_16, int a_17, int a_18, int a_19, int[] b) {
+    return b[0];
+  }
+
+  public static void main(String[] args) {
+    Test a = new Test();
+    System.out.println(a.foo(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, new int[3]));
+  }
+}

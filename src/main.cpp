@@ -13,6 +13,8 @@
 
 #include "firm_interface/FirmInterface.hpp"
 
+#include "firm_interface/optimizer/BasicInliner.hpp"
+
 
 int dumpLexGraph(lexer::Stateomat stateomat, std::string out_name)
 {
@@ -77,7 +79,6 @@ void build()
 int compileAssembly(std::string out_name_assembly, std::string out_name_file)
 {
 	std::cout << "Compiling" << std::endl;
-	//TODO: may check if "gcc" is installed...or something.
 #ifndef __APPLE__
 	std::string cmd = "gcc " + out_name_assembly + " -o " + out_name_file;
 #else
@@ -235,6 +236,8 @@ int main(int argc, const char** argv)
 			firm::FirmInterface::getInstance().setOptimizationFlag(firm::FirmInterface::OptimizationFlags::FIRM_COMPATIBLE);
 
 		runFirm(file_name, out_name_assembly, options[DUMP_FIRM_GRAPH], parser.getRoot());
+
+		firm::FirmInterface::getInstance().optimizeGraphs();
 
 		if (options[FIRM])
 			return EXIT_SUCCESS;

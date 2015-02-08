@@ -6,16 +6,17 @@
 #include "LocalOptimizer.hpp"
 #include "LoadStoreOptimizer.hpp"
 #include "JumpChainOptimizer.hpp"
+#include "BasicInliner.hpp"
 #include "Optimizer.hpp"
 #include "../Worklist.hpp"
 #include "../FirmInterface.hpp"
 
 namespace firm
 {
-	Optimizer::Optimizer(ir_graph* irg): irg(irg)
+	Optimizer::Optimizer()
 	{
 		changed = false;
-		max_iterations = 10;
+		max_iterations = 100;
 		optimizationFlag = FirmInterface::OptimizationFlags::DEFAULT;
 	}
 
@@ -31,41 +32,53 @@ namespace firm
 
 	void Optimizer::run()
 	{
-		printf("opt flag: %d\n", optimizationFlag);
-
-		if (optimizationFlag != FirmInterface::OptimizationFlags::NONE)
+		if (optimizationFlag >= FirmInterface::OptimizationFlags::DEFAULT)
 		{
 			unsigned int iterations_count = 0;
 
 			do
 			{
 				changed = false;
-				changed = foldConstants() || changed;
-				changed = optimizeLocal() || changed;
-				FirmInterface::getInstance().handleConvNodes(irg);
-				changed = eliminateCommonSubexpressions() || changed;
-				changed = optimizeLoadStore() || changed;
-				changed = optimizeControlFlow() || changed;
-				remove_unreachable_code(irg);
-				remove_bads(irg);
-				//FirmInterface::getInstance().outputFirmGraph(irg, "during_opt");
-				optimizeJumpChains();
+
+				for (size_t i = 0; i < get_irp_n_irgs(); i++)
+				{
+					irg = get_irp_irg(i);
+
+					if (iterations_count == 0)
+						FirmInterface::getInstance().outputFirmGraph(irg, "orig");
+
+					changed = foldConstants() || changed;
+					changed = optimizeInlining() || changed;
+					changed = optimizeLocal() || changed;
+					FirmInterface::getInstance().handleConvNodes(irg);
+					changed = eliminateCommonSubexpressions() || changed;
+					changed = optimizeLoadStore() || changed;
+					changed = optimizeControlFlow() || changed;
+					remove_bads(irg);
+					remove_unreachable_code(irg);
+
+					irg_verify(irg);
+				}
 			}
 			while (changed && ++iterations_count < max_iterations);
 
-			remove_unreachable_code(irg);
-			remove_bads(irg);
+			for (size_t i = 0; i < get_irp_n_irgs(); i++)
+			{
+				irg = get_irp_irg(i);
 
-			if (!(optimizationFlag & FirmInterface::OptimizationFlags::FIRM_COMPATIBLE))
-				optimizeAddressMode();
+				if (!(optimizationFlag & FirmInterface::OptimizationFlags::FIRM_COMPATIBLE))
+					optimizeAddressMode();
 
-			optimizeBitFiddling();
+				optimizeBitFiddling();
+
+				FirmInterface::getInstance().outputFirmGraph(irg, "optimized");
+			}
 		}
 	}
 
 	bool Optimizer::graphWasChanged() const
 	{
-		return  changed;
+		return changed;
 	}
 
 	bool Optimizer::foldConstants()
@@ -170,5 +183,17 @@ namespace firm
 		edges_deactivate(irg);
 
 		return jco.graphChanged();
+	}
+
+	bool Optimizer::optimizeInlining()
+	{
+		BasicInliner bi(irg);
+		firm::Worklist worklist(irg, bi);
+
+		edges_activate(irg);
+		worklist.run();
+		edges_deactivate(irg);
+
+		return bi.graphChanged();
 	}
 }

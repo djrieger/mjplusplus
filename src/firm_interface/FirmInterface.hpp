@@ -110,10 +110,10 @@ namespace firm
 			void outputFirmGraph(ir_graph* irg, std::string suffix);
 
 			/**
-			 * Optimize the given firm graph using the optimization flags.
-			 * @param irg the given firm graph
+			 * Optimize all firm graphs using the optimization flags.
+			 * Calls optimize(ir_graph*)
 			 */
-			void optimize(ir_graph* irg);
+			void optimizeGraphs();
 
 			/**
 			 * Replaces chains of Conv nodes with a single node.
@@ -149,9 +149,11 @@ namespace firm
 			{
 				NONE = 0,
 				DEFAULT = 1 << 0,
-				FIRM_COMPATIBLE = 1 << 1
+				FIRM_COMPATIBLE = 1 << 1,
+				CUSTOM_PRINT = 1 << 2 //or SYSTEM_PRINT...depends on what should be default behaviour.
 			};
 			void setOptimizationFlag(int flag);
+			int getOptimizationFlag() const;
 			void setFirmGraphOutput(bool dumpFirmGraph);
 
 			shptr<std::map<std::string, int>> getVarMap();
