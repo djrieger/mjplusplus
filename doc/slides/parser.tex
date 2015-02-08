@@ -8,11 +8,16 @@
     	\item LALR- und LR-Parser
     	\end{itemize}
     \item MiniJava-Grammatik in SLL(3) umformbar \pause
+    \begin{itemize}
+    	\item Beispiel \code{a[}:
+    	\item[] $\rightarrow$ Deklaration einer lokalen Variable: \code{a[] q;}
+    	\item[] $\rightarrow$ Zugriff auf einen Array: \code{a[3] = 3;}
+    \end{itemize} \pause
     \item mögliche Technologien
 	    \begin{itemize}
 		\item Tabellenbasiert
 		\item rekursiver Abstieg
-		\only<3->{
+		\only<4->{
             \begin{tikzpicture}[overlay]
                 \node at (.8,.2) {\includegraphics[angle=5,origin=c,width=1.5cm,keepaspectratio=true]{logos/mj++logo.png}};
             \end{tikzpicture}
