@@ -28,9 +28,7 @@ namespace firm
 			ir_node* elseBlock = new_immBlock();
 			ir_node* exitBlock = new_immBlock();
 
-			BoolExpressionVisitor condVisitor(ifStatement->getThenStatement() ? thenBlock : exitBlock,
-			                                  ifStatement->getElseStatement() ? elseBlock : exitBlock
-			                                 );
+			BoolExpressionVisitor condVisitor(thenBlock, elseBlock);
 
 			ifStatement->getCondition()->accept(condVisitor);
 
@@ -43,6 +41,11 @@ namespace firm
 				if (!get_cur_block())
 					returns++;
 			}
+			else
+			{
+				mature_immBlock(thenBlock);
+				add_immBlock_pred(exitBlock, new_r_Jmp(thenBlock));
+			}
 
 			if (ifStatement->getElseStatement())
 			{
@@ -50,6 +53,11 @@ namespace firm
 
 				if (!get_cur_block())
 					returns++;
+			}
+			else
+			{
+				mature_immBlock(elseBlock);
+				add_immBlock_pred(exitBlock, new_r_Jmp(elseBlock));
 			}
 
 			if (returns < 2)
@@ -64,11 +72,7 @@ namespace firm
 		void StatementVisitor::visit(shptr<const ast::stmt::WhileStatement> whileStmt)
 		{
 			ir_node* whileCondBlock = new_immBlock();
-			ir_node* whileBodyBlock = NULL;
-
-			if (whileStmt->getLoopStatement())
-				whileBodyBlock = new_immBlock();
-
+			ir_node* whileBodyBlock = new_immBlock();
 			ir_node* exitBlock = new_immBlock();
 
 			// this is necessary for correctly handling infinite loops
@@ -77,17 +81,17 @@ namespace firm
 			add_immBlock_pred(whileCondBlock, new_Jmp());
 
 			// create while condition
-			BoolExpressionVisitor condVisitor(whileStmt->getLoopStatement() ? whileBodyBlock : whileCondBlock, exitBlock);
+			BoolExpressionVisitor condVisitor(whileBodyBlock, exitBlock);
 			set_cur_block(whileCondBlock);
 			whileStmt->getCondition()->accept(condVisitor);
 
 			// prevent "No memory chain found in graph" Firm errors
 			get_store();
 
+			mature_immBlock(whileBodyBlock);
+
 			if (whileStmt->getLoopStatement())
 			{
-				mature_immBlock(whileBodyBlock);
-
 				// create while body
 				set_cur_block(whileBodyBlock);
 				whileStmt->getLoopStatement()->accept(*this);
@@ -96,6 +100,8 @@ namespace firm
 				if (get_cur_block())
 					add_immBlock_pred(whileCondBlock, new_Jmp());
 			}
+			else
+				add_immBlock_pred(whileCondBlock, new_r_Jmp(whileBodyBlock));
 
 			mature_immBlock(whileCondBlock);
 
