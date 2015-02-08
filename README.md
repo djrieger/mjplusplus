@@ -5,7 +5,7 @@ mjplusplus is a compiler for the MiniJava language, a Java subset. MiniJava code
 
 The code's documentation can be found here: http://djrieger.github.io/mjplusplus/doc/doxygen/html/ 
 
-Compile by running `make` (debug version) or `make release` (release version) in the mjplusplus directory. This will create an `mj++` binary.
+Compile by running `make` or `make release` in the mjplusplus directory, this will create an `mj++` binary. To obtain a debugging version run `make debug` instead.
 
 Run the compiler like this:
 `./mj++ [--help|--dumplexgraph|--lextest|--parse|--check|--firm|--assembly] [--print-ast] [--suppress-errors] [--keep] [--compile-firm] [--out] FILE`

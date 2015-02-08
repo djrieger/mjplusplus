@@ -20,7 +20,7 @@ all: $(TARGET)
 
 -include $(SOURCE_FILES:src/%.cpp=build/%.d)
 
-debug $(TARGET): $(SOURCE_FILES:src/%.cpp=build/%.o) | libfirm/build/debug/libfirm.so build
+debug: $(SOURCE_FILES:src/%.cpp=build/%.o) | libfirm/build/debug/libfirm.so build
 	$(CPP) $(COMMON) $(DEBUGFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # analyse with gprof [options] ./mj++ gmon.out
@@ -28,7 +28,7 @@ profile: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so build
 	$(CPP) $(COMMON) $(CPPFLAGS) $(PROFILEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 # no .o files in release build
-release: $(SOURCE_FILES) | libfirm/build/debug/libfirm.so build
+release $(TARGET): $(SOURCE_FILES) | libfirm/build/debug/libfirm.so build
 	$(CPP) $(COMMON) $(CPPFLAGS) $(RELEASEFLAGS) $^ $(LDFLAGS) -o $(TARGET)
 
 libfirm/build/debug/libfirm.so:
