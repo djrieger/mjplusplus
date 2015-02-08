@@ -3,7 +3,14 @@
 	\begin{itemize}
 		\item Laufzeitanteil von Lexer und Parser: $\approx$ X\%	%falls wir das separat messen: in je 1 Zeile schreiben
 		\item LoC (gesamt): XXX
-		\item verwendete Tools: Git, Issue-Tracker, gprof, astyle, \dots
+		\item verwendete Tools: 
+		\begin{itemize}
+			\item Git
+			\item Issue-Tracker
+			\item gprof
+			\item astyle
+			\item \dots
+		\end{itemize}
 	\end{itemize}
 \end{frame}
 
@@ -11,12 +18,21 @@
     \frametitle{Besonderheiten von mj++}
     \begin{itemize}
         \item (einfache) Error-Recovery im Parser zur Meldung verschiedener Fehler
+        \begin{itemize}
+        	\item Beispiel: \code{public static 12 [ void main...}
+        \end{itemize} \pause
         \item Semantische Analyse von Expression-Statements und Definite-Return-Analysis nahe an Java-Semantik
+        \begin{itemize}
+        	\item Verbot von Expressions wie \code{4+2;} oder \code{a;} (siehe JLS §15.2ff)
+        	\item[] \lstinputlisting{DRA.mj}
+        \end{itemize} \pause
         \item schnelle Compilation
             \pause
+        \begin{itemize}
         \item Gruppe 5 sind die Besten!
             \begin{tikzpicture}[overlay]
                 \node at (.8,.2) {\includegraphics[angle=-10,origin=c,width=1.5cm,keepaspectratio=true]{logos/mj++logo.png}};
             \end{tikzpicture}
+        \end{itemize}
     \end{itemize}
 \end{frame}

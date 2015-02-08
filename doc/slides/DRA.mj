@@ -1,0 +1,5 @@
+public int foo() {
+    while (32 + 10 > 23) {
+        return 42;
+    }
+}
