@@ -9,11 +9,11 @@
     	\end{itemize}
     \item MiniJava-Grammatik in SLL(3) umformbar \pause
     \begin{itemize}
-    	\item Beispiel \code{a[}:
+    	\item Beispiel: \code{a[}
     	\item[] $\rightarrow$ Deklaration einer lokalen Variable: \code{a[] q;}
     	\item[] $\rightarrow$ Zugriff auf einen Array: \code{a[3] = 3;}
     \end{itemize} \pause
-    \item mögliche Technologien
+    \item mögliche Verfahren
 	    \begin{itemize}
 		\item Tabellenbasiert
 		\item rekursiver Abstieg
@@ -30,8 +30,8 @@
 	\frametitle{AST-Aufbau}
 	\begin{itemize}
 	\item Quelltext muss in passenderes Format umgewandelt werden
-	\item Zeichen und Regeln ohne Bedeutung werden nicht übernommen
-	\item Ergebnis ist der abstrakte Syntaxbaum (AST)
+	\item[] $\rightarrow$ Code-Hierarchie darstellen durch \textbf{abstrakten Syntaxbaum (AST)}
+	\item Zeichen ohne Bedeutung werden nicht übernommen
 	\item Aufbau während des Parsens
 	\end{itemize}
 \end{frame}
