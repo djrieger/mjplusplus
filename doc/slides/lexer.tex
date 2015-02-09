@@ -36,21 +36,21 @@
 \begin{frame}
     \frametitle{Lexikalische Analyse}
     \begin{tikzpicture}
-        \node[diamond,draw=black,fill=green!40] (0) at (0,0) {0};
-        \node[diamond,draw=black,fill=green!40] (1) at (-2,2) {1};
-        \node[diamond,draw=black,fill=green!40] (2) at (-4,0) {2};
-        \node[diamond,draw=black,fill=green!40] (4) at (-2,-2) {4};
-        \node[diamond,draw=black,fill=green!40] (3) at (5,2) {3};
-        \node[diamond,draw=black,fill=green!40] (20) at (5,-2) {20};
-        \draw[->] (0) to              node[midway,anchor=north west] {\texttt{/}} (4);
-        \draw[->] (4) to              node[midway,anchor=north east] {\texttt{*}} (2);
-        \draw[->] (2) to [bend right] node[midway,anchor=north west] {\texttt{*}} (1);
-        \draw[->] (1) to [bend right] node[midway,anchor=north west] {}           (2);
-        \draw[->] (1) to              node[midway,anchor=south west] {\texttt{/}} (0);
-        \draw[->] (0) to              node[very near end,anchor=north east] {\texttt{[a..g]ilnprstvw}} (20);
-        \draw[->] (0) to node[very near end,anchor=south east] {\texttt{[A-Z]\_hjkmoquxyz}} (3);
-        \draw[->] (20) to node[midway,anchor=east] {\texttt{[0-9][A-Z]\_jq}} (3);
-        \draw[->] (3) to [loop above] node {\texttt{[0-9][A-Z]\_[a-z]}} (3);
+        \node[circle,thick,draw=black,fill=green!40] (0) at (0,0) {0};
+        \node[circle,thick,draw=black,fill=green!40] (1) at (-2,2) {1};
+        \node[circle,thick,draw=black,fill=green!40] (2) at (-4,0) {2};
+        \node[circle,thick,draw=black,fill=green!40] (4) at (-2,-2) {4};
+        \node[circle,thick,draw=black,fill=green!40] (3) at (5,2) {3};
+        \node[circle,thick,draw=black,fill=green!40] (20) at (5,-2) {20};
+        \draw[thick,->] (0) to              node[midway,anchor=north west] {\texttt{/}} (4);
+        \draw[thick,->] (4) to              node[midway,anchor=north east] {\texttt{*}} (2);
+        \draw[thick,->] (2) to [bend right] node[midway,anchor=north west] {\texttt{*}} (1);
+        \draw[thick,->] (1) to [bend right] node[near start,anchor=south] {\texttt{[\^{}/]}}           (2);
+        \draw[thick,->] (1) to              node[midway,anchor=south west] {\texttt{/}} (0);
+        \draw[thick,->] (0) to              node[very near end,anchor=north east] {\texttt{[a..g]ilnprstvw}} (20);
+        \draw[thick,->] (0) to node[very near end,anchor=south east] {\texttt{[A-Z]\_hjkmoquxyz}} (3);
+        \draw[thick,->] (20) to [bend right] node[midway,anchor=east] {\texttt{[0-9][A-Z]\_jq}} (3);
+        \draw[thick,->] (3) to [loop above] node {\texttt{[0-9][A-Z]\_[a-z]}} (3);
     \end{tikzpicture}
 \end{frame}
 
