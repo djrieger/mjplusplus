@@ -14,6 +14,13 @@ namespace firm
 
 	BasicInliner::BasicInliner(ir_graph* irg): GraphHandler(irg)
 	{
+		add_irg_constraints(irg, IR_GRAPH_CONSTRAINT_CONSTRUCTION);
+		set_current_ir_graph(irg);
+	}
+
+	BasicInliner::~BasicInliner()
+	{
+		clear_irg_constraints(irg, IR_GRAPH_CONSTRAINT_CONSTRUCTION);
 	}
 
 	static void countReturnNodesCallback(ir_node* node, void* env)
@@ -50,8 +57,6 @@ namespace firm
 
 	void BasicInliner::tryInline(Node callNode, ir_graph* calleeIrg)
 	{
-		// ir_printf("[Proc %F] Checking if %F (%d) to %s can be inlined...\n", irg, callNode, get_irn_node_nr(callNode), get_entity_name(get_Call_callee(callNode)));
-
 		unsigned int returnNodesCount = 0;
 		Worklist::walk_topological(calleeIrg, &countReturnNodesCallback, &returnNodesCount);
 
@@ -70,7 +75,7 @@ namespace firm
 
 	static void checkForPhisCallback(ir_node* node, void* env)
 	{
-		if (is_Phi(node))
+		if (is_Phi(node) || is_Jmp(node))
 		{
 			auto hasPhis = (unsigned int*)env;
 			*hasPhis = true;
@@ -83,7 +88,6 @@ namespace firm
 		Node callNode = Node(info->callNode);
 		ir_node* destBlock = get_nodes_block(callNode);
 		ir_graph* irg = info->destIrg;
-		ir_printf("Copying %F (%d) to main graph...\n", node, get_irn_node_nr(node));
 
 		switch (node.getOpcode())
 		{
@@ -94,13 +98,23 @@ namespace firm
 				break;
 
 			case iro_Proj:
+
+				// found argument
 				if (node.getMode() != mode_M && node.getMode() != mode_T
 				        && get_irn_mode(get_Proj_pred(node)) == mode_T
 				        && is_Start(get_Proj_pred(get_Proj_pred(node))))
 				{
-					// found argument
 					ir_printf("Found argument %F (%d)\n", node, get_irn_node_nr(node));
 					set_irn_link(node, get_Call_param(callNode, get_Proj_num(node)));
+				}
+				// we have a Proj M with Start as child node
+				else if (node.getMode() == mode_M && is_Start(get_Proj_pred(node)))
+				{
+					ir_node* callNodeMemInput = get_Call_mem(callNode);
+					ir_node* projChild = is_Proj(callNodeMemInput) ? get_Proj_pred(callNodeMemInput) : callNodeMemInput;
+					ir_node* newNode = new_Proj(projChild, mode_M, 0);
+					ir_printf("Copying %F (%d) -> %F (%d)\n", node, get_irn_node_nr(node), newNode, get_irn_node_nr(newNode));
+					set_irn_link(node, newNode);
 				}
 
 				break;
@@ -136,23 +150,23 @@ namespace firm
 			break;
 
 			case iro_Return:
-				for (auto child : node.getChildren())
+				for (auto returnChild : node.getChildren())
 				{
-					// get result child
-					if (child.getMode() != mode_M)
+					for (auto outEdge : callNode.getOuts())
 					{
-						for (auto outEdge : callNode.getOuts())
-						{
-							// M or T projection succeeding the call node
-							Node succProj = outEdge.first;
+						// M or T projection succeeding the call node
+						Node succProj = outEdge.first;
 
-							if (succProj.getMode() == mode_T)
-							{
-								// replace this projection's successor with new Const node for the return value
-								Node grandparentProj = succProj.getOuts()[0].first;
-								grandparentProj.replaceWith((ir_node*)get_irn_link(child));
-							}
+						// value input for return node and Proj T below call node
+						if (returnChild.getMode() != mode_M && succProj.getMode() == mode_T)
+						{
+							// replace this projection's successor with new Const node for the return value
+							Node grandparentProj = succProj.getOuts()[0].first;
+							grandparentProj.replaceWith((ir_node*)get_irn_link(returnChild));
 						}
+						// mem input for return mode and Proj M below call node
+						else if (returnChild.getMode() == mode_M && succProj.getMode() == mode_M)
+							succProj.replaceWith((ir_node*)get_irn_link(returnChild));
 					}
 				}
 
@@ -167,6 +181,9 @@ namespace firm
 	{
 		ir_printf("Got %F (%d) to simple function %F\n", callNode, get_irn_node_nr(callNode), calleeIrg);
 		edges_activate(calleeIrg);
+
+
+
 
 		// make sure we don't have phis
 		bool hasPhis = false;
@@ -184,22 +201,23 @@ namespace firm
 			Worklist::walk_topological(calleeIrg, &copyNodesToNewGraphCallback, &info);
 
 			// "Delete" old Call node (rewiring memory chain)
-			for (auto outEdge : callNode.getOuts())
-			{
-				Node succProj = outEdge.first;
+			// for (auto outEdge : callNode.getOuts())
+			// {
+			// 	Node succProj = outEdge.first;
 
-				// got a memory projection
-				if (succProj.getMode() == mode_M)
-				{
-					// rewire each successor of the memory projection to the memory projection above the call node
-					for (auto projChild : succProj.getOuts())
-						projChild.first.setChild(projChild.second, get_Call_mem(callNode));
-				}
-			}
+			// 	// got a memory projection
+			// 	if (succProj.getMode() == mode_M)
+			// 	{
+			// 		// rewire each successor of the memory projection to the memory projection above the call node
+			// 		for (auto projChild : succProj.getOuts())
+			// 			projChild.first.setChild(projChild.second, get_Call_mem(callNode));
+			// 	}
+			// }
 
 		}
 
 		edges_deactivate(calleeIrg);
+
 	}
 
 	void BasicInliner::inlineImpureFunction(Node callNode, ir_graph*, Tarval returnValue)

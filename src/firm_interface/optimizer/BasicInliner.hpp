@@ -17,6 +17,7 @@ namespace firm
 			void inlineImpureFunction(Node callNode, ir_graph* calleeIrg, Tarval returnValue);
 		public:
 			BasicInliner(ir_graph* irg);
+			~BasicInliner();
 			void run();
 			virtual void cleanUp(Node node);
 			virtual void handle(Node node);
