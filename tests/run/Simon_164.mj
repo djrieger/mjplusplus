@@ -1,0 +1,45 @@
+class a {
+	public static void main(String[] args) {
+		a q = new a();
+		q.phiMadness(3);
+	}
+	
+	public void phiMadness(int n) {
+		int x0 = 3;
+		int x1 = 0;
+		int x2 = 1;
+		int x3 = 2;
+		int x4 = 9;
+		int x5 = 9;
+		int x6 = 9;
+		int x7 = 9;
+		int x8 = 8;
+		int x9 = 9;
+		int x10 = 9;
+		while (n > 0) {
+			x7 = x6;
+			x6 = x5;
+			x5 = x4;
+			x4 = x3;
+			x3 = x2;
+			x2 = x1;
+			x1 = x0;
+			
+			x10 = x9;
+			x9 = x8;
+			
+			n = n - 1;
+		}
+		System.out.println(x0);
+		System.out.println(x1);
+		System.out.println(x2);
+		System.out.println(x3);
+		System.out.println(x4);
+		System.out.println(x5);
+		System.out.println(x6);
+		System.out.println(x7);
+		System.out.println(x8);
+		System.out.println(x9);
+		System.out.println(x10);
+	}
+}

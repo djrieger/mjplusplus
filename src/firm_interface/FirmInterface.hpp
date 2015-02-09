@@ -149,9 +149,11 @@ namespace firm
 			{
 				NONE = 0,
 				DEFAULT = 1 << 0,
-				FIRM_COMPATIBLE = 1 << 1
+				FIRM_COMPATIBLE = 1 << 1,
+				CUSTOM_PRINT = 1 << 2 //or SYSTEM_PRINT...depends on what should be default behaviour.
 			};
 			void setOptimizationFlag(int flag);
+			int getOptimizationFlag() const;
 			void setFirmGraphOutput(bool dumpFirmGraph);
 
 			shptr<std::map<std::string, int>> getVarMap();
