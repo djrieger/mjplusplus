@@ -416,15 +416,7 @@ namespace firm
 				return NULL;
 			else {
 				ir_node* block = get_nodes_block(node);
-
-				for (int i = 0; i < get_irn_arity(block); ++i)
-				{
-					ir_node* res = traverseUntilLoopHead(get_irn_n(block, i));
-
-					if (res) return res;
-				}
-
-				return NULL;
+				return traverseUntilLoopHead(get_irn_n(block, 0));
 			}
 		};
 
