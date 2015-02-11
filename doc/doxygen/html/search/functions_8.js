@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['handle',['handle',['../classfirm_1_1_conv_handler.html#a3f82f9f521a7435c017c20c05077c9d3',1,'firm::ConvHandler::handle()'],['../classfirm_1_1_graph_handler.html#a0c3c3a1a7abe08a73086bd6f8845e3c3',1,'firm::GraphHandler::handle()'],['../classfirm_1_1_address_mode_optimizer.html#aa400c7947483d4f99dfddb97f95f5786',1,'firm::AddressModeOptimizer::handle()'],['../classfirm_1_1_basic_inliner.html#aff75f39883488269cc40c9451532e235',1,'firm::BasicInliner::handle()'],['../classfirm_1_1_bit_fiddling_optimizer.html#a10c4527cb4cf40a395a377eaf0f3f18e',1,'firm::BitFiddlingOptimizer::handle()'],['../classfirm_1_1_common_subexpression_eliminator.html#a2feafafd41eb24b02b93665a50ecb6a3',1,'firm::CommonSubexpressionEliminator::handle()'],['../classfirm_1_1_constant_folder.html#aadd724ebc491d83109cb5329c6d3ed3a',1,'firm::ConstantFolder::handle()'],['../classfirm_1_1_control_flow_optimizer.html#aa4a4a12e3b28d88fedf087adb0c5b324',1,'firm::ControlFlowOptimizer::handle()'],['../classfirm_1_1_jump_chain_optimizer.html#a35ec57d9a71a68384e72946a5920ce7d',1,'firm::JumpChainOptimizer::handle()'],['../classfirm_1_1_load_store_optimizer.html#abe899a27528d317f8a4cb255ed22c9fa',1,'firm::LoadStoreOptimizer::handle()'],['../classfirm_1_1_local_optimizer.html#aceff33f88ee755b0c89eb8426130d1d1',1,'firm::LocalOptimizer::handle()']]],
+  ['handle_5fadd',['handle_Add',['../classfirm_1_1_address_mode_optimizer.html#a134c62b4fb46984dec94756c0b7d6376',1,'firm::AddressModeOptimizer']]],
+  ['handle_5fmul',['handle_Mul',['../classfirm_1_1_address_mode_optimizer.html#aa90f9e82df91cd605bcd36e41f6942b3',1,'firm::AddressModeOptimizer']]],
+  ['handlearithmetic',['handleArithmetic',['../classfirm_1_1_common_subexpression_eliminator.html#a5dcc751119d2bcb354f7e4b77200a73c',1,'firm::CommonSubexpressionEliminator']]],
+  ['handleconst',['handleConst',['../classfirm_1_1_common_subexpression_eliminator.html#acf1e13fde98e379537306150ef329886',1,'firm::CommonSubexpressionEliminator']]],
+  ['handleconvnodes',['handleConvNodes',['../classfirm_1_1_firm_interface.html#a8ab016f1eed45d18a559bc30326f72db',1,'firm::FirmInterface']]],
+  ['handledivandmod',['handleDivAndMod',['../classfirm_1_1_constant_folder.html#a69cd0f1b3780b14ea2bb450c045674d0',1,'firm::ConstantFolder']]],
+  ['handleload',['handleLoad',['../classfirm_1_1_load_store_optimizer.html#ad3b3fc3648bdeed0f0e40151840b245e',1,'firm::LoadStoreOptimizer']]],
+  ['handleloadload',['handleLoadLoad',['../classfirm_1_1_load_store_optimizer.html#a8a72ec1ffd125d519704af2208040f21',1,'firm::LoadStoreOptimizer']]],
+  ['handleloadstore',['handleLoadStore',['../classfirm_1_1_load_store_optimizer.html#ae1c59dc0814a3208839e5d5a40f78dcf',1,'firm::LoadStoreOptimizer']]],
+  ['handleminus',['handleMinus',['../classfirm_1_1_constant_folder.html#ab59f6ac65ce909239c50f3999c0c3642',1,'firm::ConstantFolder']]],
+  ['handlemul',['handleMul',['../classfirm_1_1_constant_folder.html#a4df766cfb873d8e1ccbaa410cbb94e7a',1,'firm::ConstantFolder']]],
+  ['handlephi',['handlePhi',['../classfirm_1_1_constant_folder.html#aaa109988979e2e616e50953414aebb11',1,'firm::ConstantFolder']]],
+  ['handlestore',['handleStore',['../classfirm_1_1_load_store_optimizer.html#a8e4ef24fe8b7d031f0d07eac3cb05856',1,'firm::LoadStoreOptimizer']]],
+  ['handlestoreload',['handleStoreLoad',['../classfirm_1_1_load_store_optimizer.html#a7379bd81cdc8fde7a290df25c8c201a8',1,'firm::LoadStoreOptimizer']]],
+  ['handlestorestore',['handleStoreStore',['../classfirm_1_1_load_store_optimizer.html#ab974409c209f52901f1e059d91c3132b',1,'firm::LoadStoreOptimizer']]],
+  ['haschildren',['hasChildren',['../classfirm_1_1_node.html#a899c5901c35bd02f97ff06bb426b2a8a',1,'firm::Node']]]
+];
