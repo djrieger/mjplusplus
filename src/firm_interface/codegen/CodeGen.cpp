@@ -2057,9 +2057,29 @@ namespace firm
 				if (!usage[irn].second[2].reg)
 					gen_mov(mode, get_irn_n(irn, 2), 0, RCX);
 
+				if (get_mode_sign(mode))
+				{
+					fprintf(out, "\tcmp%s $-1, %s\n", os, constraintToRegister(usage[irn].second[2].reg ? usage[irn].second[2].reg : (size_t) RCX, mode));
+					fprintf(out, "\tje .L_divmod_%ld\n", get_irn_node_nr(irn));
+				}
+
 				fprintf(out, "\tc%s\n\t%sdiv%s ", conv, get_mode_sign(mode) ? "i" : "", os);
 				load_or_reg(mode, usage[irn].second[2].reg ? usage[irn].second[2].reg : (size_t) RCX);
 				fprintf(out, "\n");
+
+				if (get_mode_sign(mode))
+				{
+					fprintf(out, "\tjmp .L_divmod_%ld_2\n", get_irn_node_nr(irn));
+					fprintf(out, ".L_divmod_%ld:\n", get_irn_node_nr(irn));
+
+					if (is_Div(irn))
+						fprintf(out, "\tneg%s %s\n", os, constraintToRegister(RAX, mode));
+					else
+						fprintf(out, "\tmov%s $0, %s\n", os, constraintToRegister(RDX, mode));
+
+					fprintf(out, ".L_divmod_%ld_2:\n", get_irn_node_nr(irn));
+				}
+
 				gen_mov(mode, NULL, is_Div(irn) ? RAX : RDX, usage[irn].first[0].reg);
 			}
 		}
